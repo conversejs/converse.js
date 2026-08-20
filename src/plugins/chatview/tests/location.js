@@ -3,10 +3,12 @@ import converse from '../../../../dist/converse.js';
 
 const { u } = converse.env;
 
+const settings = { 'view_mode': 'fullscreen', 'visible_toolbar_buttons': { 'location': true } };
+
 describe('The Location Button', function () {
     it(
         'shows a confirmation prompt and sends the geo URI in a one-on-one chat',
-        mock.initConverse(converse, ['chatBoxesFetched'], { 'view_mode': 'fullscreen' }, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openControlBox(_converse);
 

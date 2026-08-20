@@ -91,16 +91,15 @@ declare const _default: {
     isString(s: any): boolean;
     getDefaultStorageType(): import("headless/types/utils/types.js").StorageType;
     isPersistentStorageAvailable(): boolean;
-    createStore(id: string, type: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").PersistentStorage;
+    createStore(id: string, type?: import("headless/types/utils/types.js").StorageType): import("@converse/skeletor").PersistentStorage;
     initStorage(model: import("headless/types/utils/types.js").StorageModel, id: string, type?: import("headless/types/utils/types.js").StorageType): void;
     isErrorStanza(stanza: Element): boolean;
     isForbiddenError(stanza: Element): boolean;
     isServiceUnavailableError(stanza: Element): boolean;
     getAttributes(stanza: Element): object;
-    toStanza: typeof import("@converse/headless").Stanza.toElement;
+    toStanza: typeof import("strophe.js").Stanza.toElement;
     isUniView(): boolean;
     isTestEnv(): boolean;
-    getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
     replacePromise(_converse: ConversePrivateGlobal, name: string): void;
     shouldClearCache(_converse: ConversePrivateGlobal): boolean;
     tearDown(_converse: ConversePrivateGlobal): Promise<any>;
@@ -123,17 +122,12 @@ declare const _default: {
     isSameBareJID(jid1: string, jid2: string): boolean;
     isSameDomain(jid1: string, jid2: string): boolean;
     getJIDFromURI(jid: string): string;
+    getNodeFromURI(uri?: string): string | undefined;
+    getItemFromURI(uri?: string): string | undefined;
     isOwnJID(jid: string, include_resource?: boolean): boolean;
+    getFullJID(jid: string): string | null;
     maybeAppendDomain(jid: string): string;
-    initPlugins(_converse: 
-    /**
-     * Given a specific index "i" of "text", return the directive it matches or null otherwise.
-     * @param {import('./texture').Texture} text - The text in which  the directive appears
-     * @param {Number} i - The directive index
-     * @param {Boolean} opening - Whether we're looking for an opening or closing directive
-     * @returns {string|null}
-     */
-    ConversePrivateGlobal): void;
+    initPlugins(_converse: ConversePrivateGlobal): void;
     initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
     initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
     initPersistentStorage(_converse: ConversePrivateGlobal, store_name: string, key?: string): void;
@@ -146,12 +140,25 @@ declare const _default: {
     safeSave(model: import("@converse/skeletor").Model, attributes: any, options: any): void;
     isElement(el: unknown): boolean;
     isEqualNode(actual: Element, expected: Element): boolean;
-    isTagEqual(stanza: Element | typeof import("@converse/headless").Builder, name: string): boolean;
-    stringToElement(s: string): Element;
+    isTagEqual(stanza: Element | typeof import("strophe.js").Builder, name: string): boolean;
     queryChildren(el: HTMLElement, selector: string): ChildNode[];
     siblingIndex(el: Element): number;
     decodeHTMLEntities(str: string): string;
     unescapeHTML(string: string): string;
+    getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
+    addUnloadListener(listener: EventListener, options?: AddEventListenerOptions): void;
+    removeUnloadListener(listener: EventListener): void;
+    isAppHidden(): boolean;
+    addVisibilityListener(listener: EventListener): void;
+    removeVisibilityListener(listener: EventListener): void;
+    getRouteHash(): string;
+    addRouteListener(listener: EventListener): void;
+    removeRouteListener(listener: EventListener): void;
+    getLocalStorageItem(key: string): string | null;
+    setLocalStorageItem(key: string, value: string): void;
+    removeLocalStorageItem(key: string): void;
+    hasCredentialsAPI(): boolean;
+    IS_BROWSER: boolean;
     colorize(s: string): Promise<string>;
     appendArrayBuffer(buffer1: any, buffer2: any): ArrayBufferLike;
     arrayBufferToHex(ab: any): any;

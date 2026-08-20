@@ -13,17 +13,11 @@ describe('A Chat Message', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
 
             const firstMessageText = 'But soft, what light through yonder airlock breaks?';
 
-            textarea.value = firstMessageText;
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, firstMessageText);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
             const spyClipboard = spyOn(navigator.clipboard, 'writeText');
@@ -63,36 +57,30 @@ describe('A Chat Message', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
 
             const firstMessageText = 'But soft, what light through yonder airlock breaks?';
 
-            textarea.value = firstMessageText;
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, firstMessageText);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
             // Quote with empty text area
-            expect(textarea.value).toBe('');
+            expect(mock.composerText(view)).toBe('');
             let firstAction = view.querySelector('.chat-msg__action-quote');
             expect(firstAction).not.toBeNull();
             firstAction.click();
-            await u.waitUntil(() => textarea.value === `> ${firstMessageText}`);
+            await u.waitUntil(() => mock.composerText(view) === `> ${firstMessageText}`);
 
             // Quote with already-present text
-            textarea.value = 'Hi!';
-            textarea.dispatchEvent(new Event('change'));
+            await mock.setComposerText(view, 'Hi!');
 
             firstAction.click();
-            await u.waitUntil(() => textarea.value === `Hi!\n> ${firstMessageText}\n`);
+            // A blank line separates the paragraph from the quote block, which is how both
+            // markdown and XEP-0393 delimit blocks.
+            await u.waitUntil(() => mock.composerText(view) === `Hi!\n\n> ${firstMessageText}`);
 
             // Test messages from other users
-            textarea.value = '';
-            textarea.dispatchEvent(new Event('change'));
+            await mock.setComposerText(view, '');
 
             const secondMessageText = 'Hello';
             _converse.handleMessageStanza(
@@ -112,7 +100,7 @@ describe('A Chat Message', function () {
             let secondAction = quoteActions[quoteActions.length - 1];
             expect(secondAction).not.toBeNull();
             secondAction.click();
-            await u.waitUntil(() => textarea.value === `> ${secondMessageText}`);
+            await u.waitUntil(() => mock.composerText(view) === `> ${secondMessageText}`);
         }),
     );
 });

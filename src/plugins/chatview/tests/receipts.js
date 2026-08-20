@@ -124,14 +124,8 @@ describe('A delivery receipt', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
-            textarea.value = 'But soft, what light through yonder airlock breaks?';
-            const message_form = view.querySelector('converse-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'But soft, what light through yonder airlock breaks?');
+            await mock.pressComposerKey(view, 'Enter');
             const chatbox = _converse.chatboxes.get(contact_jid);
             expect(chatbox).toBeDefined();
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
@@ -148,12 +142,8 @@ describe('A delivery receipt', function () {
 
             // Also handle receipts with type 'chat'. See #1353
             spyOn(_converse.exports, 'handleMessageStanza').and.callThrough();
-            textarea.value = 'Another message';
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'Another message');
+            await mock.pressComposerKey(view, 'Enter');
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
             msg_obj = chatbox.messages.models[1];

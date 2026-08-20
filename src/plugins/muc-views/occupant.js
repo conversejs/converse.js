@@ -41,7 +41,7 @@ export default class MUCOccupant extends CustomElement {
      * @param {string} jid
      */
     openChat(jid) {
-        api.chats.open(jid, {}, true);
+        api.trigger('openConversation', { view: 'chat', jid });
     }
 
     closeSidebar() {

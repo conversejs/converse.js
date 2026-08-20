@@ -4,4 +4,31 @@ converse-muc-chat-content {
     height: 100%;
     justify-content: space-between;
     overflow: auto;
+    position: relative; // anchor for the empty-state overlay below
+}
+
+converse-muc-empty {
+    // The sibling .chat-content__messages is height:100%, so flex-grow can't
+    // claim any space. Overlay the (message-less) chat area instead and centre
+    // the copy both ways.
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .muc-empty {
+        margin: auto;
+        padding: 2em 1.5em;
+        max-width: 30em;
+        text-align: center;
+    }
+    .muc-empty__heading {
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-bottom: 0.5em;
+    }
+    .muc-empty__body {
+        opacity: 0.8;
+    }
 }

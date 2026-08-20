@@ -65,28 +65,28 @@ export class LocationButton extends CustomElement {
                 switch (error.code) {
                     case error.PERMISSION_DENIED:
                         error_message = __(
-                            'Location access was denied. Please allow location permissions in your browser settings and try again.'
+                            'Location access was denied. Please allow location permissions in your browser settings and try again.',
                         );
                         break;
                     case error.POSITION_UNAVAILABLE:
                         error_message = __(
-                            "Your current location could not be determined. Please check your device's location services and try again."
+                            "Your current location could not be determined. Please check your device's location services and try again.",
                         );
                         break;
                     case error.TIMEOUT:
                         error_message = __(
-                            'The request to get your location timed out. Please check your connection and try again.'
+                            'The request to get your location timed out. Please check your connection and try again.',
                         );
                         break;
                     default:
                         error_message = __(
-                            'An unexpected error occurred while trying to retrieve your location. Please try again.'
+                            'An unexpected error occurred while trying to retrieve your location. Please try again.',
                         );
                 }
                 api.alert('error', __('Location Error'), [error_message]);
                 this.fetching_location = false;
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
         );
     }
 }

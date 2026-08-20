@@ -52,6 +52,13 @@ declare class DiscoEntity extends Model<import("@converse/skeletor").ModelAttrib
      */
     fetchFeatures(options: import("./types").FetchEntityFeaturesOptions): Promise<void>;
     /**
+     * Populates this entity's identities, features and fields from cached
+     * disco#info data (supplied by a `discoEntityInfoRequested` listener),
+     * instead of querying disco#info over the network.
+     * @param {import('./types').DiscoInfoData} info
+     */
+    populateFromCache(info: import("./types").DiscoInfoData): void;
+    /**
      * @param {import('./types').DiscoInfoOptions} [options]
      */
     queryInfo(options?: import("./types").DiscoInfoOptions): Promise<void>;

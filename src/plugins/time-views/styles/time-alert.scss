@@ -1,0 +1,48 @@
+converse-entity-time-alert {
+    display: block;
+
+    .entity-time-alert {
+        display: flex;
+        align-items: center;
+        padding: 0.5em 0.75em;
+        margin-bottom: 0;
+        background-color: var(--inset-bg-color);
+        border-left: 3px solid var(--warning-color);
+        border-top: 1px solid var(--chat-separator-border-color, rgba(0, 0, 0, 0.1));
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+        gap: 0.5em;
+
+        // The glyph's fill is set by an attribute on <converse-icon> rather than
+        // here: converse-icon fills its <svg> from a custom property of its own,
+        // which an inherited `color` doesn't reach.
+        &__icon {
+            flex-shrink: 0;
+        }
+
+        &__message {
+            flex: 1;
+            font-size: 0.85em;
+            color: var(--foreground-color);
+            // A long display name would otherwise wrap the bar onto a second and
+            // third line, which in overlayed mode is a real bite out of the
+            // message list. The whole sentence is on the bar's title.
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &__dismiss {
+            background: none;
+            border: none;
+            cursor: pointer;
+            // Padding rather than a width, so the glyph stays the size it is
+            // while the target around it clears the 24px WCAG 2.2 asks for.
+            padding: 0.5em;
+            opacity: 0.7;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}

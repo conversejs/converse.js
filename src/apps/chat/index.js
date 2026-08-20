@@ -1,0 +1,104 @@
+/**
+ * @copyright 2024, the Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ */
+import { html } from 'lit';
+import { _converse, api, constants, converse } from '@converse/headless';
+import './view.js';
+import ChatBoxViews from './container.js';
+import { calculateViewportHeightUnit } from './utils.js';
+import { openConversationRouted } from './navigation.js';
+import 'plugins/rootview/index.js';
+
+import './styles/chats.scss';
+
+converse.plugins.add('converse-app-chat', {
+    dependencies: ['converse-rootview', 'converse-chatboxes', 'converse-vcard'],
+
+    initialize() {
+        api.promises.add(['chatBoxViewsInitialized']);
+
+        // Configuration values for this plugin
+        // ====================================
+        // Refer to docs/source/configuration.rst for explanations of these
+        // configuration settings.
+        api.settings.extend({ animate: true });
+
+        api.apps.add({
+            name: 'chat',
+            title: 'Chat',
+            icon: 'fa-comments',
+            primary: true,
+            render: () => {
+                const extra_classes = api.settings.get('singleton') ? ['converse-singleton'] : [];
+                extra_classes.push(`converse-${api.settings.get('view_mode')}`);
+                return html`<converse-app-chat
+                    class="converse-app row justify-content-start g-0 ${extra_classes.join(' ')}"
+                ></converse-app-chat>`;
+            },
+            renderControlbox: () => html`
+                <converse-headlines-feeds-list class="controlbox-section"></converse-headlines-feeds-list>
+                <div id="chatrooms" class="controlbox-section">
+                    <converse-rooms-list></converse-rooms-list>
+                </div>
+                ${
+                    api.settings.get('authentication') === constants.ANONYMOUS
+                        ? ''
+                        : html`<div id="converse-roster" class="controlbox-section">
+                              <converse-roster />
+                          </div>`
+                }
+            `,
+        });
+
+        const chatboxviews = new ChatBoxViews();
+        Object.assign(_converse, { chatboxviews }); // XXX DEPRECATED
+        Object.assign(_converse.state, { chatboxviews });
+
+        /************************ BEGIN Event Handlers ************************/
+        api.listen.on('chatBoxesInitialized', () => {
+            _converse.state.chatboxes.on('destroy', (m) => chatboxviews.remove(m.get('jid')));
+        });
+
+        // The Chat app owns router navigation. The individual plugins announce
+        // intent by triggering `openConversation`, so the dependency arrow stays
+        // app -> plugin.
+        api.listen.on(
+            'openConversation',
+            /** @param {{ view: 'chat'|'room', jid: string, attrs?: object }} data */
+            ({ view, jid, attrs }) => openConversationRouted(view, jid, attrs),
+        );
+
+        api.listen.on('cleanup', () => Object.assign(_converse, { chatboxviews: null })); // DEPRECATED
+        api.listen.on('cleanup', () => delete _converse.state.chatboxviews);
+        api.listen.on('clearSession', () => chatboxviews.closeAllChatBoxes());
+        api.listen.on('chatBoxViewsInitialized', calculateViewportHeightUnit);
+
+        window.addEventListener('resize', calculateViewportHeightUnit);
+        /************************ END Event Handlers ************************/
+
+        Object.assign(converse, {
+            /**
+             * Public API method which will ensure that the #conversejs element
+             * is inserted into a container element.
+             *
+             * This method is useful when the #conversejs element has been
+             * detached from the DOM somehow.
+             * @async
+             * @memberOf converse
+             * @method insertInto
+             * @param {HTMLElement} container
+             * @example
+             * converse.insertInto(document.querySelector('#converse-container'));
+             */
+            insertInto(container) {
+                const el = chatboxviews.el;
+                if (el && !container.contains(el)) {
+                    container.insertAdjacentElement('afterbegin', el);
+                } else if (!el) {
+                    throw new Error('Cannot insert non-existing #conversejs element into the DOM');
+                }
+            },
+        });
+    },
+});

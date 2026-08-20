@@ -1,6 +1,8 @@
-&[data-converse-theme="classic"],
-&[data-bs-theme="classic"] {
+&[data-converse-theme='classic'],
+&[data-bs-theme='classic'] {
     $theme: 'classic' !default;
+
+    color-scheme: light;
 
     // Hex color values
     // ----------------
@@ -8,6 +10,7 @@
     --blue-rgb: 56, 117, 146;
     --dark-blue: #397491;
     --dark-green: #1e9652;
+    --dark-green-rgb: 30, 150, 82;
     --red: #d24e2b;
     --red-rgb: 210, 78, 43;
     --gray: #818479;
@@ -19,6 +22,7 @@
     --orange: #e7a151;
     --orange-rgb: 231, 161, 81;
     --redder-orange: #e77051;
+    --redder-orange-rgb: 231, 112, 81;
 
     // Base variables
     // --------------
@@ -26,8 +30,12 @@
     --background-color: #efefef;
     --background-color-rgb: 239, 239, 239;
 
-    --chat-rgb: var(--green-rgb);
-    --muc-rgb: var(--orange-rgb);
+    // The `-rgb` form of an accent has to be the same colour as the accent, or
+    // a translucent wash built from it comes out a different hue to the solid
+    // fill beside it. These two named the neighbouring palette entries rather
+    // than the ones `--chat-color` and `--muc-color` actually use.
+    --chat-rgb: var(--dark-green-rgb);
+    --muc-rgb: var(--redder-orange-rgb);
 
     // Bootstrap variables
     --primary-color: var(--blue) !important;
@@ -54,8 +62,14 @@
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--blue);
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
     .navbar-nav {
         --converse-nav-link-color: var(--link-color) !important;
+        --converse-nav-link-hover-color: var(--link-color-hover) !important;
     }
     .popover {
         --converse-popover-header-color: var(--background-color) !important;
@@ -80,7 +94,7 @@
     --error-color: var(--red);
     --focus-color: var(--light-blue);
     --heading-color: var(--light-blue);
-    --link-color: #2D3991;
+    --link-color: #2d3991;
     --subdued-color: gray;
 
     // The background when selecting text with your mouse
@@ -93,6 +107,9 @@
     // 1:1 Chat-related colors
     --chat-color: var(--dark-green);
     --chat-header-fg-color: var(--background-color);
+    // A saturated mid-green header: grey text on it measures 1.04:1, so the
+    // status message is a dimmed version of the header's own text instead.
+    --chat-header-subdued-color: color-mix(in srgb, var(--chat-header-fg-color) 75%, var(--chat-header-bg-color));
     --chat-header-bg-color: var(--chat-color);
 
     // MUC-related colors
@@ -115,6 +132,5 @@
     --muc-color-hover: var(--muc-color);
     --primary-color-hover: var(--dark-blue);
     --secondary-color-hover: #ddd;
-    --success-color-hover: var(--success);
     --warning-color-hover: #d2842b;
 }

@@ -1,4 +1,4 @@
-import { AdHocCommand, AdHocCommandResult } from '@converse/headless/plugins/adhoc/types';
+import { AdHocCommand, AdHocCommandResult } from '@converse/headless/types/plugins/adhoc/types';
 
 export type AdHocUIProps = {
     instructions: string;

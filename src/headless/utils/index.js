@@ -8,6 +8,7 @@ import log, { LEVELS } from '@converse/log';
 import * as array from './array.js';
 import * as arraybuffer from './arraybuffer.js';
 import * as color from './color.js';
+import * as environment from './environment.js';
 import * as html from './html.js';
 import * as init from './init.js';
 import * as jid from './jid.js';
@@ -38,9 +39,10 @@ const u = {
  * @param {Event} [event]
  */
 export function setLogLevelFromRoute(event) {
-    if (location.hash.startsWith('#converse?loglevel=')) {
+    const hash = environment.getRouteHash();
+    if (hash.startsWith('#converse?loglevel=')) {
         event?.preventDefault();
-        const level = location.hash.split('=').pop();
+        const level = hash.split('=').pop();
         if (Object.keys(LEVELS).includes(level)) {
             log.setLogLevel(/** @type {keyof LEVELS} */ (level));
         } else {
@@ -149,6 +151,7 @@ export default Object.assign(
         ...array,
         ...arraybuffer,
         ...color,
+        ...environment,
         ...html,
         ...init,
         ...jid,

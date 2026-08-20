@@ -1,11 +1,15 @@
-declare const Connection_base: typeof import("strophe.js/src/types/connection").default;
+declare const Connection_base: typeof import("../../../../node_modules/strophe.js/dist/types/connection.js").default;
 /**
  * The Connection class manages the connection to the XMPP server. It's
  * agnostic concerning the underlying protocol (i.e. websocket, long-polling
  * via BOSH or websocket inside a shared worker).
  */
 export class Connection extends Connection_base {
-    constructor(service: any, options: any);
+    /**
+     * @param {string} service - The BOSH or WebSocket service URL.
+     * @param {import('strophe.js').ConnectionOptions} options
+     */
+    constructor(service: string, options: import("strophe.js").ConnectionOptions);
     send_initial_presence: boolean;
     debouncedReconnect: import("lodash").DebouncedFunc<() => Promise<any>>;
     /** @param {Element} body */
@@ -26,13 +30,9 @@ export class Connection extends Connection_base {
      * password.
      * @param {String} jid
      * @param {String} password
-     * @param {Function} callback
+     * @param {import('strophe.js').ConnectCallback} [callback]
      */
-    connect(jid: string, password: string, callback: Function): Promise<void>;
-    /**
-     * @param {string} reason
-     */
-    disconnect(reason: string): void;
+    connect(jid: string, password: string, callback?: import("strophe.js").ConnectCallback): Promise<void>;
     /**
      * Switch to a different transport if a service URL is available for it.
      *
@@ -91,7 +91,6 @@ export class Connection extends Connection_base {
      * @param {string} type
      */
     isType(type: string): boolean;
-    hasResumed(): boolean;
     restoreWorkerSession(): Promise<any> & {
         isResolved: boolean;
         isPending: boolean;
@@ -111,16 +110,21 @@ export class Connection extends Connection_base {
  * The MockConnection class is used during testing, to mock an XMPP connection.
  */
 export class MockConnection extends Connection {
-    /**
-     * @param {string} service - The BOSH or WebSocket service URL.
-     * @param {import('strophe.js/src/types/connection').ConnectionOptions} options - The configuration options
-     */
-    constructor(service: string, options: import("strophe.js/src/types/connection").ConnectionOptions);
     sent_stanzas: any[];
     IQ_stanzas: any[];
     IQ_ids: any[];
     mock: boolean;
-    get _sasl_mechanism(): import("strophe.js/src/types/sasl-sha256.js").default;
+    /**
+     * Strophe's `Connection._dataRecv` unwraps an injected request into its
+     * stanza element via the transport's `_reqToData`, but only for BOSH; on
+     * websocket it expects the element directly. Tests inject a Request-shaped
+     * object on both transports (see `createRequest`), so unwrap it here for
+     * the websocket case before Strophe processes it.
+     * @param {any} req
+     * @param {string} [raw]
+     */
+    _dataRecv(req: any, raw?: string): void;
+    get _sasl_mechanism(): import("../../../../node_modules/strophe.js/dist/types/sasl-sha256.js").default;
     _processRequest(): void;
     sendIQ(iq: any, callback: any, errback: any): string;
     send(stanza: any): void;

@@ -2,6 +2,8 @@
 &[data-bs-theme='nordic'] {
     $theme: 'nordic' !default;
 
+    color-scheme: light;
+
     // Darker gray theme colors
     --polar-night-1: #2e3440;
     --polar-night-2: #3b4252;
@@ -68,7 +70,6 @@
     --converse-body-bg: var(--background-color);
     --converse-body-color: var(--foreground-color) !important;
     --converse-highlight-color: var(--red);
-    --converse-border-color: lightgray;
 
     .form-check-input:checked {
         background-color: var(--purple);
@@ -76,6 +77,7 @@
     }
     .navbar-nav {
         --converse-nav-link-color: var(--link-color) !important;
+        --converse-nav-link-hover-color: var(--link-color-hover) !important;
     }
     .popover {
         --converse-popover-header-color: var(--background-color) !important;
@@ -121,6 +123,9 @@
     // 1:1 Chat-related colors
     --chat-color: var(--green-1);
     --chat-header-fg-color: var(--background-color);
+    // A saturated mid-green header: grey text on it measures 1.04:1, so the
+    // status message is a dimmed version of the header's own text instead.
+    --chat-header-subdued-color: color-mix(in srgb, var(--chat-header-fg-color) 75%, var(--chat-header-bg-color));
     --chat-header-bg-color: var(--chat-color);
 
     // MUC-related colors
@@ -141,8 +146,9 @@
     --global-background-color: var(--background-color);
     --link-color-hover: var(--link-color);
     --muc-color-hover: var(--muc-color);
-    --primary-color-hover: var(--purple);
+    // `--primary-color-hover` is declared with the Bootstrap variables above,
+    // and with `!important`, so it wins over a later declaration at the same
+    // specificity no matter the order. This second one has never applied.
     --secondary-color-hover: var(--snow-storm-1);
-    --success-color-hover: var(--success);
     --warning-color-hover: var(--orange);
 }

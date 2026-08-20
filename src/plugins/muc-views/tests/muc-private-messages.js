@@ -44,7 +44,9 @@ describe('MUC Private Messages', () => {
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`
+                    mock.createRequest(
+                        _converse,
+                        stx`
                         <presence
                             from="${muc_jid}/firstwitch"
                             id="${u.getUniqueId()}"
@@ -53,12 +55,15 @@ describe('MUC Private Messages', () => {
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="owner" role="moderator"/>
                         </x>
-                        </presence>`),
+                        </presence>`,
+                    ),
                 );
                 await u.waitUntil(() => view.model.occupants.length === 2);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`
+                    mock.createRequest(
+                        _converse,
+                        stx`
                         <message from="${muc_jid}/firstwitch"
                                 id="${u.getUniqueId()}"
                                 to="${_converse.jid}"
@@ -67,11 +72,14 @@ describe('MUC Private Messages', () => {
                             <body>I'll give thee a wind.</body>
                             <x xmlns="http://jabber.org/protocol/muc#user" />
                         </message>
-                    `),
+                    `,
+                    ),
                 );
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`
+                    mock.createRequest(
+                        _converse,
+                        stx`
                         <message from="coven@chat.shakespeare.lit/thirdwitch"
                                 id="${u.getUniqueId()}"
                                 to="${_converse.jid}"
@@ -79,7 +87,8 @@ describe('MUC Private Messages', () => {
                                 xmlns="jabber:client">
                             <body>Harpier cries: "tis time, "tis time.</body>
                         </message>
-                    `),
+                    `,
+                    ),
                 );
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 1);
@@ -106,7 +115,9 @@ describe('MUC Private Messages', () => {
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`
+                    mock.createRequest(
+                        _converse,
+                        stx`
                             <presence
                                 from="${muc_jid}/firstwitch"
                                 id="${u.getUniqueId()}"
@@ -115,7 +126,8 @@ describe('MUC Private Messages', () => {
                             <x xmlns="http://jabber.org/protocol/muc#user">
                                 <item affiliation="owner" role="moderator"/>
                             </x>
-                            </presence>`),
+                            </presence>`,
+                    ),
                 );
                 if (view.model.get('hidden_occupants')) {
                     // Happens in headless chrome due to smaller viewport size
@@ -126,8 +138,11 @@ describe('MUC Private Messages', () => {
                 // Open the occupant view in the sidebar
                 view.querySelector('.occupant-list converse-avatar[name="firstwitch"]').click();
 
-                const textarea = await u.waitUntil(() => view.querySelector('converse-muc-occupant textarea'));
-                textarea.value = 'hello';
+                // The occupant sidebar has its own composer, so scope to it rather than
+                // picking up the room's one from the bottom panel.
+                const occupant_view = await u.waitUntil(() => view.querySelector('converse-muc-occupant'));
+                await u.waitUntil(() => occupant_view.querySelector('.chat-textarea'));
+                await mock.setComposerText(occupant_view, 'hello');
 
                 const button = view.querySelector('converse-muc-occupant .send-button');
                 button.click();
@@ -162,7 +177,9 @@ describe('MUC Private Messages', () => {
                 const view = _converse.chatboxviews.get(muc_jid);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`
+                    mock.createRequest(
+                        _converse,
+                        stx`
                             <presence
                                 from="${muc_jid}/firstwitch"
                                 id="${u.getUniqueId()}"
@@ -171,7 +188,8 @@ describe('MUC Private Messages', () => {
                             <x xmlns="http://jabber.org/protocol/muc#user">
                                 <item affiliation="owner" role="moderator"/>
                             </x>
-                            </presence>`),
+                            </presence>`,
+                    ),
                 );
                 if (view.model.get('hidden_occupants')) {
                     // Happens in headless chrome due to smaller viewport size
@@ -207,7 +225,9 @@ describe('MUC Private Messages', () => {
                     const view = _converse.chatboxviews.get(muc_jid);
 
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`
+                        mock.createRequest(
+                            _converse,
+                            stx`
                             <presence
                                 from="${muc_jid}/firstwitch"
                                 id="${u.getUniqueId()}"
@@ -216,7 +236,8 @@ describe('MUC Private Messages', () => {
                             <x xmlns="http://jabber.org/protocol/muc#user">
                                 <item affiliation="owner" role="moderator"/>
                             </x>
-                            </presence>`),
+                            </presence>`,
+                        ),
                     );
                     if (view.model.get('hidden_occupants')) {
                         // Happens in headless chrome due to smaller viewport size
@@ -237,7 +258,9 @@ describe('MUC Private Messages', () => {
 
                     const err_msg_text = 'Recipient not in room';
                     api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`
+                        mock.createRequest(
+                            _converse,
+                            stx`
                         <message xmlns="jabber:client"
                             id="${sent_stanza.getAttribute('id')}"
                             to="${_converse.session.get('jid')}"
@@ -248,7 +271,8 @@ describe('MUC Private Messages', () => {
                                 <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                                 <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">${err_msg_text}</text>
                             </error>
-                        </message>`),
+                        </message>`,
+                        ),
                     );
 
                     expect(await u.waitUntil(() => view.querySelector('.chat-msg__error')?.textContent?.trim())).toBe(

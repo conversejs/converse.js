@@ -16,6 +16,7 @@ import { Signal } from '@lit-labs/signals';
 // the model/collection is gone.
 const attr_signals = new WeakMap(); // Model -> Map<string, Signal.State>
 const collection_signals = new WeakMap(); // Collection -> Signal.State
+const aggregated_signals = new WeakMap(); // Collection -> Signal.Computed
 
 /**
  * Mirror a model attribute (or `computed` key) as a `Signal.State`.
@@ -55,6 +56,37 @@ export function collectionSignal(collection) {
         // `subscribe` fires once per add/remove/reset/sort (not per model).
         collection.subscribe(() => signal.set([...collection.models]));
         collection_signals.set(collection, signal);
+    }
+    return signal;
+}
+
+/**
+ * Merge the child collections of every model in a parent collection into one
+ * (optionally sorted) `Signal.Computed` snapshot (e.g. a single timeline
+ * aggregated from many feeds).
+ *
+ * The computed reads `collectionSignal(parent)` plus, for each parent model,
+ * `collectionSignal(childAccessor(model))`. Because every one of those reads is
+ * auto-tracked, the aggregate recomputes when the parent gains or loses a model
+ * AND when any child collection changes. No manual subscription bookkeeping.
+ *
+ * Memoized per parent collection: the first call binds `childAccessor` and
+ * `comparator` for that parent (one aggregate view per parent collection),
+ * mirroring how {@link collectionSignal} memoizes per collection.
+ * @param {import('@converse/skeletor').Collection} parent
+ * @param {(model: import('@converse/skeletor').Model) => import('@converse/skeletor').Collection} childAccessor
+ * @param {(a: import('@converse/skeletor').Model, b: import('@converse/skeletor').Model) => number} [comparator]
+ * @returns {import('@lit-labs/signals').Signal.Computed<import('@converse/skeletor').Model[]>}
+ */
+export function aggregatedCollectionSignal(parent, childAccessor, comparator) {
+    let signal = aggregated_signals.get(parent);
+    if (!signal) {
+        const parent_signal = collectionSignal(parent);
+        signal = new Signal.Computed(() => {
+            const models = parent_signal.get().flatMap((m) => collectionSignal(childAccessor(m)).get());
+            return comparator ? [...models].sort(comparator) : models;
+        });
+        aggregated_signals.set(parent, signal);
     }
     return signal;
 }

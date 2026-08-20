@@ -22,8 +22,6 @@ describe('A Groupchat Message', function () {
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
-            const message_form = view.querySelector('converse-muc-message-form');
             const spyClipboard = spyOn(navigator.clipboard, 'writeText');
 
             const firstMessageText = 'But soft, what light through yonder airlock breaks?';
@@ -43,12 +41,8 @@ describe('A Groupchat Message', function () {
             expect(spyClipboard).toHaveBeenCalledOnceWith(firstMessageText);
 
             const secondMessageText = 'Hello';
-            textarea.value = secondMessageText;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, secondMessageText);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
             const copyActions = view.querySelectorAll('.chat-msg__action-copy');
             expect(copyActions.length).toBe(2);
@@ -88,21 +82,21 @@ describe('A Groupchat Message', function () {
             </message>`);
 
             const view = _converse.chatboxviews.get(muc_jid);
-            const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
 
             // Quote with empty text area
-            expect(textarea.value).toBe('');
+            expect(mock.composerText(view)).toBe('');
             let firstAction = await u.waitUntil(() => view.querySelector('.chat-msg__action-quote'));
             expect(firstAction).not.toBeNull();
             firstAction.click();
-            await u.waitUntil(() => textarea.value === '> ' + firstMessageText);
+            await u.waitUntil(() => mock.composerText(view) === '> ' + firstMessageText);
 
             // Quote with already-present text
-            textarea.value = 'Hi!';
-            textarea.dispatchEvent(new Event('change'));
+            await mock.setComposerText(view, 'Hi!');
 
             firstAction.click();
-            await u.waitUntil(() => textarea.value === `Hi!\n> ${firstMessageText}\n`);
+            // A blank line separates the paragraph from the quote block, which is how both
+            // markdown and XEP-0393 delimit blocks.
+            await u.waitUntil(() => mock.composerText(view) === `Hi!\n\n> ${firstMessageText}`);
         }),
     );
 

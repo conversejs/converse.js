@@ -25,14 +25,8 @@ describe('Emojis', function () {
                 const view = _converse.chatboxviews.get(contact_jid);
 
                 // Type an emoji shortname and send the message
-                const textarea = view.querySelector('textarea.chat-textarea');
-                textarea.value = ':thumbsup:';
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, ':thumbsup:');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
@@ -102,8 +96,37 @@ describe('Emojis', function () {
                 await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')), 1000);
                 const item = view.querySelector('.emoji-picker li.insert-emoji a');
                 item.click();
-                expect(view.querySelector('textarea.chat-textarea').value).toBe(':thumbsup: ');
+                // Insertion goes through the editor, which may still be loading.
+                await u.waitUntil(() => mock.composerText(view) === ':thumbsup:');
                 toolbar.querySelector('.toggle-emojis').click(); // Close the panel again
+            }),
+        );
+
+        it(
+            'is closed by Escape even when focus is not inside it',
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+                const contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                await mock.waitForRoster(_converse, 'current');
+                await mock.openControlBox(_converse);
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+                const toolbar = await u.waitUntil(() => view.querySelector('converse-chat-toolbar'));
+                toolbar.querySelector('.toggle-emojis').click();
+                await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')), 1000);
+
+                // Focus sits in the message textarea (as it does when the picker was
+                // opened via the ":shortname" tab-autocomplete), NOT inside the
+                // dropdown, so only a document-level handler can see this keydown.
+                const editable = view.querySelector('.chat-textarea');
+                editable.focus();
+                editable.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+                const dropdown = view.querySelector('converse-emoji-dropdown');
+                await u.waitUntil(
+                    () => !dropdown.querySelector('.dropdown-menu').classList.contains('show'),
+                    1000,
+                );
+                expect(dropdown.querySelector('.dropdown-menu').classList.contains('show')).toBe(false);
             }),
         );
 
@@ -238,34 +261,21 @@ describe('Emojis', function () {
 
                 // Test that a modified message that no longer contains only
                 // emojis now renders normally again.
-                const textarea = view.querySelector('textarea.chat-textarea');
-                textarea.value = ':poop: :innocent:';
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, ':poop: :innocent:');
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
                 const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
                 await u.waitUntil(() => view.querySelector(last_msg_sel).textContent === '💩 😇');
 
-                expect(textarea.value).toBe('');
-                message_form.onKeyDown({
-                    target: textarea,
-                    key: 'ArrowUp',
-                });
-                await u.waitUntil(() => textarea.value === '💩 😇');
+                expect(mock.composerText(view)).toBe('');
+                await mock.pressComposerKey(view, 'ArrowUp');
+                await u.waitUntil(() => mock.composerText(view) === '💩 😇');
                 expect(view.model.messages.at(2).get('correcting')).toBe(true);
                 sel = 'converse-chat-message:last-child .chat-msg';
                 await u.waitUntil(() => u.hasClass('correcting', view.querySelector(sel)), 500);
-                const edited_text = (textarea.value += 'This is no longer an emoji-only message');
-                textarea.value = edited_text;
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                const edited_text = mock.composerText(view) + 'This is no longer an emoji-only message';
+                await mock.setComposerText(view, edited_text);
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(
                     () =>
                         Array.from(view.querySelectorAll('.chat-msg__text')).filter(
@@ -276,20 +286,12 @@ describe('Emojis', function () {
                 let message = view.querySelector(last_msg_sel);
                 expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
 
-                textarea.value = ':smile: Hello world!';
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, ':smile: Hello world!');
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
 
-                textarea.value = ':smile: :smiley: :imp:';
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, ':smile: :smiley: :imp:');
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 5);
 
                 message = view.querySelector('.message:last-child .chat-msg__text');
@@ -328,14 +330,8 @@ describe('Emojis', function () {
                 expect(imgs.length).toBe(1);
                 expect(imgs[0].src).toBe(_converse.api.settings.get('emoji_image_path') + '/72x72/1f607.png');
 
-                const textarea = view.querySelector('textarea.chat-textarea');
-                textarea.value = ':poop: :innocent:';
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, ':poop: :innocent:');
+                await mock.pressComposerKey(view, 'Enter');
                 await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                 message = view.querySelector(last_msg_sel);
                 await u.waitUntil(() => u.isVisible(message.querySelector('.emoji')), 1000);
@@ -383,14 +379,8 @@ describe('Emojis', function () {
                         '<img class="emoji" loading="lazy" draggable="false" title=":xmpp:" alt=":xmpp:" src="/dist/./images/custom_emojis/xmpp.png">',
                     );
 
-                    const textarea = view.querySelector('textarea.chat-textarea');
-                    textarea.value = 'Running tests for :converse:';
-                    const message_form = view.querySelector('converse-message-form');
-                    message_form.onKeyDown({
-                        target: textarea,
-                        preventDefault: function preventDefault() {},
-                        key: 'Enter',
-                    });
+            await mock.setComposerText(view, 'Running tests for :converse:');
+                    await mock.pressComposerKey(view, 'Enter');
                     await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                     const body = view.querySelector('converse-chat-message-body');
                     await u.waitUntil(
@@ -445,14 +435,8 @@ describe('Emojis', function () {
                     const view = _converse.chatboxviews.get(contact_jid);
 
                     // Send a message using the longer shortname :penguin3:
-                    const textarea = view.querySelector('textarea.chat-textarea');
-                    textarea.value = 'Look at :penguin3: here';
-                    const message_form = view.querySelector('converse-message-form');
-                    message_form.onKeyDown({
-                        target: textarea,
-                        preventDefault: function preventDefault() {},
-                        key: 'Enter',
-                    });
+            await mock.setComposerText(view, 'Look at :penguin3: here');
+                    await mock.pressComposerKey(view, 'Enter');
                     await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                     const body = view.querySelector('converse-chat-message-body');
                     // :penguin3: should render as the penguin3 custom emoji image,

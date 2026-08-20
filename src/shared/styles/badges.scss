@@ -1,5 +1,5 @@
 .conversejs {
-    @import "bootstrap/scss/badge";
+    @import 'bootstrap/scss/badge';
 
     .badge {
         color: var(--background-color);
@@ -16,7 +16,9 @@
     .badge-primary {
         background-color: var(--primary-color);
         border-color: transparent;
-        &:focus, &:hover, &:active {
+        &:focus,
+        &:hover,
+        &:active {
             background-color: var(--primary-color-hover) !important;
             border-color: transparent !important;
         }
@@ -32,9 +34,5 @@
     .badge-secondary {
         background-color: var(--secondary-color);
         border-color: var(--secondary-color);
-        &:hover {
-            background-color: var(--secondary-color-dark);
-            border-color: var(--secondary-color-dark);
-        }
     }
 }

@@ -1,6 +1,11 @@
 .conversejs {
-
     #chatrooms {
+        .collapsed {
+            height: 0 !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+        }
+
         .muc-domain-group-toggle {
             margin: 0.75em 0 0.25em 0;
         }

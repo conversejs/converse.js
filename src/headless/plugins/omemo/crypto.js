@@ -2,6 +2,28 @@ import log from '@converse/log';
 
 let _promise;
 
+/** @type {(() => Promise<typeof import('libomemo.js')>)|null} */
+let _loader = null;
+
+/**
+ * Overrides how libomemo.js is loaded. Registered by `shims/node-omemo.js`,
+ * because under Node the library comes from the package rather than from a file
+ * served next to the bundle.
+ * @param {() => Promise<typeof import('libomemo.js')>} loader
+ */
+export function setCryptoLoader(loader) {
+    _loader = loader;
+}
+
+/**
+ * Loads libomemo.js from the file served alongside converse-headless.js.
+ * @returns {Promise<typeof import('libomemo.js')>}
+ */
+function loadFromAssetDirectory() {
+    // @ts-expect-error - resolved at runtime from dist/, not source
+    return import(/* webpackIgnore: true */ './libomemo.esm.min.js');
+}
+
 /**
  * Dynamically imports libomemo.js (GPL-3.0 licensed).
  * The dynamic import ensures the GPL code is only loaded
@@ -26,38 +48,19 @@ export function getCrypto() {
         return _promise;
     }
 
-    // Tell libomemo where to find curve25519_compiled.wasm.
-    // Without this, the Emscripten-generated code fetches the wasm with a bare
-    // relative path (e.g. "curve25519_compiled.wasm") which fetch() resolves
-    // against the page URL, not the module URL.
-    // We can't use import.meta.url because rspack statically inlines it as the
-    // source file path. Instead, find the script URL of converse.js or
-    // converse-headless.js at runtime and use its directory.
-    let script_base;
-    if (typeof document !== 'undefined') {
-        const scripts = /** @type {HTMLScriptElement[]} */ (Array.from(document.querySelectorAll('script[src]')));
-        for (const el of scripts) {
-            if (
-                el.src.includes('converse-headless') ||
-                el.src.includes('converse.js') ||
-                el.src.includes('converse.min.js')
-            ) {
-                script_base = el.src.slice(0, el.src.lastIndexOf('/') + 1);
-                break;
-            }
-        }
-    }
-    if (!script_base && typeof location !== 'undefined') {
-        script_base = location.origin + location.pathname.slice(0, location.pathname.lastIndexOf('/') + 1);
-    }
-    if (script_base) globalThis.__WASM_BASE__ = script_base;
-
-    // @ts-expect-error - resolved at runtime from dist/, not source
-    _promise = import(/* webpackIgnore: true */ './libomemo.esm.min.js').catch((e) => {
+    const promise = (_loader ?? loadFromAssetDirectory)().catch((e) => {
         log.error('Failed to load libomemo.js crypto library');
         log.error(e);
         _promise = null;
         throw e;
     });
+
+    // Callers that await this still see the rejection; this only stops one that
+    // doesn't from surfacing as an unhandled rejection, which terminates a
+    // Node process by default. OMEMO failing to load must degrade to "no OMEMO"
+    // (see `initOMEMO`), never take the client down with it.
+    promise.catch(() => {});
+
+    _promise = promise;
     return _promise;
 }

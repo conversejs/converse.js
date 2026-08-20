@@ -1,75 +1,43 @@
-import { FILTER_CONTAINS, FILTER_STARTSWITH } from 'shared/autocomplete/utils.js';
+/**
+ * @copyright The Converse.js contributors
+ * @license Mozilla Public License (MPLv2)
+ *
+ * The MUC composer: the 1:1 chat one, plus occupant-nickname completion.
+ */
 import { MUCOccupant, api, converse, log } from '@converse/headless';
-import AutoComplete from 'shared/autocomplete/autocomplete.js';
 import MessageForm from 'plugins/chatview/message-form.js';
-import { getAutoCompleteListItem } from './utils.js';
-import tplMUCMessageForm from './templates/message-form.js';
+import { makeMentionSource } from './mention-source.js';
 
 export default class MUCMessageForm extends MessageForm {
-    async initialize() {
-        super.initialize();
-        await this.model.initialized;
-        this.initMentionAutoComplete();
+    getTypeaheadSources() {
+        return [
+            ...super.getTypeaheadSources(),
+            makeMentionSource(
+                () => this.getMUC(),
+                () => this.shouldAutoComplete(),
+            ),
+        ];
     }
 
-    render() {
-        return tplMUCMessageForm(this);
+    /** The room being composed in, which for an occupant form is its parent room. */
+    getMUC() {
+        return this.model instanceof MUCOccupant ? this.model.collection.chatroom : this.model;
     }
 
     /**
+     * Whether mentions apply right now: only once the room has been entered, and never as a
+     * visitor in a moderated room, who cannot post anyway.
      * @returns {boolean}
      */
     shouldAutoComplete() {
-        const muc = this.model instanceof MUCOccupant ? this.model.collection.chatroom : this.model;
-        if (muc) {
-            const entered = muc.session.get('connection_status') === converse.ROOMSTATUS.ENTERED;
-            return entered && !(muc.features.get('moderated') && muc.getOwnRole() === 'visitor');
+        const muc = this.getMUC();
+        if (!muc) {
+            log.debug('Could not determine MUC for MUCMessageForm element');
+            return false;
         }
-        log.debug('Could not determine MUC for MUCMessageForm element');
-        return false;
-    }
 
-    initMentionAutoComplete() {
-        this.auto_complete = new AutoComplete(this, {
-            ac_triggers: ['Tab', '@'],
-            auto_first: true,
-            filter:
-                api.settings.get('muc_mention_autocomplete_filter') == 'contains' ? FILTER_CONTAINS : FILTER_STARTSWITH,
-            include_triggers: [],
-            item: /** @param {import('./utils').Suggestion} text
-             * @parm {string} input
-             */ (text, input) => getAutoCompleteListItem(this.model, text, input),
-            list: () => this.getAutoCompleteList(),
-            match_current_word: true,
-            min_chars: api.settings.get('muc_mention_autocomplete_min_chars'),
-        });
-        this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
-    }
-
-    getAutoCompleteList() {
-        return this.model
-            .getAllKnownNicknames()
-            .map(/** @param {string} nick */ (nick) => ({ label: nick, value: `@${nick}` }));
-    }
-
-    /**
-     * @param {KeyboardEvent} ev
-     */
-    onKeyDown(ev) {
-        if (this.shouldAutoComplete() && this.auto_complete.onKeyDown(ev)) {
-            return;
-        }
-        super.onKeyDown(ev);
-    }
-
-    /**
-     * @param {KeyboardEvent} ev
-     */
-    onKeyUp(ev) {
-        if (this.shouldAutoComplete() && this.auto_complete.auto_completing) {
-            this.auto_complete.evaluate(ev);
-        }
-        super.onKeyUp(ev);
+        const entered = muc.session?.get('connection_status') === converse.ROOMSTATUS.ENTERED;
+        return entered && !(muc.features.get('moderated') && muc.getOwnRole() === 'visitor');
     }
 }
 

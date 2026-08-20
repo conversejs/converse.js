@@ -18,6 +18,9 @@ export class ChatToolbar extends CustomElement {
         show_emoji_button: {
             type: BooleanConstructor;
         };
+        show_fileupload_button: {
+            type: BooleanConstructor;
+        };
         show_location_button: {
             type: BooleanConstructor;
         };
@@ -35,6 +38,7 @@ export class ChatToolbar extends CustomElement {
     show_spoiler_button: boolean;
     show_call_button: boolean;
     show_emoji_button: boolean;
+    show_fileupload_button: boolean;
     show_location_button: boolean;
     render(): import("lit-html").TemplateResult<1>;
     firstUpdated(): void;

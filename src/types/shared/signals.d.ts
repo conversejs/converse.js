@@ -16,4 +16,23 @@ export function attrSignal(model: import("@converse/skeletor").Model, key: strin
  * @returns {import('@lit-labs/signals').Signal.State<import('@converse/skeletor').Model[]>}
  */
 export function collectionSignal(collection: import("@converse/skeletor").Collection): import("@lit-labs/signals").Signal.State<import("@converse/skeletor").Model[]>;
+/**
+ * Merge the child collections of every model in a parent collection into one
+ * (optionally sorted) `Signal.Computed` snapshot (e.g. a single timeline
+ * aggregated from many feeds).
+ *
+ * The computed reads `collectionSignal(parent)` plus, for each parent model,
+ * `collectionSignal(childAccessor(model))`. Because every one of those reads is
+ * auto-tracked, the aggregate recomputes when the parent gains or loses a model
+ * AND when any child collection changes. No manual subscription bookkeeping.
+ *
+ * Memoized per parent collection: the first call binds `childAccessor` and
+ * `comparator` for that parent (one aggregate view per parent collection),
+ * mirroring how {@link collectionSignal} memoizes per collection.
+ * @param {import('@converse/skeletor').Collection} parent
+ * @param {(model: import('@converse/skeletor').Model) => import('@converse/skeletor').Collection} childAccessor
+ * @param {(a: import('@converse/skeletor').Model, b: import('@converse/skeletor').Model) => number} [comparator]
+ * @returns {import('@lit-labs/signals').Signal.Computed<import('@converse/skeletor').Model[]>}
+ */
+export function aggregatedCollectionSignal(parent: import("@converse/skeletor").Collection, childAccessor: (model: import("@converse/skeletor").Model) => import("@converse/skeletor").Collection, comparator?: (a: import("@converse/skeletor").Model, b: import("@converse/skeletor").Model) => number): import("@lit-labs/signals").Signal.Computed<import("@converse/skeletor").Model[]>;
 //# sourceMappingURL=signals.d.ts.map

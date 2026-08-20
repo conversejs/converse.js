@@ -58,14 +58,13 @@ declare class RosterContacts extends Collection<RosterContact> {
      */
     addContact(attributes: import("./types").RosterContactAttributes, persist?: boolean, subscribe?: boolean, message?: string): Promise<RosterContact>;
     /**
-     * @param {string} bare_jid
-     * @param {Element} presence
+     * @param {import('./types').PresenceAttributes} attrs
      * @param {string} [auth_msg=''] - Optional message to be included in the
      *   authorization of the contacts subscription request.
      * @param {string} [sub_msg=''] - Optional message to be included in our
      *   reciprocal subscription request.
      */
-    subscribeBack(bare_jid: string, presence: Element, auth_msg?: string, sub_msg?: string): Promise<void>;
+    subscribeBack(attrs: import("./types").PresenceAttributes, auth_msg?: string, sub_msg?: string): Promise<void>;
     /**
      * Handle roster updates from the XMPP server.
      * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
@@ -86,21 +85,21 @@ declare class RosterContacts extends Collection<RosterContact> {
      */
     updateContact(item: Element): any;
     /**
-     * @param {Element} presence
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    createRequestingContact(presence: Element): void;
+    createRequestingContact(attrs: import("./types").PresenceAttributes): void;
     /**
-     * @param {Element} presence
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    handleIncomingSubscription(presence: Element): void;
+    handleIncomingSubscription(attrs: import("./types").PresenceAttributes): void;
     /**
-     * @param {Element} stanza
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    handleOwnPresence(stanza: Element): void;
+    handleOwnPresence(attrs: import("./types").PresenceAttributes): void;
     /**
-     * @param {Element} presence
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    presenceHandler(presence: Element): true | void;
+    presenceHandler(attrs: import("./types").PresenceAttributes): true | void;
 }
 import RosterContact from './contact.js';
 import { Collection } from '@converse/skeletor';

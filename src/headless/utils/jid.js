@@ -67,6 +67,30 @@ export function getJIDFromURI(jid) {
 }
 
 /**
+ * Extract the `node` query parameter from an XMPP URI (RFC 5122),
+ * e.g. `xmpp:romeo@montague.lit?;node=urn:xmpp:microblog:0;item=1` → `urn:xmpp:microblog:0`.
+ * @param {string} [uri]
+ * @returns {string|undefined}
+ */
+export function getNodeFromURI(uri) {
+    if (!uri) return undefined;
+    const m = uri.match(/[?;&]node=([^;&]+)/);
+    return m ? decodeURIComponent(m[1]) : undefined;
+}
+
+/**
+ * Extract the `item` query parameter from an XMPP URI (RFC 5122),
+ * e.g. `xmpp:romeo@montague.lit?;node=urn:xmpp:microblog:0;item=1` → `1`.
+ * @param {string} [uri]
+ * @returns {string|undefined}
+ */
+export function getItemFromURI(uri) {
+    if (!uri) return undefined;
+    const m = uri.match(/[?;&]item=([^;&]+)/);
+    return m ? decodeURIComponent(m[1]) : undefined;
+}
+
+/**
  * @param {string} jid
  * @param {boolean} [include_resource=false]
  * @returns {boolean}
@@ -76,6 +100,25 @@ export function isOwnJID(jid, include_resource = false) {
         return jid === _converse.session.get('full_jid');
     }
     return Strophe.getBareJidFromJid(jid) === _converse.session.get('bare_jid');
+}
+
+/**
+ * Resolves a JID to the full JID of the contact's highest-priority resource.
+ *
+ * Needed whenever a query has to reach the contact's client rather than their
+ * server. An IQ addressed to a bare JID is answered by the server on their
+ * behalf (RFC 6121 § 8.5.2), which is the wrong respondent for anything about
+ * the person, such as XEP-0202 entity time.
+ *
+ * @param {string} jid - Bare or full; only the bare part is used to look up
+ * @returns {string|null}
+ */
+export function getFullJID(jid) {
+    if (typeof jid !== 'string') return null;
+
+    const bare_jid = Strophe.getBareJidFromJid(jid);
+    const resource = _converse.state.presences?.get(bare_jid)?.getHighestPriorityResource();
+    return resource ? `${bare_jid}/${resource.get('name')}` : null;
 }
 
 /**

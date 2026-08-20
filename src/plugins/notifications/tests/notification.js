@@ -367,4 +367,89 @@ describe('Notifications', function () {
             }),
         );
     });
+
+    describe('For activity on one of your posts', function () {
+        it(
+            'shows a comment notification and opens the post when clicked',
+            mock.initConverse(converse, [], {}, async (_converse) => {
+                await mock.waitForRoster(_converse, 'current');
+                const { api } = _converse;
+                const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                spyOn(window, 'Notification').and.returnValue(stub);
+                spyOn(window, 'focus');
+
+                // The notifications plugin only needs the comment's display name
+                // and text and the post reference to open on click.
+                const comment = {
+                    getDisplayName: () => 'Bob',
+                    get: (k) => ({ title: 'great post!', author_name: 'Bob', id: 'c1' })[k],
+                };
+                const ref = { feedJid: 'romeo@montague.lit', node: 'urn:xmpp:microblog:0', itemId: 'p1' };
+                const opened = [];
+                api.listen.on('openMicroblogPost', (r) => opened.push(r));
+
+                api.trigger('microblogNotification', { type: 'comment', comment, ref });
+
+                await u.waitUntil(() => window.Notification.calls.count() === 1);
+                const [title, opts] = window.Notification.calls.mostRecent().args;
+                expect(title).toContain('Bob');
+                expect(title).toContain('commented');
+                expect(opts.body).toContain('great post');
+
+                // Clicking the notification asks the Social app to open the thread.
+                stub.onclick({ preventDefault: () => {} });
+                expect(opened).toEqual([ref]);
+            }),
+        );
+
+        it(
+            'shows a like notification titled with the liker, bodied with the post',
+            mock.initConverse(converse, [], {}, async (_converse) => {
+                await mock.waitForRoster(_converse, 'current');
+                const { api } = _converse;
+                const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                spyOn(window, 'Notification').and.returnValue(stub);
+                spyOn(window, 'focus');
+
+                // A ♥ like: the comment's title is just the marker, so the body
+                // comes from the liked post's own text instead.
+                const comment = {
+                    getDisplayName: () => 'Bob',
+                    get: (k) => ({ title: '♥', author_name: 'Bob', id: 'l1' })[k],
+                };
+                const post = { get: (k) => ({ title: 'my great post' })[k] };
+                const ref = { feedJid: 'romeo@montague.lit', node: 'urn:xmpp:microblog:0', itemId: 'p1' };
+                const opened = [];
+                api.listen.on('openMicroblogPost', (r) => opened.push(r));
+
+                api.trigger('microblogNotification', { type: 'like', post, comment, ref });
+
+                await u.waitUntil(() => window.Notification.calls.count() === 1);
+                const [title, opts] = window.Notification.calls.mostRecent().args;
+                expect(title).toContain('Bob');
+                expect(title).toContain('liked');
+                expect(opts.body).toContain('my great post');
+
+                // Clicking the notification asks the Social app to open the thread.
+                stub.onclick({ preventDefault: () => {} });
+                expect(opened).toEqual([ref]);
+            }),
+        );
+
+        it(
+            'ignores an unrecognised microblog notification type',
+            mock.initConverse(converse, [], {}, async (_converse) => {
+                await mock.waitForRoster(_converse, 'current');
+                const { api } = _converse;
+                spyOn(window, 'Notification');
+                api.trigger('microblogNotification', {
+                    type: 'repost',
+                    comment: { get: () => '', getDisplayName: () => 'x' },
+                    ref: {},
+                });
+                await new Promise((r) => setTimeout(r, 50));
+                expect(window.Notification).not.toHaveBeenCalled();
+            }),
+        );
+    });
 });

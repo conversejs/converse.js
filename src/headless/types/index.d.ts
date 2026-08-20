@@ -19,10 +19,12 @@ import * as omemo_constants from './plugins/omemo/constants.js';
 export { BaseMessage, ModelWithMessages, api, converse, _converse, i18n, log, u, parsers, errors };
 export { Collection, EventEmitter, Model } from "@converse/skeletor";
 export { Builder, Stanza } from "strophe.js";
+export { uploadFile, getUploadService } from "./shared/http-upload.js";
 export { Bookmark, Bookmarks } from "./plugins/bookmarks/index.js";
 export { ChatBox, Message, Messages } from "./plugins/chat/index.js";
 export { Device, Devices, DeviceList, DeviceLists } from "./plugins/omemo/index.js";
 export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from "./plugins/muc/index.js";
+export { MicroblogProfile, PubSubFeed, PubSubFeeds, PubSubMessage, PubSubMessages, buildCommentTree, computeThreadCounts, getAncestors } from "./plugins/microblog/index.js";
 export { RosterContact, RosterContacts, RosterFilter, Presence, Presences } from "./plugins/roster/index.js";
 export { VCard, VCards } from "./plugins/vcard/index.js";
 //# sourceMappingURL=index.d.ts.map

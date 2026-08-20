@@ -9,6 +9,7 @@ import { Model } from '@converse/skeletor';
 import { RosterFilter } from '../../plugins/roster/filter.js';
 import { initStorage } from '../../utils/storage.js';
 import { shouldClearCache } from '../../utils/session.js';
+import { parsePresence } from './parsers.js';
 
 const { stx } = converse.env;
 
@@ -81,9 +82,11 @@ function registerPresenceHandler() {
     const connection = api.connection.get();
     presence_ref = connection.addHandler(
         /** @param {Element} presence */
-        (presence) => {
+        async (presence) => {
+            const attrs = await parsePresence(presence);
+
             const roster = /** @type {RosterContacts} */ (_converse.state.roster);
-            roster.presenceHandler(presence);
+            roster.presenceHandler(attrs);
             return true;
         },
         null,
@@ -152,18 +155,9 @@ export async function onStatusInitialized(reconnecting) {
         // When reconnecting and not resuming a previous session,
         // we clear all cached presence data, since it might be stale
         // and we'll receive new presence updates
-        !api.connection.get().hasResumed() && (await clearPresences());
+        if (!api.connection.get().hasResumed()) await clearPresences();
     } else {
-        const presences = new _converse.exports.Presences();
-        Object.assign(_converse, { presences });
-        Object.assign(_converse.state, { presences });
-
-        const bare_jid = _converse.session.get('bare_jid');
-        const id = `converse.presences-${bare_jid}`;
-
-        initStorage(presences, id, 'session');
-        // We might be continuing an existing session, so we fetch cached presence data.
-        await new Promise((r) => presences.fetch({ success: r, error: r }));
+        Object.assign(_converse.state, { presences: new _converse.exports.Presences() });
     }
     /**
      * Triggered once the _converse.Presences collection has been

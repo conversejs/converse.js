@@ -1,0 +1,191 @@
+import { vi } from 'vitest';
+import mock from '../../../shared/tests/mock.js';
+import converse from '../../../../dist/converse.js';
+
+const { Strophe, stx } = converse.env;
+
+export const ATOM = 'http://www.w3.org/2005/Atom';
+export const PUBSUB_EVENT = `${Strophe.NS.PUBSUB}#event`;
+export const MICROBLOG_NODE = 'urn:xmpp:microblog:0';
+export const ONBOARDING_DISMISSED = 'social_onboarding_dismissed';
+
+/**
+ * Inject an incoming PEP/PubSub event stanza, as if pushed by the server.
+ * @param {any} _converse
+ * @param {Element|import('strophe.js').Builder} stanza
+ */
+export function receive(_converse, stanza) {
+    _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+}
+
+/**
+ * Build a headline PEP event carrying a single plain-text microblog post, as the
+ * server would push it: addressed to the logged-in user, from the publisher. The
+ * Atom tag id is namespaced to the publisher's domain.
+ * @param {string} to - The recipient's bare JID (the logged-in user).
+ * @param {string} from - The publisher's bare JID (also the feed JID).
+ * @param {string} id - The PubSub item id.
+ * @param {string} body - The post body.
+ * @param {string} [published='2024-01-01T18:30:02Z'] - ISO-8601 publication time (drives ordering).
+ */
+export function makePost(to, from, id, body, published = '2024-01-01T18:30:02Z') {
+    const domain = Strophe.getDomainFromJid(from);
+    return stx`
+        <message xmlns="jabber:client" from="${from}" to="${to}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${MICROBLOG_NODE}">
+              <item id="${id}" publisher="${from}">
+                <entry xmlns="${ATOM}">
+                  <title type="text">${body}</title>
+                  <id>tag:${domain},2024-01-01:posts-${id}</id>
+                  <published>${published}</published>
+                  <updated>${published}</updated>
+                </entry>
+              </item>
+            </items>
+          </event>
+        </message>`;
+}
+
+/**
+ * Build a headline PEP event carrying a post with any combination of the three
+ * Atom text constructs (`<title>`, `<summary>`, `<content>`), so the template's
+ * per-construct rendering (bold heading, italic excerpt, spacing) can be tested.
+ * @param {string} to - The recipient's bare JID (the logged-in user).
+ * @param {string} from - The publisher's bare JID (also the feed JID).
+ * @param {string} id - The PubSub item id.
+ * @param {{ title?: string, summary?: string, content?: string }} constructs
+ * @param {string} [published='2024-01-01T18:30:02Z'] - ISO-8601 publication time.
+ */
+export function makeRichPost(to, from, id, { title, summary, content }, published = '2024-01-01T18:30:02Z') {
+    const domain = Strophe.getDomainFromJid(from);
+    return stx`
+        <message xmlns="jabber:client" from="${from}" to="${to}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${MICROBLOG_NODE}">
+              <item id="${id}" publisher="${from}">
+                <entry xmlns="${ATOM}">
+                  ${title === undefined ? '' : stx`<title type="text">${title}</title>`}
+                  ${summary === undefined ? '' : stx`<summary type="text">${summary}</summary>`}
+                  ${content === undefined ? '' : stx`<content type="text">${content}</content>`}
+                  <id>tag:${domain},2024-01-01:posts-${id}</id>
+                  <published>${published}</published>
+                  <updated>${published}</updated>
+                </entry>
+              </item>
+            </items>
+          </event>
+        </message>`;
+}
+
+/**
+ * Build a headline PEP event carrying a *repost*: the publisher (`from`) repeats
+ * another account's entry. Carries an `<author>` (the original poster) and a
+ * `rel="via"` link, the two signals the parser reads as a repost.
+ * @param {string} to - The recipient's bare JID (the logged-in user).
+ * @param {string} from - The reposter's bare JID (publisher + feed JID).
+ * @param {string} id - The PubSub item id.
+ * @param {string} body - The post body.
+ * @param {string} author_jid - The original author's bare JID.
+ * @param {string} author_name - The original author's display name.
+ * @param {string} [published='2024-01-02T09:00:00Z'] - ISO-8601 publication time.
+ */
+export function makeRepost(to, from, id, body, author_jid, author_name, published = '2024-01-02T09:00:00Z') {
+    const domain = Strophe.getDomainFromJid(author_jid);
+    return stx`
+        <message xmlns="jabber:client" from="${from}" to="${to}" type="headline">
+          <event xmlns="${PUBSUB_EVENT}">
+            <items node="${MICROBLOG_NODE}">
+              <item id="${id}" publisher="${from}">
+                <entry xmlns="${ATOM}">
+                  <author>
+                    <name>${author_name}</name>
+                    <uri>xmpp:${author_jid}</uri>
+                  </author>
+                  <title type="text">${body}</title>
+                  <id>tag:${domain},2024-01-02:posts-${id}</id>
+                  <link rel="via" href="xmpp:${author_jid}?;node=urn%3Axmpp%3Amicroblog%3A0;item=orig"/>
+                  <published>${published}</published>
+                  <updated>${published}</updated>
+                </entry>
+              </item>
+            </items>
+          </event>
+        </message>`;
+}
+
+/**
+ * Mount a `<converse-social-feed>` into the test root and return it.
+ * @returns {Element}
+ */
+export function mountSocialFeed() {
+    const el = document.createElement('converse-social-feed');
+    document.querySelector('#conversejs').appendChild(el);
+    return el;
+}
+
+/**
+ * Mount the whole `<converse-app-social>` app (needed to exercise the timeline
+ * ⇄ post-detail routing, which the app element owns).
+ * @returns {Element}
+ */
+export function mountSocialApp() {
+    const el = document.createElement('converse-app-social');
+    document.querySelector('#conversejs').appendChild(el);
+    return el;
+}
+
+/**
+ * Drive the rich (Lexical) composer to publish a post: attach the editor (it
+ * loads lazily on first focus), type the given text, wait for the Post button to
+ * enable, and click it. Returns the `<converse-social-compose-rich>` element so
+ * callers can assert on its cleared state afterwards.
+ * @param {Element} el - The mounted `<converse-social-feed>` (or `<converse-app-social>`).
+ * @param {string} text
+ * @returns {Promise<any>}
+ */
+export async function publishViaComposer(el, text) {
+    const { u } = converse.env;
+    const compose = await u.waitUntil(() => el.querySelector('converse-social-compose-rich'));
+    const editable = await u.waitUntil(() => compose.querySelector('.social-rich__editable'));
+    // Lexical attaches lazily; ensureEditor() imports it, mounts it on the host and
+    // focuses (establishing a selection), so the subsequent insertText has a caret.
+    const handle = await compose.ensureEditor();
+    /** @type {HTMLElement} */ (editable).focus();
+    handle.insertText(text);
+    // The Post button is disabled while the editor reports empty; the insertText
+    // above flips `_empty` via the onChange listener, so wait for it to enable.
+    const post = await u.waitUntil(() => {
+        const btn = /** @type {HTMLButtonElement} */ (compose.querySelector('.social-rich__post'));
+        return btn && !btn.disabled ? btn : null;
+    });
+    post.click();
+    return compose;
+}
+
+/**
+ * Stub `api.microblog.discoverFollowable` to resolve with the given candidate
+ * JIDs, returning the spy.
+ * @param {any} api
+ * @param {string[]} candidates
+ */
+export function stubDiscoverFollowable(api, candidates) {
+    return vi.spyOn(api.microblog, 'discoverFollowable').mockResolvedValue(candidates);
+}
+
+/**
+ * Open the Discover modal from a mounted social feed (clicking the compose
+ * toolbar's Discover button) and return the modal element once its content has
+ * rendered.
+ * @param {Element} el - The mounted <converse-social-feed>.
+ * @param {any} api
+ * @returns {Promise<Element>}
+ */
+export async function openDiscover(el, api) {
+    const { u } = converse.env;
+    const btn = await u.waitUntil(() => el.querySelector('.social-discover__btn'));
+    /** @type {HTMLButtonElement} */ (btn).click();
+    const modal = await u.waitUntil(() => api.modal.get('converse-social-discover-modal'));
+    await u.waitUntil(() => modal.querySelector('.social-scan__btn') && modal.querySelector('input[name="address"]'));
+    return modal;
+}

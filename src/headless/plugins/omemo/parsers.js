@@ -4,7 +4,7 @@
  * @typedef {import('./types').MUCMessageAttrsWithEncryption} MUCMessageAttrsWithEncryption
  * @typedef {import('./types').MessageAttrsWithEncryption} MessageAttrsWithEncryption
  */
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import log from '@converse/log';
 import api from '../../shared/api/index.js';
 import _converse from '../../shared/_converse.js';

@@ -554,5 +554,151 @@ describe('XEP-0363: HTTP File Upload', function () {
                 }),
             );
         });
+
+        describe('when the upload fails', function () {
+            /**
+             * Get a chat ready to upload, and return the message model plus the slot
+             * request IQ the composer sent for it.
+             * @param {any} _converse
+             */
+            async function startUpload(_converse) {
+                const { api } = _converse;
+                const domain = _converse.session.get('domain');
+                await mock.waitUntilDiscoConfirmed(
+                    _converse,
+                    domain,
+                    [{ 'category': 'server', 'type': 'IM' }],
+                    ['http://jabber.org/protocol/disco#items'],
+                    [],
+                    'info',
+                );
+                await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], ['upload.montague.tld'], 'items');
+                await mock.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
+                await mock.waitForRoster(_converse, 'current');
+                const contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+                view.model.sendFiles([
+                    { 'type': 'image/jpeg', 'size': '23456', 'lastModifiedDate': '', 'name': 'my-juliet.jpg' },
+                ]);
+                const iq = await u.waitUntil(() =>
+                    api.connection
+                        .get()
+                        .IQ_stanzas.filter((s) => s.querySelector('iq[to="upload.montague.tld"] request'))
+                        .pop(),
+                );
+                return { view, iq };
+            }
+
+            it(
+                'says so when the slot request is refused',
+                mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+                    const { api } = _converse;
+                    const { view, iq } = await startUpload(_converse);
+
+                    api.connection.get()._dataRecv(
+                        mock.createRequest(
+                            _converse,
+                            stx`<iq from="upload.montague.tld"
+                                    id="${iq.getAttribute('id')}"
+                                    to="romeo@montague.lit/orchard"
+                                    type="error"
+                                    xmlns="jabber:client">
+                                <error type="modify">
+                                    <not-acceptable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                                </error>
+                            </iq>`,
+                        ),
+                    );
+
+                    await u.waitUntil(() => view.model.messages.at(0)?.get('type') === 'error');
+                    expect(view.model.messages.at(0).get('message')).toBe('Sorry, could not determine upload URL.');
+                }),
+            );
+
+            it(
+                'says so when the response carries no slot',
+                mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+                    const { api } = _converse;
+                    const { view, iq } = await startUpload(_converse);
+
+                    // A result, but an empty one: a different failure from the IQ erroring,
+                    // and it gets its own message.
+                    api.connection.get()._dataRecv(
+                        mock.createRequest(
+                            _converse,
+                            stx`<iq from="upload.montague.tld"
+                                    id="${iq.getAttribute('id')}"
+                                    to="romeo@montague.lit/orchard"
+                                    type="result"
+                                    xmlns="jabber:client"></iq>`,
+                        ),
+                    );
+
+                    await u.waitUntil(() => view.model.messages.at(0)?.get('type') === 'error');
+                    expect(view.model.messages.at(0).get('message')).toBe(
+                        'Sorry, could not determine file upload URL.',
+                    );
+                }),
+            );
+
+            /**
+             * Answer the slot request, then fail the PUT with `responseText`.
+             * @param {any} _converse
+             * @param {string} responseText
+             */
+            async function failThePut(_converse, responseText) {
+                const { api } = _converse;
+                const { view, iq } = await startUpload(_converse);
+
+                const send_backup = XMLHttpRequest.prototype.send;
+                XMLHttpRequest.prototype.send = function () {
+                    Object.defineProperty(this, 'status', { value: 500 });
+                    Object.defineProperty(this, 'responseText', { value: responseText });
+                    Object.defineProperty(this, 'readyState', { value: XMLHttpRequest.DONE });
+                    this.onreadystatechange();
+                };
+
+                api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<iq from="upload.montague.tld"
+                                id="${iq.getAttribute('id')}"
+                                to="romeo@montague.lit/orchard"
+                                type="result"
+                                xmlns="jabber:client">
+                            <slot xmlns="urn:xmpp:http:upload:0">
+                                <put url="https://upload.montague.tld/put/my-juliet.jpg"/>
+                                <get url="https://upload.montague.tld/get/my-juliet.jpg"/>
+                            </slot>
+                        </iq>`,
+                    ),
+                );
+
+                await u.waitUntil(() => view.model.messages.at(0)?.get('type') === 'error');
+                XMLHttpRequest.prototype.send = send_backup;
+                return view.model.messages.at(0);
+            }
+
+            it(
+                'quotes the server response when the PUT fails with one',
+                mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+                    const message = await failThePut(_converse, 'Quota exceeded');
+                    expect(message.get('message')).toBe(
+                        'Sorry, could not successfully upload your file. Your server\u2019s response: "Quota exceeded"',
+                    );
+                    expect(message.get('upload')).toBe(_converse.FAILURE);
+                }),
+            );
+
+            it(
+                'falls back to a generic message when the PUT fails without one',
+                mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+                    const message = await failThePut(_converse, '');
+                    expect(message.get('message')).toBe('Sorry, could not successfully upload your file.');
+                    expect(message.get('upload')).toBe(_converse.FAILURE);
+                }),
+            );
+        });
     });
 });

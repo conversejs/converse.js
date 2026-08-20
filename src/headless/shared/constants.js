@@ -1,7 +1,7 @@
 import { Strophe } from 'strophe.js';
 
 export const BOSH_WAIT = 59;
-export const VERSION_NAME = "v14.0.0-beta.4";
+export const VERSION_NAME = "v14.0.0";
 
 export const PRES_SHOW_VALUES = ['chat', 'dnd', 'away', 'xa'];
 export const PRES_TYPE_VALUES = [
@@ -117,6 +117,7 @@ Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
 Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
 Strophe.addNamespace('STANZAS', 'urn:ietf:params:xml:ns:xmpp-stanzas');
 Strophe.addNamespace('STYLING', 'urn:xmpp:styling:0');
+Strophe.addNamespace('TIME', 'urn:xmpp:time');
 Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
@@ -137,6 +138,7 @@ export const CORE_PLUGINS = [
     'converse-emoji',
     'converse-headlines',
     'converse-mam',
+    'converse-microblog',
     'converse-muc',
     'converse-ping',
     'converse-pubsub',
@@ -144,6 +146,7 @@ export const CORE_PLUGINS = [
     'converse-roster',
     'converse-smacks',
     'converse-status',
+    'converse-time',
     'converse-vcard',
     'converse-version',
     'converse-omemo',

@@ -357,7 +357,7 @@ function isVisible(el) {
 /**
  * Takes an XML field in XMPP XForm (XEP-004: Data Forms) format returns a
  * [TemplateResult](https://lit.polymer-project.org/api/classes/_lit_html_.templateresult.html).
- * @param {import('@converse/headless/shared/types').XFormField} xfield - the field to convert
+ * @param {import('@converse/headless/types/shared/types').XFormField} xfield - the field to convert
  * @param {import('./types').XFormFieldOptions} [options]
  * @returns {TemplateResult}
  */
@@ -457,6 +457,18 @@ export function getRootElement() {
     return root;
 }
 
+/**
+ * Whether an event target is a text-entry element
+ * @param {EventTarget|null} target
+ * @returns {boolean}
+ */
+export function isEditableTarget(target) {
+    if (!(target instanceof HTMLElement)) return false;
+
+    const tag = target.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
+}
+
 Object.assign(u, {
     addClass,
     ancestor,
@@ -468,6 +480,7 @@ Object.assign(u, {
     getRootElement,
     hasClass,
     hideElement,
+    isEditableTarget,
     isInDOM,
     isVisible,
     nextUntil,

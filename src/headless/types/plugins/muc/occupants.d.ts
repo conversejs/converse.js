@@ -1,8 +1,8 @@
 export default MUCOccupants;
 export type MemberListItem = any;
-export type ModelAttributes = import("@converse/skeletor/dist/skeletor.d").ModelAttributes;
-export type CollectionOptions = import("@converse/skeletor/dist/skeletor.d").CollectionOptions;
-export type Options = import("@converse/skeletor/dist/skeletor.d").Options;
+export type ModelAttributes = import("@converse/skeletor").ModelAttributes;
+export type CollectionOptions = import("@converse/skeletor").CollectionOptions;
+export type Options = import("@converse/skeletor").Options;
 /**
  * A list of {@link MUCOccupant} instances, representing participants in a MUC.
  * @memberOf _converse

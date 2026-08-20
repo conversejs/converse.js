@@ -3,11 +3,30 @@
  *   - OMEMO 2 bundle parsing
  *   - OMEMO 2 message stanza routing
  */
+import { afterEach } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 import { answerV2DeviceList, answerV2Bundle } from './utils.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
+
+// These specs answer the device-list IQ that decryption fetches by polling on a timer.
+// Registering the timers means a spec that gives up early (decryption is CPU-heavy, and a
+// wait can time out) cannot leave one running to inject stanzas into whatever runs next.
+const pollers = [];
+function pollFor(fn, ms = 50) {
+    const id = setInterval(fn, ms);
+    pollers.push(id);
+    return id;
+}
+afterEach(() => {
+    while (pollers.length) clearInterval(pollers.pop());
+});
+
+// Decryption sets up an X3DH session before the reaction lands, which can outrun
+// waitUntil's default on a loaded machine. Still inside vitest's per-test timeout, so a
+// genuine failure reports as itself rather than as the whole test timing out.
+const DECRYPT_WAIT = 5000;
 
 /**
  * Override the read-only `document.visibilityState` and fire a
@@ -50,7 +69,7 @@ describe('OMEMO 2 message reception', function () {
             // background with a list containing the sending device.
             const conn = api.connection.get();
             const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
                     .pop();
@@ -135,7 +154,7 @@ describe('OMEMO 2 message reception', function () {
             // Answer the contact's v2 device-list IQ fetched during decryption.
             const conn = api.connection.get();
             const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
                     .pop();
@@ -234,7 +253,7 @@ describe('OMEMO 2 message reception', function () {
 
             // Answer the contact's v2 device-list IQ fetched during decryption.
             const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
                     .pop();
@@ -275,7 +294,7 @@ describe('OMEMO 2 message reception', function () {
             </message>`;
             conn._dataRecv(mock.createRequest(_converse, stanza));
 
-            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'));
+            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'), DECRYPT_WAIT);
             clearInterval(interval);
 
             expect(msg_model.get('reactions')[contact_jid]).toContain('👍');
@@ -326,7 +345,7 @@ describe('OMEMO 2 message reception', function () {
 
             // Answer the contact's v2 device-list IQ fetched during decryption.
             const v2_dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO2_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(v2_dl_selector) && !i.dataset_handled)
                     .pop();
@@ -367,7 +386,7 @@ describe('OMEMO 2 message reception', function () {
             </message>`;
             conn._dataRecv(mock.createRequest(_converse, stanza));
 
-            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'));
+            await u.waitUntil(() => msg_model.get('reactions')?.[contact_jid]?.includes('👍'), DECRYPT_WAIT);
             clearInterval(interval);
 
             expect(msg_model.get('reactions')[contact_jid]).toContain('👍');
@@ -484,7 +503,7 @@ describe('OMEMO 2 message reception', function () {
             // list to mark the sending device active. Answer that IQ in the
             // background with a list containing the sending device.
             const dl_selector = `iq[to="${contact_jid}"] items[node="${Strophe.NS.OMEMO_DEVICELIST}"]`;
-            const interval = setInterval(() => {
+            const interval = pollFor(() => {
                 const iq = Array.from(conn.IQ_stanzas)
                     .filter((i) => i.querySelector(dl_selector) && !i.dataset_handled)
                     .pop();
@@ -627,6 +646,75 @@ describe('OMEMO 2 store self-healing', function () {
             await store.ensureProvisioned();
             expect(store.get('prekeys')).toBe(prekeys);
             expect(store.get('signed_prekey')).toBe(spk);
+        }),
+    );
+
+    it(
+        'reports whether it regenerated key material, so the bundle is only republished when it changed',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.initializedOMEMO(_converse);
+            const store = _converse.state.omemo_store;
+
+            // A fully provisioned store needs no repair, so nothing changed and
+            // there's nothing new to publish.
+            expect(await store.ensureProvisioned()).toBe(false);
+
+            // Each kind of missing key material is backfilled and reported as a
+            // change, so initOMEMO knows the bundle must be (re)published. First
+            // the omemo:2 signed prekey (i.e. a store from before omemo:2 support).
+            store.unset('signed_prekey_omemo2');
+            expect(await store.ensureProvisioned()).toBe(true);
+            expect(await store.ensureProvisioned()).toBe(false); // now intact again
+
+            store.unset('signed_prekey');
+            expect(await store.ensureProvisioned()).toBe(true);
+
+            store.unset('prekeys');
+            expect(await store.ensureProvisioned()).toBe(true);
+            expect(await store.ensureProvisioned()).toBe(false);
+        }),
+    );
+});
+
+describe('OMEMO bundle publishing', function () {
+    it(
+        'only republishes the bundle when it changed or was never confirmed on the server',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.initializedOMEMO(_converse);
+            const store = _converse.state.omemo_store;
+
+            // The gate initOMEMO applies on connect. Instead of a resumed-session
+            // check we track `bundle_published`, so this holds for any connection
+            // type (full login, XEP-0198 resume, shared-worker attach, BOSH prebind).
+            const wouldPublish = (changed) => changed || !store.get('bundle_published');
+
+            // initializedOMEMO drove a successful publish, so the bundle is flagged
+            // as published and an unchanged (re)connection skips the large republish.
+            expect(store.get('bundle_published')).toBe(true);
+            expect(wouldPublish(await store.ensureProvisioned())).toBe(false);
+
+            // A change (here the omemo:2 migration) clears the flag and forces a
+            // republish, regardless of how we (re)connected.
+            store.unset('signed_prekey_omemo2');
+            const changed = await store.ensureProvisioned();
+            expect(changed).toBe(true);
+            expect(store.get('bundle_published')).toBe(false);
+            expect(wouldPublish(changed)).toBe(true);
+
+            // A successful publish records that the bundle reached the server, so
+            // the next unchanged connection skips again. (Stub the network so we
+            // don't have to answer the publish IQ here.)
+            spyOn(api.pubsub, 'publish').and.resolveTo();
+            await store.publishBundle();
+            expect(store.get('bundle_published')).toBe(true);
+            expect(wouldPublish(await store.ensureProvisioned())).toBe(false);
+
+            // A bundle that never reached the server (e.g. the initial publish
+            // failed) is retried even when nothing changed. This is what a
+            // resumed-session check would have missed on a BOSH prebind attach.
+            store.save({ bundle_published: false });
+            expect(wouldPublish(await store.ensureProvisioned())).toBe(true);
         }),
     );
 });

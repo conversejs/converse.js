@@ -17,6 +17,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
+import { addRouteListener, addVisibilityListener } from '../../utils/environment.js';
 import {
     autoJoinRooms,
     disconnectChatRooms,
@@ -27,6 +28,7 @@ import {
     onBeforeResourceBinding,
     onBeforeTearDown,
     onDirectMUCInvitation,
+    onParsePresence,
     onStatusInitialized,
     onWindowStateChanged,
     registerDirectInvitationHandler,
@@ -159,7 +161,7 @@ converse.plugins.add('converse-muc', {
         Object.assign(_converse, labels); // XXX DEPRECATED
 
         routeToRoom();
-        addEventListener('hashchange', routeToRoom);
+        addRouteListener(routeToRoom);
 
         // TODO: DEPRECATED
         const legacy_exports = {
@@ -195,12 +197,16 @@ converse.plugins.add('converse-muc', {
 
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.CONFINFO}+notify`));
         api.listen.on('addClientFeatures', onAddClientFeatures);
-        api.listen.on('beforeResourceBinding', onBeforeResourceBinding);
         api.listen.on('beforeTearDown', onBeforeTearDown);
         api.listen.on('chatBoxesFetched', autoJoinRooms);
         api.listen.on('disconnected', disconnectChatRooms);
         api.listen.on('statusInitialized', onStatusInitialized);
+        api.listen.on('parsePresence', onParsePresence);
 
-        document.addEventListener('visibilitychange', onWindowStateChanged);
+        // A resumed XEP-0198 stream skips resource binding
+        api.listen.on('streamResumed', onBeforeResourceBinding);
+        api.listen.on('beforeResourceBinding', onBeforeResourceBinding);
+
+        addVisibilityListener(onWindowStateChanged);
     },
 });

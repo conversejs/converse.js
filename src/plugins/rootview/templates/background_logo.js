@@ -1,13 +1,14 @@
 /* eslint-disable max-len */
 import { html } from 'lit';
 import { api } from '@converse/headless';
+import { getTheme } from '../utils.js';
 
 /**
  * @param {import('../background').default} el
  */
 export default (el) => html`
     ${
-        api.settings.get('theme') === 'cyberpunk'
+        getTheme() === 'cyberpunk'
             ? html`<section class="moving-grid">
                   <div class="container">
                       <div class="static-lines">

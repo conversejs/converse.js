@@ -666,15 +666,9 @@ describe('An XEP-0393 styled message ', function () {
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            const textarea = view.querySelector('textarea.chat-textarea');
-            const message_form = view.querySelector('converse-message-form');
 
-            textarea.value = `https://conversejs.org\nhttps://opkode.com`;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, `https://conversejs.org\nhttps://opkode.com`);
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
@@ -684,18 +678,11 @@ describe('An XEP-0393 styled message ', function () {
                     '<a target="_blank" rel="noopener" href="https://opkode.com/">https://opkode.com</a>',
             );
 
-            expect(textarea.value).toBe('');
-            message_form.onKeyDown({
-                target: textarea,
-                key: 'ArrowUp',
-            });
+            expect(mock.composerText(view)).toBe('');
+            await mock.pressComposerKey(view, 'ArrowUp');
 
-            textarea.value = `A\nhttps://conversejs.org\n\nhttps://opkode.com`;
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, `A\nhttps://conversejs.org\n\nhttps://opkode.com`);
+            await mock.pressComposerKey(view, 'Enter');
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
             expect(view.querySelectorAll('.chat-msg__text').length).toBe(1);

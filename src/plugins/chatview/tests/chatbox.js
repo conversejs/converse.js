@@ -58,14 +58,8 @@ describe('Chatboxes', function () {
                 }
                 await u.waitUntil(() => sizzle('converse-chat-message', view).length === 10);
 
-                const textarea = view.querySelector('textarea.chat-textarea');
-                textarea.value = '/clear';
-                const message_form = view.querySelector('converse-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+            await mock.setComposerText(view, '/clear');
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
                 await u.waitUntil(() => sizzle('converse-chat-message', view).length === 0);
                 expect(true).toBe(true);
@@ -161,9 +155,9 @@ describe('Chatboxes', function () {
                 const rosterview = document.querySelector('converse-roster');
                 const el = sizzle('a.open-chat:contains("' + view.model.getDisplayName() + '")', rosterview).pop();
                 await u.waitUntil(() => u.isVisible(el));
-                const textarea = view.querySelector('.chat-textarea');
-                await u.waitUntil(() => u.isVisible(textarea));
-                textarea.blur();
+                const composer = view.querySelector('.chat-textarea');
+                await u.waitUntil(() => u.isVisible(composer));
+                composer.blur();
                 el.click();
                 await u.waitUntil(() => view.focus.calls.count(), 1000);
                 expect(view.focus).toHaveBeenCalled();
@@ -278,20 +272,13 @@ describe('Chatboxes', function () {
                     item.click();
                     await u.waitUntil(() => counter.textContent === '177');
 
-                    const textarea = view.querySelector('.chat-textarea');
-                    const ev = {
-                        target: textarea,
-                        preventDefault: function preventDefault() {},
-                        key: 'Enter',
-                    };
-                    const message_form = view.querySelector('converse-message-form');
-                    message_form.onKeyDown(ev);
+                    await mock.pressComposerKey(view, 'Enter');
                     await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-                    message_form.onKeyUp(ev);
+                    await mock.releaseComposerKey(view, 'a');
                     expect(counter.textContent).toBe('200');
 
-                    textarea.value = 'hello world';
-                    message_form.onKeyUp(ev);
+                    await mock.setComposerText(view, 'hello world');
+                    await mock.releaseComposerKey(view, 'a');
                     await u.waitUntil(() => counter.textContent === '189');
                 }),
             );
@@ -448,11 +435,7 @@ describe('Chatboxes', function () {
                         spyOn(api.connection.get(), 'send');
                         spyOn(_converse.api, 'trigger').and.callThrough();
 
-                        const message_form = view.querySelector('converse-message-form');
-                        message_form.onKeyDown({
-                            target: view.querySelector('textarea.chat-textarea'),
-                            key: 'C',
-                        });
+                        await mock.pressComposerKey(view, 'C');
                         expect(view.model.get('chat_state')).toBe('composing');
                         expect(api.connection.get().send).toHaveBeenCalled();
 
@@ -464,10 +447,7 @@ describe('Chatboxes', function () {
                         expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
 
                         // The notification is not sent again
-                        message_form.onKeyDown({
-                            target: view.querySelector('textarea.chat-textarea'),
-                            key: 'C',
-                        });
+                        await mock.pressComposerKey(view, 'C');
                         expect(view.model.get('chat_state')).toBe('composing');
                         expect(_converse.api.trigger.calls.count(), 1);
                     }),
@@ -492,11 +472,7 @@ describe('Chatboxes', function () {
                             expect(view.model.get('chat_state')).toBe('active');
                             spyOn(api.connection.get(), 'send');
                             spyOn(_converse.api, 'trigger').and.callThrough();
-                            const message_form = view.querySelector('converse-message-form');
-                            message_form.onKeyDown({
-                                target: view.querySelector('textarea.chat-textarea'),
-                                key: 'C',
-                            });
+                            await mock.pressComposerKey(view, 'C');
                             expect(view.model.get('chat_state')).toBe('composing');
                             expect(api.connection.get().send).not.toHaveBeenCalled();
                         },
@@ -615,11 +591,7 @@ describe('Chatboxes', function () {
                         const view = _converse.chatboxviews.get(contact_jid);
                         spyOn(view.model, 'setChatState').and.callThrough();
                         expect(view.model.get('chat_state')).toBe('active');
-                        const message_form = view.querySelector('converse-message-form');
-                        message_form.onKeyDown({
-                            target: view.querySelector('textarea.chat-textarea'),
-                            key: 'C',
-                        });
+                        await mock.pressComposerKey(view, 'C');
                         expect(view.model.get('chat_state')).toBe('composing');
 
                         const xmlns = 'https://jabber.org/protocol/chatstates';
@@ -651,17 +623,11 @@ describe('Chatboxes', function () {
                         // Test #359. A paused notification should not be sent
                         // out if the user simply types longer than the
                         // timeout.
-                        message_form.onKeyDown({
-                            target: view.querySelector('textarea.chat-textarea'),
-                            key: 'C',
-                        });
+                        await mock.pressComposerKey(view, 'C');
                         expect(view.model.setChatState).toHaveBeenCalled();
                         expect(view.model.get('chat_state')).toBe('composing');
 
-                        message_form.onKeyDown({
-                            target: view.querySelector('textarea.chat-textarea'),
-                            key: 'C',
-                        });
+                        await mock.pressComposerKey(view, 'C');
                         expect(view.model.get('chat_state')).toBe('composing');
                     }),
                 );
@@ -764,11 +730,7 @@ describe('Chatboxes', function () {
                             <no-permanent-store xmlns="urn:xmpp:hints"/>
                         </message>`);
 
-                        const message_form = view.querySelector('converse-message-form');
-                        message_form.onKeyDown({
-                            target: view.querySelector('textarea.chat-textarea'),
-                            key: 'C',
-                        });
+                        await mock.pressComposerKey(view, 'C');
                         await u.waitUntil(() => view.model.get('chat_state') === 'composing', 600);
                         let stanza = await u.waitUntil(() =>
                             sent_stanzas.filter((s) => s.querySelector('message composing')).pop(),
@@ -1010,14 +972,9 @@ describe('Chatboxes', function () {
                 await u.waitUntil(() => view.querySelector('.chat-msg'));
 
                 message = '/clear';
-                const message_form = view.querySelector('converse-message-form');
                 spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
-                view.querySelector('.chat-textarea').value = message;
-                message_form.onKeyDown({
-                    target: view.querySelector('textarea.chat-textarea'),
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, message);
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
                 expect(_converse.api.confirm).toHaveBeenCalledWith(
                     'Confirm',

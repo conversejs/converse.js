@@ -1,112 +1,120 @@
+@import "shared/styles/_mixins.scss";
+
 .conversejs {
     converse-chat-toolbar {
+        // Every colour the toolbar carries — the glyphs, the plate that appears
+        // under a button on hover, the send button's fill — is drawn from this one
+        // variable, so a context only has to name its accent once. A 1:1 chat is
+        // the default; a MUC and the occupant panel's private composer override it.
+        --toolbar-accent: var(--chat-color);
+
+        // Hand the accent to the quiet buttons, whose hover plate is mixed from it.
+        --btn-quiet-tint: var(--toolbar-accent);
+
         justify-content: space-between !important;
+        color: var(--toolbar-accent);
+
+        // `.btn-toolbar` is a class on this element, not on anything inside it
+        // (the chat message form's template puts it there). Written as a
+        // descendant, as it was, these rules matched nothing at all, which is why
+        // the toolbar's buttons were left sitting on Bootstrap's defaults with no
+        // hover state.
+        &.btn-toolbar {
+            box-sizing: border-box;
+            width: 100%;
+            background-color: var(--background-color);
+        }
 
         converse-message-limit-indicator {
             padding: 0.75em 0.5em;
         }
 
+        // Sized here rather than per context, so a MUC's toolbar and a chat's come
+        // out the same. They did not: only the MUC block set a size, leaving the
+        // 1:1 toolbar's glyphs a couple of pixels smaller than the same glyphs one
+        // conversation over.
+        .message-limit,
+        .fa,
+        .far,
+        .fas {
+            color: var(--toolbar-accent);
+            font-size: var(--font-size-large);
+        }
+
+        // The one loud control in the row: a filled accent tile carrying a glyph
+        // painted in the background colour.
+        //
+        // Driven through Bootstrap's own button variables rather than by setting
+        // `background-color` and out-specifying it. `.conversejs .btn:hover`
+        // carries three classes, so it wins against anything reasonable written
+        // here and swaps the fill for `--converse-btn-hover-bg` — which, unset,
+        // left a background-coloured glyph sitting on the background, and the
+        // button disappeared from under the pointer.
         .send-button {
-            color: var(--background-color);
+            --converse-btn-color: var(--background-color);
+            --converse-btn-bg: var(--toolbar-accent);
+            --converse-btn-border-color: var(--toolbar-accent);
+
+            // Hover and press deepen the accent instead of flattening it. Mixing
+            // the foreground colour in darkens it on the light themes and
+            // brightens it on the dark ones, so the button gains weight under the
+            // pointer in all four — the same trick the quiet buttons' plate uses,
+            // and by the same 18% / 30% steps, so the loud button and the quiet
+            // ones move on one scale.
+            --converse-btn-hover-color: var(--background-color);
+            --converse-btn-hover-bg: color-mix(in srgb, var(--toolbar-accent) 82%, var(--foreground-color));
+            --converse-btn-hover-border-color: color-mix(in srgb, var(--toolbar-accent) 82%, var(--foreground-color));
+            --converse-btn-active-bg: color-mix(in srgb, var(--toolbar-accent) 70%, var(--foreground-color));
+            --converse-btn-active-border-color: color-mix(in srgb, var(--toolbar-accent) 70%, var(--foreground-color));
+
             border-radius: 0;
         }
 
-        .btn-toolbar {
-            background-color: var(--background-color);
-            box-sizing: border-box;
-            width: 100%;
-            justify-content: space-between;
-            margin-bottom: 1px; // So that bottom border on toolbar buttons is visible
+        // The row of quiet controls: emoji, call, spoiler, location, attachment,
+        // OMEMO, and whatever a plugin has added through the `getToolbarButtons`
+        // hook. Selecting on `.btn` rather than on each of them in turn means a
+        // plugin's button is dressed like the built-in ones without having to know
+        // anything about this file.
+        .toolbar-buttons {
+            align-items: center;
+            gap: 0.1em;
 
             .btn {
-                padding: 0.25em 0.5em !important;
-            }
+                @include btn-quiet;
 
-            .fa, .fa:hover,
-            .far, .far:hover,
-            .fas, .fas:hover {
-                color: var(--background-color);
-                font-size: var(--font-size-large);
-                svg {
-                    fill: var(--background-color);
-                }
+                // Near-square padding, so the plate comes out as a tile around the
+                // glyph rather than a wide slab, and the row reads as a set of
+                // evenly spaced targets.
+                display: inline-flex;
+                align-items: center;
+                padding: 0.4em 0.5em;
+                line-height: 1;
             }
-            .unencrypted a,
-            .unencrypted {
-                color: var(--text-color);
-            }
+        }
+
+        // Bootstrap's `.btn-group` — still on the row, since the emoji dropdown
+        // positions against it — treats its children as a segmented control: it
+        // overlaps them by a border width and squares off their inner corners.
+        // Only the bare <button>s are direct children though, because the emoji and
+        // location buttons sit inside custom elements of their own, so half the row
+        // would keep a rounded plate and half would lose it.
+        //
+        // Undone here, spaced with the gap above instead. Written through
+        // `&.btn-toolbar` purely for the extra specificity: the Bootstrap rules
+        // being unwound carry five classes of their own.
+        &.btn-toolbar .toolbar-buttons.btn-group > .btn {
+            flex: 0 0 auto;
+            margin-left: 0;
+            border-radius: var(--button-border-radius);
         }
     }
 
-    .chatbox {
-        .send-button {
-            background-color: var(--chat-color);
-        }
-    }
-
-    .chatroom {
-        .send-button {
-            background-color: var(--muc-color);
-        }
-    }
-
-
-    .chatbox {
-        converse-chat-toolbar {
-            color: var(--chat-color);
-            background-color: var(--background-color);
-            .message-limit,
-            .fas, .fas:hover,
-            .far, .far:hover,
-            .fa, .fa:hover {
-                color: var(--chat-color);
-                svg, svg:hover {
-                    fill: var(--chat-color);
-                }
-            }
-            button {
-                &:focus {
-                    outline-color: var(--chat-color) !important;
-                }
-                &:disabled .fa {
-                    color: var(--disabled-color);
-                    &:hover {
-                        color: var(--disabled-color);
-                    }
-                    svg, svg:hover {
-                        fill: var(--disabled-color);
-                    }
-                }
-            }
-        }
-    }
-
-    .chatroom {
-        converse-chat-toolbar {
-            color: var(--muc-color);
-            .fas, .fas:hover,
-            .far, .far:hover,
-            .fa, .fa:hover {
-                color: var(--muc-color);
-                font-size: var(--font-size-large);
-                svg {
-                    fill: var(--muc-color);
-                }
-            }
-            button {
-                &:focus {
-                    outline-color: var(--muc-color) !important;
-                }
-                &:disabled .fa {
-                    color: var(--disabled-color);
-                    &:hover {
-                        color: var(--disabled-color);
-                    }
-                    svg, svg:hover {
-                        fill: var(--disabled-color);
-                    }
-                }
-            }
-        }
+    // A MUC's toolbar answers in the groupchat colour, a 1:1 chat's in the chat
+    // colour. Selected on `.chatroom` at a higher specificity than the default
+    // above, rather than on `.chatbox` versus `.chatroom` at the same one: a MUC
+    // carries both classes, so as a pair those two rules were decided only by the
+    // order they happened to appear in.
+    .chatroom converse-chat-toolbar {
+        --toolbar-accent: var(--muc-color);
     }
 }

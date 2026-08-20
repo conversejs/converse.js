@@ -107,7 +107,7 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
      * @param {string} [address='']
      */
     removeAllSessions(address?: string): Promise<void>;
-    publishBundle(): any;
+    publishBundle(): Promise<void>;
     generateMissingPreKeys(): Promise<void>;
     /**
      * Generates, stores and then returns pre-keys.
@@ -142,11 +142,13 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
      * legacy signed prekey, but no `signed_prekey_omemo2`.
      *
      * This generates the missing v2 signed prekey, reusing the existing
-     * identity key so our fingerprint and device_id are unchanged. The v2 bundle
-     * itself is published by the regular {@link OMEMOStore#publishBundle} call in
-     * initOMEMO, which runs right after the session is restored.
+     * identity key so our fingerprint and device_id are unchanged. When we
+     * generate one, initOMEMO publishes the (now changed) bundle right after
+     * the session is restored.
+     *
+     * @returns {Promise<boolean>} Whether a new v2 signed prekey was generated.
      */
-    ensureV2SignedPreKey(): Promise<void>;
+    ensureV2SignedPreKey(): Promise<boolean>;
     /**
      * Self-heal a partially-provisioned store before its bundle is published.
      *
@@ -159,9 +161,18 @@ declare class OMEMOStore extends Model<import("./types").OMEMOStoreAttributes> {
      * identity key and device_id so the fingerprint stays unchanged.
      * It also subsumes the omemo:2 migration for stores created before omemo:2
      * support.
+     *
+     * @returns {Promise<boolean>} Whether any key material was (re)generated, in
+     *      which case the bundle changed and must be republished.
      */
-    ensureProvisioned(): Promise<void>;
-    fetchSession(): Promise<void>;
+    ensureProvisioned(): Promise<boolean>;
+    /**
+     * Restores the persisted OMEMO store, provisioning or repairing it as needed.
+     *
+     * @returns {Promise<boolean>} Whether key material was (re)generated, so that
+     *      the caller knows the bundle changed and must be (re)published.
+     */
+    fetchSession(): Promise<boolean>;
     #private;
 }
 import { Model } from '@converse/skeletor';

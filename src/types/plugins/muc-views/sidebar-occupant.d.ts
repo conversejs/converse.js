@@ -18,9 +18,9 @@ export default class MUCOccupantListItem extends ObservableElement {
     render(): import("lit-html").TemplateResult<1> | "";
     /**
      * @param {MouseEvent} ev
-     * @param {import('@converse/headless/types/plugins/muc/occupant.js').default} occupant
+     * @param {import('@converse/headless/types/plugins/muc/occupant').default} occupant
      */
-    onOccupantClicked(ev: MouseEvent, occupant: import("@converse/headless/types/plugins/muc/occupant.js").default): void;
+    onOccupantClicked(ev: MouseEvent, occupant: import("@converse/headless/types/plugins/muc/occupant").default): void;
 }
 import { ObservableElement } from "shared/components/observable.js";
 import { Model } from "@converse/headless";

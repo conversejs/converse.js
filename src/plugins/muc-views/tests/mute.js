@@ -11,10 +11,8 @@ describe('Groupchats', function () {
                 const muc_jid = 'trollbox@montague.lit';
                 await mock.openAndEnterMUC(_converse, muc_jid, 'troll');
                 const view = _converse.chatboxviews.get(muc_jid);
-                const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
-                textarea.value = 'Hello world';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, 'Hello world');
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
                 await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
                 let stanza = stx`<message id="${view.model.messages.at(0).get('msgid')}"
@@ -31,8 +29,8 @@ describe('Groupchats', function () {
                     `Message delivery failed.\nYour message was not delivered because you weren't allowed to send it.`,
                 );
 
-                textarea.value = 'Hello again';
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, 'Hello again');
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
                 stanza = stx`<message id="${view.model.messages.at(1).get('msgid')}"
@@ -90,8 +88,7 @@ describe('Groupchats', function () {
                 // configuration changes to be non-moderated
                 view.model.features.set('moderated', false);
                 await u.waitUntil(() => view.querySelector('.muc-bottom-panel') === null);
-                const textarea = await u.waitUntil(() => view.querySelector('textarea.chat-textarea'));
-                expect(textarea === null).toBe(false);
+                expect(await u.waitUntil(() => view.querySelector('.chat-textarea'))).not.toBe(null);
 
                 view.model.features.set('moderated', true);
                 await u.waitUntil(() => view.querySelector('.chat-textarea') === null);
@@ -118,7 +115,7 @@ describe('Groupchats', function () {
                 </presence>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
                 await u.waitUntil(() => view.querySelector('.muc-bottom-panel') === null);
-                expect(textarea === null).toBe(false);
+                expect(await u.waitUntil(() => view.querySelector('.chat-textarea'))).not.toBe(null);
                 // Check now that things get restored when the user is given a voice
                 await u.waitUntil(
                     () =>

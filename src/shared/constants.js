@@ -8,7 +8,8 @@ import { __ } from 'i18n';
 export const VIEW_PLUGINS = [
     'converse-adhoc-views',
     'converse-bookmark-views',
-    'converse-chatboxviews',
+    'converse-app-chat',
+    'converse-app-social',
     'converse-chatview',
     'converse-controlbox',
     'converse-disco-views',
@@ -28,7 +29,8 @@ export const VIEW_PLUGINS = [
     'converse-rootview',
     'converse-rosterview',
     'converse-singleton',
-    'converse-reaction-views'
+    'converse-time-views',
+    'converse-reaction-views',
 ];
 
 /**
@@ -42,15 +44,14 @@ export const VIEW_PLUGINS = [
  * @property {string} online
  */
 export const PRETTY_CHAT_STATUS = {
-    offline:      __('Offline'),
-    unavailable:  __('Unavailable'),
-    xa:           __('Extended Away'),
-    away:         __('Away'),
-    dnd:          __('Do not disturb'),
-    chat:         __('Chatty'),
-    online:       __('Online')
+    offline: __('Offline'),
+    unavailable: __('Unavailable'),
+    xa: __('Extended Away'),
+    away: __('Away'),
+    dnd: __('Do not disturb'),
+    chat: __('Chatty'),
+    online: __('Online'),
 };
-
 
 // The width in pixels below which we're considered on a mobile device and
 // above a desktop device.

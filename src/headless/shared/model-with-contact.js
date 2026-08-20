@@ -39,8 +39,12 @@ export default function ModelWithContact(BaseModel) {
 
         /**
          * @param {string} jid
+         * @param {object} [options]
+         * @param {boolean} [options.create=true] - Whether to add a (non-persistent)
+         *     roster contact when none exists. Pass `false` to resolve only an
+         *     existing contact (or our own profile) without touching the roster.
          */
-        async setModelContact(jid) {
+        async setModelContact(jid, { create = true } = {}) {
             if (this.contact?.get('jid') === jid) return;
 
             if (this.get('type') === PRIVATE_CHAT_TYPE && this.get('closed')) {
@@ -56,7 +60,10 @@ export default function ModelWithContact(BaseModel) {
                 contact = state.profile;
             } else {
                 contact = await api.contacts.get(jid);
-                if (!contact && !(await api.blocklist.get()).get(jid)) {
+
+                // A JID without a localpart (a server, a service or XEP-0100 gateway)
+                // can't be made into a roster contact, but we can still chat with it.
+                if (!contact && create && u.isValidJID(jid) && !(await api.blocklist.get()).get(jid)) {
                     contact = await api.contacts.add({ jid }, false, false);
                 }
             }

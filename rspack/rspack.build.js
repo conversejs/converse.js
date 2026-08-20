@@ -118,11 +118,13 @@ const buildConfig = (_env, argv) => {
             new rspack.CopyRspackPlugin({
                 patterns: [
                     {
-                        from: 'node_modules/strophe.js/src/shared-connection-worker.js',
+                        from: 'node_modules/strophe.js/dist/shared-connection-worker.js',
                         to: 'shared-connection-worker.js',
                     },
-                    { from: 'node_modules/libomemo.js/dist/curve25519_compiled.wasm', to: 'curve25519_compiled.wasm' },
-                    { from: `node_modules/libomemo.js/dist/${isDev ? 'libomemo.esm.js' : 'libomemo.esm.min.js'}`, to: 'libomemo.esm.min.js' },
+                    {
+                        from: `node_modules/libomemo.js/dist/${isDev ? 'libomemo.esm.js' : 'libomemo.esm.min.js'}`,
+                        to: 'libomemo.esm.min.js',
+                    },
                     { from: 'sounds', to: 'sounds' },
                     { from: 'images/favicon.ico', to: 'images/favicon.ico' },
                     { from: 'images/custom_emojis', to: 'images/custom_emojis' },

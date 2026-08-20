@@ -26,6 +26,7 @@ export namespace DEFAULT_SETTINGS {
     let rid: any;
     let root: Document;
     let sid: any;
+    let storage_path: any;
     let singleton: boolean;
     let strict_plugin_dependencies: boolean;
     let stanza_timeout: number;
@@ -69,8 +70,16 @@ export type ConfigurationSettings = {
     password?: string;
     persistent_store?: ("IndexedDB" | "localStorage");
     rid?: string;
+    /**
+     * - The DOM node Converse renders into. Null outside a browser.
+     */
     root?: Element;
     sid?: string;
+    /**
+     * - Node.js only. Directory for the SQLite database.
+     * Defaults to `$XDG_STATE_HOME/converse`, or `~/.local/state/converse`.
+     */
+    storage_path?: string;
     singleton?: boolean;
     strict_plugin_dependencies?: boolean;
     view_mode?: ("fullscreen" | "embedded" | "overlayed");

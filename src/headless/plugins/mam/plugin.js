@@ -54,8 +54,23 @@ converse.plugins.add("converse-mam", {
         });
         api.listen.on(
             "enteredNewRoom",
-            /** @param {import('../muc/muc').default} muc */ (muc) =>
-                muc.features.get("mam_enabled") && fetchNewestMessages(muc)
+            /** @param {import('../muc/muc').default} muc */ async (muc) => {
+                try {
+                    if (muc.features.get("mam_enabled")) {
+                        await fetchNewestMessages(muc);
+                        // `fetchNewestMessages` only *queues* the fetched messages
+                        // for processing (via `queueMessage`), so wait for that
+                        // queue to drain before declaring the history settled —
+                        // otherwise a room with history could momentarily look empty.
+                        await muc.msg_chain;
+                    }
+                } finally {
+                    // History has settled (fetched, errored, or MAM unavailable).
+                    // Always flip the flag so views can treat a message-less room
+                    // as genuinely empty rather than waiting forever.
+                    muc.session.save({ mam_initialized: true });
+                }
+            }
         );
 
         api.listen.on("chatReconnected", (chat) => {

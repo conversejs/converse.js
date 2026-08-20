@@ -8,7 +8,9 @@
             color: var(--button-text-color) !important;
         }
         i {
-            &.fa, &.far, &.fas {
+            &.fa,
+            &.far,
+            &.fas {
                 color: var(--button-text-color);
                 margin-inline-end: 0.5em;
                 &.only-icon {
@@ -23,7 +25,6 @@
                 color: var(--button-text-color);
             }
         }
-
     }
 
     .btn-primary,
@@ -41,9 +42,14 @@
     .btn-primary {
         --converse-btn-color: var(--button-text-color);
         --converse-btn-bg: var(--primary-color);
+        // A filled button already wears its colour, so restating that same colour
+        // for hover, as every one of these did, left it inert. The fill deepens
+        // instead; the outline siblings still want the plain accent, so they keep
+        // the shared block above.
+        --converse-btn-hover-bg: #{btn-fill-shade(var(--primary-color), 18%)};
+        --converse-btn-active-bg: #{btn-fill-shade(var(--primary-color), 30%)};
     }
     .btn-outline-primary {
-        --converse-btn-bg: var(--background);
         --converse-btn-color: var(--primary-color);
     }
 
@@ -62,10 +68,11 @@
     .btn-secondary {
         --converse-btn-color: var(--button-text-color);
         --converse-btn-bg: var(--secondary-color);
+        --converse-btn-hover-bg: #{btn-fill-shade(var(--secondary-color), 18%)};
+        --converse-btn-active-bg: #{btn-fill-shade(var(--secondary-color), 30%)};
     }
     .btn-outline-secondary {
         --converse-btn-color: var(--secondary-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn-success,
@@ -83,10 +90,11 @@
     .btn-success {
         --converse-btn-color: var(--button-text-color);
         --converse-btn-bg: var(--success-color);
+        --converse-btn-hover-bg: #{btn-fill-shade(var(--success-color), 18%)};
+        --converse-btn-active-bg: #{btn-fill-shade(var(--success-color), 30%)};
     }
     .btn-outline-success {
         --converse-btn-color: var(--success-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn-warning,
@@ -99,14 +107,16 @@
         --converse-btn-disabled-color: var(--warning-color);
         --converse-btn-hover-bg: var(--warning-color);
         --converse-btn-hover-border-color: var(--warning-color);
+        --converse-btn-hover-color: var(--background-color);
     }
     .btn-warning {
         --converse-btn-color: var(--button-text-color);
         --converse-btn-bg: var(--warning-color);
+        --converse-btn-hover-bg: #{btn-fill-shade(var(--warning-color), 18%)};
+        --converse-btn-active-bg: #{btn-fill-shade(var(--warning-color), 30%)};
     }
     .btn-outline-warning {
         --converse-btn-color: var(--warning-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn-danger,
@@ -124,10 +134,11 @@
     .btn-danger {
         --converse-btn-color: var(--button-text-color);
         --converse-btn-bg: var(--danger-color);
+        --converse-btn-hover-bg: #{btn-fill-shade(var(--danger-color), 18%)};
+        --converse-btn-active-bg: #{btn-fill-shade(var(--danger-color), 30%)};
     }
     .btn-outline-danger {
         --converse-btn-color: var(--danger-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn-info,
@@ -138,22 +149,28 @@
         --converse-btn-disabled-bg: var(--disabled-color);
         --converse-btn-disabled-border-color: var(--info-color);
         --converse-btn-disabled-color: var(--info-color);
-        --converse-btn-hover-bg: var(--info-color-dark);
-        --converse-btn-hover-border-color: var(--danger-color);
-        --converse-btn-hover-border-color: var(--info-color-dark);
+        --converse-btn-hover-bg: var(--info-color);
+        --converse-btn-hover-border-color: var(--info-color);
+        --converse-btn-hover-color: var(--background-color);
     }
     .btn-info {
         --converse-btn-color: var(--button-text-color);
         --converse-btn-bg: var(--info-color);
+        --converse-btn-hover-bg: #{btn-fill-shade(var(--info-color), 18%)};
+        --converse-btn-active-bg: #{btn-fill-shade(var(--info-color), 30%)};
     }
     .btn-outline-info {
         --converse-btn-color: var(--info-color);
-        --converse-btn-bg: var(--background);
     }
 
     .btn--transparent {
         background: transparent;
         border: none;
+    }
+
+    // The chrome-less icon button used by the toolbars and the feed's top bar.
+    .btn--quiet {
+        @include btn-quiet;
     }
 
     .btn-circle {
@@ -164,5 +181,54 @@
         font-size: var(--font-size-small);
         line-height: 1.428571429;
         border-radius: 50%;
+    }
+}
+
+// Every ordinary button answers the pointer with the same plate, so that a
+// control with no fill of its own is not simply inert under the cursor.
+//
+// Written entirely inside `:where()`, which contributes no specificity — even
+// the `.conversejs` scope — so this is a floor rather than an override. Every
+// colour variant, every button with hover styling of its own, and every rule
+// that merely paints a resting background out-ranks it without having to say
+// anything, and none of them can be reached by tying on source order.
+//
+// Resting appearance is deliberately left alone: no border, radius or
+// background is reset here, because these buttons are not all ours to strip.
+// Only the response to the pointer is added.
+//
+// Deliberately keyed on `[type]`, so a <button> that is a link or a list row in
+// disguise, and carries neither type, is left out.
+:where(.conversejs) {
+    // For a `.btn`, the plate is handed to Bootstrap as the value of its own
+    // hover and active variables, and painted by Bootstrap's own rules — rather
+    // than fought for with a louder selector. A variant declares those same
+    // variables at a real specificity, so its fill is untouched.
+    :where(button[type='button'], button[type='submit']) {
+        --converse-btn-hover-bg: #{btn-quiet-plate(18%)};
+        --converse-btn-active-bg: #{btn-quiet-plate(30%)};
+    }
+
+    // A button that is not a `.btn` has no Bootstrap rule to carry that value
+    // into a background, so it is painted here. The `:not()`s sit inside the
+    // `:where()` so that excluding disabled buttons costs no weight.
+    :where(
+        button[type='button']:not(.btn):not(:disabled):not([aria-disabled='true']),
+        button[type='submit']:not(.btn):not(:disabled):not([aria-disabled='true'])
+    ) {
+        transition: background-color 0.12s ease-out;
+
+        &:hover,
+        &:focus-visible {
+            background-color: btn-quiet-plate(18%);
+        }
+
+        &:active {
+            background-color: btn-quiet-plate(30%);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
     }
 }

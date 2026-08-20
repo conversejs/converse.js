@@ -23,6 +23,7 @@ export interface ModelOptions {
     parse?: boolean;
     unset?: boolean;
     silent?: boolean;
+    fromStorage?: boolean;
 }
 
 // XEP-0059 Result Set Management
@@ -209,7 +210,7 @@ export type MessageErrorAttributes = {
     error_type: string; // The type of error received from the server
 };
 
-export type MessageStanzaTypes = 'chat' | 'headline' | 'groupchat' | 'error';
+export type MessageStanzaTypes = 'chat' | 'normal' | 'headline' | 'groupchat' | 'error';
 
 export type MessageAttributes = EncryptionAttrs &
     MessageErrorAttributes & {
@@ -245,7 +246,7 @@ export type MessageAttributes = EncryptionAttrs &
         plaintext: string; // The decrypted text of this message, in case it was encrypted.
         receipt_id: string; // The `id` attribute of a XEP-0184 <receipt> element
         received: string; // An ISO8601 string recording the time that the message was received
-        references: Array<Reference>; // A list of objects representing XEP-0372 references
+        references: Array<XEP372Reference>; // A list of objects representing XEP-0372 references
         replace_id: string; // The `id` attribute of a XEP-0308 <replace> element
         reply_to_id: string; // The `id` attribute of a XEP-0461 <reply> element (message being replied to)
         reply_to: string; // The `to` attribute of a XEP-0461 <reply> element (JID of the original message sender)
@@ -269,6 +270,37 @@ export type FileUploadMessageAttributes = {
     upload: 'success' | 'failure';
 };
 
+// XEP-0363 HTTP File Upload
+// -------------------------
+
+export type UploadService = {
+    slot_request_url: string; // The upload component's JID, which slot requests are addressed to.
+    max_file_size: number; // Maximum allowed size in bytes, or Infinity if the service advertises none.
+};
+
+export type UploadSlotHeader = {
+    name: string; // Only Authorization and Expires are kept; Cookie cannot be set from JS.
+    value: string;
+};
+
+// Where to PUT a file, which is all putFile needs.
+export type UploadTarget = {
+    put: string; // The URL to PUT the file to.
+    headers?: UploadSlotHeader[]; // Headers the service wants on the PUT.
+};
+
+// A slot as granted by the service: a target, plus where the file will be readable.
+export type UploadSlot = UploadTarget & {
+    get: string; // The public URL the file is readable at once uploaded.
+};
+
+export type UploadedFile = {
+    url: string; // The public GET URL of the uploaded file.
+    name: string; // The original filename.
+    type: string; // The file's MIME type.
+    size: number; // The file's size in bytes.
+};
+
 export type MessageMarkerType = 'displayed' | 'received' | 'acknowledged';
 export type ChatStateType = 'active' | 'composing' | 'paused' | 'inactive' | 'gone';
 
@@ -279,3 +311,8 @@ export type StorageKeys = {
 
 // Common chatbox types
 export type ChatBoxOrMUC = import('../plugins/chat/model.js').default | import('../plugins/muc/muc.js').default;
+
+export type BaseMessageAttributes = ModelAttributes &
+    Omit<MessageAttributes, 'type'> & {
+        type: MessageStanzaTypes | 'info';
+    };

@@ -6,7 +6,6 @@
  */
 export function isUniView(): boolean;
 export function isTestEnv(): boolean;
-export function getUnloadEvent(): "pagehide" | "beforeunload" | "unload";
 /**
  * @param {ConversePrivateGlobal} _converse
  * @param {string} name

@@ -239,6 +239,18 @@ The data that is cached (or cleared) includes your sent and received messages, w
 
 Clearing the cache makes Converse much slower when the user logs in again, because all data needs to be fetch anew.
 
+### apps
+
+- Default: `['chat', 'social']`
+
+The list of apps to make available in the app switcher. Converse ships two apps: the `chat` app (one-on-one chats and multi-user chatrooms) and the `social` app, an [XEP-0277: Microblogging over XMPP](https://xmpp.org/extensions/xep-0277.html) feed.
+
+Only apps named in this list are registered, so this is the setting to use when a deployment wants to offer some apps but not others. To offer chat on its own, set it to `['chat']`. The omitted app's code still ships in the build, it simply no longer appears in the switcher.
+
+The app switcher is only shown in the `fullscreen` [view_mode](#view_mode). In the `overlayed` and `embedded` view modes Converse always shows the primary (chat) app, so this setting has no visible effect in those modes.
+
+This setting controls only what the switcher offers. To stop an app's plugin from initializing at all (including its background work), blacklist the plugin via [blacklisted_plugins](#blacklisted_plugins) (for the social app that is `converse-app-social`), or leave it out of a custom build.
+
 ### archived_messages_page_size
 
 - Default: `50`
@@ -250,12 +262,6 @@ This feature applies to [XEP-0313: Message Archive Management (MAM)](https://xmp
 It allows you to specify the maximum amount of archived messages to be returned per query. When you open a chatbox or room, archived messages will be displayed (if available) and the amount returned will be no more than the page size.
 
 You will be able to query for even older messages by scrolling upwards in the chatbox or room (the so-called infinite scrolling pattern).
-
-### auto_fill_history_gaps
-
-- Default: `true`
-
-Determines whether Converse automatically fills gaps in the chat history. If set to false, a placeholder appears which can be clicked to fetch the missing messages.
 
 ### auto_focus
 
@@ -383,41 +389,66 @@ From Converse 3.0 onwards most of the API is available only to plugins and all p
 
 The usecase for blacklisting is generally to disable removed core plugins (which are automatically whitelisted) to prevent other (potentially malicious) plugins from registering themselves under those names.
 
-The core, and by default whitelisted, plugins are:
+The core plugins are whitelisted automatically. They fall into two families: the headless plugins (protocol and state, always present) and the view plugins (the user interface, present in the standard browser build). This is why many features have a pair, for example `converse-muc` and `converse-muc-views`.
 
-    converse-bosh
+Headless core plugins:
+
+    converse-adhoc
+    converse-blocklist
     converse-bookmarks
+    converse-bosh
+    converse-caps
+    converse-chat
     converse-chatboxes
+    converse-disco
+    converse-emoji
+    converse-headlines
+    converse-mam
+    converse-microblog
+    converse-muc
+    converse-omemo
+    converse-ping
+    converse-pubsub
+    converse-reactions
+    converse-roster
+    converse-smacks
+    converse-status
+    converse-vcard
+    converse-version
+
+View plugins (standard browser build):
+
+    converse-adhoc-views
+    converse-app-chat
+    converse-app-social
+    converse-bookmark-views
     converse-chatview
     converse-controlbox
-    converse-core
-    converse-disco
+    converse-disco-views
     converse-dragresize
     converse-fullscreen
-    converse-headline
-    converse-mam
+    converse-headlines-view
+    converse-mam-views
     converse-minimize
-    converse-muc
-    converse-muc-embedded
+    converse-modal
+    converse-muc-views
     converse-notification
-    converse-ping
+    converse-omemo-views
     converse-profile
+    converse-push
+    converse-reaction-views
     converse-register
     converse-roomslist
+    converse-rootview
     converse-rosterview
     converse-singleton
-    converse-smacks
-    converse-spoilers
-    converse-vcard
 
 Example:
 
 ```javascript
-require(['converse-core', 'converse-muc-embedded'], function (converse) {
-    converse.initialize({
-        // other settings removed for brevity
-        blacklisted_plugins: ['converse-dragresize', 'converse-minimize'],
-    });
+converse.initialize({
+    // other settings removed for brevity
+    blacklisted_plugins: ['converse-dragresize', 'converse-minimize'],
 });
 ```
 
@@ -436,6 +467,17 @@ The bosh_service_url setting takes the URL of a BOSH connection manager.
 Please refer to your XMPP server's documentation on how to enable BOSH. For more information, read this blog post: [Which BOSH server do you need?](http://metajack.im/2008/09/08/which-bosh-server-do-you-need)
 
 A more modern alternative to BOSH is to use [websockets](https://developer.mozilla.org/en/docs/WebSockets). Please see the `websocket-url` configuration setting.
+
+### caps_cache_size
+
+- Default: `3000`
+- Type: Integer
+
+The maximum number of verified [XEP-0115](https://xmpp.org/extensions/xep-0115.html) entity capabilities (caps) entries kept in the persistent cache.
+
+Converse caches the disco#info it has verified for a given capabilities hash, so that any other entity advertising the same hash can be recognized without sending a new disco#info query. The cache is content-addressed by the verification hash and shared across all JIDs and resources.
+
+Once the cache grows past this size, the least-recently-used entries are evicted (they're cheap to re-fetch). Set to `0` to disable pruning and keep an unbounded cache.
 
 ### clear_cache_on_logout
 
@@ -672,6 +714,41 @@ Determines support for [roster versioning](https://xmpp.org/rfcs/rfc6121.html#ro
 Determines whether [XEP-0198 Stream Management](https://xmpp.org/extensions/xep-0198.html) support is turned on or not.
 
 Recommended to set to `true` if a websocket connection is used. Please see the `websocket-url` configuration setting.
+
+### enable_url_routing
+
+- Default: `false`
+
+Determines whether Converse reflects in-app navigation in the browser's URL, using hash fragments (for example `#converse/social/tag/xmpp`). When enabled, the browser's back and forward buttons move through the views you have visited, and a link to a particular view (such as an author's profile or an individual post) can be shared and reopened after a reload.
+
+### entity_time_min_diff_hours
+
+- Default: `0`
+
+The minimum timezone difference (in hours) between you and a contact before Converse says anything about their local time.
+
+- `0`: say something for any different timezone, including the half-hour and quarter-hour ones (India is 30 minutes off from Pakistan, Nepal 15 minutes off from India)
+- `3`: only if the contact is 3 or more hours ahead or behind
+
+A contact in your own timezone never triggers the warning, whatever this is set to, since your own clock already tells you what time it is for them. Their profile is the exception: a value you went looking for is shown whatever the difference.
+
+See also `show_entity_time`.
+
+### entity_time_warning_end
+
+- Default: `7`
+
+The hour (0-23) at which the "off-hours" warning period ends. Defaults to 7 (7 AM).
+
+See also `show_entity_time`.
+
+### entity_time_warning_start
+
+- Default: `22`
+
+The hour (0-23) at which the "off-hours" warning period starts. Defaults to 22 (10 PM).
+
+See also `show_entity_time`.
 
 ### fetch_url_headers
 
@@ -1364,6 +1441,24 @@ converse.initialize({
 });
 ```
 
+### register_protocol_handler
+
+- Default: `false`
+
+Determines whether Converse asks the browser, once you have logged in, to handle `xmpp:` links ([XEP-0147](https://xmpp.org/extensions/xep-0147.html)) so that clicking one in another application opens it in Converse.
+
+Off by default, because registering claims a browser-wide URI scheme and prompts the user, which is rarely what you want from a Converse embedded in a larger page.
+
+The browser only accepts the request from a page served over HTTPS, and Firefox additionally requires that it happen during a user gesture. If you need to prompt from a button rather than on login, leave this setting off and call `_converse.api.protocolHandler.register()` from your click handler instead:
+
+```javascript
+document.querySelector('#enable-xmpp-links').addEventListener('click', () => {
+    _converse.api.protocolHandler.register();
+});
+```
+
+When Converse is installed as a progressive web app, the handler is declared in `manifest.json` and this setting is not involved.
+
 ### registration_domain
 
 - Default: `''`
@@ -1499,6 +1594,30 @@ Determines which (if any) of the [XEP-0333](https://xmpp.org/extensions/xep-0333
 
 It's still up to Converse to decide when to send out the relevant markers, the purpose of this setting is merely to turn on or off the sending of the individual markers.
 
+### send_entity_time
+
+- Default: `'presence'`
+
+Determines who Converse answers [XEP-0202](https://xmpp.org/extensions/xep-0202.html) entity time queries from, telling them your current UTC offset.
+
+| Value                     | Who gets an answer                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| `'presence'`              | Only entities subscribed to your presence, plus your own other resources (default) |
+| `'public'`                | Anyone who asks                                                                     |
+| any falsy value           | Nobody                                                                              |
+
+Entities that don't qualify get a `service-unavailable` error, which is indistinguishable from the error sent by a client that doesn't implement the XEP at all.
+
+XEP-0202 notes that your numeric offset says something about where in the world you are, but is silent on who should be allowed to ask. The default therefore follows the rule [XEP-0012](https://xmpp.org/extensions/xep-0012.html) imposes on the comparable Last Activity data: only the people who can already see your presence. Set it to `'public'` if you'd rather answer everyone, which is what most other XMPP clients do.
+
+Any truthy value that isn't `'public'` is treated as `'presence'`, so a mistyped setting shares less rather than more.
+
+When sharing is turned off entirely, Converse also stops advertising `urn:xmpp:time` in its service discovery features. Both sharing modes do advertise it, since under `'presence'` the protocol is genuinely supported and it's the answer that's restricted.
+
+Changing this during a session takes effect immediately for the queries Converse answers. The advertised service discovery features are settled when the session starts, so those only catch up after reconnecting.
+
+Note that this setting controls _outgoing_ timezone information only. To stop Converse from querying your contacts, use `show_entity_time`.
+
 ### show_background
 
 - Default: `true`
@@ -1534,6 +1653,21 @@ By default this box is hidden and can be toggled by clicking on any element in t
 If this options is set to true, the controlbox will by default be shown upon page load.
 
 However, be aware that even if this value is set to `false`, if the controlbox is open, and the page is reloaded, then it will stay open on the new page as well.
+
+### show_entity_time
+
+- Default: `true`
+
+Determines whether Converse queries your contacts for their local time, per [XEP-0202](https://xmpp.org/extensions/xep-0202.html). This is useful for distributed teams, to avoid messaging colleagues at inappropriate times.
+
+When it's on, Converse shows:
+
+- their local time in their profile
+- a warning above the composer, once you start writing to them, if it's "off-hours" for them (nighttime in their timezone) and their clock differs from yours
+
+A contact in your own timezone never triggers the warning, since your own clock already tells you what time it is for them.
+
+Related settings: `entity_time_warning_start`, `entity_time_warning_end`, `entity_time_min_diff_hours`. To stop Converse from answering time queries about you, use `send_entity_time`.
 
 ### show_desktop_notifications
 
@@ -1571,7 +1705,7 @@ Users will however still have the ability to render individual images via the me
 
 From [XEP-0424: Message Retraction](https://xmpp.org/extensions/xep-0424.html):
 
-::  
+::
 Due to the federated and extensible nature of XMPP it's not possible to remove a message with full certainty and a retraction can only be considered an unenforceable request for such removal. Clients which don't support message retraction are not obligated to enforce the request and people could have seen or copied the message contents already.
 
 By default Converse shows a warning to users when they retract a message, to inform them that they don't have a guarantee that the message will be removed everywhere.
@@ -1613,6 +1747,17 @@ Alternatively you could use it with [view_mode](#view_mode) set to `overlayed` t
 - Default: `5`
 
 This setting relates to [XEP-0198](https://xmpp.org/extensions/xep-0198.html) and determines the number of stanzas to be sent before Converse will ask the server for acknowledgement of those stanzas.
+
+### social_max_comment_threads
+
+- Default: `200`
+- Type: Integer
+
+The maximum number of comment threads the Social app ([XEP-0277](https://xmpp.org/extensions/xep-0277.html) microblogging) keeps cached at once.
+
+When you open a post's comments, that thread is persisted so it reopens instantly and is available offline. Since a thread is materialised for every post whose comments you view, the number of cached threads is what grows over time. Once the cache exceeds this size, threads are evicted (they're cheap to re-fetch) — empty threads, which cache no comments, are evicted before threads that hold comments, and within each the least-recently-viewed goes first. Threads for your own posts are never evicted, since they're subscribed for live updates.
+
+Set to a falsy value (`0`, `null`) to disable eviction and keep an unbounded number of threads.
 
 ### sounds_path
 
@@ -1676,14 +1821,6 @@ Lets you set a color theme for Converse.
 
 Whether nicknames should be colorized, in compliance with [XEP-0392: Consistent Color Generation](https://xmpp.org/extensions/xep-0392.html).
 
-### time_format
-
-- Default: `HH:mm`
-
-Examples: `HH:mm`, `hh:mm`, `hh:mm a`.
-
-This option makes the time format for the time shown, for each message, configurable. Converse uses [DayJS](https://github.com/iamkun/dayjs) for showing time. This option allows the configuration of the format in which `DayJS` will display the time for the messages. For detailed description of time-format options available for `DayJS` you can check the [default formatting options](https://github.com/iamkun/dayjs/blob/dev/docs/en/API-reference.md#displaying) and the [advanced options](https://github.com/iamkun/dayjs/blob/master/docs/en/Plugin.md#advancedformat).
-
 ### use_system_emojis
 
 - Default: `true`
@@ -1701,14 +1838,17 @@ See also [emoji_image_path](#emoji_image_path).
 ```javascript
 {
     call: false,
-    spoiler: false,
+    clear: true,
     emoji: true,
+    fileupload: true,
+    location: true,
+    spoiler: false,
 }
 ```
 
 Allows you to show or hide buttons on the chatboxes' toolbars.
 
-- _call_:  
+- _call_:
   Provides a button with a picture of a telephone on it. When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
 
     ```javascript
@@ -1719,10 +1859,16 @@ Allows you to show or hide buttons on the chatboxes' toolbars.
     });
     ```
 
-- _emoji_:  
+- _emoji_:
   Enables rendering of emoji and provides a toolbar button for choosing them.
 
-- _spoiler_:  
+- _fileupload_:
+  Shows the button (a paperclip) for sharing files via [XEP-0363](https://xmpp.org/extensions/xep-0363.html) HTTP File Upload. The button only appears if the server actually advertises HTTP Upload support; setting this to `false` hides it even when supported. For backwards compatibility an absent `fileupload` key is treated as `true`.
+
+- _location_:
+  Shows a button for sharing your geo-location.
+
+- _spoiler_:
   Shows a button for showing[XEP-0382](https://xmpp.org/extensions/xep-0382.html) spoiler messages.
 
 ### websocket_url

@@ -8,7 +8,7 @@
  * @param { Function } onClick - A callback function to be called once the image has been clicked.
  * @param { String } filename - The original filename, used as the `download` name for opaque URLs.
  */
-export const renderImage: (src: string, href?: string, onLoad?: Function, onClick?: Function, filename?: string) => import("lit-html/directive").DirectiveResult<typeof ImageDirective>;
+export const renderImage: (src: string, href?: string, onLoad?: Function, onClick?: Function, filename?: string) => import("lit-html/directive.js").DirectiveResult<typeof ImageDirective>;
 declare class ImageDirective extends AsyncDirective {
     /**
      * @param {string} src - The source URL of the image.

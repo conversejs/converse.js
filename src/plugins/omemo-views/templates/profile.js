@@ -3,16 +3,16 @@ import { __ } from "i18n";
 import spinner from "templates/spinner.js";
 import { formatFingerprint, formatFingerprintForQRCode } from "../utils.js";
 import "shared/qrcode/component.js";
+import "shared/components/copy-button.js";
 
 /**
  * Renders the fingerprint (and matching QR code) of one of our own device's
  * OMEMO versions. A physical device has a separate identity key per version,
  * so the legacy and omemo:2 fingerprints differ and must both be shown.
- * @param {import('../profile').Profile} el
  * @param {import('@converse/headless').Device} device
  * @param {string} label
  */
-function tplCurrentDeviceFingerprint(el, device, label) {
+function tplCurrentDeviceFingerprint(device, label) {
     if (!device) return ""; // No device list for this OMEMO version (e.g. server without omemo:2)
     const fingerprint = device.get("bundle")?.fingerprint;
     const i18n_copy = __("Copy fingerprint to clipboard");
@@ -22,16 +22,11 @@ function tplCurrentDeviceFingerprint(el, device, label) {
             ${fingerprint
                 ? html`<span class="d-flex align-items-center justify-content-between">
                       <span class="fingerprint">${formatFingerprint(fingerprint)}</span>
-                      <button
-                          type="button"
-                          class="btn btn-sm copy-fingerprint"
-                          title="${i18n_copy}"
-                          aria-label="${i18n_copy}"
-                          data-fingerprint="${formatFingerprint(fingerprint)}"
-                          @click=${el.copyFingerprint}
-                      >
-                          <converse-icon class="fas fa-copy" size="1em"></converse-icon>
-                      </button>
+                      <converse-copy-button
+                          class="copy-fingerprint"
+                          .text=${formatFingerprint(fingerprint)}
+                          label="${i18n_copy}"
+                      ></converse-copy-button>
                   </span>`
                 : spinner()}
         </li>
@@ -116,8 +111,8 @@ export default (el) => {
     return html`<form class="converse-form fingerprint-removal" @submit=${el.removeSelectedFingerprints}>
         <ul class="list-group fingerprints">
             <li class="list-group-item active">${i18n_device}</li>
-            ${tplCurrentDeviceFingerprint(el, el.current_device, i18n_fingerprint_legacy)}
-            ${tplCurrentDeviceFingerprint(el, el.current_device_v2, i18n_fingerprint_v2)}
+            ${tplCurrentDeviceFingerprint(el.current_device, i18n_fingerprint_legacy)}
+            ${tplCurrentDeviceFingerprint(el.current_device_v2, i18n_fingerprint_v2)}
             <li class="list-group-item">
                 <span class="fw-bold">${__("Device ID")}:</span>
                 <span class="ms-2">${el?.current_device?.get("id") || ""}</span>

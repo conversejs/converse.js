@@ -2,6 +2,8 @@
 &[data-bs-theme='dracula'] {
     $theme: 'dracula' !default;
 
+    color-scheme: dark;
+
     // Hex color values
     // ----------------
     --cyan: #8be9fd;
@@ -107,6 +109,10 @@
     // 1:1 Chat-related colors
     --chat-color: var(--green);
     --chat-header-fg-color: var(--chat-color);
+    // The page grey is readable on this header but sits low against it, so
+    // lighten it toward the theme's own text colour. Neutral either way, which
+    // is the point: the name above it carries the theme's colour.
+    --chat-header-subdued-color: color-mix(in srgb, var(--subdued-color) 60%, var(--foreground-color));
     --chat-header-bg-color: var(--background-color);
 
     // MUC-related colors
@@ -129,6 +135,5 @@
     --muc-color-hover: var(--muc-color);
     --primary-color-hover: var(--purple);
     --secondary-color-hover: var(--secondary-color);
-    --success-color-hover: var(--success);
     --warning-color-hover: var(--orange);
 }

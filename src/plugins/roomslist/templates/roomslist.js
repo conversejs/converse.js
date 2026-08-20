@@ -74,11 +74,7 @@ function tplRoomItem(el, room) {
             title="${i18n_leave_room}"
             @click=${(/** @type {Event} */ ev) => el.closeRoom(ev)}
         >
-            <converse-icon
-                class="fa fa-sign-out-alt"
-                size="1.2em"
-                color="${isCurrentlyOpen(room) ? 'var(--foreground-color)' : ''}"
-            ></converse-icon>
+            <converse-icon class="fa fa-sign-out-alt" size="1.2em"></converse-icon>
         </a>
     </li>`;
 }

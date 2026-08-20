@@ -5,7 +5,7 @@ import log from '@converse/log';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
 import { safeSave } from '../../utils/init.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
-import { getUnloadEvent } from '../../utils/session.js';
+import { addUnloadListener, getRouteHash, isAppHidden } from '../../utils/environment.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -100,7 +100,7 @@ export function disconnectChatRooms() {
 }
 
 export async function onWindowStateChanged() {
-    if (!document.hidden && api.connection.connected()) {
+    if (!isAppHidden() && api.connection.connected()) {
         const rooms = await api.rooms.get();
         rooms.forEach((room) => room.rejoinIfNecessary());
     }
@@ -110,11 +110,18 @@ export async function onWindowStateChanged() {
  * @param {Event} [event]
  */
 export async function routeToRoom(event) {
-    if (!location.hash.startsWith('#converse/room?jid=')) {
+    // In fullscreen with URL routing on, the Chat app's own router owns the
+    // `#converse/room...` space (it also accepts this legacy `?jid=` form and
+    // canonicalizes it), so bow out to avoid double-opening.
+    if (api.settings.get('enable_url_routing') && api.settings.get('view_mode') === 'fullscreen') {
+        return;
+    }
+    const hash = getRouteHash();
+    if (!hash.startsWith('#converse/room?jid=')) {
         return;
     }
     event?.preventDefault();
-    const jid = location.hash.split('=').pop();
+    const jid = hash.split('=').pop();
     if (!u.isValidMUCJID(jid)) {
         return log.warn(`invalid jid "${jid}" provided in url fragment`);
     }
@@ -261,10 +268,22 @@ export function onBeforeTearDown() {
         .forEach((muc) => safeSave(muc.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
 }
 
+/**
+ * @param {Element} stanza
+ * @param {import('../roster/types').PresenceAttributes} attrs
+ * @returns {import('../roster/types').PresenceAttributes}
+ */
+export function onParsePresence(stanza, attrs) {
+    return {
+        ...attrs,
+        is_muc: !!sizzle(`x[xmlns="${Strophe.NS.MUC}"]`, stanza).length,
+    };
+}
+
 export function onStatusInitialized() {
-    window.addEventListener(getUnloadEvent(), () => {
+    addUnloadListener(() => {
         const using_websocket = api.connection.isType('websocket');
-        if (using_websocket && (!api.settings.get('enable_smacks') || !_converse.session.get('smacks_stream_id'))) {
+        if (using_websocket && !api.connection.get()?.sm?.state.id) {
             // For non-SMACKS websocket connections, or non-resumeable
             // connections, we disconnect all chatrooms when the page unloads.
             // See issue #1111

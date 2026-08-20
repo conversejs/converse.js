@@ -79,14 +79,8 @@ describe('The OMEMO module', function () {
             expect(u.hasClass('fa-unlock', icon)).toBe(false);
             expect(u.hasClass('fa-lock', icon)).toBe(true);
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This message will be encrypted';
-            const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'This message will be encrypted');
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() =>
                 mock.bundleFetched(_converse, {
                     jid: contact_jid,
@@ -226,13 +220,8 @@ describe('The OMEMO module', function () {
             const baddy_occ = view.model.occupants.findOccupant({ jid: baddy_jid });
             baddy_occ.save({ affiliation: 'outcast' });
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This message must not reach baddy';
-            view.querySelector('converse-muc-message-form').onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'This message must not reach baddy');
+            await mock.pressComposerKey(view, 'Enter');
 
             // Only goodguy's and our own bundle should be fetched, never baddy's.
             await u.waitUntil(() =>
@@ -327,13 +316,8 @@ describe('The OMEMO module', function () {
             await u.waitUntil(() => mock.deviceListFetched(_converse, goodguy_jid, [goodguy_device]));
             await u.waitUntil(() => mock.deviceListFetched(_converse, flaky_jid, [flaky_device]));
 
-            const textarea = view.querySelector('.chat-textarea');
-            textarea.value = 'This must still go out to goodguy';
-            view.querySelector('converse-muc-message-form').onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'This must still go out to goodguy');
+            await mock.pressComposerKey(view, 'Enter');
 
             // goodguy's and our own bundle resolve successfully...
             await u.waitUntil(() =>
@@ -360,9 +344,7 @@ describe('The OMEMO module', function () {
             );
 
             // ...but flaky's bundle request is answered with item-not-found.
-            const flaky_iq = await u.waitUntil(() =>
-                mock.bundleIQRequestSent(_converse, flaky_jid, flaky_device),
-            );
+            const flaky_iq = await u.waitUntil(() => mock.bundleIQRequestSent(_converse, flaky_jid, flaky_device));
             _converse.api.connection.get()._dataRecv(
                 mock.createRequest(
                     _converse,
@@ -385,8 +367,8 @@ describe('The OMEMO module', function () {
             expect(rids).toContain(goodguy_device);
             expect(rids).not.toContain(flaky_device);
 
-            // The message left the textarea (i.e. it wasn't stuck/greyed out).
-            expect(view.querySelector('.chat-textarea').value).toBe('');
+            // The message left the composer (i.e. it wasn't stuck/greyed out).
+            await u.waitUntil(() => mock.composerText(view) === '');
         }),
     );
 
@@ -427,14 +409,8 @@ describe('The OMEMO module', function () {
             expect(view.model.get('omemo_active')).toBe(true);
             expect(view.model.get('omemo_supported')).toBe(true);
 
-            const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-            textarea.value = 'This message will be encrypted';
-            const message_form = view.querySelector('converse-muc-message-form');
-            message_form.onKeyDown({
-                target: textarea,
-                preventDefault: function preventDefault() {},
-                key: 'Enter',
-            });
+            await mock.setComposerText(view, 'This message will be encrypted');
+            await mock.pressComposerKey(view, 'Enter');
             await u.waitUntil(() =>
                 mock.deviceListFetched(_converse, contact_jid, ['4e30f35051b7b8b42abe083742187228']),
             );
@@ -502,7 +478,7 @@ describe('The OMEMO module', function () {
             );
 
             expect(view.model.get('omemo_supported')).toBe(false);
-            expect(view.querySelector('.chat-textarea').value).toBe('This message will be encrypted');
+            expect(mock.composerText(view)).toBe('This message will be encrypted');
         }),
     );
 

@@ -46,6 +46,8 @@ type SerializedPreKey = {
 export type OMEMOStoreAttributes = ModelAttributes & {
     identity_keypair: SerializedKeyPair;
     signed_prekey: SerializedPreKey;
+    /** Whether the current bundle has been successfully published to the server. */
+    bundle_published?: boolean;
 };
 export type EncryptedMessage = {
     key: ArrayBuffer;

@@ -2,7 +2,16 @@ export function getAppSettings(): any;
 export function initAppSettings(settings: any): void;
 export function getInitSettings(): {};
 export function getAppSetting(key: any): any;
-export function extendAppSettings(settings: any): void;
+/**
+ * @param {Object} settings - New settings (or new defaults for existing settings).
+ * @param {Object} [options]
+ * @param {string[]} [options.deep_merge] - Keys whose user-provided object value
+ *  should be deep-merged onto the default instead of replacing it wholesale. The
+ *  setting must be a plain object (see {@link deepMergeSetting}).
+ */
+export function extendAppSettings(settings: any, options?: {
+    deep_merge?: string[];
+}): void;
 /**
  * @param {string} name
  * @param {Function} func

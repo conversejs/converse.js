@@ -1,13 +1,14 @@
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { isTestEnv } from '../../utils/session.js';
+import { isAppHidden } from '../../utils/environment.js';
 
 const { Strophe, stx } = converse.env;
 
 let lastStanzaDate;
 
 export function onWindowStateChanged () {
-    if (!document.hidden) api.ping(null, 5000);
+    if (!isAppHidden()) api.ping(null, 5000);
 }
 
 export function setLastStanzaDate (date) {

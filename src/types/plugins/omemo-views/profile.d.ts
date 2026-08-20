@@ -8,8 +8,6 @@ export class Profile extends CustomElement {
     current_device_v2: any;
     other_devices: any;
     render(): import("lit-html").TemplateResult<1>;
-    /** @param {MouseEvent} ev */
-    copyFingerprint(ev: MouseEvent): Promise<void>;
     selectAll(ev: any): void;
     removeSelectedFingerprints(ev: any): Promise<void>;
     generateOMEMODeviceBundle(ev: any): Promise<void>;

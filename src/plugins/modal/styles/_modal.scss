@@ -1,7 +1,8 @@
 $prefix: 'converse-';
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'shared/styles/_mixins.scss';
 
 .conversejs {
     &.fullscreen {
@@ -27,6 +28,12 @@ $prefix: 'converse-';
     }
 
     .modal-header {
+        // An accent surface, whose controls are drawn in the background colour.
+        // The plate under the close button is tinted to match: a light wash
+        // reads against the accent, where the default foreground tint would sink
+        // into it.
+        --btn-quiet-tint: var(--background-color);
+
         background-color: var(--primary-color);
         border-bottom: none;
         display: flex;
@@ -76,18 +83,32 @@ $prefix: 'converse-';
         .modal {
             .nav-item {
                 margin: 0.25em;
+
                 .nav-link {
+                    --btn-quiet-tint: var(--primary-color);
+                    @include btn-quiet;
+
+                    &:hover,
+                    &:focus-visible {
+                        color: var(--focus-color);
+                    }
+
+                    // The chosen tab is already filled with the accent and reads
+                    // in the background colour; a translucent plate laid over
+                    // that would only muddy it. It deepens instead, the way the
+                    // composer's send button does, and on the same steps.
                     &.active {
                         color: var(--background-color);
-                    }
-                }
-                &:hover {
-                    .nav-link {
-                        color: var(--focus-color);
-                        background-color: var(--background-color);
-                        &.active {
+                        background-color: var(--primary-color);
+
+                        &:hover,
+                        &:focus-visible {
                             color: var(--background-color);
-                            background-color: var(--primary-color);
+                            background-color: color-mix(in srgb, var(--primary-color) 82%, var(--foreground-color));
+                        }
+
+                        &:active {
+                            background-color: color-mix(in srgb, var(--primary-color) 70%, var(--foreground-color));
                         }
                     }
                 }
@@ -151,6 +172,5 @@ $prefix: 'converse-';
         .btn {
             font-weight: normal;
         }
-
     }
 }

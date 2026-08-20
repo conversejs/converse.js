@@ -33,7 +33,8 @@ describe('Groupchats', () => {
 
         it(
             'has an avatar which opens a details modal when clicked',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['chatBoxesFetched'],
                 {
                     whitelisted_plugins: ['converse-roomslist'],

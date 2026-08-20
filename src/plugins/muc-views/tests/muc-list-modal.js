@@ -30,7 +30,8 @@ describe('The "Groupchats" List modal', function () {
                 IQ_stanzas.filter((s) => sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`, s).length).pop(),
             );
             const id = sent_stanza.getAttribute('id');
-            expect(sent_stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${id}" to="chat.shakespeare.lit" type="get" xmlns="jabber:client">
+            expect(sent_stanza)
+                .toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${id}" to="chat.shakespeare.lit" type="get" xmlns="jabber:client">
                 <query xmlns="http://jabber.org/protocol/disco#items"/>
             </iq>`);
 
@@ -83,22 +84,30 @@ describe('The "Groupchats" List modal', function () {
 
     it(
         'is pre-filled with the muc_domain',
-        mock.initConverse(converse, ['chatBoxesFetched'], { 'muc_domain': 'muc.example.org' }, async function (_converse) {
-            await mock.openControlBox(_converse);
-            const cbview = _converse.chatboxviews.get('controlbox');
-            const button = await u.waitUntil(() => cbview.querySelector('converse-rooms-list .show-list-muc-modal'));
-            button.click();
-            mock.closeControlBox(_converse);
-            const modal = _converse.api.modal.get('converse-muc-list-modal');
-            await u.waitUntil(() => u.isVisible(modal), 1000);
-            const server_input = modal.querySelector('input[name="server"]');
-            expect(server_input.value).toBe('muc.example.org');
-        }),
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { 'muc_domain': 'muc.example.org' },
+            async function (_converse) {
+                await mock.openControlBox(_converse);
+                const cbview = _converse.chatboxviews.get('controlbox');
+                const button = await u.waitUntil(() =>
+                    cbview.querySelector('converse-rooms-list .show-list-muc-modal'),
+                );
+                button.click();
+                mock.closeControlBox(_converse);
+                const modal = _converse.api.modal.get('converse-muc-list-modal');
+                await u.waitUntil(() => u.isVisible(modal), 1000);
+                const server_input = modal.querySelector('input[name="server"]');
+                expect(server_input.value).toBe('muc.example.org');
+            },
+        ),
     );
 
     it(
         "doesn't let you set the MUC domain if it's locked",
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesFetched'],
             { 'muc_domain': 'chat.shakespeare.lit', 'locked_muc_domain': true },
             async function (_converse) {
@@ -124,7 +133,8 @@ describe('The "Groupchats" List modal', function () {
                         )
                         .pop(),
                 );
-                expect(sent_stanza).toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" to="chat.shakespeare.lit" type="get" xmlns="jabber:client">
+                expect(sent_stanza)
+                    .toEqualStanza(stx`<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" to="chat.shakespeare.lit" type="get" xmlns="jabber:client">
                     <query xmlns="http://jabber.org/protocol/disco#items"/>
                 </iq>`);
                 const iq = stx`

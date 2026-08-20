@@ -1,4 +1,11 @@
 /**
+ * Overrides how libomemo.js is loaded. Registered by `shims/node-omemo.js`,
+ * because under Node the library comes from the package rather than from a file
+ * served next to the bundle.
+ * @param {() => Promise<typeof import('libomemo.js')>} loader
+ */
+export function setCryptoLoader(loader: () => Promise<typeof import("libomemo.js")>): void;
+/**
  * Dynamically imports libomemo.js (GPL-3.0 licensed).
  * The dynamic import ensures the GPL code is only loaded
  * when OMEMO encryption is actually used.

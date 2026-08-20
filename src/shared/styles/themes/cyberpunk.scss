@@ -4,6 +4,8 @@
 &[data-bs-theme='cyberpunk'] {
     $theme: 'vapor' !default;
 
+    color-scheme: dark;
+
     // Hex color values
     // ----------------
     --blue: #1ba2f6;
@@ -12,15 +14,28 @@
     --green-rgb: 60, 242, 129;
     --indigo: #6610f2;
     --orange: #f1b633;
-    --orange-rgb: 255, 193, 7;
+    // Was `255, 193, 7`, which is `--yellow` below, so everything the MUC's
+    // accent glows through (its heading, its toolbar, its separators) came out
+    // yellow while the solid `--muc-color` beside it was this orange.
+    --orange-rgb: 241, 182, 51;
     --pink: #ea39b8;
-    --pink-rgb: 234, 57, 185;
+    --pink-rgb: 234, 57, 184;
+    // A pale wash of the pink above, for the decorative grid. The grid is meant
+    // to read as a distant horizon, so it wants the faded end of the hue rather
+    // than the saturated accent the buttons and inputs wear.
+    --pink-light: #edb8df;
     --purple: #6f42c1;
     --purple-rgb: 111, 66, 193;
+    // A light purple, for the muted foreground. This theme's `--purple` is a
+    // dark accent, so using it for quiet text on a near-black page (as the
+    // Dracula theme reasonably does, its own purple being a light one) left
+    // timestamps and icons at under 3:1.
+    --purple-light: #a890d6;
+    --purple-light-rgb: 168, 144, 214;
     --red: #e44c55;
-    --red-rgb: 228, 76, 84;
+    --red-rgb: 228, 76, 85;
     --teal: #3f81a2;
-    --teal-rgb: 63, 130, 162;
+    --teal-rgb: 63, 129, 162;
     --white: #efefef;
     --yellow: #ffc107;
     --yellow-rgb: 255, 193, 7;
@@ -36,8 +51,8 @@
     // Bootstrap variables
     --primary-color: var(--pink) !important;
     --primary-rgb: var(--pink-rgb);
-    --secondary-color: var(--purple) !important;
-    --secondary-rgb: var(--purple-rgb);
+    --secondary-color: var(--purple-light) !important;
+    --secondary-rgb: var(--purple-light-rgb);
     --success-color: var(--green);
     --success-color-rgb: var(--green-rgb);
     --danger-color: var(--red);
@@ -96,13 +111,18 @@
     --chat-status-offline: gray;
     --chat-status-online: var(--green);
 
-    --controlbox-color: var(--purple);
+    --controlbox-color: var(--purple-light);
     --disabled-color: gray;
     --error-color: var(--red);
     --focus-color: var(--secondary-color);
-    --heading-color: var(--purple);
+    --heading-color: var(--purple-light);
     --link-color: var(--cyan);
     --subdued-color: gray;
+
+    // This theme backs the app with a moving grid rather than a flat fill, so
+    // a surface sitting on it has something to cast onto and wants its edge
+    // stated. See `--backdrop-shadow` in shared/styles/_variables.scss.
+    --backdrop-shadow: var(--raised-el-shadow);
 
     // The background when selecting text with your mouse
     --selection-color: black;
@@ -115,6 +135,9 @@
     --chat-color: var(--green);
     --chat-rgb: var(--green-rgb);
     --chat-header-fg-color: var(--chat-color);
+    // As in dracula: the page grey, lightened toward the theme's own text
+    // colour, so it reads as secondary without taking the header's hue.
+    --chat-header-subdued-color: color-mix(in srgb, var(--subdued-color) 60%, var(--foreground-color));
     --chat-header-bg-color: var(--background-color);
 
     // MUC-related colors
@@ -139,12 +162,13 @@
     --muc-color-hover: var(--muc-color);
     --primary-color-hover: var(--purple);
     --secondary-color-hover: var(--secondary-color);
-    --success-color-hover: var(--success);
     --warning-color-hover: var(--orange);
 
-    .toggle-controlbox {
-        color: var(--foreground-color) !important;
-    }
+    // The overlayed controlbox toggle is a tile filled with `--controlbox-color`
+    // and lettered in `--button-text-color`, which is the background colour.
+    // While that fill was the dark purple the lettering had to be overridden to
+    // the foreground colour to be legible at all; now that the fill is light,
+    // the shared rule is right again and the override would undo it.
 
     input {
         background-color: rgba(var(--background-color-rgb), 0.7);
@@ -172,7 +196,11 @@
                 0 0 0px 1000px rgba(var(--background-color-rgb), 0.9) inset,
                 0 0 0.5rem 0 rgba(var(--pink-rgb), 0.8),
                 0 0 1.5rem 0 rgba(var(--pink-rgb), 0.4) !important;
-            transition: red 5000s ease-in-out 0s;
+            // Chrome repaints an autofilled field with its own background after
+            // a beat; delaying the transition indefinitely is the usual way to
+            // hold it off. This named no property at all ("red"), so it did
+            // nothing, and only the box-shadow above was masking the autofill.
+            transition: background-color 5000s ease-in-out 0s;
             caret-color: var(--foreground-color);
             background-color: rgba(var(--background-color-rgb), 0.1);
         }
@@ -334,11 +362,14 @@
                 0 0 2rem 0rem rgba(var(--purple-rgb), 0.3),
                 0 0 4rem 2rem rgba(var(--purple-rgb), 0.1) !important;
         }
+        // The grid is drawn in a pale wash of the theme's own pink. It used to
+        // use the CSS keyword `pink`, a `#ffc0cb` unrelated to anything else
+        // here, so the one piece of the theme that is pure decoration was the
+        // one piece not wearing its colours.
         .container {
             position: relative;
             width: 100%;
             height: 300%;
-            border: 2px solid pink;
             box-sizing: border-box;
             transform-origin: top;
             transform: rotateX(57deg) translateY(10%);
@@ -351,9 +382,9 @@
                     display: inline-block;
                     height: 100%;
                     width: 2px;
-                    background-color: pink;
+                    background-color: var(--pink-light);
                     margin-inline-start: 4.5%;
-                    box-shadow: 0 2px 21px pink;
+                    box-shadow: 0 2px 21px var(--pink-light);
                 }
             }
             .moving-lines {
@@ -367,8 +398,8 @@
                     width: 100%;
                     height: 3px;
                     margin-top: 4.8%;
-                    background-color: pink;
-                    box-shadow: 2px 0 21px pink;
+                    background-color: var(--pink-light);
+                    box-shadow: 2px 0 21px var(--pink-light);
                     animation: lines 15000ms linear infinite;
                 }
             }

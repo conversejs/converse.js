@@ -3,6 +3,7 @@ converse-root {
     &.converse-overlayed {
         bottom: 0;
         left: 0;
+        right: 0;
         padding-inline-start: env(safe-area-inset-left);
         padding-inline-end: env(safe-area-inset-right);
         position: fixed;
@@ -16,5 +17,51 @@ converse-root {
 
     &.converse-embedded {
         position: relative;
+    }
+}
+
+.conversejs {
+    &.converse-fullscreen {
+        converse-app-container {
+            display: flex;
+            justify-content: flex-start;
+            height: 100%;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            left: 0;
+        }
+    }
+}
+
+.conversejs {
+    .converse-app {
+        &.converse-overlayed {
+            > .row {
+                flex-direction: row-reverse;
+            }
+            z-index: 1031; // One more than bootstrap navbar
+            position: fixed;
+            bottom: 0;
+            right: 0;
+        }
+
+        &.converse-fullscreen {
+            flex-wrap: nowrap;
+            width: 100%;
+            position: sticky;
+        }
+
+        &.converse-embedded {
+            bottom: auto;
+            flex-wrap: nowrap;
+            height: 100%;
+            height: 100%; // When embedded, it fills the containing element
+            position: inherit;
+            position: relative;
+            right: auto;
+            width: 100%;
+            z-index: 1031; // One more than bootstrap navbar
+        }
     }
 }

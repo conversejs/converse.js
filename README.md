@@ -119,6 +119,7 @@ Converse implements a wide range of XMPP Extensions (XEPs), making it one of the
 | [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Receipt                                 |                 |
 | [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management                               |                 |
 | [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping                                       |                 |
+| [XEP-0202](https://xmpp.org/extensions/xep-0202.html) | Entity Time                                     | 1:1 chats only  |
 | [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery                                |                 |
 | [XEP-0206](https://xmpp.org/extensions/xep-0206.html) | XMPP Over BOSH                                  |                 |
 | [XEP-0245](https://xmpp.org/extensions/xep-0245.html) | The /me Command                                 |                 |
@@ -220,9 +221,6 @@ Thanks to everyone who has supported this project over the years through donatio
 ## Sponsors
 
 <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center;">
-  <a href="https://bairesdev.com/sponsoring-open-source-projects/?utm_source=conversejs" target="_blank" rel="noopener">
-    <img alt="BairesDev" src="https://raw.githubusercontent.com/conversejs/media/main/logos/BairesDev_logo-orange.png" width="200">
-  </a>
   <a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="Blokt Crypto & Privacy" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/blokt.png" width="200">
   </a>

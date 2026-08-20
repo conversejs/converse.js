@@ -134,14 +134,12 @@ async function tplActionButtons(o) {
     }
 
     const items = buttons.map((b) => {
+        // No `color`, for the same reason the message actions carry none: it
+        // becomes an inline style on the <svg> that no stylesheet can reach past,
+        // and pinned these glyphs to the foreground colour while every other
+        // dropdown in the groupchat took the MUC colour from CSS.
         return html` <button class="dropdown-item ${b.button_class}" @click=${b.handler} type="button">
-            <converse-icon
-                class="${b.icon_class}"
-                color="var(--foreground-color)"
-                size="1em"
-                aria-hidden="true"
-            ></converse-icon
-            >&nbsp;${b.i18n_text}
+            <converse-icon class="${b.icon_class}" size="1em" aria-hidden="true"></converse-icon>&nbsp;${b.i18n_text}
         </button>`;
     });
 

@@ -37,7 +37,8 @@ describe('Groupchats', function () {
 
                 // Romeo loses his voice
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                             xmlns="jabber:client"
                             to="romeo@montague.lit/orchard"
@@ -78,7 +79,8 @@ describe('Groupchats', function () {
                     expect(csntext.trim()).toEqual('some1 has entered the groupchat');
 
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, 
+                        mock.createRequest(
+                            _converse,
                             stx`<presence to="romeo@montague.lit/_converse.js-29092160" from="coven@chat.shakespeare.lit/newguy" xmlns="jabber:client">
                         <x xmlns="${Strophe.NS.MUC_USER}">
                             <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
@@ -93,7 +95,8 @@ describe('Groupchats', function () {
                     );
 
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, 
+                        mock.createRequest(
+                            _converse,
                             stx`<presence to="romeo@montague.lit/_converse.js-29092160" from="coven@chat.shakespeare.lit/nomorenicks" xmlns="jabber:client">
                         <x xmlns="${Strophe.NS.MUC_USER}">
                             <item affiliation="none" jid="nomorenicks@montague.lit/_converse.js-290929789" role="participant"/>
@@ -234,7 +237,9 @@ describe('Groupchats', function () {
                      *  </presence></body>
                      */
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`<presence
+                        mock.createRequest(
+                            _converse,
+                            stx`<presence
                             to="romeo@montague.lit/_converse.js-29092160"
                             from="coven@chat.shakespeare.lit/some1"
                             xmlns="jabber:client">
@@ -242,7 +247,8 @@ describe('Groupchats', function () {
                             <item affiliation="owner" jid="romeo@montague.lit/_converse.js-29092160" role="moderator"/>
                         </x>
                         <status code="110"/>
-                    </presence>`),
+                    </presence>`,
+                        ),
                     );
                     const csntext = await u.waitUntil(
                         () => view.querySelector('.chat-content__notifications').textContent,
@@ -250,14 +256,17 @@ describe('Groupchats', function () {
                     expect(csntext.trim()).toEqual('some1 has entered the groupchat');
 
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`<presence
+                        mock.createRequest(
+                            _converse,
+                            stx`<presence
                             to="romeo@montague.lit/_converse.js-29092160"
                             from="coven@chat.shakespeare.lit/newguy"
                             xmlns="jabber:client">
                         <x xmlns="${Strophe.NS.MUC_USER}">
                             <item affiliation="none" jid="newguy@montague.lit/_converse.js-290929789" role="participant"/>
                         </x>
-                    </presence>`),
+                    </presence>`,
+                        ),
                     );
                     await u.waitUntil(
                         () =>
@@ -266,14 +275,17 @@ describe('Groupchats', function () {
                     );
 
                     _converse.api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`<presence
+                        mock.createRequest(
+                            _converse,
+                            stx`<presence
                             to="romeo@montague.lit/_converse.js-29092160"
                             from="coven@chat.shakespeare.lit/nomorenicks"
                             xmlns="jabber:client">
                         <x xmlns="${Strophe.NS.MUC_USER}">
                             <item affiliation="none" jid="nomorenicks@montague.lit/_converse.js-290929789" role="participant"/>
                         </x>
-                    </presence>`),
+                    </presence>`,
+                        ),
                     );
 
                     await u.waitUntil(

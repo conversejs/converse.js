@@ -8,7 +8,7 @@ export class RoomsList extends CustomElement {
     /** @returns {import('@converse/headless').MUC[]} */
     getRoomsToShow(): import("@converse/headless").MUC[];
     /** @param {Event} ev */
-    openRoom(ev: Event): Promise<void>;
+    openRoom(ev: Event): void;
     /** @param {Event} ev */
     closeRoom(ev: Event): Promise<void>;
     /** @param {Event} [ev] */

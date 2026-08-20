@@ -3,7 +3,7 @@
  */
 import debounce from 'lodash-es/debounce.js';
 import pick from 'lodash-es/pick.js';
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { getOpenPromise } from '@converse/openpromise';
 import { Model } from '@converse/skeletor';
 import log from '@converse/log';
@@ -197,8 +197,10 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             return;
         }
         log.info(`MUC ${this.get('jid')} join() called, setting status to CONNECTING`);
-        // Set this early, so we don't rejoin in onHiddenChange
-        this.session.save('connection_status', ROOMSTATUS.CONNECTING);
+        // Set this early, so we don't rejoin in onHiddenChange.
+        // Reset `mam_initialized` too: we're entering afresh, so the post-entry
+        // history fetch hasn't happened yet (see MUCSession defaults).
+        this.session.save({ connection_status: ROOMSTATUS.CONNECTING, mam_initialized: false });
 
         const result = await this.refreshDiscoInfo({ timeout: DISCO_INFO_TIMEOUT_ON_JOIN });
         const is_new = result instanceof ItemNotFoundError;
@@ -1287,7 +1289,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * Refresh the disco identity, features and fields for this {@link MUC}.
      * *features* are stored on the features {@link Model} attribute on this {@link MUC}.
      * *fields* are stored on the config {@link Model} attribute on this {@link MUC}.
-     * @param {import('@converse/headless/plugins/disco/types').DiscoInfoOptions} [options]
+     * @param {import('../disco/types').DiscoInfoOptions} [options]
      * @returns {Promise}
      */
     async refreshDiscoInfo(options) {

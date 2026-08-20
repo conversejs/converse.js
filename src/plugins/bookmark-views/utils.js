@@ -29,5 +29,5 @@ export function openRoomViaEvent(ev) {
     const data = {
         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid,
     };
-    api.rooms.open(jid, data, true);
+    api.trigger('openConversation', { view: 'room', jid, attrs: data });
 }

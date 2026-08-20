@@ -21,6 +21,7 @@ export class ChatToolbar extends CustomElement {
             model: { type: Object },
             show_call_button: { type: Boolean },
             show_emoji_button: { type: Boolean },
+            show_fileupload_button: { type: Boolean },
             show_location_button: { type: Boolean },
             show_send_button: { type: Boolean },
             show_spoiler_button: { type: Boolean },
@@ -36,6 +37,7 @@ export class ChatToolbar extends CustomElement {
         this.show_spoiler_button = false;
         this.show_call_button = false;
         this.show_emoji_button = false;
+        this.show_fileupload_button = false;
         this.show_location_button = false;
     }
 
@@ -91,16 +93,18 @@ export class ChatToolbar extends CustomElement {
             );
         }
 
-        const domain = _converse.session.get('domain');
-        const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, domain);
-        buttons.push(
-            html`${until(
-                http_upload_promise.then(
-                    /** @param {boolean} is_supported */ (is_supported) => this.getHTTPUploadButton(!!is_supported),
-                ),
-                '',
-            )}`,
-        );
+        if (this.show_fileupload_button) {
+            const domain = _converse.session.get('domain');
+            const http_upload_promise = api.disco.supports(Strophe.NS.HTTPUPLOAD, domain);
+            buttons.push(
+                html`${until(
+                    http_upload_promise.then(
+                        /** @param {boolean} is_supported */ (is_supported) => this.getHTTPUploadButton(!!is_supported),
+                    ),
+                    '',
+                )}`,
+            );
+        }
 
         /**
          * *Hook* which allows plugins to add more buttons to a chat's toolbar
@@ -122,8 +126,13 @@ export class ChatToolbar extends CustomElement {
     getHTTPUploadButton(is_supported) {
         if (is_supported) {
             const i18n_choose_file = __('Choose a file to send');
+            // Coloured like its neighbours. `converse-icon` writes its `color`
+            // attribute out as an inline style, so a glyph that doesn't name one
+            // falls back to `--secondary-color` and stands out as the only button
+            // in the row not wearing the conversation's colour.
+            const color = this.is_groupchat ? '--muc-color' : '--chat-color';
             return html` <button type="button" class="btn" title="${i18n_choose_file}" @click=${this.toggleFileUpload}>
-                    <converse-icon class="fa fa-paperclip" size="1em"></converse-icon>
+                    <converse-icon color="var(${color})" class="fa fa-paperclip" size="1em"></converse-icon>
                 </button>
                 <input
                     type="file"

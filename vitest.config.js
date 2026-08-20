@@ -14,6 +14,8 @@ const commonExclude = [
     '**/node_modules/**',
     '**/tests/mock.js', // shared test helpers
     '**/omemo-views/tests/utils.js', // omemo-views test helper (no describe/it)
+    '**/microblog/tests/utils.js', // microblog test helper (no describe/it)
+    '**/apps/social/tests/utils.js', // app-social test helper (no describe/it)
     '**/__screenshots__/**', // vitest browser-mode failure screenshots
     '**/.vitest-attachments/**',
 ];
@@ -43,6 +45,10 @@ export default defineConfig({
                 find: /(?:\.\.\/)+dist\/converse-headless\.js$/,
                 replacement: abs('src/headless/dist/converse-headless.js'),
             },
+            // Source modules import siblings by the bare `shared/...` specifier that the
+            // bundler resolves via tsconfig's baseUrl. Specs that exercise a source module
+            // directly (rather than the prebuilt bundle) need the same mapping.
+            { find: /^shared\//, replacement: abs('src/shared/') },
         ],
     },
     optimizeDeps: {
@@ -53,12 +59,7 @@ export default defineConfig({
     test: {
         globals: true,
         restoreMocks: true, // match Jasmine's per-spec spyOn restoration
-        // Converse leaves async work (lit renders, localforage reads) in flight
-        // when a test ends; the next test's initConverse tears down #conversejs and
-        // clears storage, so that trailing work errors against a gone root/store.
-        // Karma+Jasmine silently tolerated these unhandled rejections; match that
-        // so the runner swap doesn't change pass/fail semantics.
-        dangerouslyIgnoreUnhandledErrors: true,
+        dangerouslyIgnoreUnhandledErrors: false,
         testTimeout: 7000,
         setupFiles,
         sequence: { shuffle: false },
@@ -71,7 +72,7 @@ export default defineConfig({
                 test: {
                     name: 'main',
                     include: ['src/**/tests/**/*.js', 'src/**/tests/*.js'],
-                    exclude: ['src/headless/**', ...commonExclude],
+                    exclude: ['src/headless/**', '**/*.node.js', ...commonExclude],
                     browser: makeBrowser(),
                 },
             },
@@ -82,8 +83,33 @@ export default defineConfig({
                 test: {
                     name: 'headless',
                     include: ['**/tests/**/*.js', '**/tests/*.js'],
-                    exclude: [...commonExclude],
+                    // The shims are Node-only; they're covered by the
+                    // `headless-node` project below, as are the `.node.js`
+                    // specs, which import those shims directly.
+                    exclude: ['shims/**', '**/*.node.js', ...commonExclude],
                     browser: makeBrowser(),
+                },
+            },
+            {
+                // Runs under Node rather than a browser, covering the shims that
+                // stand in for the browser DOM there. Deliberately does not
+                // extend the root config: those setup files inject stylesheets
+                // and a Jasmine compatibility layer that only make sense in a
+                // page, and the aliases point at the browser bundles.
+                root: abs('src/headless'),
+                test: {
+                    name: 'headless-node',
+                    environment: 'node',
+                    // The shims, plus the DOM-free utils that only they make
+                    // usable off-browser. Both also run in the `headless`
+                    // project, which is the point: they're isomorphic.
+                    //
+                    // Plugin specs suffixed `.node.js` opt in here too. They
+                    // import plugin modules directly rather than the browser
+                    // bundle, and exist to pin that a plugin's logic carries no
+                    // hidden dependency on the DOM.
+                    include: ['shims/tests/**/*.js', 'utils/tests/**/*.js', 'plugins/**/tests/*.node.js'],
+                    exclude: [...commonExclude],
                 },
             },
         ],

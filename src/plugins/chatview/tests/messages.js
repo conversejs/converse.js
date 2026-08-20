@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
@@ -348,7 +349,7 @@ describe('A Chat Message', function () {
             await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__text'));
 
             expect(view.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(msgtext);
-            expect(view.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+            expect(view.querySelector('.chat-msg__time').textContent).toBe('now');
             await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet');
             expect(view.querySelector('.chatbox-title__text .show-msg-author-modal').textContent.trim()).toBe(
                 'Juliet Capulet',
@@ -499,7 +500,10 @@ describe('A Chat Message', function () {
             expect(msg_obj.get('is_delayed')).toEqual(true);
             await u.waitUntil(() => chatbox.vcard.get('fullname') === 'Juliet Capulet');
             expect(view.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
-            expect(view.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+            // A message from the day before shows "Yesterday" and the time.
+            expect(view.querySelector('.chat-msg__time').textContent).toBe(
+                `Yesterday at ${dayjs(one_day_ago).format('LT')}`,
+            );
             await u.waitUntil(
                 () => view.querySelector('span.chat-msg__author').textContent.trim() === 'Juliet Capulet',
             );
@@ -550,10 +554,8 @@ describe('A Chat Message', function () {
 
             expect(view.querySelector('converse-chat-message:last-child .chat-msg__text').textContent).toEqual(message);
             expect(
-                view
-                    .querySelector('converse-chat-message:last-child .chat-msg__time')
-                    .textContent.match(/^[0-9][0-9]:[0-9][0-9]/),
-            ).toBeTruthy();
+                view.querySelector('converse-chat-message:last-child .chat-msg__time').textContent,
+            ).toBe('now');
             expect(view.querySelector('converse-chat-message:last-child .chat-msg__author').textContent.trim()).toBe(
                 'Juliet Capulet',
             );
@@ -750,31 +752,6 @@ describe('A Chat Message', function () {
     );
 
     it(
-        'will render the message time as configured',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
-            const { api } = _converse;
-            await mock.waitForRoster(_converse, 'current');
-            api.settings.set('time_format', 'hh:mm');
-            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            await mock.openChatBoxFor(_converse, contact_jid);
-            const view = _converse.chatboxviews.get(contact_jid);
-            const message = 'This message is sent from this chatbox';
-            await mock.sendMessage(_converse, view, message);
-
-            const chatbox = await _converse.api.chats.get(contact_jid);
-            expect(chatbox.messages.models.length, 1);
-            const msg_object = chatbox.messages.models[0];
-
-            const msg_author = view.querySelector('.chat-content .chat-msg:last-child .chat-msg__author');
-            expect(msg_author.textContent.trim()).toBe('Romeo Montague');
-
-            const msg_time = view.querySelector('.chat-content .chat-msg:last-child .chat-msg__time');
-            const time = dayjs(msg_object.get('time')).format(api.settings.get('time_format'));
-            expect(msg_time.textContent).toBe(time);
-        }),
-    );
-
-    it(
         'will be correctly identified and rendered as a followup message',
         mock.initConverse(converse, [], { 'debounced_content_rendering': false }, async function (_converse) {
             const { api } = _converse;
@@ -790,8 +767,8 @@ describe('A Chat Message', function () {
             const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             api.settings.set('filter_by_resource', true);
 
-            jasmine.clock().install();
-            jasmine.clock().mockDate(base_time);
+            vi.useFakeTimers();
+            vi.setSystemTime(base_time);
 
             _converse.handleMessageStanza(
                 stx`
@@ -808,7 +785,7 @@ describe('A Chat Message', function () {
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
-            jasmine.clock().tick(3 * ONE_MINUTE_LATER);
+            vi.advanceTimersByTime(3 * ONE_MINUTE_LATER);
             _converse.handleMessageStanza(
                 stx`
                     <message from="${sender_jid}"
@@ -822,7 +799,7 @@ describe('A Chat Message', function () {
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
-            jasmine.clock().tick(11 * ONE_MINUTE_LATER);
+            vi.advanceTimersByTime(11 * ONE_MINUTE_LATER);
             _converse.handleMessageStanza(
                 stx`
                     <message from="${sender_jid}"
@@ -836,7 +813,7 @@ describe('A Chat Message', function () {
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
-            jasmine.clock().tick(1 * ONE_MINUTE_LATER);
+            vi.advanceTimersByTime(1 * ONE_MINUTE_LATER);
 
             _converse.handleMessageStanza(
                 stx`
@@ -851,7 +828,7 @@ describe('A Chat Message', function () {
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
-            jasmine.clock().tick(1 * ONE_MINUTE_LATER);
+            vi.advanceTimersByTime(1 * ONE_MINUTE_LATER);
             await mock.sendMessage(_converse, view, 'Another message within 10 minutes, but from a different person');
 
             await u.waitUntil(() => view.querySelectorAll('.message').length === 6);
@@ -974,7 +951,7 @@ describe('A Chat Message', function () {
                 'Another message within 10 minutes, but from a different person',
             );
 
-            jasmine.clock().uninstall();
+            vi.useRealTimers();
         }),
     );
 
@@ -1056,7 +1033,7 @@ describe('A Chat Message', function () {
                 // Now check that the message appears inside the chatbox in the DOM
                 const mel = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__text'));
                 expect(mel.textContent).toEqual(message);
-                expect(view.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+                expect(view.querySelector('.chat-msg__time').textContent).toBe('now');
                 await u.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0]);
                 await u.waitUntil(() => view.querySelector('span.chat-msg__author').textContent.trim() === 'Mercutio');
             }),
@@ -1199,9 +1176,7 @@ describe('A Chat Message', function () {
                     await u.waitUntil(() => view.querySelector('.chat-msg__author').textContent.trim() === 'Mercutio');
                     // Now check that the message appears inside the chatbox in the DOM
                     expect(view.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
-                    expect(
-                        view.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/),
-                    ).toBeTruthy();
+                    expect(view.querySelector('.chat-msg__time').textContent).toBe('now');
                     expect(view.querySelector('span.chat-msg__author').textContent.trim()).toBe('Mercutio');
                 }),
             );
@@ -1350,16 +1325,8 @@ describe('A Chat Message', function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
 
-                    const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                    textarea.value = 'hello world';
-                    const enter_event = {
-                        'target': textarea,
-                        'preventDefault': function preventDefault() {},
-                        'stopPropagation': function stopPropagation() {},
-                        key: 'Enter',
-                    };
-                    const message_form = view.querySelector('converse-message-form');
-                    message_form.onKeyDown(enter_event);
+                    await mock.setComposerText(view, 'hello world');
+                    await mock.pressComposerKey(view, 'Enter');
                     await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
                     const msg = stx`
@@ -1402,16 +1369,8 @@ describe('A Chat Message', function () {
                     await mock.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
 
-                    const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                    textarea.value = 'hello world';
-                    const enter_event = {
-                        'target': textarea,
-                        'preventDefault': function preventDefault() {},
-                        'stopPropagation': function stopPropagation() {},
-                        key: 'Enter',
-                    };
-                    const message_form = view.querySelector('converse-message-form');
-                    message_form.onKeyDown(enter_event);
+                    await mock.setComposerText(view, 'hello world');
+                    await mock.pressComposerKey(view, 'Enter');
                     await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 
                     // Normally "modify" errors need to have their id set to the

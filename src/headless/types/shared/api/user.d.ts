@@ -32,11 +32,7 @@ declare namespace api {
          */
         logout(): Promise<any>;
         presence: {
-            send(attrs?: import("../../plugins/status/types.js" /**
-             * @method _converse.api.user.jid
-             * @returns {string} The current user's full JID (Jabber ID)
-             * @example _converse.api.user.jid())
-             */).PresenceAttrs, nodes?: Array<Element> | Array<Builder> | Element | Builder): Promise<void>;
+            send(attrs?: import("../../plugins/status/types.js").PresenceAttrs, nodes?: Array<Element> | Array<Builder> | Element | Builder): Promise<void>;
         };
         settings: {
             getModel(): Promise<Model>;

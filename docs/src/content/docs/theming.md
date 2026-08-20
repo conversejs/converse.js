@@ -13,7 +13,9 @@ Converse can be themed via CSS custom properties (aka CSS variables) and comes w
 
 A theme is a CSS file with a specific rule that defines the theme's CSS properties. The rule has a specific selector that must include (and determines) the theme name.
 
-Inside this CSS rule, various CSS variables are assigned values. The CSS variables mainly refer to the colors that comprise the theme. If you don't specify a value for a specific CSS variable, then the value from the `classic` theme is used, as defined in [classic.scss](https://github.com/conversejs/converse.js/tree/master/src/shared/styles/themes/classic.scss).
+Inside this CSS rule, various CSS variables are assigned values. The CSS variables mainly refer to the colors that comprise the theme.
+
+There is no fallback to the `classic` theme: each theme is an independent CSS rule, so a variable your theme doesn't set resolves to nothing at all, and every declaration that reads it is dropped. Copy a shipped theme such as [classic.scss](https://github.com/conversejs/converse.js/tree/master/src/shared/styles/themes/classic.scss) and change the values, rather than starting from a short list.
 
 The native theme files can be found in [shared/styles/themes](https://github.com/conversejs/converse.js/tree/master/src/shared/styles/themes).
 
@@ -23,25 +25,23 @@ The theme that Converse uses can be set via the [`theme`](/configuration/#theme)
 
 ### How are themes applied?
 
-When you set a value for the [`theme`](/configuration/#theme) configuration setting, Converse will add a class `theme-${api.settings.get('theme')}` on the `converse-root` DOM element.
+When you set a value for the [`theme`](/configuration/#theme) configuration setting, Converse marks the `converse-root` DOM element with the theme's name in three ways: a `theme-${name}` class, and the `data-converse-theme` and `data-bs-theme` attributes.
 
-So, for example, if you set the `theme` setting to `"dracula"`, then the `converse-root` element will get the class `theme-dracula`.
+So, for example, if you set the `theme` setting to `"dracula"`:
 
 ```javascript
 converse.initialize({ theme: "dracula" });
 ```
 
 ```html
-<converse-root class="conversejs theme-dracula"></converse-root>
+<converse-root class="conversejs theme-dracula"
+               data-converse-theme="dracula"
+               data-bs-theme="dracula"></converse-root>
 ```
 
-To apply a theme, there needs to be a CSS rule with a selector that matches the `theme-dracula` class on the `converse-root` element.
+Any of the three can carry your theme's rule. The shipped themes use the attribute form, so [dracula.scss](https://github.com/conversejs/converse.js/tree/master/src/shared/styles/themes/dracula.scss) opens with `&[data-converse-theme='dracula'], &[data-bs-theme='dracula']`, nested inside a `.conversejs, converse-bg` block.
 
-If you take a look at the theme file [dracula.scss](https://github.com/conversejs/converse.js/tree/master/src/shared/styles/themes/dracula.scss), you'll see that it defines a CSS rule with the selector `.conversejs.theme-dracula`.
-
-This selector matches any DOM element with both the classes `.conversejs` and `.theme-dracula`. The `converse-root` element will already have the class `.conversejs` and it will have the class `.theme-dracula` if the `theme` (or `dark_theme` in dark mode) configuration setting is set to `"dracula"`.
-
-This is how themes are applied - by defining a CSS selector that matches the class `.theme-${name}` (where `name` is a variable containing the name of the theme), and then setting the `theme` (and/or `dark_theme`) configuration setting.
+Prefer the attribute form for your own theme too. The `converse-bg` element, which paints the background behind the app, is given the attributes but not the class, so a rule written only against `.theme-${name}` will not reach it.
 
 To create your own theme, you can create a similar CSS rule that matches your theme's name and then set the `theme` configuration setting to that name. This CSS rule can be in any CSS file that is loaded in your website, or you can even put it in the DOM as an inline style.
 
@@ -52,26 +52,64 @@ Let's create a simple custom theme called "ocean":
 1. Create a new CSS file (e.g., `ocean-theme.css`) with the following content:
 
 ```css
-.conversejs.theme-ocean {
-  /* Primary colors */
-  --brand-primary: #0077be;
-  --brand-secondary: #00a8cc;
-  
-  /* Background colors */
-  --background: #f0f8ff;
-  --background-light: #ffffff;
-  --background-dark: #e6f3ff;
-  
-  /* Text colors */
-  --text-color: #333333;
-  --text-color-light: #666666;
-  
-  /* Accent colors */
-  --success-color: #28a745;
-  --warning-color: #ffc107;
-  --error-color: #dc3545;
+.conversejs[data-converse-theme='ocean'],
+.conversejs[data-bs-theme='ocean'],
+converse-bg[data-converse-theme='ocean'],
+converse-bg[data-bs-theme='ocean'] {
+  color-scheme: light;
+
+  /* The page and the ink on it. Everything else is measured against these. */
+  --background-color: #f0f8ff;
+  --background-color-rgb: 240, 248, 255;
+  --foreground-color: #1c3d5a;
+
+  /* The semantic set, used for buttons, badges and alerts. */
+  --primary-color: #0077be;
+  --primary-rgb: 0, 119, 190;
+  --secondary-color: #00a8cc;
+  --secondary-rgb: 0, 168, 204;
+  --success-color: #2e8b57;
+  --success-color-rgb: 46, 139, 87;
+  --danger-color: #c0392b;
+  --danger-color-rgb: 192, 57, 43;
+  --warning-color: #e0a458;
+  --info-color: #00a8cc;
+  --info-color-rgb: 0, 168, 204;
+
+  /* Links, and the fill for a selected or open item in a list. */
+  --link-color: #005f94;
+  --link-color-hover: #004a73;
+  --highlight-color: #dbeeff;
+  --highlight-color-hover: #c3e0f7;
+
+  /* One accent per kind of conversation. Keep each `-rgb` in step with the
+     colour above it: the translucent washes are built from the `-rgb` form. */
+  --chat-color: #2e8b57;
+  --chat-rgb: 46, 139, 87;
+  --muc-color: #e0a458;
+  --muc-rgb: 224, 164, 88;
+  --headlines-color: #00a8cc;
+
+  /* Quiet text, and the states. */
+  --subdued-color: #7f8c8d;
+  --disabled-color: #7f8c8d;
+  --error-color: #c0392b;
+  --focus-color: #00a8cc;
+  --heading-color: #0077be;
+  --controlbox-color: #0077be;
+  --selection-color: #003b5c;
+  --chat-status-online: #2e8b57;
+  --chat-status-away: #e0a458;
+  --chat-status-busy: #c0392b;
+  --chat-status-offline: #7f8c8d;
 }
 ```
+
+This is the core of a theme, not all of it. Because nothing falls back to
+`classic`, a variable you leave out resolves to nothing and the rules that read
+it are simply dropped, so the quickest way to a complete theme is to copy
+[classic.scss](https://github.com/conversejs/converse.js/tree/master/src/shared/styles/themes/classic.scss)
+and replace the values.
 
 2. Load this CSS file in your HTML:
 
@@ -88,26 +126,83 @@ converse.initialize({
 });
 ```
 
+### Declaring whether your theme is light or dark
+
+A few things can't be decided in CSS alone, such as which variant of an image
+to load. For those, Converse needs to know whether the theme currently in force
+is a light one or a dark one, and your theme says so itself, using the standard
+[`color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme)
+property:
+
+```css
+.conversejs[data-converse-theme='ocean'] {
+  color-scheme: light;
+
+  /* ... your colours ... */
+}
+```
+
+Use `dark` for a dark theme. The browser reads this too, and will render
+scrollbars, form controls and other native widgets to match.
+
+A theme that declares nothing is treated as light. There is no list of theme
+names anywhere in Converse, so a third-party theme is on exactly the same
+footing as a bundled one.
+
 ### Available CSS variables
 
-Here are the most commonly used CSS variables you can customize in your theme:
+The variables a theme is most likely to want to set, with the values the
+`classic` theme gives them:
 
-| Variable | Description | Default (Classic Theme) |
-|----------|-------------|------------------------|
-| `--brand-primary` | Primary brand color | `#337ab7` |
-| `--brand-secondary` | Secondary brand color | `#5cb85c` |
-| `--background` | Main background color | `#ffffff` |
-| `--background-light` | Light background color | `#f5f5f5` |
-| `--background-dark` | Dark background color | `#e0e0e0` |
-| `--text-color` | Main text color | `#212121` |
-| `--text-color-light` | Light text color | `#757575` |
-| `--success-color` | Success state color | `#5cb85c` |
-| `--warning-color` | Warning state color | `#f0ad4e` |
-| `--error-color` | Error state color | `#d9534f` |
-| `--link-color` | Link color | `#337ab7` |
-| `--border-color` | Border color | `#ddd` |
+| Variable | What it colours | Classic |
+|----------|-----------------|---------|
+| `--background-color` | The page behind the whole app | `#efefef` |
+| `--background-color-rgb` | The same colour as `r, g, b`, for translucent washes | `239, 239, 239` |
+| `--foreground-color` | Body text. `--text-color` is an alias and follows it | `#666` |
+| `--primary-color` | Primary buttons, the active item in a list | `#387592` |
+| `--secondary-color` | Secondary buttons, quiet icons | `#578ea9` |
+| `--success-color` | Success buttons and badges | `#3aa569` |
+| `--danger-color` | Destructive buttons, danger alerts | `#d24e2b` |
+| `--warning-color` | Warning buttons and badges | `#e7a151` |
+| `--info-color` | Info alerts, popover headers | `#578ea9` |
+| `--link-color` | Links | `#2d3991` |
+| `--link-color-hover` | Links under the pointer | `#2d3991` |
+| `--highlight-color` | A selected or open item in a list | `#eff4f7` |
+| `--highlight-color-hover` | The same, under the pointer | `#eff4f7` |
+| `--chat-color` | The 1:1 chat accent | `#1e9652` |
+| `--chat-rgb` | The 1:1 accent as `r, g, b` | `58, 165, 105` |
+| `--muc-color` | The groupchat accent | `#e77051` |
+| `--muc-rgb` | The groupchat accent as `r, g, b` | `231, 161, 81` |
+| `--headlines-color` | The headlines (news feed) accent | `#e7a151` |
+| `--heading-color` | Section headings | `#578ea9` |
+| `--controlbox-color` | The controlbox toggle tile | `#578ea9` |
+| `--subdued-color` | Timestamps and other quiet text | `gray` |
+| `--disabled-color` | Disabled controls | `gray` |
+| `--error-color` | Error text | `#d24e2b` |
+| `--focus-color` | The focus ring | `#578ea9` |
+| `--selection-color` | The background behind selected text | `black` |
+| `--chat-status-online` | The presence dot, online | `#3aa569` |
+| `--chat-status-away` | The presence dot, away | `#e7a151` |
+| `--chat-status-busy` | The presence dot, busy | `#d24e2b` |
+| `--chat-status-offline` | The presence dot, offline | `gray` |
 
-For a complete list of available variables, check the [classic.scss](https://github.com/conversejs/converse.js/tree/master/src/shared/styles/themes/classic.scss) file.
+Several variables come in a pair: a colour and an `-rgb` companion holding the
+same colour as bare `r, g, b` numbers, because `rgba()` needs it that way to
+build a translucent wash. Set both, and keep them in step.
+
+A few more are derived from `--background-color` and `--foreground-color` in
+[\_variables.scss](https://github.com/conversejs/converse.js/tree/master/src/shared/styles/_variables.scss),
+so your theme gets them without doing anything, and may override them if the
+derived value doesn't suit:
+
+| Variable | What it colours | Derived as |
+|----------|-----------------|------------|
+| `--inset-bg-color` | A surface one step off the page: a disabled field, a quoted reply | 8% of the foreground mixed into the background |
+| `--converse-border-color` | Input, list-group, table, nav-tabs and pagination edges | 20% of the foreground mixed into the background |
+| `--converse-border-color-translucent` | Dropdown, popover and card edges | The foreground at 18% opacity |
+| `--backdrop-shadow` | The edge of a surface sitting on whatever the theme paints behind the app. `none` unless your theme paints something back there | `none` |
+
+For the complete set, check the [classic.scss](https://github.com/conversejs/converse.js/tree/master/src/shared/styles/themes/classic.scss) file.
 
 ## Modifying the CSS
 

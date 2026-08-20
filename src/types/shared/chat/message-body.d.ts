@@ -19,8 +19,8 @@ export default class MessageBody extends CustomElement {
     /** @param {MouseEvent} ev */
     onImgClick(ev: MouseEvent): void;
     onImgLoad(): void;
-    render(): import("lit-html/directive").DirectiveResult<{
-        new (_partInfo: import("lit-html/directive").PartInfo): {
+    render(): import("lit-html/directive.js").DirectiveResult<{
+        new (_partInfo: import("lit-html/directive.js").PartInfo): {
             render(text: string, offset: number, options: object, callback?: Function): import("lit-html").TemplateResult<1>;
             readonly _$isConnected: boolean;
             update(_part: import("lit-html").Part, props: Array<unknown>): unknown;

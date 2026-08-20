@@ -1,0 +1,161 @@
+/**
+ * Queue a post to open, then bring the Social app forward. Called via the
+ * `openMicroblogPost` event from the desktop-notification click for a comment on
+ * one of our posts. By the notification's own visibility gate the app is almost
+ * always not mounted, so the intent is consumed when the element next mounts.
+ * @param {{ feedJid: string, node?: string, itemId: string }} ref
+ */
+export function requestOpenPost(ref: {
+    feedJid: string;
+    node?: string;
+    itemId: string;
+}): void;
+export default SocialApp;
+/**
+ * The Social app container. Owns "which view is showing": the timeline, an
+ * author profile, a post detail, or a hashtag-filtered timeline.
+ *
+ * URL-based routing can be enabled via `enable_url_routing`.
+ * Then `location.hash` is the single source of truth.
+ */
+declare class SocialApp extends CustomElement {
+    static get properties(): {
+        open_post: {
+            type: ObjectConstructor;
+            state: boolean;
+        };
+        open_comment: {
+            type: ObjectConstructor;
+            state: boolean;
+        };
+        open_profile: {
+            type: StringConstructor;
+            state: boolean;
+        };
+        profile_node: {
+            type: StringConstructor;
+            state: boolean;
+        };
+        profile_tab: {
+            type: StringConstructor;
+            state: boolean;
+        };
+        filter: {
+            type: StringConstructor;
+            state: boolean;
+        };
+        _resolving: {
+            type: BooleanConstructor;
+            state: boolean;
+        };
+    };
+    open_post: any;
+    open_comment: any;
+    open_profile: string;
+    profile_node: string;
+    profile_tab: string;
+    filter: string;
+    _resolving: boolean;
+    router: HashRouter;
+    render(): import("lit-html").TemplateResult<1>;
+    /**
+     * @param {string} jid
+     * @param {string} [node=MICROBLOG_NODE] the node to show (a community feed if
+     *      not the microblog node)
+     * @param {'posts'|'following'} [tab='posts'] which tab to open the profile on
+     */
+    onProfileSelected(jid: string, node?: string, tab?: "posts" | "following"): void;
+    onCloseProfile(): void;
+    /**
+     * Switch the open profile's tab (bubbled from its tab bar). Same JID, so the
+     * keyed profile element stays mounted and only re-renders with the new tab.
+     * @param {'posts'|'following'} tab
+     */
+    onProfileTab(tab: "posts" | "following"): void;
+    /**
+     * Open a post's detail view (its comment thread) from a
+     * `{ feedJid, node, itemId }` reference, resolving or fetching the post as
+     * needed. Used by the desktop notification for a comment on one of our posts.
+     * @param {{ feedJid: string, node?: string, itemId: string }} ref
+     */
+    openPostByRef(ref: {
+        feedJid: string;
+        node?: string;
+        itemId: string;
+    }): void;
+    /** @param {import('@converse/headless').PubSubMessage} post */
+    onPostSelected(post: import("@converse/headless").PubSubMessage): void;
+    onClosePost(): void;
+    /**
+     * Focus a comment within the open thread (the drill-down view), or the post
+     * itself when `comment` is null. With routing on each level is its own URL, so
+     * browser back/forward climb the thread; otherwise it's local state.
+     * @param {import('@converse/headless').PubSubMessage|null} comment
+     */
+    onCommentSelected(comment: import("@converse/headless").PubSubMessage | null): void;
+    /** @param {string} tag */
+    onHashtagSelected(tag: string): void;
+    onClearFilter(): void;
+    /**
+     * Build the hash for a route and hand it to the router, which assigns
+     * `location.hash` (pushing a history entry and firing `hashchange`, which
+     * drives `applyRoute`) and dedupes redundant entries.
+     * @param {import('./types.ts').SocialRoute} route
+     */
+    navigate(route: import("./types.ts").SocialRoute): void;
+    /**
+     * Derive the view from the current hash. A hash that isn't a Social route
+     * (an empty fragment after `history.back()`, or another app's route while
+     * this app unmounts) resolves to the timeline: the view is a function of the
+     * hash, and without a Social sub-route there's nothing but the timeline to show.
+     */
+    syncFromHash(): void;
+    /**
+     * The single place Social view state is set from a route.
+     * @param {import('./types.ts').SocialRoute} route
+     */
+    applyRoute(route: import("./types.ts").SocialRoute): void;
+    _resolve_seq: any;
+    /**
+     * The route for a post, from its owning feed's identity plus its item id.
+     * @param {import('@converse/headless').PubSubMessage} post
+     * @returns {import('./types.ts').SocialRoute}
+     */
+    routeForPost(post: import("@converse/headless").PubSubMessage): import("./types.ts").SocialRoute;
+    /**
+     * The route for a comment focused within the open post's thread. Adds
+     * `commentId` to the post route; when the comment lives in a node other than
+     * the post's own comments node (a Libervia child node) it is addressed
+     * explicitly with `commentJid` / `commentNode`.
+     * @param {import('@converse/headless').PubSubMessage} comment
+     * @returns {import('./types.ts').SocialRoute}
+     */
+    routeForComment(comment: import("@converse/headless").PubSubMessage): import("./types.ts").SocialRoute;
+    /**
+     * Whether an already-open post matches a post route (avoids a refetch/flicker).
+     * @param {import('@converse/headless').PubSubMessage} post
+     * @param {import('./types.ts').SocialRoute} route
+     * @returns {boolean}
+     */
+    postMatchesRoute(post: import("@converse/headless").PubSubMessage, route: import("./types.ts").SocialRoute): boolean;
+    /**
+     * Resolve a deep-linked post into `open_post`. Locate its feed, use the cached
+     * model if present, else fetch exactly that item (XEP-0060 § 6.5.7) and add it.
+     * On a miss or access error, drop the dead entry and show the timeline.
+     * @param {import('./types.ts').SocialRoute} route
+     */
+    resolvePost(route: import("./types.ts").SocialRoute): Promise<void>;
+    /**
+     * Resolve the focused comment for a post route into `open_comment` (null when
+     * the route has no `commentId`, i.e. the post itself is focused). Uses the
+     * already-loaded comment when present, else fetches the thread once. A comment
+     * that can't be found leaves the post focused rather than failing the route.
+     * @param {import('@converse/headless').PubSubMessage} post
+     * @param {import('./types.ts').SocialRoute} route
+     * @param {() => boolean} current - Guard against a superseded navigation.
+     */
+    resolveComment(post: import("@converse/headless").PubSubMessage, route: import("./types.ts").SocialRoute, current: () => boolean): Promise<void>;
+}
+import { CustomElement } from 'shared/components/element.js';
+import { HashRouter } from 'plugins/rootview/routing.js';
+//# sourceMappingURL=view.d.ts.map

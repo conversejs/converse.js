@@ -18,7 +18,7 @@ converse.plugins.add('converse-profile', {
         'converse-status',
         'converse-modal',
         'converse-vcard',
-        'converse-chatboxviews',
+        'converse-app-chat',
         'converse-adhoc-views',
     ],
 

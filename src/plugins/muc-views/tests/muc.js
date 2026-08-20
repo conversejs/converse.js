@@ -1739,7 +1739,8 @@ describe('Groupchats', function () {
                 evt.button = 0;
                 hint.dispatchEvent(evt);
 
-                const textarea = modal.querySelector('textarea');
+                // The modal's own reason field, not the message composer.
+                const textarea = /** @type {HTMLTextAreaElement} */ (modal.querySelector('textarea'));
                 textarea.value = 'Please join!';
                 modal.querySelector('input[type="submit"]').click();
 
@@ -1825,14 +1826,8 @@ describe('Groupchats', function () {
                 spyOn(_converse.api, 'trigger').and.callThrough();
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 const text = 'This is a sent message';
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = text;
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, text);
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
 
                 expect(_converse.api.trigger).toHaveBeenCalledWith('sendMessage', jasmine.any(Object));

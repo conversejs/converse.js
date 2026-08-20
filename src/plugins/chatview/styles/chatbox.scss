@@ -1,8 +1,28 @@
 .conversejs {
-    converse-chats {
+    converse-app-chat {
         &.converse-overlayed {
             .chatbox {
                 margin: 0 var(--overlayed-chat-gutter);
+            }
+        }
+    }
+
+    // A 1:1 chat colours its glyphs the way a groupchat already did (see
+    // `converse-muc.chatroom` in muc.scss). Without this, only a MUC had a
+    // blanket rule, so shared parts of a message — the edited pencil, the
+    // encryption padlock — came out in the MUC colour in a groupchat but fell
+    // back to `converse-icon`'s own `--secondary-color` in a chat, leaving blue
+    // glyphs in a conversation whose every other control was green.
+    //
+    // Deliberately the same shape and specificity as the MUC rule, so the two
+    // contexts resolve identically against everything else. Icons that name a
+    // colour in their template are unaffected either way: `converse-icon` writes
+    // that out as an inline style, which outranks any stylesheet, so the glyphs
+    // that need to contrast with a fill keep doing so.
+    converse-chat.chatbox {
+        converse-icon {
+            svg {
+                fill: var(--chat-color);
             }
         }
     }
@@ -43,19 +63,38 @@
             }
         }
 
+        // Carried both by the standalone heading buttons and by the host of the
+        // heading's dropdown, so it holds only what they share. The box itself is
+        // shaped below, on whichever element is the actual button.
         .chatbox-btn {
-            border-radius: 25%;
             border: none;
             cursor: pointer;
             font-size: var(--chatbox-button-size);
             margin: 0 0.2em;
-            padding: 0 0 0 0.5em;
             text-decoration: none;
 
             &:active {
                 position: relative;
                 top: 1px;
             }
+        }
+
+        // A heading control is a tile around its glyph, whether it is a button
+        // itself or the toggle inside a dropdown host.
+        //
+        // Both were stretched and lopsided: a block-level button in a flex host
+        // that is itself stretched to the heading row took the row's full height,
+        // and `padding: 0 0 0 0.5em` put all of the horizontal space on one side.
+        // The glyph ended up in a 21x40 box, flush against the right edge, which
+        // is the shape the hover plate then traced.
+        button.chatbox-btn,
+        .chatbox-btn .btn--standalone {
+            display: inline-flex;
+            align-items: center;
+            align-self: center;
+            padding: 0.35em;
+            line-height: 1;
+            border-radius: var(--button-border-radius);
         }
 
         .box-flyout {

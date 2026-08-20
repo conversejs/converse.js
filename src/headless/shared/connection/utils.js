@@ -22,7 +22,7 @@ export function setStropheLogLevel () {
 }
 
 export function getConnectionServiceURL () {
-    if (('WebSocket' in window || 'MozWebSocket' in window) && settings_api.get('websocket_url')) {
+    if (('WebSocket' in globalThis || 'MozWebSocket' in globalThis) && settings_api.get('websocket_url')) {
         return settings_api.get('websocket_url');
     } else if (settings_api.get('bosh_service_url')) {
         return settings_api.get('bosh_service_url');

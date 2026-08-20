@@ -94,10 +94,14 @@ class MessageActions extends CustomElement {
     }
 
     static getActionsDropdownItem(o) {
+        // No `color`: `converse-icon` resolves that attribute at render time into
+        // an inline style on the <svg>, which no stylesheet can reach past. Naming
+        // the foreground colour here therefore pinned these icons to it, while
+        // every other dropdown in a groupchat took the MUC colour from CSS. The
+        // colour is left to the stylesheet so this one follows suit.
         return html`
             <button type="button" class="dropdown-item chat-msg__action ${o.button_class}" @click=${o.handler}>
-                <converse-icon class="${o.icon_class}" color="var(--foreground-color)" size="1em"></converse-icon
-                >&nbsp;${o.i18n_text}
+                <converse-icon class="${o.icon_class}" size="1em"></converse-icon>&nbsp;${o.i18n_text}
             </button>
         `;
     }
@@ -106,9 +110,9 @@ class MessageActions extends CustomElement {
     async onMessageEditButtonClicked(ev) {
         ev.preventDefault();
         const currently_correcting = this.model.collection.findWhere('correcting');
-        // TODO: Use state instead of DOM querying
-        // Then this code can also be put on the model
-        const unsent_text = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.value;
+        // Via the form, so this works for a contenteditable composer too (which has no
+        // `.value`, and would otherwise skip the warning and silently drop the draft).
+        const unsent_text = this.getMessageForm()?.getInputText();
         if (unsent_text && (!currently_correcting || currently_correcting.getMessageText() !== unsent_text)) {
             const result = await api.confirm(
                 __('Confirm'),
@@ -305,19 +309,22 @@ class MessageActions extends CustomElement {
         await navigator.clipboard.writeText(this.model.getMessageText());
     }
 
+    /**
+     * The chat's message form, whichever composer it is using.
+     * @returns {any}
+     */
+    getMessageForm() {
+        return u
+            .ancestor(this, '.chatbox')
+            ?.querySelector('converse-message-form, converse-muc-message-form');
+    }
+
     /** @param {MouseEvent} [ev] */
     onMessageQuoteButtonClicked(ev) {
         ev?.preventDefault?.();
-        const chatbox = this.model.collection.chatbox;
-        const idx = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea')?.selectionEnd;
-        const new_text = this.model.getMessageText().replaceAll(/^/gm, '> ');
-        let draft = chatbox.get('draft') ?? '';
-        if (idx) {
-            draft = `${draft.slice(0, idx)}\n${new_text}\n${draft.slice(idx)}`;
-        } else {
-            draft += new_text;
-        }
-        chatbox.save({ draft });
+        // Through the form rather than the DOM: a contenteditable has no selectionEnd, and
+        // writing straight to `draft` is invisible to an already-attached rich editor.
+        this.getMessageForm()?.insertAtCaret(this.model.getMessageText().replaceAll(/^/gm, '> '));
     }
 
     /**
@@ -367,9 +374,8 @@ class MessageActions extends CustomElement {
             reply_to_id,
             reply_to,
         });
-        // Focus the textarea
-        const textarea = u.ancestor(this, '.chatbox')?.querySelector('.chat-textarea');
-        textarea?.focus();
+        // Focus the composer (the rich one focuses through its editor handle).
+        this.getMessageForm()?.focusInput();
     }
 
     /**

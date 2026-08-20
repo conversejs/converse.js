@@ -1,4 +1,4 @@
-import { _converse, api, converse, log, u } from '@converse/headless';
+import { _converse, api, converse, u } from '@converse/headless';
 import BaseModal from 'plugins/modal/modal.js';
 import tplNewChat from './templates/new-chat.js';
 import { __ } from 'i18n';
@@ -41,15 +41,12 @@ export default class NewChatModal extends BaseModal {
      * @param {HTMLFormElement} _form
      * @param {string} jid
      */
-    async afterSubmission(_form, jid) {
-        try {
-            await api.chats.open(jid, {}, true);
-        } catch (e) {
-            log.error(e);
-            this.model.set('error', __('Sorry, something went wrong'));
-            return;
-        }
-        this.model.clear();
+    afterSubmission(_form, jid) {
+        // The JID is validated synchronously in validateSubmission before we get
+        // here, and the app-owned handler opens the chat, so there's nothing left to
+        // await or recover from at this call site.
+        api.trigger('openConversation', { view: 'chat', jid });
+        this.model.set('error', null);
         this.modal.hide();
     }
 

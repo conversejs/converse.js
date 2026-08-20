@@ -95,6 +95,78 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
     );
 });
 
+describe('A MUC occupant presence carrying a XEP-0153 avatar hash', function () {
+    it(
+        "does not trigger a vcard fetch for the room's own bare JID",
+        mock.initConverse(converse, ['chatBoxesFetched'], { no_vcard_mocks: true }, async function (_converse) {
+            const { sizzle } = _converse.env;
+            const room = 'lounge@muc.example.org';
+
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+            while (IQ_stanzas.length) IQ_stanzas.pop();
+
+            // The occupant's avatar hash arrives on a presence whose bare `from` is
+            // the room. It must not be misattributed to the room's JID and force a
+            // fetch of the room's vCard (the reflected self-presence does this on
+            // every rejoin). Occupant avatars are handled via the occupant model.
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<presence xmlns="jabber:client"
+                                to="${_converse.session.get('jid')}"
+                                from="${room}/thirdwitch">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="member" role="participant"/>
+                            </x>
+                            <x xmlns="vcard-temp:x:update">
+                                <photo>01b87fcd030b72895ff8e88db57ec525450f000d</photo>
+                            </x>
+                        </presence>`,
+                ),
+            );
+
+            await new Promise((resolve) => setTimeout(resolve, 250));
+            expect(
+                IQ_stanzas.filter((s) => sizzle('vCard', s).length && s.getAttribute('to') === room).length,
+            ).toBe(0);
+        }),
+    );
+});
+
+describe('A VCard restored from cache when a session resumes', function () {
+    it(
+        'is not eagerly refetched, but defers the fetch until it becomes visible',
+        mock.initConverse(converse, ['chatBoxesFetched'], { no_vcard_mocks: true }, async function (_converse) {
+            const { u, sizzle } = _converse.env;
+            const { vcards } = _converse.state;
+            // A MUC occupant's vcard, keyed by `room/nick`, created lazily in a
+            // prior session but never made visible (so it has no `vcard_updated`).
+            const occupant_jid = 'discuss@conference.example.org/Eduardo';
+
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+            while (IQ_stanzas.length) IQ_stanzas.pop();
+            const occupantIQs = () =>
+                IQ_stanzas.filter((s) => sizzle('vCard', s).length && s.getAttribute('to') === occupant_jid);
+
+            // Reproduce what Collection.fetch() does when it rehydrates the store on
+            // reload: it calls set() with the `fromStorage` option. Before the fix
+            // this eagerly fired a vcard-temp IQ to `room/nick` for every such
+            // hidden occupant across all joined MUCs.
+            vcards.set([{ jid: occupant_jid }], { fromStorage: true });
+            const vcard = vcards.get(occupant_jid);
+            expect(vcard).toBeDefined();
+
+            await new Promise((resolve) => setTimeout(resolve, 250));
+            expect(occupantIQs().length).toBe(0);
+
+            // Once the occupant actually becomes visible, its vcard is fetched.
+            vcard.trigger('visibilityChanged');
+            const sent = await u.waitUntil(() => occupantIQs().pop(), 1000);
+            expect(sent.getAttribute('to')).toBe(occupant_jid);
+        }),
+    );
+});
+
 describe('An outgoing presence with a XEP-0153 vcard:update element', function () {
     it(
         'is sent when the user updates their VCard avatar',

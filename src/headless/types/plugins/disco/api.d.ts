@@ -75,9 +75,19 @@ declare namespace _default {
          * @method api.disco.items
          * @param {string} jid The Jabber ID of the entity to query for items
          * @param {string} [node] A specific node identifier associated with the JID
+         * @param {object} [options]
+         * @param {import('../../shared/rsm').RSM|object} [options.rsm] XEP-0059 Result
+         *      Set Management query options (e.g. `{ max: 100, after: '<cursor>' }`),
+         *      so a caller can page through a large item set. The response's `<set>`
+         *      is returned verbatim in the result stanza for the caller to read the
+         *      cursor (`<last>`) and request the next page.
+         * @param {number} [options.timeout]
          * @returns {promise} Promise which resolves once we have a result from the server.
          */
-        export function items(jid: string, node?: string): Promise<any>;
+        export function items(jid: string, node?: string, options?: {
+            rsm?: import("../../shared/rsm").RSM | object;
+            timeout?: number;
+        }): Promise<any>;
         export namespace entities {
             /**
              * Finds the first entity advertising a given feature.

@@ -6,8 +6,8 @@
 
 
 .conversejs {
-    converse-chats.converse-embedded,
-    converse-chats.converse-fullscreen  {
+    converse-app-chat.converse-embedded,
+    converse-app-chat.converse-fullscreen  {
         &.converse-singleton {
             .flyout {
                 border: none !important;
@@ -22,7 +22,7 @@
         }
     }
 
-    converse-chats.converse-fullscreen  {
+    converse-app-chat.converse-fullscreen  {
         &.converse-singleton {
             .chatbox {
                 @include make-col-ready();

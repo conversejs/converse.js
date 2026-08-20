@@ -1,9 +1,9 @@
 export default Presence;
 /**
- * @extends {Model<import('./types').PresenceAttrs>}
+ * @extends {Model<import('./types').PresenceModelAttrs>}
  */
-declare class Presence extends Model<import("./types").PresenceAttrs> {
-    constructor(attributes?: Partial<import("./types").PresenceAttrs>, options?: import("@converse/skeletor").ModelOptions);
+declare class Presence extends Model<import("./types").PresenceModelAttrs> {
+    constructor(attributes?: Partial<import("./types").PresenceModelAttrs>, options?: import("@converse/skeletor").ModelOptions);
     defaults(): {
         presence: import("./types").PresenceTypes | "offline";
     };
@@ -20,16 +20,16 @@ declare class Presence extends Model<import("./types").PresenceAttrs> {
      * Adds a new resource and it's associated attributes as taken
      * from the passed in presence stanza.
      * Also updates the presence if the resource has higher priority (and is newer).
-     * @param {Element} presence: The presence stanza
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    addResource(presence: Element): void;
+    addResource(attrs: import("./types").PresenceAttributes): void;
     /**
      * Remove the passed in resource from the resources map.
      * Also redetermines the presence given that there's one less
      * resource.
-     * @param {string} name: The resource name
+     * @param {import('./types').PresenceAttributes} attrs
      */
-    removeResource(name: string): void;
+    removeResource({ resource: name }: import("./types").PresenceAttributes): void;
 }
 import { Model } from '@converse/skeletor';
 import Resources from './resources.js';

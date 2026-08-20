@@ -1,6 +1,9 @@
 # Distribution directory
 dist
 
+# SQLite databases written by @converse/skeletor when headless runs under Node
+.skeletor-storage/
+
 # Local working docs / implementation briefs
 briefs/
 

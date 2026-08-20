@@ -58,7 +58,7 @@ export class RoomsList extends CustomElement {
     }
 
     /** @param {Event} ev */
-    async openRoom(ev) {
+    openRoom(ev) {
         ev.preventDefault();
         const target = u.ancestor(/** @type {HTMLElement} */ (ev.target), '.open-room');
         const name = target.getAttribute('data-room-name');
@@ -66,7 +66,7 @@ export class RoomsList extends CustomElement {
         const data = {
             'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid,
         };
-        await api.rooms.open(jid, data, true);
+        api.trigger('openConversation', { view: 'room', jid, attrs: data });
     }
 
     /** @param {Event} ev */

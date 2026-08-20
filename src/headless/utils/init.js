@@ -10,9 +10,11 @@ import log from '@converse/log';
 import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN } from '../shared/constants.js';
 import { Strophe } from 'strophe.js';
 import { createStore, initStorage } from './storage.js';
+import { getNodeStore } from './node-store.js';
 import { generateResource, getConnectionServiceURL } from '../shared/connection/utils.js';
 import { isValidJID } from './jid.js';
-import { getUnloadEvent, isTestEnv } from './session.js';
+import { addUnloadListener, getLocalStorageItem, hasCredentialsAPI, IS_BROWSER } from './environment.js';
+import { isTestEnv } from './session.js';
 import { isPersistableModel } from './object.js';
 
 /**
@@ -89,6 +91,14 @@ export async function initClientConfig(_converse) {
  * @param {ConversePrivateGlobal} _converse
  */
 export async function initSessionStorage(_converse) {
+    if (!IS_BROWSER) {
+        // Node has no sessionStorage, so the session store is the same SQLite
+        // store as the persistent one. Nothing depends on it being cleared when
+        // the process exits: `clear_cache_on_logout` and the logout path both
+        // clear it explicitly.
+        _converse.storage['session'] = getNodeStore();
+        return;
+    }
     await BrowserStorage.sessionStorageInitialized;
     _converse.storage['session'] = BrowserStorage.localForage.createInstance({
         name: isTestEnv() ? 'converse-test-session' : 'converse-session',
@@ -105,6 +115,14 @@ export async function initSessionStorage(_converse) {
  */
 export function initPersistentStorage(_converse, store_name, key = 'persistent') {
     const { api } = _converse;
+    if (!IS_BROWSER) {
+        // IndexedDB, localStorage and sessionStorage are all browser APIs, so
+        // `persistent_store` has nothing to select between under Node. Every
+        // store shares one SQLite database, the same way they share one
+        // localForage instance in the browser.
+        _converse.storage[key] = getNodeStore();
+        return;
+    }
     if (api.settings.get('persistent_store') === 'sessionStorage') {
         _converse.storage[key] = _converse.storage['session'];
         return;
@@ -218,7 +236,7 @@ export async function initSession(_converse, jid) {
         saveJIDtoSession(_converse, jid);
 
         // Set `active` flag to false when the tab gets reloaded
-        window.addEventListener(getUnloadEvent(), () => safeSave(_converse.session, { active: false }));
+        addUnloadListener(() => safeSave(_converse.session, { active: false }));
 
         /**
          * Triggered once the user's session has been initialized. The session is a
@@ -328,7 +346,7 @@ async function getLoginCredentialsFromURL() {
 }
 
 async function getLoginCredentialsFromBrowser() {
-    const jid = localStorage.getItem('conversejs-session-jid');
+    const jid = getLocalStorageItem('conversejs-session-jid');
     if (!jid) return null;
 
     try {
@@ -347,7 +365,7 @@ async function getLoginCredentialsFromBrowser() {
 }
 
 async function getLoginCredentialsFromSCRAMKeys() {
-    const jid = localStorage.getItem('conversejs-session-jid');
+    const jid = getLocalStorageItem('conversejs-session-jid');
     if (!jid) return null;
 
     await setUserJID(jid);
@@ -396,7 +414,7 @@ export async function attemptNonPreboundSession(credentials, automatic) {
             if (credentials) return connect(credentials);
         }
 
-        if (!isTestEnv() && 'credentials' in navigator) {
+        if (!isTestEnv() && hasCredentialsAPI()) {
             const credentials = await getLoginCredentialsFromBrowser();
             if (credentials) return connect(credentials);
         }

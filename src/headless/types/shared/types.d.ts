@@ -18,6 +18,7 @@ export interface ModelOptions {
     parse?: boolean;
     unset?: boolean;
     silent?: boolean;
+    fromStorage?: boolean;
 }
 export type RSMQueryOptions = {
     after?: string;
@@ -140,7 +141,7 @@ export type MessageErrorAttributes = {
     error_text: string;
     error_type: string;
 };
-export type MessageStanzaTypes = 'chat' | 'headline' | 'groupchat' | 'error';
+export type MessageStanzaTypes = 'chat' | 'normal' | 'headline' | 'groupchat' | 'error';
 export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     body: string;
     chat_state: string;
@@ -174,7 +175,7 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     plaintext: string;
     receipt_id: string;
     received: string;
-    references: Array<Reference>;
+    references: Array<XEP372Reference>;
     replace_id: string;
     reply_to_id: string;
     reply_to: string;
@@ -199,6 +200,27 @@ export type FileUploadMessageAttributes = {
     oob_url: string;
     upload: 'success' | 'failure';
 };
+export type UploadService = {
+    slot_request_url: string;
+    max_file_size: number;
+};
+export type UploadSlotHeader = {
+    name: string;
+    value: string;
+};
+export type UploadTarget = {
+    put: string;
+    headers?: UploadSlotHeader[];
+};
+export type UploadSlot = UploadTarget & {
+    get: string;
+};
+export type UploadedFile = {
+    url: string;
+    name: string;
+    type: string;
+    size: number;
+};
 export type MessageMarkerType = 'displayed' | 'received' | 'acknowledged';
 export type ChatStateType = 'active' | 'composing' | 'paused' | 'inactive' | 'gone';
 export type StorageKeys = {
@@ -206,5 +228,8 @@ export type StorageKeys = {
     fetched_flag_key: string;
 };
 export type ChatBoxOrMUC = import('../plugins/chat/model.js').default | import('../plugins/muc/muc.js').default;
+export type BaseMessageAttributes = ModelAttributes & Omit<MessageAttributes, 'type'> & {
+    type: MessageStanzaTypes | 'info';
+};
 export {};
 //# sourceMappingURL=types.d.ts.map

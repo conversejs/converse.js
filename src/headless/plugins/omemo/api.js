@@ -64,6 +64,10 @@ export default {
         },
 
         session: {
+            /**
+             * @returns {Promise<boolean>} Whether key material was (re)generated
+             *      while restoring, i.e. whether the bundle needs (re)publishing.
+             */
             async restore() {
                 const { state } = _converse;
                 if (state.omemo_store === undefined) {
@@ -73,7 +77,7 @@ export default {
                     state.omemo_store = new OMEMOStore({ id });
                     initStorage(state.omemo_store, id);
                 }
-                await state.omemo_store.fetchSession();
+                return await state.omemo_store.fetchSession();
             },
         },
 

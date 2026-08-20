@@ -1,0 +1,1338 @@
+@import 'shared/styles/_mixins.scss';
+
+.conversejs {
+    converse-app-social {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+
+        // The floor the app stands on. The views above are transparent, so this
+        // is what shows either side of the reading column when there is no
+        // `converse-bg`, which keeps the app looking exactly as it did.
+        background-color: var(--background-color);
+
+        // Contain the backdrop: `converse-bg` is absolutely positioned, and
+        // without a positioned ancestor here it would resolve against
+        // `converse-root` and spill across the whole viewport, under the app
+        // switcher's rail, rather than being clipped to the app.
+        //
+        // `z-index` rather than bare `position: relative` because this has to be
+        // a stacking context: the backdrop below is taken out of the flow with a
+        // negative index, and it can only stay above *this* element's background
+        // while still sitting under the posts if the two are ordered within a
+        // context that starts here.
+        position: relative;
+        z-index: 0;
+
+        // A positioned element paints above in-flow siblings whatever the source
+        // order, so left alone the backdrop covered the feed rather than backing
+        // it. A negative index puts it back where it belongs: over this
+        // element's own fill, under everything in the flow.
+        > converse-bg {
+            z-index: -1;
+
+            // Knock the backdrop back with a wash of the page colour, so it
+            // reads as scenery behind the column rather than competing with it.
+            // Themes whose backdrop is already the flat page colour are
+            // unaffected, the wash being that same colour.
+            &::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background-color: color-mix(in srgb, var(--background-color) 55%, transparent);
+                pointer-events: none;
+            }
+        }
+
+        .social-placeholder {
+            margin: auto;
+            text-align: center;
+            opacity: 0.6;
+        }
+    }
+
+    // The reading column, shared by all three Social views: the timeline, a
+    // post's thread, and an author's profile. One rule, so they can't drift.
+    //
+    // The scrolling views themselves are transparent and this carries the fill,
+    // so whatever `converse-app-social` puts behind them shows in the margins:
+    // the plain background colour normally, and the theme's backdrop (the
+    // cyberpunk grid) when there is a `converse-bg`.
+    .social-feed,
+    .social-post-detail,
+    .social-profile {
+        max-width: 42em;
+        margin: 0 auto;
+        padding: 1em;
+        background-color: var(--background-color);
+        // Fill the viewport even when there is too little content to, so a short
+        // feed still reads as a column rather than a floating strip.
+        min-height: 100%;
+
+        // State the column's edge, but only where the theme has put something
+        // behind the app for it to sit on. Against a flat backdrop of the page
+        // colour there is nothing to cast onto and the edge only cuts up what
+        // should read as a single surface, so this resolves to `none` there.
+        box-shadow: var(--backdrop-shadow);
+
+        // Room to breathe either side. A post's text sits past the avatar
+        // gutter, so the left already has an inset the right doesn't; widening
+        // both is what stops the right edge reading as cramped, while leaving
+        // that deliberate offset intact.
+        //
+        // Only once there is width to spare. On a portrait phone the column is
+        // the whole screen, there are no margins to balance against, and the
+        // extra inset would come straight out of the line length. 480px is
+        // `$mobile_portrait_length` from shared/styles/_variables.scss, which
+        // isn't imported here because it would emit its whole variable block a
+        // second time.
+        @media screen and (min-width: 480px) {
+            padding-inline: 2em;
+        }
+    }
+
+    converse-social-feed {
+        display: block;
+        height: 100%;
+        overflow-y: auto;
+        // The windowed post list keeps the reading position itself (see
+        // windowed.js); disable native scroll anchoring so both don't compensate.
+        overflow-anchor: none;
+
+        .social-feed__header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5em;
+        }
+
+        .social-feed__empty {
+            opacity: 0.6;
+            text-align: center;
+            padding: 1em;
+        }
+
+        // History placeholder: a per-feed marker rendered between posts (in a
+        // newer-than-cache gap, or at a feed's oldest-loaded post) that auto-loads
+        // the missing posts when it scrolls into view (via its IntersectionObserver).
+        // It must have a real height, otherwise it's invisible AND can never reach
+        // the observer's intersection ratio.
+        converse-history-placeholder {
+            display: block;
+
+            // While fetching, show a small centred spinner instead of the skeleton.
+            .spinner-grow {
+                display: block;
+                width: 1em;
+                height: 1em;
+                margin: 1em auto;
+            }
+
+            .social-feed__placeholder {
+                display: block;
+                min-height: 3em;
+                margin-bottom: 1em;
+                padding: 1em;
+                border: 1px solid var(--foreground-color);
+                border-radius: 0.5em;
+                background-color: var(--background-color);
+                cursor: pointer;
+            }
+
+            .social-feed__placeholder-line {
+                display: block;
+                height: 0.7em;
+                margin: 0.5em 0;
+                border-radius: 0.35em;
+                background: linear-gradient(
+                    90deg,
+                    rgba(128, 128, 128, 0.12) 25%,
+                    rgba(128, 128, 128, 0.28) 37%,
+                    rgba(128, 128, 128, 0.12) 63%
+                );
+                background-size: 400% 100%;
+                animation: social-placeholder-shimmer 1.4s ease infinite;
+
+                &:last-child {
+                    width: 55%;
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        // Banner shown while the timeline is filtered to a single hashtag. Sticks
+        // to the top so the active filter (and its clear button) stay in view.
+        // A slim, right-aligned entry point to the "Following" list.
+        .social-feed__following {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        // "Discover" and "Following" share the same slim look in the top bar.
+        // Quiet controls, so they take the shared treatment: neutral here, since
+        // nothing sets `--btn-quiet-tint` in the feed.
+        .social-feed__following-btn,
+        .social-discover__btn {
+            @include btn-quiet;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            padding: 0.25em 0.5em;
+            color: var(--subdued-color);
+
+            converse-icon svg {
+                fill: currentColor;
+            }
+        }
+
+        .social-feed__following-count {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .social-feed__filter {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5em;
+            margin-bottom: 1em;
+            padding: 0.5em 0.75em;
+            border: 1px solid var(--foreground-color);
+            border-radius: 0.5em;
+            background-color: var(--background-color);
+
+            &-clear {
+                display: flex;
+                align-items: center;
+                gap: 0.3em;
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: var(--foreground-color);
+                opacity: 0.7;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    // A post's detail view (its comment thread) and an author's profile view,
+    // which take over the app area. Both mirror the feed container (scrollable,
+    // centred, same max width) and share the sticky back bar.
+    // The profile's post list is windowed and keeps the reading position itself
+    // (see windowed.js); disable native scroll anchoring so both don't compensate.
+    converse-social-profile {
+        overflow-anchor: none;
+    }
+
+    converse-social-post,
+    converse-social-profile {
+        display: block;
+        height: 100%;
+        overflow-y: auto;
+
+        // XEP-0472 gallery node: the post list becomes a square-tile image grid.
+        .social-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
+            gap: 0.4em;
+        }
+
+        .social-gallery__tile {
+            display: block;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 0.3em;
+            background-color: rgba(0, 0, 0, 0.05);
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+                cursor: pointer;
+                transition: transform 0.15s ease;
+            }
+
+            &:hover img {
+                transform: scale(1.04);
+            }
+        }
+
+        // Sticky back bar so leaving the thread is always one click away.
+        .social-post-detail__bar {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            margin-bottom: 0.5em;
+            padding-bottom: 0.5em;
+            background-color: var(--background-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .social-post-detail__back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--subdued-color);
+
+            converse-icon svg {
+                fill: currentColor;
+            }
+
+            &:hover {
+                color: var(--link-color);
+            }
+        }
+
+        .social-post-detail__likes {
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+            margin: 0.5em 0 0;
+            padding-inline-start: 0.25em;
+            font-size: 0.9em;
+            color: var(--danger-color);
+        }
+
+        // The banner: a wide header image (Movim's 1280×320, so 4:1) bled to the
+        // card edges (offsetting the .social-profile padding). Always shown: the
+        // author's published banner (urn:xmpp:movim-banner:0) when it loads, else
+        // a Converse logo watermark (see --fallback).
+        .social-profile__banner {
+            margin: 0 -1em;
+            aspect-ratio: 1280 / 320;
+            overflow: hidden;
+            background-color: var(--controlbox-pane-bgcolor, rgba(0, 0, 0, 0.05));
+
+            img {
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            // No banner (or it failed to load): a centred, faded logo so the
+            // header reads as intentional rather than empty/broken. Sized in `em`
+            // (not %) since the logo sits inside the inline `converse-logo` element,
+            // which has no definite height for a percentage to resolve against. The
+            // banner is itself `em`-wide (max 42em), so an `em` logo stays
+            // proportional to it across font sizes.
+            &.social-profile__banner--fallback {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                .converse-svg-logo {
+                    height: 6em;
+                    width: auto;
+                    opacity: 0.55;
+                }
+            }
+        }
+
+        // The profile header: avatar + name/JID, with the follow toggle pushed
+        // to the trailing edge.
+        .social-profile__header {
+            display: flex;
+            align-items: center;
+            gap: 0.75em;
+            margin-bottom: 1em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .social-profile__header--with-banner {
+            .social-profile__avatar {
+                padding: 3px;
+                background-color: var(--background-color);
+                border-radius: var(--avatar-border-radius, 10%);
+                line-height: 0;
+            }
+        }
+
+        .social-profile__identity {
+            display: flex;
+            flex-direction: column;
+            min-width: 0; // let a long name/JID ellipsize rather than overflow
+        }
+
+        // One line of the identity block: the text, then the copy button that
+        // belongs to it. The text shrinks (and ellipsizes); the button doesn't.
+        .social-profile__line {
+            display: flex;
+            align-items: center;
+            gap: 0.25em;
+            min-width: 0;
+        }
+
+        .social-profile__name {
+            font-weight: bold;
+            font-size: 1.2em;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        // A nickname reads as an aside to the name it follows, so give it more
+        // room than the line's own gap: twice it, to set the two names apart.
+        .social-profile__name + .social-profile__nickname {
+            margin-inline-start: 0.25em;
+        }
+
+        // The nickname beside the full name, and the address under both: the same
+        // subdued treatment, since neither is the heading.
+        .social-profile__nickname,
+        .social-profile__jid {
+            color: var(--subdued-color);
+            font-size: 0.9em;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .social-profile__copy {
+            font-size: 0.9em;
+        }
+
+        // The header action cluster, pushed to the trailing edge: the Follow
+        // toggle plus a "more" (⋯) menu (Message / Add to contacts), or the
+        // Edit-profile button on your own profile.
+        .social-profile__actions {
+            margin-inline-start: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25em;
+            flex-shrink: 0;
+        }
+
+        .social-profile__edit {
+            margin-inline-start: auto;
+            flex-shrink: 0;
+        }
+
+        .social-profile__follow {
+            flex-shrink: 0;
+        }
+
+        .social-profile__menu .dropdown-toggle {
+            color: var(--subdued-color);
+        }
+
+        // The menu's item icons are sized 1.5em (wider than the shared
+        // dropdown's 1.25em icon box, so the glyph overflows into the default
+        // 0.25rem gap). Widen the gap so icon and label don't touch, matching
+        // the roster contact menu.
+        .social-profile__menu .dropdown-item converse-icon {
+            margin-inline-end: 0.5em;
+        }
+
+        // The "feed isn't public" notice: a lock glyph above/left of the text.
+        .social-profile__restricted {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5em;
+
+            converse-icon svg {
+                fill: var(--subdued-color);
+            }
+        }
+
+        // The "Following" list: a heading with a count, then a row per author.
+        .social-following__heading {
+            margin: 0 0 0.75em;
+            font-size: 1.2em;
+        }
+
+        .social-following__count {
+            color: var(--subdued-color);
+            font-weight: normal;
+        }
+
+        .social-following__list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .social-following__item {
+            display: flex;
+            align-items: center;
+            gap: 0.75em;
+            padding: 0.5em;
+            border-radius: 0.5em;
+            cursor: pointer;
+
+            &:hover,
+            &:focus {
+                background-color: var(--highlight-color-hover);
+                outline: none;
+            }
+        }
+
+        .social-following__avatar {
+            flex-shrink: 0;
+        }
+
+        .social-following__identity {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        // Both identity lines are clipped at the row's edge, so a name that's
+        // really a gateway JID can't push the Unfollow button off it.
+        .social-following__name,
+        .social-following__jid {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .social-following__name {
+            font-weight: bold;
+        }
+
+        .social-following__jid {
+            font-size: 0.85em;
+            color: var(--subdued-color);
+        }
+
+        .social-following__unfollow {
+            margin-inline-start: auto;
+            flex-shrink: 0;
+        }
+
+        // The "you can't see who they follow" notice, like the restricted feed.
+        .social-following__unavailable {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5em;
+
+            converse-icon svg {
+                fill: var(--subdued-color);
+            }
+        }
+
+        // Profile tab bar: switch between the author's Posts and Following list.
+        .social-profile__tabs {
+            display: flex;
+            gap: 0.5em;
+            margin: 1em 0 0.5em;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .social-profile__tab {
+            padding: 0.5em 0.75em;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            color: var(--subdued-color);
+
+            &:hover {
+                color: var(--text-color);
+            }
+
+            &.social-profile__tab--active {
+                color: var(--text-color);
+                border-bottom-color: var(--link-color);
+                font-weight: bold;
+            }
+        }
+
+        .social-profile__tab-count {
+            margin-inline-start: 0.35em;
+            color: var(--subdued-color);
+            font-weight: normal;
+        }
+
+        .social-comments {
+            margin-top: 1em;
+        }
+
+        .social-comments__heading {
+            margin: 0 0 0.5em;
+            font-size: 0.95em;
+            color: var(--subdued-color);
+        }
+
+        // Comments read as a quieter, tighter list beneath the parent post.
+        .social-comment .social-post {
+            padding: 0.5em 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        // The drill-down context stack: the post, then the ancestor chain, then
+        // the focused comment. Each ancestor sits slightly indented with a thread
+        // rule, so the path from the post down to the focused item reads at a glance.
+        .social-post-detail__ancestor {
+            display: block;
+            margin-inline-start: 0.75em;
+            padding-inline-start: 0.75em;
+            border-inline-start: 2px solid rgba(0, 0, 0, 0.08);
+
+            .social-post {
+                opacity: 0.85;
+            }
+        }
+
+        // The focused comment: the current level, emphasised above its replies.
+        .social-post-detail__focused {
+            display: block;
+            margin-inline-start: 0.75em;
+            padding-inline-start: 0.75em;
+            border-inline-start: 2px solid var(--link-color, rgba(0, 0, 0, 0.2));
+
+            .social-post {
+                border-bottom: none;
+                font-weight: 500;
+            }
+        }
+
+        .social-comment-compose {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+            margin-top: 1em;
+
+            &__textarea {
+                width: 100%;
+                resize: vertical;
+                padding: 0.5em;
+                border: 1px solid var(--foreground-color);
+                border-radius: 0.25em;
+                // Match the chat/compose textarea so text stays legible in every theme.
+                color: var(--foreground-color);
+                background-color: var(--background-color);
+                font-family: inherit;
+            }
+
+            &__toolbar {
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+    }
+
+    .social-onboarding {
+        position: relative;
+        margin-bottom: 1em;
+        padding: 1em;
+        border: 1px solid var(--foreground-color);
+        border-radius: 0.5em;
+        background-color: var(--background-color);
+
+        &__dismiss {
+            position: absolute;
+            top: 0.5em;
+            right: 0.5em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--foreground-color);
+            opacity: 0.5;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+
+        &__title {
+            margin: 0 0 0.25em;
+            font-size: 1.1em;
+        }
+
+        &__subtitle {
+            margin: 0 0 0.75em;
+            opacity: 0.7;
+        }
+
+        &__list {
+            list-style: none;
+            margin: 0 0 0.75em;
+            padding: 0;
+            max-height: 14em;
+            overflow-y: auto;
+        }
+
+        &__item {
+            padding: 0.2em 0;
+        }
+
+        &__label {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            cursor: pointer;
+        }
+
+        &__actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+
+    .social-onboarding__name {
+        margin-left: 1em;
+    }
+
+    // The compact "Find people to follow" control + its in-progress state, sitting
+    // on the left of the compose toolbar (opposite the Post button). Quiet by
+    // design — it's an occasional action.
+    .social-scan {
+        &__btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--subdued-color);
+
+            // The default converse-icon fill is --secondary-color; match the text
+            // colour instead so the glyph follows the (muted/hover) state.
+            converse-icon svg {
+                fill: currentColor;
+            }
+
+            &:hover {
+                color: var(--link-color);
+            }
+        }
+
+        &--scanning {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            color: var(--subdued-color);
+        }
+
+        &__cancel {
+            display: inline-flex;
+            align-items: center;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--subdued-color);
+
+            converse-icon svg {
+                fill: currentColor;
+            }
+
+            &:hover {
+                color: var(--danger-color);
+            }
+        }
+    }
+
+    // The Discover modal: two stacked sections ("Find people to follow" and
+    // "Follow a feed") separated by a divider.
+    .social-discover {
+        &__section + .social-discover__section {
+            margin-top: 0.5em;
+        }
+
+        &__heading {
+            font-size: 1em;
+            font-weight: bold;
+            margin-bottom: 0.25em;
+        }
+
+        &__divider {
+            margin: 1em 0;
+            opacity: 0.25;
+        }
+
+        &__preview {
+            margin: 0.5em 0;
+            font-size: 0.9em;
+        }
+
+        &__manual > summary {
+            cursor: pointer;
+            color: var(--subdued-color);
+            font-size: 0.9em;
+        }
+    }
+
+    // The "Browse a service" control: a service-JID input + results list of the
+    // feed nodes hosted there, each with a per-row follow button.
+    .social-browse {
+        &__form {
+            display: flex;
+            gap: 0.5em;
+            align-items: center;
+
+            .form-control {
+                flex: 1;
+            }
+        }
+
+        &__progress {
+            margin: 0.5em 0 0;
+        }
+
+        &__list {
+            list-style: none;
+            margin: 0.5em 0 0;
+            padding: 0;
+            max-height: 16em;
+            overflow-y: auto;
+            // Leave a gutter for the scrollbar so it doesn't sit on top of the
+            // right-aligned Follow buttons.
+            padding-right: 0.5em;
+        }
+
+        &__item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5em;
+            padding: 0.4em 0;
+            border-top: 1px solid var(--foreground-color-lighten-20, rgba(127, 127, 127, 0.2));
+        }
+
+        &__info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15em;
+            min-width: 0;
+            // Break long unbreakable labels/descriptions instead of forcing the
+            // list to scroll horizontally.
+            overflow-wrap: anywhere;
+            // The info column is a link opening a read-only preview of the feed
+            // (middle-/⌘-clickable into a new tab when URL routing is on). Reset
+            // the default link look so only the title underlines on hover.
+            cursor: pointer;
+            border-radius: 0.25em;
+            color: inherit;
+            text-decoration: none;
+
+            &:hover .social-browse__title {
+                text-decoration: underline;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--link-color);
+                outline-offset: 2px;
+            }
+        }
+
+        &__title {
+            font-weight: bold;
+        }
+
+        &__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5em;
+            align-items: center;
+            font-size: 0.8em;
+            color: var(--subdued-color);
+        }
+
+        &__badge {
+            padding: 0 0.4em;
+            border-radius: 0.75em;
+            background: var(--link-color);
+            color: var(--inverse-link-color, #fff);
+            font-size: 0.9em;
+        }
+
+        &__node {
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        &__desc {
+            font-size: 0.85em;
+            color: var(--subdued-color);
+        }
+
+        &__following {
+            color: var(--subdued-color);
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        &__toggle {
+            margin-top: 0.5em;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--link-color);
+            font-size: 0.9em;
+        }
+
+        &__more {
+            display: block;
+            margin-top: 0.75em;
+        }
+
+        &__error {
+            margin: 0.5em 0 0;
+            font-size: 0.9em;
+        }
+    }
+
+    converse-social-message {
+        display: block;
+
+        .social-post {
+            display: flex;
+            flex-direction: column;
+            padding: 0.75em 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+            // X.com-style repost attribution: a quiet eyebrow above the post that
+            // names *who* repeated it, so it's never mistaken for the original
+            // author shown below. Indented to align with the content column
+            // (past the avatar gutter), with the retweet glyph in that gutter.
+            &__repost {
+                display: flex;
+                align-items: center;
+                gap: 0.4em;
+                margin-bottom: 0.25em;
+                margin-left: calc(40px + 0.75em);
+                font-size: 0.85em;
+                color: var(--subdued-color);
+            }
+
+            // The post proper: avatar pinned left, author/body to its right.
+            &__row {
+                display: flex;
+                align-items: flex-start;
+                gap: 0.75em;
+            }
+
+            // Fixed left column: the avatar stays pinned to the top and never
+            // shrinks, so the name and body always sit to its right.
+            &__avatar {
+                flex-shrink: 0;
+                display: block;
+            }
+
+            // Right column: header on top, body wrapping below — both beside
+            // the avatar, so the text never flows underneath it.
+            // `min-width: 0` lets long words / URLs wrap instead of overflowing.
+            &__main {
+                flex: 1;
+                min-width: 0;
+            }
+
+            &__header {
+                display: flex;
+                align-items: baseline;
+                gap: 0.5em;
+                margin-bottom: 0.25em;
+            }
+
+            // Avatar and author name are click targets (open the author's
+            // profile / details) when the author resolves to a contact.
+            .show-msg-author-modal {
+                cursor: pointer;
+            }
+
+            // The identity pair (name + handle) yields to the timestamp and the
+            // action buttons, which keep their size and their place at the end
+            // of the row. Both truncate rather than push the row wider than the
+            // post: a bridged author's name and JID are single unbreakable words
+            // (a Renostr localpart is a 63-character npub), and `min-width: 0`
+            // is what lets a flex item shrink below such a word at all.
+            &__author,
+            &__jid {
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            &__author {
+                font-weight: bold;
+
+                // The clickable variant links to the author's profile; keep it
+                // looking like a name — the per-author colour is set inline, so
+                // inherit here to avoid a hyperlink-blue flash before it loads.
+                &.show-msg-author-modal {
+                    color: inherit;
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            &__jid {
+                font-weight: normal;
+                color: var(--subdued-color);
+                // The handle takes only what the name, timestamp and buttons
+                // leave over: a zero flex basis it grows into, rather than a
+                // real width it would have to be shrunk back out of. Shrinking
+                // is proportional to basis and never prioritised, so a handle
+                // with a real basis would still nibble a fraction of a pixel off
+                // the name beside it, and half a pixel is a whole ellipsis:
+                // four characters lost from a name that had room to spare.
+                flex: 1 1 0;
+            }
+
+            &__time {
+                // The auto margin only has free space to absorb when there's no
+                // handle beside the name to have grown into it first.
+                margin-left: auto;
+                flex-shrink: 0;
+                white-space: nowrap;
+                font-size: 0.8em;
+                opacity: 0.6;
+            }
+
+            // Quiet attribution line under the header: names the topic/news feed
+            // a post was republished through (e.g. "via Phoronix on
+            // news.movim.eu") and links to that node's feed profile, so the
+            // source is distinct from the publisher shown above.
+            &__via {
+                display: inline-block;
+                // One line, clipped at the post's edge: the node name is a raw
+                // node id for a feed we're only browsing, and the service can be
+                // a gateway JID, either of which is an unbreakable word wide
+                // enough to run past the column on its own.
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin-bottom: 0.5em;
+                font-size: 0.8em;
+                color: var(--subdued-color) !important;
+                cursor: pointer;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                    color: var(--link-color) !important;
+                }
+            }
+
+            &__action {
+                background: none;
+                border: none;
+                cursor: pointer;
+                flex-shrink: 0;
+                padding: 0 0.25em;
+                color: var(--foreground-color);
+                opacity: 0.5;
+
+                &:hover {
+                    opacity: 1;
+                }
+
+                &--delete:hover {
+                    color: var(--danger-color);
+                }
+
+                &--repost:hover,
+                &--comment:hover {
+                    color: var(--link-color);
+                }
+
+                &--like:hover {
+                    color: var(--danger-color);
+                }
+
+                // A liked post shows a solid, full-opacity ♥ in the like colour.
+                &--liked {
+                    color: var(--danger-color);
+                    opacity: 1;
+                }
+
+                &[disabled] {
+                    cursor: default;
+                }
+            }
+
+            // The comment / like count sits inside its button, right of the icon.
+            &__count {
+                margin-inline-start: 0.35em;
+                font-size: 0.85em;
+                font-variant-numeric: tabular-nums;
+            }
+
+            &__body {
+                word-wrap: break-word;
+                // A post is a paragraph of prose, not a chat line: without leading,
+                // a body of hard-wrapped lines reads as one solid block.
+                line-height: 1.5;
+
+                // Inline media rendered by the texture pipeline shouldn't
+                // overflow the post column.
+                img,
+                video {
+                    max-width: 100%;
+                    height: auto;
+                }
+
+                // An image in the body is the post's content, so give it its own line
+                // and the same rounded frame as an enclosure.
+                // Emoji are images too but they stay in the line.
+                img:not(.emoji) {
+                    display: block;
+                    // A tall image otherwise fills the viewport on its own; capped,
+                    // it still opens full-size in the lightbox on click.
+                    max-height: 32em;
+                    margin: 0.75em 0;
+                    border-radius: 0.5em;
+                    cursor: pointer;
+                    // Bootstrap's thumbnail chrome (a light border on a filled
+                    // background) frames a chat attachment; here it reads as a
+                    // border around the post's own content.
+                    padding: 0;
+                    border: 0;
+                    background: none;
+                }
+
+                // The link the texture pipeline wraps an image in, so the image's
+                // own box is what the line is sized to.
+                a.chat-image__link {
+                    display: block;
+                    width: fit-content;
+                }
+            }
+
+            // Structured tags (Atom <category>) footer: a wrap of clickable chips.
+            &__tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.4em;
+                margin-top: 0.5em;
+            }
+
+            &__hashtag {
+                cursor: pointer;
+                color: var(--link-color);
+            }
+
+            // XEP-0080 geotag: a quiet location line under the post body.
+            &__location {
+                display: flex;
+                align-items: center;
+                gap: 0.4em;
+                margin-top: 0.5em;
+                font-size: 0.9em;
+                color: var(--subdued-color);
+            }
+
+            // The Atom text constructs (<title>/<summary>/<content>), each its own
+            // block. `pre-wrap` preserves newlines *within* a construct's text.
+            &__title,
+            &__summary,
+            &__content {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+
+            // A blank line ("two line-breaks") between stacked constructs. The
+            // first construct (title, or summary/content when there's no title)
+            // has no element sibling before it, so it gets no leading gap.
+            &__summary,
+            &__content {
+                &:not(:first-child) {
+                    margin-top: 1em;
+                }
+            }
+
+            // A <title> above other constructs reads as a heading; a <summary>
+            // shown above <content> is an excerpt/standfirst.
+            &__title--heading {
+                font-weight: bold;
+            }
+
+            &__summary--excerpt {
+                font-style: italic;
+            }
+
+            // Sanitized HTML from `type="html"`/`"xhtml"` Atom constructs (blog
+            // feeds, Movim). Unlike plain-text constructs it carries its own block
+            // structure, so drop the `pre-wrap` whitespace handling and let the
+            // first/last block sit flush with the construct box.
+            &__richtext {
+                white-space: normal;
+
+                > :first-child {
+                    margin-top: 0;
+                }
+
+                > :last-child {
+                    margin-bottom: 0;
+                }
+
+                // Blog feeds embed full heading hierarchies; the browser defaults
+                // (h1 ~2em) dwarf the post text. Rein them in to a compact scale
+                // that still reads as headings against ~1em body copy.
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6 {
+                    font-weight: bold;
+                    line-height: 1.3;
+                    margin: 0.6em 0 0.3em;
+                }
+
+                h1 {
+                    font-size: 1.3em;
+                }
+
+                h2 {
+                    font-size: 1.2em;
+                }
+
+                h3 {
+                    font-size: 1.1em;
+                }
+
+                h4,
+                h5,
+                h6 {
+                    font-size: 1em;
+                }
+
+                a {
+                    color: var(--link-color);
+                }
+
+                img,
+                video {
+                    max-width: 100%;
+                    height: auto;
+                }
+
+                // Long-form structure that blog / Movim posts lean on.
+                p {
+                    margin: 0 0 0.5em;
+                }
+
+                ul,
+                ol {
+                    margin: 0 0 0.5em;
+                    padding-inline-start: 1.5em;
+                }
+
+                blockquote {
+                    margin: 0.5em 0;
+                    padding-inline-start: 0.75em;
+                    border-inline-start: 3px solid var(--subdued-color);
+                    color: var(--subdued-color);
+                }
+
+                code {
+                    font-family: monospace;
+                    font-size: 0.9em;
+                }
+
+                pre {
+                    overflow-x: auto;
+                    padding: 0.5em 0.75em;
+                    border-radius: 0.25em;
+                    background-color: rgba(0, 0, 0, 0.05);
+
+                    code {
+                        font-size: inherit;
+                    }
+                }
+            }
+
+            // Media attachments (<link rel="enclosure">): a post's image/audio/
+            // video, stacked below the body text.
+            &__media {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5em;
+                margin-top: 0.75em;
+            }
+
+            &__enclosure {
+                img {
+                    border-radius: 0.5em;
+                    cursor: pointer;
+                }
+
+                img,
+                video,
+                audio {
+                    max-width: 100%;
+                    height: auto;
+                }
+
+                // A failed image degrades to a link (directive onError); keep the
+                // long URL from overflowing the post column.
+                a {
+                    word-break: break-all;
+                }
+            }
+
+            &__enclosure-link {
+                color: var(--link-color);
+                word-break: break-all;
+            }
+
+            // "Read more" link to the entry's canonical URL (<link rel="alternate">),
+            // for news/blog posts whose body is only a teaser.
+            &__source {
+                margin-top: 0.75em;
+
+                a {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.4em;
+                    color: var(--link-color);
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            &__hashtag {
+                color: var(--link-color);
+                cursor: pointer;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+@keyframes social-placeholder-shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+}

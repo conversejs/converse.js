@@ -1,4 +1,4 @@
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import log from '@converse/log';
 import { Model } from '@converse/skeletor';
 import converse from '../../shared/api/public.js';
@@ -254,8 +254,19 @@ export async function initOMEMO(reconnecting) {
     try {
         await fetchDeviceLists();
         await fetchOMEMOActiveStates();
-        await api.omemo.session.restore();
-        await _converse.state.omemo_store.publishBundle();
+        const bundle_changed = await api.omemo.session.restore();
+
+        // The bundle is persistent PubSub data, so we only (re)publish it when it
+        // changed or when we haven't confirmed the current one reached the server.
+        // `bundle_published` is persisted and set only after a successful publish.
+        // Unlike a resumed-session check, it also handles a session established
+        // out-of-band (e.g. a BOSH prebind) whose bundle was never published, and
+        // it recovers from a failed publish. Prekey consumption republishes on its
+        // own, see `decryptPrekeyWhisperMessage`.
+        const { omemo_store } = _converse.state;
+        if (bundle_changed || !omemo_store.get('bundle_published')) {
+            await omemo_store.publishBundle();
+        }
     } catch (e) {
         log.error('Could not initialize OMEMO support');
         log.error(e);
@@ -615,7 +626,7 @@ async function encryptMessage(plaintext) {
     // by implementations.
     //
     // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
-    const iv = crypto.getRandomValues(new window.Uint8Array(12));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await crypto.subtle.generateKey(KEY_ALGO, true, ['encrypt', 'decrypt']);
     const algo = /** @type {AesGcmParams} */ {
         iv,
@@ -1207,7 +1218,7 @@ export async function encryptFile(file) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
     const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, await file.arrayBuffer());
-    const exported_key = await window.crypto.subtle.exportKey('raw', key);
+    const exported_key = await crypto.subtle.exportKey('raw', key);
     const encrypted_file = new File([encrypted], file.name, { type: file.type, lastModified: file.lastModified });
 
     Object.assign(encrypted_file, { xep454_ivkey: arrayBufferToHex(iv) + arrayBufferToHex(exported_key) });

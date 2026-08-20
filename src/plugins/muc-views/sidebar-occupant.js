@@ -37,7 +37,7 @@ export default class MUCOccupantListItem extends ObservableElement {
 
     /**
      * @param {MouseEvent} ev
-     * @param {import('@converse/headless/types/plugins/muc/occupant.js').default} occupant
+     * @param {import('@converse/headless/types/plugins/muc/occupant').default} occupant
      */
     onOccupantClicked(ev, occupant) {
         ev.preventDefault();

@@ -7,3 +7,110 @@
     animation-duration: 0.5s;
     animation-timing-function: ease;
 }
+
+// The tinted plate that marks a button as being under the pointer, at a given
+// strength: 18% for hover, 30% for pressed.
+//
+// Mixed into transparency from `--btn-quiet-tint` rather than taken from a
+// theme's `--highlight-color-hover`. That variable is a *hovered row* colour,
+// and on the dark themes (Dracula's `--darkgray`, Cyberpunk's
+// `--background-color-lighter`) it sits almost on top of the surface, leaving
+// the plate invisible. A mix of the foreground colour lightens the plate on the
+// dark themes and darkens it on the light ones, so one declaration covers all
+// four.
+//
+// The tint is *read* with a fallback and never declared alongside the use: a
+// declaration on the button itself would shadow the one an ancestor sets, and
+// the accent a toolbar hands down would never arrive.
+@function btn-quiet-plate($strength) {
+    @return color-mix(in srgb, var(--btn-quiet-tint, var(--foreground-color)) $strength, transparent);
+}
+
+// The counterpart for a button that already wears a fill: rather than laying a
+// translucent plate over its colour, which would only muddy it, the fill itself
+// deepens by the same 18% / 30% steps.
+//
+// Mixing the foreground colour in darkens the fill on the light themes and
+// brightens it on the dark ones, so a filled button gains weight under the
+// pointer in all four, and the loud controls and the quiet ones move on one
+// scale.
+@function btn-fill-shade($color, $strength) {
+    @return color-mix(in srgb, #{$color} #{100% - $strength}, var(--foreground-color));
+}
+
+// A quiet button: no chrome at rest, so a row of them reads as a row of glyphs
+// rather than a row of boxes. Under the pointer it grows a tinted plate that
+// traces its own shape, which is what tells you where the click will land, and
+// how far apart its neighbours are.
+//
+// Callers standing in an accented context reset `--btn-quiet-tint` to that
+// accent, and the whole row then answers in the colour of its surroundings: the
+// chat's green, the MUC's orange. Left alone it stays neutral, which is what the
+// quiet controls (a feed's top bar, a compose toolbar) want.
+//
+// This is the full treatment, resting appearance included, for buttons that are
+// ours to strip. Ordinary buttons across the app get only the plate, from the
+// rule in buttons.scss, so their own borders and fills are left alone.
+//
+// A caller with something else to animate passes it as `$transition`, rather
+// than restating the property afterwards: a later `transition` declaration would
+// sit below the reduced-motion block this mixin ends with, at the same
+// specificity, and quietly switch the animations back on for the readers who
+// asked for none.
+@mixin btn-quiet($radius: var(--button-border-radius), $transition: null) {
+    // Only the properties that actually change: a blanket `all` would also pick up
+    // the colour swaps that callers make on hover, and those should be immediate.
+    // Appended, not joined, so a caller's `opacity 0.12s ease-out` stays one entry
+    // instead of being flattened into three.
+    $motion: (background-color 0.12s ease-out, transform 0.12s ease-out);
+    @if $transition {
+        $motion: append($motion, $transition, comma);
+    }
+
+    background: none;
+    border: none;
+    border-radius: $radius;
+    cursor: pointer;
+    transition: $motion;
+
+    &:hover,
+    &:focus-visible {
+        background-color: btn-quiet-plate(18%);
+    }
+
+    // Keyboard focus has to be at least as loud as hover, so it takes the plate
+    // and an outline drawn from the same tint. An outline rather than a shadow,
+    // because forced-colours mode keeps the former and drops the latter.
+    &:focus-visible {
+        outline: 2px solid color-mix(in srgb, var(--btn-quiet-tint, var(--foreground-color)) 60%, transparent);
+        outline-offset: 1px;
+    }
+
+    // Pressed: the plate deepens and the button settles a pixel into it.
+    &:active {
+        background-color: btn-quiet-plate(30%);
+        transform: translateY(1px);
+    }
+
+    // A disabled control has nothing to answer with. Listed last so it outranks
+    // the hover rule, which a disabled button still matches.
+    //
+    // Faded rather than recoloured: `converse-icon` resolves its `color`
+    // attribute at render time and writes the result as an inline style on the
+    // <svg>, which no ordinary rule can override. Opacity is applied to the
+    // button and so reaches the glyph regardless.
+    &:disabled,
+    &[aria-disabled='true'] {
+        background-color: transparent;
+        cursor: default;
+        opacity: 0.5;
+        transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+        &:active {
+            transform: none;
+        }
+    }
+}

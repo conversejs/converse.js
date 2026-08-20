@@ -61,7 +61,7 @@ export default class AddContactModal extends BaseModal {
             });
             return;
         });
-        api.chats.open(jid, {}, true);
+        api.trigger('openConversation', { view: 'chat', jid });
         this.alert(null); // clear alert
         api.toast.show('contact-added', { type: 'success', body: __('Contact added successfully') });
         this.modal.hide();

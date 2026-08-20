@@ -35,7 +35,9 @@ export default class OccupantBottomPanel extends BottomPanel {
 
     openChat() {
         const jid = this.model.get('jid');
-        return jid ? api.chats.open(jid, {}, true) : api.alert('error', __('Error'), 'Could not find XMPP address');
+        return jid
+            ? api.trigger('openConversation', { view: 'chat', jid })
+            : api.alert('error', __('Error'), 'Could not find XMPP address');
     }
 
     invite() {

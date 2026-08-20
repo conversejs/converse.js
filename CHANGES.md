@@ -1,10 +1,50 @@
 # Changelog
 
-## 14.0.0 (Unreleased)
+## 15.0.0 (Unreleased)
+
+- #194: Full support for XEP-0115: Entity capabilities.
+- #1247: Register Converse as the browser's handler for `xmpp:` links.
+- #1509: You can now chat with a bare-host JID.
+- #3560: Emoji shortnames are now matched case-sensitively
+- #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
+- #3978: Add support for XEP-0202 Entity Time.
+- Full XEP-0172 User Nickname support.
+- fix(chatview): The contact's name and status message in a chat header were painted the same
+  colour as the header itself.
+- fix(chatview): Show the contact's status message in the chat header again. It was read off the
+  chat, while the presence handler keeps it on the contact, so it never rendered.
+- fix(vcard): Don't eagerly refetch cached vcards when a session resumes.
+- fix(vcard): Don't fetch a MUC's own vCard in response to an occupant presence.
+- refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its
+  `enableStreamManagement` connection option). The `converse-smacks` plugin is reduced to mapping
+  the existing `enable_smacks` and `smacks_max_unacked_stanzas` settings onto that option, and two
+  events: the existing `streamResumptionFailed` and the new `streamResumed`.
+- feat(toolbar): Allow hiding the file upload button via the `fileupload` key of `visible_toolbar_buttons`
+- feat(settings): `api.settings.extend` accepts a `deep_merge` option so an object setting fills in
+  defaults instead of being replaced wholesale.
+- Optional browser back/forward and deep links via URL routing, gated behind the new `enable_url_routing` setting
+- chore(types): Switch TypeScript `moduleResolution` to `bundler`; `@converse/headless` now exposes its
+  type declarations via a `./types/*` export instead of consumer-side `paths` mappings.
+
+### Breaking changes:
+
+The `time_format` setting has been removed. Message times are now shown relative to the present
+instead of as a configurable clock.
+
+Stream Management state is no longer kept in `_converse.session`. Query the connection instead
+(e.g. `api.connection.get().isStreamManagementEnabled()`, `.hasResumed()`, `.sm.state`).
+
+Resource binding (and the `beforeResourceBinding` event) is now skipped when a stream
+is resumed via XEP-0198. Plugins that use `beforeResourceBinding` to register stanza handlers
+must also listen to the new `streamResumed` event, which fires while `<resumed/>` is processed,
+before the server's replay of queued stanzas is handled.
+
+## 14.0.0 (2026-06-26)
 
 - feat(version): Add XEP-0092 Software Version support and show the server's software version in the profile modal
-- fix(omemo): detect omemo:2-only contacts as OMEMO-capable
-- feat: add custom element with support for animated WebP images
+- fix(omemo): Detect omemo:2-only contacts as OMEMO-capable
+- refactor: Drop deprecated Karma test runner and Jasmine testing library and use Vitest instead.
+- feat: Add custom element with support for animated WebP images
 
 ## 14.0.0-beta.4 (2026-06-22)
 

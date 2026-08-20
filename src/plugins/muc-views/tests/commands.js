@@ -11,11 +11,8 @@ describe('Groupchats', function () {
                 spyOn(window, 'confirm').and.callFake(() => true);
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                const enter = { 'target': textarea, 'preventDefault': function preventDefault() {}, key: 'Enter' };
-                textarea.value = '/help';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown(enter);
+                await mock.setComposerText(view, '/help');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() => sizzle('converse-chat-help .chat-info', view).length);
                 let chat_help_el = view.querySelector('converse-chat-help');
@@ -52,8 +49,8 @@ describe('Groupchats', function () {
                 expect(view.model.get('show_help_messages')).toBe(false);
                 await u.waitUntil(() => view.querySelector('converse-chat-help') === null);
 
-                textarea.value = '/help';
-                message_form.onKeyDown(enter);
+                await mock.setComposerText(view, '/help');
+                await mock.pressComposerKey(view, 'Enter');
                 chat_help_el = await u.waitUntil(() => view.querySelector('converse-chat-help'));
                 info_messages = sizzle('.chat-info', chat_help_el);
                 expect(info_messages.length).toBe(18);
@@ -82,8 +79,8 @@ describe('Groupchats', function () {
                 view.querySelector('.close-chat-help').click();
                 await u.waitUntil(() => view.querySelector('converse-chat-help') === null);
 
-                textarea.value = '/help';
-                message_form.onKeyDown(enter);
+                await mock.setComposerText(view, '/help');
+                await mock.pressComposerKey(view, 'Enter');
                 chat_help_el = await u.waitUntil(() => view.querySelector('converse-chat-help'));
                 info_messages = sizzle('.chat-info', chat_help_el);
                 expect(info_messages.length).toBe(9);
@@ -107,8 +104,8 @@ describe('Groupchats', function () {
                 occupant.set('role', 'participant');
                 // Role changes causes rerender, so we need to get the new textarea
 
-                textarea.value = '/help';
-                message_form.onKeyDown(enter);
+                await mock.setComposerText(view, '/help');
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.model.get('show_help_messages'));
                 chat_help_el = await u.waitUntil(() => view.querySelector('converse-chat-help'));
                 info_messages = sizzle('.chat-info', chat_help_el);
@@ -122,8 +119,8 @@ describe('Groupchats', function () {
                 view.querySelector('.close-chat-help').click();
                 await u.waitUntil(() => view.querySelector('converse-chat-help') === null);
 
-                textarea.value = '/help';
-                message_form.onKeyDown(enter);
+                await mock.setComposerText(view, '/help');
+                await mock.pressComposerKey(view, 'Enter');
                 chat_help_el = await u.waitUntil(() => view.querySelector('converse-chat-help'));
                 info_messages = sizzle('.chat-info', chat_help_el);
                 expect(info_messages.length).toBe(7);
@@ -134,43 +131,47 @@ describe('Groupchats', function () {
 
         it(
             'takes /help to show the available commands and commands can be disabled by config',
-            mock.initConverse(converse, [], { muc_disable_slash_commands: ['mute', 'voice'] }, async function (_converse) {
-                await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
-                const view = _converse.chatboxviews.get('lounge@montague.lit');
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                const enter = { 'target': textarea, 'preventDefault': function () {}, key: 'Enter' };
-                spyOn(window, 'confirm').and.callFake(() => true);
-                textarea.value = '/clear';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown(enter);
-                textarea.value = '/help';
-                message_form.onKeyDown(enter);
+            mock.initConverse(
+                converse,
+                [],
+                { muc_disable_slash_commands: ['mute', 'voice'] },
+                async function (_converse) {
+                    await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
+                    const view = _converse.chatboxviews.get('lounge@montague.lit');
+                    spyOn(window, 'confirm').and.callFake(() => true);
+                    await mock.setComposerText(view, '/clear');
+                    await mock.pressComposerKey(view, 'Enter');
+                    await mock.setComposerText(view, '/help');
+                    await mock.pressComposerKey(view, 'Enter');
 
-                await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view).length);
-                const info_messages = sizzle('.chat-info:not(.chat-event)', view);
-                expect(info_messages.length).toBe(17);
-                expect(info_messages.pop().textContent.trim()).toBe(
-                    '/topic: Set groupchat subject (alias for /subject)',
-                );
-                expect(info_messages.pop().textContent.trim()).toBe('/subject: Set groupchat subject');
-                expect(info_messages.pop().textContent.trim()).toBe("/revoke: Revoke the user's current affiliation");
-                expect(info_messages.pop().textContent.trim()).toBe('/register: Register your nickname');
-                expect(info_messages.pop().textContent.trim()).toBe('/owner: Grant ownership of this groupchat');
-                expect(info_messages.pop().textContent.trim()).toBe('/op: Grant moderator role to user');
-                expect(info_messages.pop().textContent.trim()).toBe('/nick: Change your nickname');
-                expect(info_messages.pop().textContent.trim()).toBe('/modtools: Opens up the moderator tools GUI');
-                expect(info_messages.pop().textContent.trim()).toBe('/member: Grant membership to a user');
-                expect(info_messages.pop().textContent.trim()).toBe('/me: Write in 3rd person');
-                expect(info_messages.pop().textContent.trim()).toBe('/kick: Kick user from groupchat');
-                expect(info_messages.pop().textContent.trim()).toBe('/help: Show this menu');
-                expect(info_messages.pop().textContent.trim()).toBe('/destroy: Remove this groupchat');
-                expect(info_messages.pop().textContent.trim()).toBe('/deop: Change user role to participant');
-                expect(info_messages.pop().textContent.trim()).toBe('/clear: Clear the chat area');
-                expect(info_messages.pop().textContent.trim()).toBe(
-                    '/ban: Ban user by changing their affiliation to outcast',
-                );
-                expect(info_messages.pop().textContent.trim()).toBe("/admin: Change user's affiliation to admin");
-            }),
+                    await u.waitUntil(() => sizzle('.chat-info:not(.chat-event)', view).length);
+                    const info_messages = sizzle('.chat-info:not(.chat-event)', view);
+                    expect(info_messages.length).toBe(17);
+                    expect(info_messages.pop().textContent.trim()).toBe(
+                        '/topic: Set groupchat subject (alias for /subject)',
+                    );
+                    expect(info_messages.pop().textContent.trim()).toBe('/subject: Set groupchat subject');
+                    expect(info_messages.pop().textContent.trim()).toBe(
+                        "/revoke: Revoke the user's current affiliation",
+                    );
+                    expect(info_messages.pop().textContent.trim()).toBe('/register: Register your nickname');
+                    expect(info_messages.pop().textContent.trim()).toBe('/owner: Grant ownership of this groupchat');
+                    expect(info_messages.pop().textContent.trim()).toBe('/op: Grant moderator role to user');
+                    expect(info_messages.pop().textContent.trim()).toBe('/nick: Change your nickname');
+                    expect(info_messages.pop().textContent.trim()).toBe('/modtools: Opens up the moderator tools GUI');
+                    expect(info_messages.pop().textContent.trim()).toBe('/member: Grant membership to a user');
+                    expect(info_messages.pop().textContent.trim()).toBe('/me: Write in 3rd person');
+                    expect(info_messages.pop().textContent.trim()).toBe('/kick: Kick user from groupchat');
+                    expect(info_messages.pop().textContent.trim()).toBe('/help: Show this menu');
+                    expect(info_messages.pop().textContent.trim()).toBe('/destroy: Remove this groupchat');
+                    expect(info_messages.pop().textContent.trim()).toBe('/deop: Change user role to participant');
+                    expect(info_messages.pop().textContent.trim()).toBe('/clear: Clear the chat area');
+                    expect(info_messages.pop().textContent.trim()).toBe(
+                        '/ban: Ban user by changing their affiliation to outcast',
+                    );
+                    expect(info_messages.pop().textContent.trim()).toBe("/admin: Change user's affiliation to admin");
+                },
+            ),
         );
 
         it(
@@ -186,7 +187,8 @@ describe('Groupchats', function () {
                  * receive our own.
                  */
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                                 xmlns="jabber:client"
                                 to="romeo@montague.lit/orchard"
@@ -202,7 +204,6 @@ describe('Groupchats', function () {
                 await u.waitUntil(() => muc.occupants.length === 2);
 
                 const view = _converse.chatboxviews.get(muc_jid);
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
                 let sent_stanza;
                 spyOn(_converse.api.connection.get(), 'send').and.callFake((stanza) => {
                     sent_stanza = stanza;
@@ -210,13 +211,8 @@ describe('Groupchats', function () {
 
                 // First check that an error message appears when a
                 // non-existent nick is used.
-                textarea.value = '/member chris Welcome to the club!';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/member chris Welcome to the club!');
+                await mock.pressComposerKey(view, 'Enter');
                 expect(_converse.api.connection.get().send).not.toHaveBeenCalled();
                 await u.waitUntil(() => view.querySelectorAll('.chat-error').length);
                 expect(view.querySelector('.chat-error').textContent.trim()).toBe(
@@ -224,12 +220,8 @@ describe('Groupchats', function () {
                 );
 
                 // Now test with an existing nick
-                textarea.value = '/member marc Welcome to the club!';
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/member marc Welcome to the club!');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() => sent_stanza?.querySelector('item[affiliation="member"]'));
 
@@ -348,26 +340,16 @@ describe('Groupchats', function () {
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
                 // Check the alias /topic
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = '/topic This is the groupchat subject';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/topic This is the groupchat subject');
+                await mock.pressComposerKey(view, 'Enter');
                 const { sent_stanzas } = _converse.api.connection.get();
-                await u.waitUntil(() =>
-                    sent_stanzas.filter((s) => s.textContent.trim() === 'This is the groupchat subject'),
+                await u.waitUntil(
+                    () => sent_stanzas.filter((s) => s.textContent.trim() === 'This is the groupchat subject').length,
                 );
 
                 // Check /subject
-                textarea.value = '/subject This is a new subject';
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/subject This is a new subject');
+                await mock.pressComposerKey(view, 'Enter');
 
                 let sent_stanza = await u.waitUntil(() =>
                     sent_stanzas.filter((s) => s.textContent.trim() === 'This is a new subject').pop(),
@@ -378,12 +360,8 @@ describe('Groupchats', function () {
                 </message>`);
 
                 // Check case insensitivity
-                textarea.value = '/Subject This is yet another subject';
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/Subject This is yet another subject');
+                await mock.pressComposerKey(view, 'Enter');
                 sent_stanza = await u.waitUntil(() =>
                     sent_stanzas.filter((s) => s.textContent.trim() === 'This is yet another subject').pop(),
                 );
@@ -396,12 +374,8 @@ describe('Groupchats', function () {
                     sent_stanzas.pop();
                 }
                 // Check unsetting the topic
-                textarea.value = '/topic';
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/topic');
+                await mock.pressComposerKey(view, 'Enter');
                 sent_stanza = await u.waitUntil(() => sent_stanzas.pop());
                 expect(sent_stanza).toEqualStanza(stx`
                     <message to="lounge@montague.lit" type="groupchat" xmlns="jabber:client">
@@ -415,15 +389,9 @@ describe('Groupchats', function () {
             mock.initConverse(converse, [], {}, async function (_converse) {
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = '/clear';
+                await mock.setComposerText(view, '/clear');
                 spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(false));
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
                 expect(_converse.api.confirm).toHaveBeenCalledWith(
                     'Confirm',
@@ -447,7 +415,8 @@ describe('Groupchats', function () {
                 spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                             from="lounge@montague.lit/annoyingGuy"
                             id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -460,14 +429,8 @@ describe('Groupchats', function () {
                     ),
                 );
 
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = '/owner';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/owner');
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
                 const err_msg = await u.waitUntil(() => view.querySelector('.chat-error'));
                 expect(err_msg.textContent.trim()).toBe(
@@ -481,8 +444,8 @@ describe('Groupchats', function () {
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = "/owner nobody You're responsible";
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, "/owner nobody You're responsible");
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
                 await u.waitUntil(() => view.querySelectorAll('.chat-error').length === 2);
                 expect(Array.from(view.querySelectorAll('.chat-error')).pop().textContent.trim()).toBe(
                     "Error: couldn't find a groupchat participant based on your arguments",
@@ -494,8 +457,8 @@ describe('Groupchats', function () {
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = "/owner annoyingGuy You're responsible";
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, "/owner annoyingGuy You're responsible");
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 3);
                 // Check that the member list now gets updated
@@ -510,7 +473,8 @@ describe('Groupchats', function () {
                 );
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         from="lounge@montague.lit/annoyingGuy"
                         id="27C55F89-1C6A-459A-9EB5-77690145D628"
@@ -545,7 +509,8 @@ describe('Groupchats', function () {
                 spyOn(view.model, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                             from="lounge@montague.lit/annoyingGuy"
                             id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -558,14 +523,8 @@ describe('Groupchats', function () {
                     ),
                 );
 
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = '/ban';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/ban');
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
                 await u.waitUntil(
                     () =>
@@ -581,8 +540,8 @@ describe('Groupchats', function () {
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = "/ban annoyingGuy You're annoying";
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, "/ban annoyingGuy You're annoying");
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
                 // Check that the member list now gets updated
@@ -597,7 +556,8 @@ describe('Groupchats', function () {
                 );
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         from='lounge@montague.lit/annoyingGuy'
                         id='27C55F89-1C6A-459A-9EB5-77690145D628'
@@ -620,7 +580,8 @@ describe('Groupchats', function () {
                 );
                 expect(view.querySelector('.chat-info:last-child q').textContent.trim()).toBe("You're annoying");
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         from="lounge@montague.lit/joe2"
                         id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -633,8 +594,8 @@ describe('Groupchats', function () {
                     ),
                 );
 
-                textarea.value = '/ban joe22';
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, '/ban joe22');
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
                 await u.waitUntil(
                     () =>
                         view.querySelector('converse-chat-message:last-child')?.textContent?.trim() ===
@@ -670,14 +631,8 @@ describe('Groupchats', function () {
                 </presence>`;
                 _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
 
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = '/kick';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/kick');
+                await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
                 await u.waitUntil(
                     () =>
@@ -689,8 +644,8 @@ describe('Groupchats', function () {
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = "/kick @annoying guy You're annoying";
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, "/kick @annoying guy You're annoying");
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
                 expect(view.model.setRole).toHaveBeenCalled();
@@ -744,7 +699,8 @@ describe('Groupchats', function () {
 
                 // New user enters the groupchat
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         from="lounge@montague.lit/trustworthyguy"
                         id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -763,14 +719,8 @@ describe('Groupchats', function () {
                         'romeo and trustworthyguy have entered the groupchat',
                 );
 
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = '/op';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/op');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
                 await u.waitUntil(
@@ -784,8 +734,8 @@ describe('Groupchats', function () {
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = "/op trustworthyguy You're trustworthy";
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, "/op trustworthyguy You're trustworthy");
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
                 expect(view.model.setRole).toHaveBeenCalled();
@@ -799,7 +749,8 @@ describe('Groupchats', function () {
                 </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         from="lounge@montague.lit/trustworthyguy"
                         to="romeo@montague.lit/desktop"
@@ -821,8 +772,8 @@ describe('Groupchats', function () {
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = '/deop trustworthyguy Perhaps not';
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, '/deop trustworthyguy Perhaps not');
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 3);
                 expect(view.model.setRole).toHaveBeenCalled();
@@ -836,7 +787,8 @@ describe('Groupchats', function () {
                 </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         from="lounge@montague.lit/trustworthyguy"
                         to="romeo@montague.lit/desktop"
@@ -872,7 +824,8 @@ describe('Groupchats', function () {
 
                 // New user enters the groupchat
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                             from="lounge@montague.lit/annoyingGuy"
                             id="27C55F89-1C6A-459A-9EB5-77690145D624"
@@ -890,14 +843,8 @@ describe('Groupchats', function () {
                         'romeo and annoyingGuy have entered the groupchat',
                 );
 
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = '/mute';
-                const message_form = view.querySelector('converse-muc-message-form');
-                message_form.onKeyDown({
-                    target: textarea,
-                    preventDefault: function preventDefault() {},
-                    key: 'Enter',
-                });
+                await mock.setComposerText(view, '/mute');
+                await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count());
                 await u.waitUntil(
@@ -910,8 +857,8 @@ describe('Groupchats', function () {
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = "/mute annoyingGuy You're annoying";
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, "/mute annoyingGuy You're annoying");
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 2);
                 expect(view.model.setRole).toHaveBeenCalled();
@@ -935,14 +882,17 @@ describe('Groupchats', function () {
                  * </presence>
                  */
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, stx`<presence
+                    mock.createRequest(
+                        _converse,
+                        stx`<presence
                     from="lounge@montague.lit/annoyingGuy"
                     to="romeo@montague.lit/desktop"
                     xmlns="jabber:client">
                     <x xmlns="http://jabber.org/protocol/muc#user">
                         <item jid="annoyingguy@montague.lit" affiliation="member" role="visitor"/>
                     </x>
-                </presence>`),
+                </presence>`,
+                    ),
                 );
                 await u.waitUntil(() =>
                     view
@@ -954,8 +904,8 @@ describe('Groupchats', function () {
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = '/voice annoyingGuy Now you can talk again';
-                message_form.onFormSubmitted(new Event('submit'));
+                await mock.setComposerText(view, '/voice annoyingGuy Now you can talk again');
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
 
                 await u.waitUntil(() => view.model.validateRoleOrAffiliationChangeArgs.calls.count() === 3);
                 expect(view.model.setRole).toHaveBeenCalled();
@@ -969,7 +919,8 @@ describe('Groupchats', function () {
                 </iq>`);
 
                 _converse.api.connection.get()._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<presence
                         from="lounge@montague.lit/annoyingGuy"
                         to="romeo@montague.lit/desktop"
@@ -996,10 +947,9 @@ describe('Groupchats', function () {
                 await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
                 let view = _converse.chatboxviews.get(muc_jid);
                 spyOn(_converse.api, 'confirm').and.callThrough();
-                let textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = '/destroy';
-                let message_form = view.querySelector('converse-muc-message-form');
-                message_form.onFormSubmitted(new Event('submit'));
+                await u.waitUntil(() => view.querySelector('.chat-textarea'));
+                await mock.setComposerText(view, '/destroy');
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
                 let modal = await u.waitUntil(() => document.querySelector('converse-confirm-modal .modal-dialog'));
                 await u.waitUntil(() => u.isVisible(modal));
 
@@ -1047,10 +997,9 @@ describe('Groupchats', function () {
                 sent_IQs = _converse.api.connection.get().IQ_stanzas;
                 await mock.openAndEnterMUC(_converse, new_muc_jid, 'romeo');
                 view = _converse.chatboxviews.get(new_muc_jid);
-                textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.value = '/destroy';
-                message_form = view.querySelector('converse-muc-message-form');
-                message_form.onFormSubmitted(new Event('submit'));
+                await u.waitUntil(() => view.querySelector('.chat-textarea'));
+                await mock.setComposerText(view, '/destroy');
+                mock.getMessageForm(view).onFormSubmitted(new Event('submit'));
                 modal = await u.waitUntil(() => document.querySelector('converse-confirm-modal .modal-dialog'));
                 await u.waitUntil(() => u.isVisible(modal));
 

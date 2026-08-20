@@ -5,7 +5,7 @@
  * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
  * @typedef {import('strophe.js').Builder} Builder
  */
-import sizzle from 'sizzle';
+import sizzle from '#sizzle';
 import { Model } from '@converse/skeletor';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
@@ -14,15 +14,26 @@ import log from '@converse/log';
 import { isArchived, isHeadline, isMUCPrivateMessage, isServerMessage } from '../../shared/parsers.js';
 import { parseMessage } from './parsers.js';
 import { PRIVATE_CHAT_TYPE } from '../../shared/constants.js';
+import { getRouteHash } from '../../utils/environment.js';
 
 const { Strophe, u } = converse.env;
 
+/**
+ * @param {Event} [event]
+ */
 export function routeToChat(event) {
-    if (!location.hash.startsWith('#converse/chat?jid=')) {
+    // In fullscreen with URL routing on, the Chat app's own router owns the
+    // `#converse/chat...` space (it also accepts this legacy `?jid=` form and
+    // canonicalizes it), so bow out to avoid double-opening.
+    if (api.settings.get('enable_url_routing') && api.settings.get('view_mode') === 'fullscreen') {
+        return;
+    }
+    const hash = getRouteHash();
+    if (!hash.startsWith('#converse/chat?jid=')) {
         return;
     }
     event?.preventDefault();
-    const jid = location.hash.split('=').pop();
+    const jid = hash.split('=').pop();
     if (!u.isValidJID(jid)) {
         return log.warn(`Invalid JID "${jid}" provided in URL fragment`);
     }
@@ -146,11 +157,11 @@ export async function handleMessageStanza(stanza) {
         return log.error(message);
     }
 
-    const { body, plaintext, contact_jid, nick } = /** @type {MessageAttributes} */ (attrs);
+    const { body, plaintext, contact_jid } = /** @type {MessageAttributes} */ (attrs);
 
     // XXX: Need to take XEP-428 <fallback> into consideration
     const has_body = !!(body || plaintext);
-    const chatbox = await api.chats.get(contact_jid, { nickname: nick }, has_body);
+    const chatbox = await api.chats.get(contact_jid, {}, has_body);
     await chatbox?.queueMessage(attrs);
     /**
      * @typedef {Object} MessageData

@@ -44,6 +44,7 @@ before the server's replay of queued stanzas is handled.
 - feat(version): Add XEP-0092 Software Version support and show the server's software version in the profile modal
 - fix(omemo): Detect omemo:2-only contacts as OMEMO-capable
 - refactor: Drop deprecated Karma test runner and Jasmine testing library and use Vitest instead.
+- feat: Add custom element with support for animated WebP images
 
 ## 14.0.0-beta.4 (2026-06-22)
 

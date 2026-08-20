@@ -6,6 +6,7 @@ import tplAudio from './templates/audio.js';
 import tplGif from './templates/gif.js';
 import tplImage from './templates/image.js';
 import tplVideo from './templates/video.js';
+import tplWebP from './templates/webp.js';
 import tplSpotify from './templates/spotify.js';
 import { getEmojiMarkup } from '../chat/utils.js';
 import { getHyperlinkTemplate } from '../../utils/html.js';
@@ -126,6 +127,8 @@ export class Texture extends String {
         let template;
         if (url_obj.is_gif && this.shouldRenderMedia(url, 'image')) {
             template = tplGif(filtered_url, this.hide_media_urls);
+        } else if (url_obj.is_webp) {
+            template = tplWebP(filtered_url, this.hide_media_urls);
         } else if (url_obj.is_image && this.shouldRenderMedia(url, 'image')) {
             template = tplImage({
                 src: filtered_url,

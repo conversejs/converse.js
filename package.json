@@ -147,7 +147,7 @@
     "@lexical/link": "^0.47.0",
     "@lexical/list": "^0.47.0",
     "@lexical/markdown": "^0.47.0",
-    "@lexical/rich-text": "^0.47.0",
+    "@lexical/rich-text": "^0.49.0",
     "@lexical/utils": "^0.47.0",
     "@lit-labs/signals": "^0.3.0",
     "bootstrap": "^5.3.3",

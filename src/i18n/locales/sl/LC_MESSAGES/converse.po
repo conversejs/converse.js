@@ -8,15 +8,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 14.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-26 10:16+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-09-01 16:51+0000\n"
+"Last-Translator: Janez Pavel Žebovec <osebno@janezpavelzebovec.net>\n"
+"Language-Team: Slovenian <https://hosted.weblate.org/projects/conversejs/"
+"translations/sl/>\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
 "n%100==4 ? 2 : 3;\n"
+"X-Generator: Weblate 2026.9.dev0\n"
 
 #: dist/converse-no-dependencies.js:39545
 msgid "A timeout occurred"
@@ -64,43 +66,43 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:46256
 msgid "Smileys and emotions"
-msgstr ""
+msgstr "Smejkoti in čustveniki"
 
 #: dist/converse-no-dependencies.js:46257
 msgid "People"
-msgstr ""
+msgstr "Ljudje"
 
 #: dist/converse-no-dependencies.js:46258
 msgid "Activities"
-msgstr ""
+msgstr "Dejavnosti"
 
 #: dist/converse-no-dependencies.js:46259
 msgid "Travel"
-msgstr ""
+msgstr "Potovanje"
 
 #: dist/converse-no-dependencies.js:46260
 msgid "Objects"
-msgstr ""
+msgstr "Predmeti"
 
 #: dist/converse-no-dependencies.js:46261
 msgid "Animals and nature"
-msgstr ""
+msgstr "Živali in narava"
 
 #: dist/converse-no-dependencies.js:46262
 msgid "Food and drink"
-msgstr ""
+msgstr "Hrana in pijača"
 
 #: dist/converse-no-dependencies.js:46263
 msgid "Symbols"
-msgstr ""
+msgstr "Znamenja"
 
 #: dist/converse-no-dependencies.js:46264
 msgid "Flags"
-msgstr ""
+msgstr "Zastave"
 
 #: dist/converse-no-dependencies.js:46265
 msgid "Stickers"
-msgstr ""
+msgstr "Nalepke"
 
 #: dist/converse-no-dependencies.js:47722
 msgid "Timeout while trying to fetch archived messages."
@@ -125,16 +127,17 @@ msgstr ""
 #: dist/converse-no-dependencies.js:50400
 msgid "Your message was not delivered because you weren't allowed to send it."
 msgstr ""
+"Vaše sporočilo ni bilo dostavljeno, ker vam ga ni bilo dovoljeno poslati."
 
 #: dist/converse-no-dependencies.js:50402
 msgid ""
 "Your message was not delivered because you're not present in the groupchat."
-msgstr ""
+msgstr "Vaše sporočilo ni bilo dostavljeno ker niste v tej skupini."
 
 #: dist/converse-no-dependencies.js:50404
 #: dist/converse-no-dependencies.js:71540
 msgid "Sorry, an error occurred while trying to send your message."
-msgstr ""
+msgstr "Med poskusom pošiljanja vašega sporočila je prišlo do napake."
 
 #: dist/converse-no-dependencies.js:50745
 msgid "A timeout happened while trying to retract your message."
@@ -186,7 +189,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:52387
 #, javascript-format
 msgid "Topic set by %1$s"
-msgstr ""
+msgstr "Tematiko nastavil %1$s"
 
 #: dist/converse-no-dependencies.js:52387
 #, javascript-format
@@ -197,13 +200,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:70421
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s piše"
 
 #: dist/converse-no-dependencies.js:52845
 #: dist/converse-no-dependencies.js:70423
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s je nehal pisati"
 
 #: dist/converse-no-dependencies.js:52849
 #, javascript-format
@@ -233,28 +236,28 @@ msgstr ""
 #: dist/converse-no-dependencies.js:52859
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "%1$s je bil utišan"
 
 #: dist/converse-no-dependencies.js:52867
 #: dist/converse-no-dependencies.js:152047
 #, javascript-format
 msgid "%1$s and %2$s"
-msgstr ""
+msgstr "%1$s in %2$s"
 
 #: dist/converse-no-dependencies.js:52870
 #, javascript-format
 msgid "%1$s are typing"
-msgstr ""
+msgstr "%1$s pišejo"
 
 #: dist/converse-no-dependencies.js:52872
 #, javascript-format
 msgid "%1$s have stopped typing"
-msgstr ""
+msgstr "%1$s so nehali pisati"
 
 #: dist/converse-no-dependencies.js:52874
 #, javascript-format
 msgid "%1$s have gone away"
-msgstr ""
+msgstr "%1$s so odšli"
 
 #: dist/converse-no-dependencies.js:52876
 #, javascript-format

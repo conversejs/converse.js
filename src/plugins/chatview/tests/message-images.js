@@ -5,6 +5,30 @@ const { sizzle, u } = converse.env;
 
 describe('A Chat Message', function () {
     it(
+        'will render images served from an extensionless URL with an image content-type',
+        mock.initConverse(converse, ['chatBoxesFetched'], { fetch_url_headers: true }, async function (_converse) {
+            const message = 'http://foo.bar/image-stream';
+            const original_fetch = window.fetch.bind(window);
+            spyOn(window, 'fetch').and.callFake(async (url, options) => {
+                if (String(url) !== message) return original_fetch(url, options);
+                return new Response('', {
+                    status: 200,
+                    headers: { 'Content-Type': 'image/png' },
+                });
+            });
+
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            await mock.sendMessage(_converse, view, message);
+            await u.waitUntil(() => view.querySelectorAll('.chat-content .chat-image').length, 1000);
+            const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            expect(msg.querySelector('img.chat-image').getAttribute('src')).toEqual(message);
+        }),
+    );
+
+    it(
         'will render images from their URLs',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');

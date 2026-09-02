@@ -90,7 +90,7 @@
     "strophe.js": "^5.0.0"
   },
   "optionalDependencies": {
-    "@xmldom/xmldom": "^0.9.0",
+    "@xmldom/xmldom": "^0.9.12",
     "ws": "^8.21.1"
   },
   "engines": {

@@ -24,7 +24,7 @@ Once you have the repository cloned and Node.js installed, run the following com
 
 ```bash
 npm install
-npm run serve &
+npm run serve -- -p 8008 &
 npm run watch
 ```
 
@@ -35,7 +35,7 @@ make serve_bg
 make watch
 ```
 
-After running these commands, visit http://localhost:8000/dev.html to load Converse in your browser.
+After running these commands, visit http://localhost:8008/dev.html to load Converse in your browser.
 
 To customize the Converse configuration, modify [dev.html](https://github.com/conversejs/converse.js/blob/master/dev.html) and update the settings passed to `converse.initialize()`.
 
@@ -54,7 +54,7 @@ make devserver
 npm run devserver
 ```
 
-Then visit http://localhost:8080.
+Then visit http://localhost:8008.
 
 ## Troubleshooting
 

@@ -33,7 +33,9 @@ npm install
 npm run dev
 ```
 
-This will start a local server with live-reloading. You can view the docs at http://localhost:4321.
+This will start a local server with live-reloading. You can view the docs at
+http://localhost:4321/docs/ (the site is served under the `base` path, so the bare
+origin Astro prints on startup returns a 404).
 
 ### Build for production
 

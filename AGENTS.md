@@ -505,6 +505,8 @@ Read: RELEASE.md
 - **Dev server**: `npm run docs:dev`
 - **Output**: `docs/dist/`
 - **Online**: https://conversejs.org/docs/
+- **Self-contained**: the docs have their own `package.json`; building them does not
+  require the root `npm install`
 
 Generate docs:
 

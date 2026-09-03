@@ -5,6 +5,10 @@ import starlight from '@astrojs/starlight';
 // https://astro.build/config
 export default defineConfig({
     base: '/docs/',
+    // Keep the docs build self-contained: without this, Vite searches
+    // upwards and picks up the main app's postcss.config.js, which pulls
+    // autoprefixer out of the root node_modules.
+    vite: { css: { postcss: {} } },
     integrations: [
         starlight({
             title: 'Converse',

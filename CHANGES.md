@@ -13,6 +13,9 @@
   colour as the header itself.
 - fix(chatview): Show the contact's status message in the chat header again. It was read off the
   chat, while the presence handler keeps it on the contact, so it never rendered.
+- fix(utils): `isImageURL` checked the fetched `Content-Type` header for `video`, not `image`. With
+  `fetch_url_headers` on, extensionless image URLs weren't rendered at all and video URLs were
+  rendered as broken images.
 - fix(vcard): Don't eagerly refetch cached vcards when a session resumes.
 - fix(vcard): Don't fetch a MUC's own vCard in response to an occupant presence.
 - refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its

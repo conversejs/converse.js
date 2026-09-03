@@ -515,3 +515,13 @@ make doc           # Build HTML documentation
 npm run docs:dev   # Start dev server with live reload
 npm run docs:build # Build for production
 ```
+
+### Internal links
+
+The site is built with `base: '/docs/'`, which Starlight applies only to the links it
+generates itself (sidebar, frontmatter, pagination). Hand-written Markdown links must
+carry it: `/docs/configuration/`, not `/configuration/`. Heading anchors keep
+underscores, so `### bosh_service_url` is `#bosh_service_url`.
+
+`starlight-links-validator` fails the build on a missing page or a missing anchor, but
+only on a build: `npm run docs:dev` does not report. The CI `docs` job runs it.

@@ -108,7 +108,7 @@ When a BOSH session is initially created, you'll receive three tokens. A JID (ja
 
 Converse needs these tokens in order to attach to that same session.
 
-In addition to setting [authentication](#authentication) to `prebind`, you'll also need to set the [prebind_url](#prebind_url) and [bosh-service-url](#bosh-service-url).
+In addition to setting [authentication](#authentication) to `prebind`, you'll also need to set the [prebind_url](#prebind_url) and [bosh_service_url](#bosh_service_url).
 
 Here's an example of Converse being initialized with these options:
 
@@ -515,7 +515,7 @@ A list of JIDs to be ignored when showing desktop notifications of changed chat 
 
 Some user's clients routinely connect and disconnect (likely on mobile) and each time a chat state notification is received (`online` when connecting and then `offline` when disconnecting).
 
-When desktop notifications are turned on (see [show-desktop-notifications](#show-desktop-notifications)), then you'll receive notification messages each time this happens.
+When desktop notifications are turned on (see [show_desktop_notifications](#show_desktop_notifications)), then you'll receive notification messages each time this happens.
 
 Receiving constant notifications that a user's client is connecting and disconnecting is annoying, so this option allows you to ignore those JIDs.
 

@@ -5,7 +5,7 @@ description: How to customize the look and feel of Converse.
 
 ## Setting up your environment
 
-In order to theme Converse, you first need to follow the steps for [Setting up a Dev Environment](/development/setup-dev-environment/), including the [webserver section](/development/setup-dev-environment/#installing-the-3rd-party-dependencies).
+In order to theme Converse, you first need to follow the steps for [Setting up a Dev Environment](/docs/development/setup-dev-environment/), including the [webserver section](/docs/development/setup-dev-environment/#setting-up-your-development-environment).
 
 ## Creating a custom theme
 
@@ -21,11 +21,11 @@ The native theme files can be found in [shared/styles/themes](https://github.com
 
 Note: The Converse theme files have a `.scss` extension because they are compiled by the Sass compiler into normal CSS files. However, it's not necessary to use Sass - basic CSS files will also work.
 
-The theme that Converse uses can be set via the [`theme`](/configuration/#theme) configuration setting (and the [`dark_theme`](/configuration/#dark_theme) configuration setting for dark mode).
+The theme that Converse uses can be set via the [`theme`](/docs/configuration/#theme) configuration setting (and the [`dark_theme`](/docs/configuration/#dark_theme) configuration setting for dark mode).
 
 ### How are themes applied?
 
-When you set a value for the [`theme`](/configuration/#theme) configuration setting, Converse marks the `converse-root` DOM element with the theme's name in three ways: a `theme-${name}` class, and the `data-converse-theme` and `data-bs-theme` attributes.
+When you set a value for the [`theme`](/docs/configuration/#theme) configuration setting, Converse marks the `converse-root` DOM element with the theme's name in three ways: a `theme-${name}` class, and the `data-converse-theme` and `data-bs-theme` attributes.
 
 So, for example, if you set the `theme` setting to `"dracula"`:
 

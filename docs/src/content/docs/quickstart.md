@@ -37,10 +37,10 @@ You can also pin to a specific version:
 
 If you prefer to host the files yourself, either:
 - **Download** the latest [release archive](https://github.com/conversejs/converse.js/releases) and extract the `dist/` folder, or
-- **Build from source** — see [Generating Builds](/development/builds/)
+- **Build from source** — see [Generating Builds](/docs/development/builds/)
 
 :::note
-When self-hosting, all files in the `dist/` directory must be available. Converse loads additional assets dynamically from this path. Use [`assets_path`](/configuration/#assets_path) to change it.
+When self-hosting, all files in the `dist/` directory must be available. Converse loads additional assets dynamically from this path. Use [`assets_path`](/docs/configuration/#assets_path) to change it.
 :::
 
 ### Already run an XMPP server?
@@ -109,7 +109,7 @@ See the [live demos](https://conversejs.org) for examples of each mode.
 
 ## What's next?
 
-- **[Configuration](/configuration/)** — All available options for `converse.initialize()`
-- **[Session Management](/session/)** — Auto-login users who are already authenticated on your site
-- **[Features](/features/)** — File sharing, OMEMO encryption, group chats, and more
-- **[Setup and Integration](/setup/)** — Production deployment guide with server-side auth
+- **[Configuration](/docs/configuration/)** — All available options for `converse.initialize()`
+- **[Session Management](/docs/session/)** — Auto-login users who are already authenticated on your site
+- **[Features](/docs/features/)** — File sharing, OMEMO encryption, group chats, and more
+- **[Setup and Integration](/docs/setup/)** — Production deployment guide with server-side auth

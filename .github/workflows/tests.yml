@@ -32,3 +32,21 @@ jobs:
       run: npx playwright install --with-deps chromium
     - name: Run linting, type checks and tests
       run: make check
+
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+        cache-dependency-path: docs/package-lock.json
+    - name: Install dependencies
+      run: npm ci
+      working-directory: docs
+    - name: Build docs and validate internal links
+      run: npm run build
+      working-directory: docs

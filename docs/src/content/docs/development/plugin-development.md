@@ -91,7 +91,7 @@ For example, they can read all messages and send messages on the user's behalf.
 To avoid malicious plugins being registered (e.g., by malware-infected
 advertising networks), we require whitelisting.
 
-To whitelist a plugin, specify [`whitelisted_plugins`](/configuration/#whitelisted_plugins) when
+To whitelist a plugin, specify [`whitelisted_plugins`](/docs/configuration/#whitelisted_plugins) when
 you call `converse.initialize`:
 
 ```javascript
@@ -160,12 +160,12 @@ converse.plugins.add('myplugin', {
 In some cases, you might want to depend on another plugin if it's available,
 but not require it.
 
-If the [`strict_plugin_dependencies`](/configuration/#strict_plugin_dependencies) setting is set to `false` (which is
+If the [`strict_plugin_dependencies`](/docs/configuration/#strict_plugin_dependencies) setting is set to `false` (which is
 the default), then no error will be raised if a dependency plugin is not found.
 
 ## Extending Converse's configuration settings
 
-Converse comes with various [configuration settings](/configuration/) that can be used to
+Converse comes with various [configuration settings](/docs/configuration/) that can be used to
 modify its functionality and behavior.
 
 All configuration settings have default values which can be overridden when

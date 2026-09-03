@@ -11,8 +11,8 @@ At the very least you'll need Converse and an [XMPP server](#an-xmpp-server) wit
 enough to simply demo Converse or to do development work on it.
 
 For end-to-end encryption via OMEMO, you'll need to load [libsignal-protocol.js](https://github.com/signalapp/libsignal-protocol-javascript) separately in
-your page. Take a look at the section on [libsignal](/development/setup-dev-environment/#libsignal) and the
-[security considerations around OMEMO](/features/#end-to-end-message-encryption-xep-0384-omemo).
+your page. Take a look at the section on [libsignal](/docs/development/setup-dev-environment/#optional-enabling-omemo-encryption) and the
+[security considerations around OMEMO](/docs/features/#security-considerations).
 
 If you want to more fully integrate it into a website
 then you'll likely need to set up more services and components.
@@ -45,7 +45,7 @@ server (Jabber® is an older and more user-friendly synonym for XMPP).
 
 You can connect to public XMPP servers like `conversejs.org` but if you want to
 integrate Converse into your own website and to use your website's
-authentication sessions to log in users to the XMPP server (i.e. [session support](/session/))
+authentication sessions to log in users to the XMPP server (i.e. [session support](/docs/session/))
 then you'll have to set up your own XMPP server.
 
 You can find a list of public XMPP servers/providers on [compliance.conversations.im](http://compliance.conversations.im/)
@@ -90,7 +90,7 @@ manager located at https://conversejs.org/http-bind.
 This connection manager is available for testing purposes only, please don't
 use it in production.
 
-Refer to the [`bosh_service_url`](/configuration/#bosh_service_url) configuration setting for information on
+Refer to the [`bosh_service_url`](/docs/configuration/#bosh_service_url) configuration setting for information on
 how to configure Converse to connect to a BOSH URL.
 
 #### Configuring your webserver for BOSH
@@ -205,7 +205,7 @@ ejabberd [(ejabberd_http_ws)](https://docs.ejabberd.im/admin/configuration/liste
 support websocket connections, as
 does the node-xmpp-bosh connection manager.
 
-Refer to the [`websocket_url`](/configuration/#websocket_url) configuration setting for information on how to
+Refer to the [`websocket_url`](/docs/configuration/#websocket_url) configuration setting for information on how to
 configure Converse to connect to a websocket URL.
 
 #### Reverse-proxy for a websocket connection

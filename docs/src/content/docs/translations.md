@@ -14,14 +14,14 @@ directory, or through the web at [Weblate](https://hosted.weblate.org/projects/c
 
 As of version 3.3.0, Converse no longer automatically bundles translations
 in its source file and instead fetches only the relevant locale for the current
-session from a URL as specified by the [`assets_path`](/configuration/#assets_path) setting.
+session from a URL as specified by the [`assets_path`](/docs/configuration/#assets_path) setting.
 
 There are three configuration settings relevant to translations and
 localisation. You're encouraged to read the documentation for each of them.
 
-- [`i18n`](/configuration/#i18n)
-- [`locales`](/configuration/#locales)
-- [`assets_path`](/configuration/#assets_path)
+- [`i18n`](/docs/configuration/#i18n)
+- [`locales`](/docs/configuration/#locales)
+- [`assets_path`](/docs/configuration/#assets_path)
 
 ## Manually updating translations
 

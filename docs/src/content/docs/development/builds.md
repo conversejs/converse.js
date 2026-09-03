@@ -9,7 +9,7 @@ explain how to create custom bundles.
 :::
 
 :::note
-Please make sure to read the section [Development](/development/overview/) and that you have installed
+Please make sure to read the section [Development](/docs/development/overview/) and that you have installed
 all development dependencies.
 :::
 

@@ -17,8 +17,8 @@ contribution or your hundredth, we'd love to have you involved!
 
 ## Topics
 
-- [Setting up a Dev Environment](/development/setup-dev-environment/)
-- [Writing a Plugin](/development/plugin-development/)
-- [Automated Tests](/development/testing/)
-- [Generating Builds](/development/builds/)
-- [Software Style Guide](/development/style-guide/)
+- [Setting up a Dev Environment](/docs/development/setup-dev-environment/)
+- [Writing a Plugin](/docs/development/plugin-development/)
+- [Automated Tests](/docs/development/testing/)
+- [Generating Builds](/docs/development/builds/)
+- [Software Style Guide](/docs/development/style-guide/)

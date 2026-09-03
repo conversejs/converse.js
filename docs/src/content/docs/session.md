@@ -27,7 +27,7 @@ It's called "prebind" because you bind to the BOSH session beforehand, and then
 later in the page you just attach to that session again.
 
 The RID and SID tokens can be passed in manually when calling
-`converse.initialize`, but a more convenient way is to pass Converse a [`prebind_url`](/configuration/#prebind_url)
+`converse.initialize`, but a more convenient way is to pass Converse a [`prebind_url`](/docs/configuration/#prebind_url)
 which it will call when it needs the tokens. This way it will be able to
 automatically reconnect whenever the connection drops, by simply calling that
 URL again to fetch new tokens.
@@ -46,7 +46,7 @@ your authentication backend, since you could then configure your XMPP server to
 use that as well.
 
 To prebind you will require:
-- A BOSH-enabled XMPP server for Converse to connect to (see the [`bosh_service_url`](/configuration/#bosh_service_url) under [Configuration](/configuration/))
+- A BOSH-enabled XMPP server for Converse to connect to (see the [`bosh_service_url`](/docs/configuration/#bosh_service_url) under [Configuration](/docs/configuration/))
 - A BOSH client in your web application (written for example in Python, Ruby or PHP) that will set up an authenticated BOSH session, which Converse can then attach to
 
 :::note
@@ -70,7 +70,7 @@ example via a BOSH client in Django), you'll receive two tokens:
 - **Session ID (SID)**: A unique identifier for the current *session*. This number stays constant for the entire session.
 - **Request ID (RID)**: A unique identifier for the current *request* (i.e. page load). Each page load is a new request which requires a new unique RID. The best way to achieve this is to simply increment the RID with each page load.
 
-You'll need to configure Converse with the [`prebind_url`](/configuration/#prebind_url) setting.
+You'll need to configure Converse with the [`prebind_url`](/docs/configuration/#prebind_url) setting.
 
 Please read the documentation on that setting for a fuller picture of what
 needs to be done.
@@ -94,8 +94,8 @@ If your web-application has access to the same credentials, it can send those
 credentials to Converse so that users are automatically logged in when the
 page loads.
 
-This can be done by setting [`auto_login`](/configuration/#auto_login) to `true` and configuring the
-[`credentials_url`](/configuration/#credentials_url) setting.
+This can be done by setting [`auto_login`](/docs/configuration/#auto_login) to `true` and configuring the
+[`credentials_url`](/docs/configuration/#credentials_url) setting.
 
 ### Option 3: Temporary authentication tokens
 
@@ -110,7 +110,7 @@ generate temporary authentication tokens which are then sent to the XMPP server
 which in turn delegates authentication to an external authentication provider
 (generally the same web-app that generated the tokens).
 
-This can be combined with prebind or with the [`credentials_url`](/configuration/#credentials_url) setting.
+This can be combined with prebind or with the [`credentials_url`](/docs/configuration/#credentials_url) setting.
 
 ### Option 4: Cryptographically signed tokens
 
@@ -119,7 +119,7 @@ HMAC tokens) which the XMPP server could authenticate by checking that they're
 signed with the right key and that they conform to some kind of pre-arranged
 format.
 
-In this case, you would also use the [`credentials_url`](/configuration/#credentials_url) setting, to specify a
+In this case, you would also use the [`credentials_url`](/docs/configuration/#credentials_url) setting, to specify a
 URL from which Converse should fetch the username and token.
 
 ## Keeping users logged-in across page reloads
@@ -169,4 +169,4 @@ security implications of storing plaintext passwords in localStorage.
 Another approach is to store the SCRAM-SHA1 computed
 `clientKey` in localStorage and to use that upon page reload to log the user in again.
 
-This has been implemented since version 10, see documentation on [`reuse_scram_keys`](/configuration/#reuse_scram_keys).
+This has been implemented since version 10, see documentation on [`reuse_scram_keys`](/docs/configuration/#reuse_scram_keys).

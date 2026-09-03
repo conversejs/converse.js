@@ -14,11 +14,13 @@ certs
 media
 
 # Editor fluff
+tags
 *~
 .sw?
 *.mo
 *.kpf
 .*.sw?
+Session.vim
 
 .hg/
 .bzr/
@@ -28,7 +30,6 @@ media
 .idea
 .su?
 .sass-cache
-pip-selfcheck.json
 
 3rdparty/
 *.map
@@ -38,31 +39,7 @@ sounds.zip
 
 analytics.js
 
-# virtualenv/python/buildout
-.*.cfg
-eggs
-.Python
-build
-share
-parts
-*.pyc
-*.egg-info
-lib
-lib64
-include
-bin
-develop-eggs
-pyvenv.cfg
-
-converse-logs/*.html
 community-plugins
-
-tags
-transpile
-
-# Sphinx
-docs/html
-docs/doctrees
 
 # Node.js
 node_modules
@@ -73,12 +50,12 @@ node_modules
 # Builds
 .sv?
 /vendor/
+
+# LLMs
 .aider*
 .agents/
 .prompts/
-.agents
-
-Session.vim
+.claude/
 
 # Vitest browser-mode generated artifacts
 .vitest-attachments/

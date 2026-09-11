@@ -71,7 +71,8 @@
                 display: flex;
                 flex-direction: row;
                 overflow: hidden;
-                width: 100%;
+                flex: 1 1 auto;
+                min-width: 0;
             }
 
             .chatbox-title__text {
@@ -88,8 +89,10 @@
             }
 
             .chatbox-title__buttons {
+                display: flex;
                 flex-direction: row-reverse;
                 flex-wrap: nowrap;
+                flex-shrink: 0;
             }
 
             .chatbox-btn {

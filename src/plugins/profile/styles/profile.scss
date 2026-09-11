@@ -3,9 +3,17 @@ converse-user-profile {
     border-bottom: 0.1rem var(--controlbox-color) solid;
 
     .show-profile {
+        display: flex;
+        align-items: center;
+        flex: 1 1 auto;
+        min-width: 0;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow-x: hidden;
+    }
+
+    converse-controlbox-buttons {
+        flex-shrink: 0;
     }
 
     .change-status {

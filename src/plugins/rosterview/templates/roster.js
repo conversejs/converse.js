@@ -117,7 +117,7 @@ export default (el) => {
 
     return html`
         <div class="d-flex controlbox-padded">
-            <span class="w-100 controlbox-heading controlbox-heading--contacts">
+            <span class="controlbox-heading controlbox-heading--contacts">
                 <a
                     class="list-toggle open-contacts-toggle"
                     title="${i18n_toggle_contacts}"

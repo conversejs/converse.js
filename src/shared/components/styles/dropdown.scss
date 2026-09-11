@@ -1,6 +1,10 @@
 .conversejs {
     converse-emoji-dropdown,
     converse-dropdown {
+        // Custom elements are `inline` by default and will shrink to nothing
+        // in a flex heading that is fighting them for width.
+        display: inline-flex;
+        flex-shrink: 0;
         &.dropup {
             &.dropup--left {
                 .dropdown-menu {

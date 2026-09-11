@@ -214,29 +214,35 @@
                 }
             }
             .chatbox {
-                width: calc(100% - 50px);
-                .row {
-                    .box-flyout {
-                        left: 50px;
-                        bottom: 0;
-                        height: var(--fullpage-chat-height);
-                        box-shadow: none;
-                    }
+                width: 100%;
+                .box-flyout {
+                    left: 0;
+                    bottom: 0;
+                    height: var(--fullpage-chat-height);
+                    box-shadow: none;
                 }
             }
         }
 
         converse-app-chat.converse-overlayed,
         converse-app-chat.converse-fullscreen {
-            .converse-app-chat {
-                .chatbox {
-                    .box-flyout {
-                        left: 0;
-                        bottom: 0;
-                        border-radius: 0;
-                        width: 100vw !important;
-                        height: var(--fullpage-chat-height);
-                    }
+            // The flyout is a child of this host. Nesting another
+            // `converse-app-chat` here (from the app-switcher rename)
+            // meant these overlay rules never matched, so a narrow
+            // fullscreen roster stayed at 100vw and the open chat sat
+            // off-screen.
+            //
+            // Use the app column, not `100vw`: the app switcher already
+            // occupies the inline-start, and a viewport-wide flyout
+            // clipped the heading kebab off the right edge.
+            .chatbox {
+                .box-flyout {
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    border-radius: 0;
+                    width: 100% !important;
+                    height: var(--fullpage-chat-height);
                 }
             }
 

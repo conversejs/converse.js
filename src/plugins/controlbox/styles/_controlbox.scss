@@ -108,6 +108,16 @@
                 font-size: 1.1em;
                 line-height: 1.1em;
                 text-transform: uppercase;
+                // Grow into leftover space; do not claim the full row.
+                // A `width: 100%` heading plus `overflow-x: hidden` on
+                // `.controlbox-pane` clips the section hamburger off the
+                // right edge on a narrow fullscreen controlbox.
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            converse-dropdown {
+                flex-shrink: 0;
             }
 
             .controlbox-heading--groupchats {
@@ -287,9 +297,9 @@
             .converse-app {
                 #controlbox {
                     margin-inline-start: 0;
-                    width: 100vw !important;
+                    width: 100% !important;
                     .box-flyout {
-                        width: 100vw !important;
+                        width: 100% !important;
                         height: var(--fullpage-chat-height);
                     }
                     .sidebar {

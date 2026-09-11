@@ -175,7 +175,7 @@ export default (el) => {
     ];
 
     return html` <div class="d-flex controlbox-padded">
-            <span class="w-100 controlbox-heading controlbox-heading--groupchats">
+            <span class="controlbox-heading controlbox-heading--groupchats">
                 <a
                     class="list-toggle open-rooms-toggle"
                     role="heading"

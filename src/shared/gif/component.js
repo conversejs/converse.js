@@ -36,6 +36,10 @@ export default class ConverseGIFElement extends CustomElement {
     }
 
     initGIF () {
+        this.supergif = new ConverseGif(this, this.initOPtions());
+    }
+
+    initOPtions () {
         /** @type {Record<string, any>} */
         const options = {
             'autoplay': this.autoplay,
@@ -44,7 +48,8 @@ export default class ConverseGIFElement extends CustomElement {
         if (this.progress_color) {
             options['progress_color'] = this.progress_color;
         }
-        this.supergif = new ConverseGif(this, options);
+
+        return options;
     }
 
     /**

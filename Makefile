@@ -238,9 +238,13 @@ types:: node_modules
 
 .PHONY: check-git-clean
 check-git-clean:
-	@if ! git diff-index --quiet HEAD src/types src/headless/types; then\
-		echo "Error: uncommitted type changes. Please include all type changes in your commit"\
-		exit 1;\
+	@# `npm run types` rewrites every .d.ts, so the index holds stale stat info
+	@# even for files whose content did not change. Refresh it first, otherwise
+	@# diff-index reports differences that `git status` does not see.
+	@git update-index --refresh -q >/dev/null || true
+	@if ! git diff-index --quiet HEAD -- src/types src/headless/types; then \
+		echo "Error: uncommitted type changes. Please include all type changes in your commit"; \
+		exit 1; \
 	fi
 
 .PHONY: eslint

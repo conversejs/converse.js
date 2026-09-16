@@ -1,5 +1,11 @@
 # Changelog
 
+## 14.0.1 (Unreleased)
+
+- fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`
+  attribute. Chromium 153 no longer keeps the redundant namespace declaration on `<from/>` and
+  `<to/>`, which stopped MUC messages from decrypting and silently skipped the `<from/>` check.
+
 ## 14.0.0 (2026-06-26)
 
 - feat(version): Add XEP-0092 Software Version support and show the server's software version in the profile modal

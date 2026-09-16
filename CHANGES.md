@@ -13,6 +13,9 @@
   colour as the header itself.
 - fix(chatview): Show the contact's status message in the chat header again. It was read off the
   chat, while the presence handler keeps it on the contact, so it never rendered.
+- fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`
+  attribute. Chromium 153 no longer keeps the redundant namespace declaration on `<from/>` and
+  `<to/>`, which stopped MUC messages from decrypting and silently skipped the `<from/>` check.
 - fix(vcard): Don't eagerly refetch cached vcards when a session resumes.
 - fix(vcard): Don't fetch a MUC's own vCard in response to an occupant presence.
 - refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its

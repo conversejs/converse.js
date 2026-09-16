@@ -187,6 +187,26 @@ export async function decryptSCE(key_and_tag, payload_b64, expected_affixes) {
 }
 
 /**
+ * Find a direct child element by local name within a given namespace.
+ *
+ * The affixes are matched on `namespaceURI` rather than with an attribute
+ * selector (`sizzle('> from[xmlns="…"]')`), because an `xmlns` declaration
+ * that merely repeats the parent's default namespace is redundant, and an XML
+ * parser is free to resolve it without keeping it in the attribute list. The
+ * SCE affixes live in the same namespace as the `<envelope>` that contains
+ * them, so an attribute selector only matched them by accident: Chromium 153
+ * stopped exposing the redundant declaration and the affixes became invisible
+ * to it, while `namespaceURI` stays correct everywhere.
+ * @param {Element} el
+ * @param {string} ns
+ * @param {string} name
+ * @returns {Element|undefined}
+ */
+function getChildElementNS(el, ns, name) {
+    return Array.from(el.children).find((c) => c.localName === name && c.namespaceURI === ns);
+}
+
+/**
  * Parse an SCE <envelope>, validate its affixes and return the decrypted
  * `<content>` element (or `null` for a heartbeat with no `<content>`/`<body>`).
  * @param {string} envelope_xml
@@ -203,7 +223,7 @@ function parseSCEEnvelope(envelope_xml, { sender_jid, to_jid }) {
     }
 
     // Validate <from> affix (SHOULD be present, MUST match sender if present)
-    const from_el = sizzle(`> from[xmlns="${Strophe.NS.SCE}"]`, envelope).pop();
+    const from_el = getChildElementNS(envelope, Strophe.NS.SCE, 'from');
     if (from_el) {
         const from_jid = from_el.getAttribute('jid');
         if (sender_jid && !u.isSameBareJID(from_jid, sender_jid)) {
@@ -213,7 +233,7 @@ function parseSCEEnvelope(envelope_xml, { sender_jid, to_jid }) {
 
     // Validate <to> affix (MUST be present and correct for MUC)
     if (to_jid) {
-        const to_el = sizzle(`> to[xmlns="${Strophe.NS.SCE}"]`, envelope).pop();
+        const to_el = getChildElementNS(envelope, Strophe.NS.SCE, 'to');
         if (!to_el) {
             throw new Error('SCE: missing required <to> affix for MUC message');
         }

@@ -48,7 +48,12 @@ converse-root {
 
         &.converse-fullscreen {
             flex-wrap: nowrap;
-            width: 100%;
+            // Sit in the leftover column beside the app switcher. `width: 100%`
+            // of the container plus the rail overflowed the viewport, which
+            // clipped heading dropdowns off the right edge on a narrow screen.
+            flex: 1 1 auto;
+            min-width: 0;
+            width: auto;
             position: sticky;
         }
 

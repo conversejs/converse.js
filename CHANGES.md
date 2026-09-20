@@ -5,6 +5,7 @@
 - fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`
   attribute. Chromium 153 no longer keeps the redundant namespace declaration on `<from/>` and
   `<to/>`, which stopped MUC messages from decrypting and silently skipped the `<from/>` check.
+- feat(notifications): Prepend `assets_path` to the notification logo path.
 
 ## 14.0.0 (2026-06-26)
 

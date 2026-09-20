@@ -28,6 +28,7 @@
 - Optional browser back/forward and deep links via URL routing, gated behind the new `enable_url_routing` setting
 - chore(types): Switch TypeScript `moduleResolution` to `bundler`; `@converse/headless` now exposes its
   type declarations via a `./types/*` export instead of consumer-side `paths` mappings.
+- feat(notifications) Prepend `assets_path` to logo path.
 
 ### Breaking changes:
 

@@ -8,6 +8,7 @@
 - #3560: Emoji shortnames are now matched case-sensitively
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
 - #3978: Add support for XEP-0202 Entity Time.
+- #4130: fix(rosterview): Fix horizontal flex layout and styling for converse-list-filter
 - Full XEP-0172 User Nickname support.
 - fix(chatview): The contact's name and status message in a chat header were painted the same
   colour as the header itself.

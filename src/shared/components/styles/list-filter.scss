@@ -5,7 +5,9 @@ converse-list-filter {
     .items-filter-form {
         width: 100%;
 
+        .btn-group,
         .button-group {
+            flex-grow: 1;
             padding: 0.2em;
         }
 
@@ -26,6 +28,7 @@ converse-list-filter {
         select.state-type {
             font-size: calc(var(--font-size) - 2px);
             width: 100% !important;
+            flex-grow: 1;
         }
     }
 }

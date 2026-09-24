@@ -33,7 +33,7 @@ export default (el) => {
         class="controlbox-padded items-filter-form input-button-group ${!el.shouldBeVisible() ? 'hidden' : 'fade-in'}"
         @submit=${(/** @type {Event} */ ev) => el.submitFilter(ev)}
     >
-        <div class="flex-nowrap">
+        <div class="d-flex flex-nowrap align-items-center">
             <div class="filter-by d-flex flex-nowrap">
                 <converse-icon
                     size="1em"

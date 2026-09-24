@@ -32,7 +32,7 @@ export default (el) => {
     const heading_headline = __('Announcements');
     return html`<div class="controlbox-section" id="headline">
             <div class="d-flex controlbox-padded ${feeds.length ? '' : 'hidden'}">
-                <span class="w-100 controlbox-heading controlbox-heading--headline" role="heading" aria-level="3"
+                <span class="controlbox-heading controlbox-heading--headline" role="heading" aria-level="3"
                     >${heading_headline}</span
                 >
             </div>

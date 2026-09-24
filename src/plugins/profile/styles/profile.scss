@@ -7,8 +7,10 @@ converse-user-profile {
         align-items: center;
         flex: 1 1 auto;
         min-width: 0;
+        // No `text-overflow` here: this is a flex container, so its children
+        // are flex items rather than inline content. `.username` owns the
+        // ellipsis. `white-space` still inherits down to it.
         white-space: nowrap;
-        text-overflow: ellipsis;
         overflow-x: hidden;
     }
 

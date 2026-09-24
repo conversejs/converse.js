@@ -186,7 +186,7 @@
     // Same as links: a control you can activate should not keep the text caret.
     // Disabled stays the platform default so it does not look clickable.
     button:not(:disabled):not([aria-disabled='true']),
-    [role='button'] {
+    [role='button']:not([aria-disabled='true']) {
         cursor: pointer;
     }
 

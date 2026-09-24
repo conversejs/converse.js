@@ -11,7 +11,7 @@ export default (el) => {
     const help_messages = el.getHelpMessages();
     const show_help_messages = el.model.get('show_help_messages');
     const is_overlayed = api.settings.get('view_mode') === 'overlayed';
-    const style = getChatStyle(el.model);
+    const style = getChatStyle(el.model, el.viewportMediaQuery);
     return html`
         <div class="flyout box-flyout" style="${style || nothing}">
             ${is_overlayed ? html`<converse-dragresize></converse-dragresize>` : ''}

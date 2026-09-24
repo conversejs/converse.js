@@ -269,9 +269,6 @@
                 @media screen and (max-width: $mobile-portrait-length) {
                     margin-inline-start: 0;
                 }
-                @include media-breakpoint-down(sm) {
-                    margin-inline-start: 0;
-                }
                 .box-flyout {
                     @include media-breakpoint-up(md) {
                         @include make-col(4);

@@ -6,7 +6,7 @@ import '../heading.js';
  * @param {import('../view').default} el
  */
 export default (el) => {
-    const style = getChatStyle(el.model);
+    const style = getChatStyle(el.model, el.viewportMediaQuery);
     return html`<div class="flyout box-flyout" style="${style || nothing}">
         <converse-dragresize></converse-dragresize>
         ${el.model

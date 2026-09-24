@@ -29,6 +29,8 @@
 - chore(types): Switch TypeScript `moduleResolution` to `bundler`; `@converse/headless` now exposes its
   type declarations via a `./types/*` export instead of consumer-side `paths` mappings.
 - feat(notifications) Prepend `assets_path` to logo path.
+- fix(ui): A conversation takes up the whole page below Bootstrap's `sm` breakpoint (576px) or on a short
+  viewport, with the JS and the stylesheets now asking one question; it was 768px in JS and 480px in SCSS.
 
 ### Breaking changes:
 

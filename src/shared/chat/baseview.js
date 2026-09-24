@@ -1,6 +1,6 @@
 import { _converse, api, constants } from '@converse/headless';
 import { CustomElement } from '../components/element.js';
-import { MOBILE_CUTOFF } from 'shared/constants.js';
+import { MOBILE_MEDIA_QUERY } from 'shared/constants.js';
 import { onScrolledDown } from './utils.js';
 
 const { CHATROOMS_TYPE, INACTIVE } = constants;
@@ -17,7 +17,7 @@ export default class BaseChatView extends CustomElement {
         super();
         this.jid = /** @type {string} */ null;
         this.model = /** @type {import('@converse/headless').Model} */ null;
-        this.viewportMediaQuery = window.matchMedia(`(max-width: ${MOBILE_CUTOFF}px)`);
+        this.viewportMediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
         this.renderOnViewportChange = () => this.requestUpdate();
     }
 

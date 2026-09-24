@@ -13,7 +13,7 @@ import '../password-form.js';
  * @param {import('../muc').default} el
  */
 export default (el) => {
-    const style = el.model ? getChatStyle(el.model) : '';
+    const style = el.model ? getChatStyle(el.model, el.viewportMediaQuery) : '';
     return html` <div class="flyout box-flyout" style="${style || nothing}">
         ${api.settings.get('view_mode') === 'overlayed' ? html`<converse-dragresize></converse-dragresize>` : ''}
         ${el.model

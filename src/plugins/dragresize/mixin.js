@@ -81,11 +81,28 @@ export default function DragResizable(BaseCustomElement) {
             }
         }
 
+        /**
+         * Re-apply the stored geometry after a window resize.
+         *
+         * Below the element's own cutoff the stylesheets lay the conversation
+         * out full-page, so there is nothing to re-apply and an inline width
+         * would override them (the mobile rules aren't `!important`). Clear
+         * instead of returning early, because the resize that got us here may
+         * be the one that crossed the boundary, leaving a desktop width behind.
+         *
+         * This asks the same query the element's template asks in
+         * `getChatStyle`, so the two writers of these styles cannot disagree.
+         */
         setDimensions() {
-            if (api.settings.get('view_mode') === 'overlayed') {
-                this.setChatBoxWidth(this.model.get('width'));
-                this.setChatBoxHeight(this.model.get('height'));
+            if (api.settings.get('view_mode') !== 'overlayed') return;
+
+            if (this.viewportMediaQuery?.matches) {
+                this.setChatBoxWidth(0);
+                this.setChatBoxHeight(0);
+                return;
             }
+            this.setChatBoxWidth(this.model.get('width'));
+            this.setChatBoxHeight(this.model.get('height'));
         }
 
         /**

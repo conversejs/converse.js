@@ -84,10 +84,12 @@
         //
         // Only once there is width to spare. On a portrait phone the column is
         // the whole screen, there are no margins to balance against, and the
-        // extra inset would come straight out of the line length. 480px is
-        // `$mobile_portrait_length` from shared/styles/_variables.scss, which
+        // extra inset would come straight out of the line length. 480px is a
+        // line-length judgement about this column, not the app-shell cutoff
+        // (`$mobile_portrait_length` in shared/styles/_variables.scss, which
         // isn't imported here because it would emit its whole variable block a
-        // second time.
+        // second time). The two answer different questions and are free to
+        // differ.
         @media screen and (min-width: 480px) {
             padding-inline: 2em;
         }

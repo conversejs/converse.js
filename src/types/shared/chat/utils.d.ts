@@ -1,8 +1,31 @@
-export function isMobileViewport(): boolean;
 /**
- * @param {import('@converse/headless/types/shared/chatbox').default} model
+ * Whether a conversation currently takes up the whole page.
+ *
+ * Asked of `matchMedia` rather than of `window.innerWidth`, so that this is
+ * literally the same question the stylesheets ask. `innerWidth` counts the
+ * scrollbar and a media query doesn't, which is enough to have the two
+ * disagree near the breakpoint.
+ *
+ * @param {string} [media_query] The query to ask, for callers whose stylesheet
+ *  collapses at a different width than the default full-page cutoff. Defaults
+ *  to {@link MOBILE_MEDIA_QUERY}.
  */
-export function getChatStyle(model: import("@converse/headless/types/shared/chatbox").default): string;
+export function isMobileViewport(media_query?: string): boolean;
+/**
+ * The inline geometry a drag-resized conversation should carry, or `''` when
+ * the stylesheets are laying it out full-page instead.
+ *
+ * Inline styles beat the mobile rules, which aren't `!important`, so this has
+ * to ask the same question as the stylesheet that owns the element. Pass the
+ * element's own `viewportMediaQuery` so that a view whose stylesheet collapses
+ * at a different width (the controlbox does) isn't measured against the wrong
+ * boundary.
+ *
+ * @param {import('@converse/headless/types/shared/chatbox').default} model
+ * @param {MediaQueryList} [mql] The query whose stylesheet owns this element's
+ *  geometry. Defaults to the full-page cutoff.
+ */
+export function getChatStyle(model: import("@converse/headless/types/shared/chatbox").default, mql?: MediaQueryList): string;
 /**
  * @param {import('@converse/headless').Model} model
  */

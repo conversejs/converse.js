@@ -1,5 +1,6 @@
 import { api, u, _converse, constants } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
+import { MOBILE_MEDIA_QUERY } from 'shared/constants.js';
 import { HashRouter, appOfHash } from 'plugins/rootview/routing.js';
 import { CHAT_ROUTE_ROOT, buildChatRoute, parseChatRoute } from './routing.js';
 import tplChats from './templates/chats.js';
@@ -30,6 +31,14 @@ class ChatApp extends CustomElement {
         // mirror stays quiet during the transition maybeShow makes across boxes.
         this._applying_route = false;
         this._foreground_scheduled = false;
+
+        // `tplChats` asks `isMobileViewport()` to decide whether a stored width
+        // belongs on a chatbox host element, so this container has to re-render
+        // when that answer changes. The chat views re-render themselves, but
+        // nothing else re-runs this template, which would leave a desktop width
+        // on the host after the flyout inside it had already gone full-page.
+        this.viewportMediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
+        this.renderOnViewportChange = () => this.requestUpdate();
     }
 
     initialize() {
@@ -69,9 +78,11 @@ class ChatApp extends CustomElement {
     connectedCallback() {
         super.connectedCallback();
         this.router.start();
+        this.viewportMediaQuery.addEventListener('change', this.renderOnViewportChange);
     }
 
     disconnectedCallback() {
+        this.viewportMediaQuery.removeEventListener('change', this.renderOnViewportChange);
         this.router.stop();
         super.disconnectedCallback();
     }

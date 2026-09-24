@@ -7,20 +7,43 @@
 import { api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
-import { MOBILE_CUTOFF } from 'shared/constants.js';
+import { MOBILE_MEDIA_QUERY } from 'shared/constants.js';
 import tplNewDay from './templates/new-day.js';
 
 const { dayjs, u } = converse.env;
 
-export function isMobileViewport() {
-    return window.innerWidth <= MOBILE_CUTOFF;
+/**
+ * Whether a conversation currently takes up the whole page.
+ *
+ * Asked of `matchMedia` rather than of `window.innerWidth`, so that this is
+ * literally the same question the stylesheets ask. `innerWidth` counts the
+ * scrollbar and a media query doesn't, which is enough to have the two
+ * disagree near the breakpoint.
+ *
+ * @param {string} [media_query] The query to ask, for callers whose stylesheet
+ *  collapses at a different width than the default full-page cutoff. Defaults
+ *  to {@link MOBILE_MEDIA_QUERY}.
+ */
+export function isMobileViewport(media_query = MOBILE_MEDIA_QUERY) {
+    return window.matchMedia(media_query).matches;
 }
 
 /**
+ * The inline geometry a drag-resized conversation should carry, or `''` when
+ * the stylesheets are laying it out full-page instead.
+ *
+ * Inline styles beat the mobile rules, which aren't `!important`, so this has
+ * to ask the same question as the stylesheet that owns the element. Pass the
+ * element's own `viewportMediaQuery` so that a view whose stylesheet collapses
+ * at a different width (the controlbox does) isn't measured against the wrong
+ * boundary.
+ *
  * @param {import('@converse/headless/types/shared/chatbox').default} model
+ * @param {MediaQueryList} [mql] The query whose stylesheet owns this element's
+ *  geometry. Defaults to the full-page cutoff.
  */
-export function getChatStyle(model) {
-    if (isMobileViewport()) return '';
+export function getChatStyle(model, mql) {
+    if (mql?.matches ?? isMobileViewport()) return '';
     const { height, width } = model.toJSON();
     const is_overlayed = api.settings.get('view_mode') === 'overlayed';
     return is_overlayed ? `${width ? `width: ${width}px;` : ''}${height ? `height: ${height}px;` : ''}` : '';

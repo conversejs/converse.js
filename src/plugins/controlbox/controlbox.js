@@ -1,6 +1,6 @@
 import { _converse, api, constants, u } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
-import { MOBILE_CUTOFF } from 'shared/constants.js';
+import { CONTROLBOX_FULLPAGE_MEDIA_QUERY } from 'shared/constants.js';
 import DragResizable from 'plugins/dragresize/mixin.js';
 import tplControlbox from './templates/controlbox.js';
 import './navbar.js';
@@ -22,7 +22,7 @@ class ControlBoxView extends DragResizable(CustomElement) {
         if (this.model.get('connected') && this.model.get('closed') === undefined) {
             this.model.set('closed', !api.settings.get('show_controlbox_by_default'));
         }
-        this.viewportMediaQuery = window.matchMedia(`(max-width: ${MOBILE_CUTOFF}px)`);
+        this.viewportMediaQuery = window.matchMedia(CONTROLBOX_FULLPAGE_MEDIA_QUERY);
         this.renderOnViewportChange = () => this.requestUpdate();
         /**
          * Triggered when the _converse.ControlBoxView has been initialized and therefore

@@ -1,5 +1,33 @@
+// A height query, for a phone held in landscape. Orthogonal to the width
+// cutoff below and deliberately left on its own number.
 $mobile_landscape_height: 450px !default;
-$mobile_portrait_length: 480px !default;
+
+// The viewport width at or below which a conversation takes up the whole page.
+//
+// Derived from Bootstrap's `sm` breakpoint rather than written out, so that
+// these rules and Bootstrap's own `media-breakpoint-down(sm)` rules cannot
+// drift apart. `MOBILE_CUTOFF` in shared/constants.js states the same
+// breakpoint, so as shipped the JS and the CSS collapse the layout at the same
+// width. Overriding this moves the CSS alone; the JS constant does not follow,
+// and has to be changed to match.
+//
+// Taken through Bootstrap's own `breakpoint-max`, which is what
+// `media-breakpoint-down` calls, so the 0.02px that stops a `max-width` query
+// overlapping the `min-width` query beginning at the breakpoint is subtracted
+// in one place. It subtracts unitless, so a `$grid-breakpoints` stated in rem
+// still works, and it returns null rather than failing on a map with no `sm`.
+//
+// Guarded on the function existing because this file is also imported by themes
+// that don't load Bootstrap first. `$mobile_portrait_length` is the override
+// point; the variable above it is private to this derivation.
+$_mobile_portrait_max: 575.98px;
+@if function-exists(breakpoint-max) {
+    $_bootstrap_sm_max: breakpoint-max('sm');
+    @if $_bootstrap_sm_max {
+        $_mobile_portrait_max: $_bootstrap_sm_max;
+    }
+}
+$mobile_portrait_length: $_mobile_portrait_max !default;
 
 .conversejs,
 .conversejs-bg,

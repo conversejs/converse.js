@@ -1,7 +1,7 @@
 import { api, converse } from '@converse/headless';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
-import { MOBILE_CUTOFF } from 'shared/constants.js';
+import { OCCUPANTS_SIDEBAR_MEDIA_QUERY } from 'shared/constants.js';
 import tplMUCChatarea from './templates/muc-chatarea.js';
 
 export default class MUCChatArea extends CustomElement {
@@ -18,7 +18,7 @@ export default class MUCChatArea extends CustomElement {
         this.jid = null;
         this.type = null;
         this.split = null;
-        this.viewportMediaQuery = window.matchMedia(`(max-width: ${MOBILE_CUTOFF}px)`);
+        this.viewportMediaQuery = window.matchMedia(OCCUPANTS_SIDEBAR_MEDIA_QUERY);
     }
 
     async initialize() {

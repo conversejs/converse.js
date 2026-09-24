@@ -39,7 +39,7 @@ function whenNotConnected(el) {
  * @param {import('../controlbox').default} el
  */
 export default (el) => {
-    const style = getChatStyle(el.model);
+    const style = getChatStyle(el.model, el.viewportMediaQuery);
     // The controlbox lives inside the active app's subtree, so `getActive()`
     // always resolves to the app that rendered it. `renderControlbox` is
     // optional: an app may show the controlbox chrome (profile, login form)

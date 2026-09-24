@@ -40,6 +40,11 @@ export function isAudioURL(url: string | URL, headers?: Headers): boolean;
 export function isVideoURL(url: string | URL, headers?: Headers): boolean;
 /**
  * @param {string|URL} url
+ * @returns {boolean}
+ */
+export function isWebPURL(url: string | URL): boolean;
+/**
+ * @param {string|URL} url
  * @param {Headers} [headers]
  * @returns {boolean}
  */

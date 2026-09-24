@@ -114,6 +114,13 @@
                 // right edge on a narrow fullscreen controlbox.
                 flex: 1 1 auto;
                 min-width: 0;
+                // `min-width: 0` also lets the heading shrink past its own
+                // text, and in most locales that text is a single word with
+                // nowhere to wrap, so it would paint over the dropdown it
+                // just stopped displacing. Truncate instead.
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
 
             converse-dropdown {

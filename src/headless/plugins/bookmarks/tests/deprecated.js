@@ -78,7 +78,7 @@ describe('A chat room', function () {
             id="${sent_stanza.getAttribute('id')}"/>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
-            expect(muc.get('bookmarked')).toBeTruthy();
+            expect(muc.bookmark).toBeTruthy();
         }),
     );
 });
@@ -106,7 +106,7 @@ describe('A bookmark', function () {
 
             const { bookmarks } = _converse.state;
             await u.waitUntil(() => bookmarks.length);
-            await u.waitUntil(() => muc.get('bookmarked'));
+            await u.waitUntil(() => muc.bookmark);
             spyOn(bookmarks, 'sendBookmarkStanza').and.callThrough();
 
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;

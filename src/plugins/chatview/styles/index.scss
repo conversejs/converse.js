@@ -85,17 +85,6 @@
     }
 }
 
-// Same width as the mobile rules above, and stated the same way, so that a
-// theme moving `$mobile_portrait_length` moves the whole collapse together
-// instead of leaving the stacking behind at Bootstrap's `sm`.
-@media screen and (max-width: $mobile-portrait-length) {
-    .conversejs.converse-overlayed {
-        > .row {
-            flex-direction: column;
-        }
-    }
-}
-
 .conversejs {
     converse-app-chat.converse-embedded,
     converse-app-chat.converse-fullscreen {

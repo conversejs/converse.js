@@ -16,6 +16,9 @@
 - fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`
   attribute. Chromium 153 no longer keeps the redundant namespace declaration on `<from/>` and
   `<to/>`, which stopped MUC messages from decrypting and silently skipped the `<from/>` check.
+- fix(utils): `isImageURL` checked the fetched `Content-Type` header for `video`, not `image`. With
+  `fetch_url_headers` on, extensionless image URLs weren't rendered at all and video URLs were
+  rendered as broken images.
 - fix(vcard): Don't eagerly refetch cached vcards when a session resumes.
 - fix(vcard): Don't fetch a MUC's own vCard in response to an occupant presence.
 - refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its

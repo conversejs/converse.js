@@ -104,7 +104,7 @@ export function isVideoURL(url, headers) {
  * @returns {boolean}
  */
 export function isImageURL(url, headers) {
-    if (headers?.get("content-type")?.startsWith("video")) {
+    if (headers?.get("content-type")?.startsWith("image")) {
         return true;
     }
     const regex = settings.get("image_urls_regex");

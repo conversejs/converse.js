@@ -80,6 +80,8 @@ export async function getVCardForModel(model, lazy_load = false) {
             return null;
         }
         const { vcards } = _converse.state;
+        // The session may have been cleared while we were waiting above.
+        if (!vcards) return null;
         vcard = vcards.get(jid) || vcards.create({ jid }, { lazy_load });
     }
 
@@ -106,7 +108,7 @@ export async function getVCardForOccupant(occupant, lazy_load = true) {
     } else {
         const jid = occupant.get('jid') || occupant.get('from');
         if (jid) {
-            return vcards.get(jid) || vcards.create({ jid }, { lazy_load });
+            return vcards?.get(jid) || vcards?.create({ jid }, { lazy_load }) || null;
         } else {
             log.debug(`Could not get VCard for occupant because no JID found!`);
             return null;
@@ -132,7 +134,7 @@ async function getVCardForMUCMessage(message, lazy_load = true) {
     } else {
         const jid = message.occupant?.get('jid') || message.get('from');
         if (jid) {
-            return vcards.get(jid) || vcards.create({ jid }, { lazy_load });
+            return vcards?.get(jid) || vcards?.create({ jid }, { lazy_load }) || null;
         } else {
             log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get('msgid')}`);
             return null;
@@ -182,7 +184,9 @@ async function handleVCardUpdatePresence(pres) {
     if (photo) {
         const avatar_hash = photo.textContent;
         const from_jid = Strophe.getBareJidFromJid(pres.getAttribute('from'));
-        const vcard = await _converse.state.vcards.get(from_jid);
+        const { vcards } = _converse.state;
+        if (!vcards) return;
+        const vcard = await vcards.get(from_jid);
         if (vcard?.get('image_hash') !== avatar_hash) {
             api.vcard.update(from_jid, true).catch((e) => log.error(e));
         }

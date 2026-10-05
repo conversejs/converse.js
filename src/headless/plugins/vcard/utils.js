@@ -85,6 +85,8 @@ export async function getVCardForModel(model, lazy_load = false) {
             return null;
         }
         const { vcards } = _converse.state;
+        // The session may have been cleared while we were waiting above.
+        if (!vcards) return null;
         vcard = vcards.get(jid) || vcards.create({ jid }, { lazy_load });
     }
 
@@ -111,7 +113,7 @@ export async function getVCardForOccupant(occupant, lazy_load = true) {
     } else {
         const jid = occupant.get('jid') || occupant.get('from');
         if (jid) {
-            return vcards.get(jid) || vcards.create({ jid }, { lazy_load });
+            return vcards?.get(jid) || vcards?.create({ jid }, { lazy_load }) || null;
         } else {
             log.debug(`Could not get VCard for occupant because no JID found!`);
             return null;
@@ -137,7 +139,7 @@ async function getVCardForMUCMessage(message, lazy_load = true) {
     } else {
         const jid = message.occupant?.get('jid') || message.get('from');
         if (jid) {
-            return vcards.get(jid) || vcards.create({ jid }, { lazy_load });
+            return vcards?.get(jid) || vcards?.create({ jid }, { lazy_load }) || null;
         } else {
             log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get('msgid')}`);
             return null;
@@ -171,6 +173,7 @@ const nick_fetched = new Set();
  */
 function maybeFetchPublishedNick(jid) {
     if (!api.pubsub?.items) return;
+
     const bare = Strophe.getBareJidFromJid(jid);
     const is_target = bare === _converse.session.get('bare_jid') || !!_converse.state.roster?.get(bare);
     if (!is_target || nick_fetched.has(bare)) return;
@@ -181,7 +184,7 @@ function maybeFetchPublishedNick(jid) {
         .then(({ items }) => {
             const item = items?.[0];
             const nick = item ? sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, item).pop()?.textContent?.trim() : undefined;
-            if (nick) setNickForJID(bare, nick);
+            if (nick) setPEPNick(bare, nick);
         })
         .catch(() => {
             // Node absent, access denied, or unsupported: nothing to apply.
@@ -212,18 +215,16 @@ export async function fetchVCard(jid) {
 }
 
 /**
- * Apply an XEP-0172 nickname to a JID's VCard model, storing it under
- * `pep_nickname` (never `nickname`, which vcard-temp owns and would clobber on
- * refetch). The VCard is created if we don't have one yet. An empty/undefined
- * nick clears the value, so the display name falls back to the vCard name and
- * then the JID.
+ * Apply XEP-0172 nickname to a JID's VCard model, storing it under
+ * `pep_nickname` (not `nickname`, which vcard-temp owns).
  * @param {string} jid - The bare JID asserting the nickname.
  * @param {string} [nick]
  */
-function setNickForJID(jid, nick) {
+function setPEPNick(jid, nick) {
     const { vcards } = _converse.state;
+    if (!vcards) return;
+
     const vcard = vcards.get(jid) || vcards.create({ jid }, { lazy_load: true });
-    // Idempotent: saving an unchanged value fires no `change`.
     vcard?.save({ pep_nickname: nick || undefined });
 }
 
@@ -232,6 +233,9 @@ function setNickForJID(jid, nick) {
  */
 async function handleVCardUpdatePresence(pres) {
     await api.waitUntil('VCardsInitialized');
+    const { vcards } = _converse.state;
+    // The session may have been cleared while we were waiting above.
+    if (!vcards) return;
 
     // MUC occupant updates are handled in onOccupantAvatarChanged
     const is_muc = sizzle(`x[xmlns="http://jabber.org/protocol/muc#user"]`, pres).length > 0;
@@ -243,7 +247,7 @@ async function handleVCardUpdatePresence(pres) {
     const photo = sizzle(`x[xmlns="${Strophe.NS.VCARD_UPDATE}"] photo`, pres).pop();
     if (photo) {
         const avatar_hash = photo.textContent;
-        const vcard = await _converse.state.vcards.get(from_jid);
+        const vcard = vcards.get(from_jid);
         if (vcard?.get('image_hash') !== avatar_hash) {
             api.vcard.update(from_jid, true).catch((e) => log.error(e));
         }
@@ -251,9 +255,7 @@ async function handleVCardUpdatePresence(pres) {
 
     // XEP-0172: apply a nickname hint carried directly in the presence.
     const nick_el = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, pres).pop();
-    if (nick_el) {
-        setNickForJID(from_jid, nick_el.textContent?.trim());
-    }
+    if (nick_el) setPEPNick(from_jid, nick_el.textContent?.trim());
 }
 
 let presence_ref;
@@ -301,7 +303,7 @@ async function handleNickUpdate(message) {
     await api.waitUntil('VCardsInitialized');
 
     const nick = sizzle(`item nick[xmlns="${Strophe.NS.NICK}"]`, items).pop()?.textContent?.trim();
-    setNickForJID(from_jid, nick);
+    setPEPNick(from_jid, nick);
 }
 
 let nick_ref;

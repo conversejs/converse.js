@@ -1,5 +1,5 @@
 /**
- * @typedef {import('strophe.js/src/builder.js').Builder} Strophe.Builder
+ * @typedef {import('strophe.js').Builder} Strophe.Builder
  */
 import _converse from '../../shared/_converse.js';
 import converse from '../../shared/api/public.js';

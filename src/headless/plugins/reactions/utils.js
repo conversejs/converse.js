@@ -73,7 +73,13 @@ export function getUpdatedMessageAttributes(message, new_attrs, original_attrs) 
             delete reactions[key];
         }
     }
-    return { ...new_attrs, reactions };
+    return {
+        ...new_attrs,
+        reactions,
+        // A reaction is a separate stanza, so its archived timestamp must not
+        // replace the time of the message it targets.
+        time: message.get('time'),
+    };
 }
 
 /**

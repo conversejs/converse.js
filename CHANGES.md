@@ -16,6 +16,8 @@
 - fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`
   attribute. Chromium 153 no longer keeps the redundant namespace declaration on `<from/>` and
   `<to/>`, which stopped MUC messages from decrypting and silently skipped the `<from/>` check.
+- fix(reactions): A reaction fetched from the message archive no longer moves the message it
+  reacts to after later messages.
 - fix(vcard): Don't eagerly refetch cached vcards when a session resumes.
 - fix(vcard): Don't fetch a MUC's own vCard in response to an occupant presence.
 - refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its

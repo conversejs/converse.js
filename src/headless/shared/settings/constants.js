@@ -87,6 +87,7 @@ export const DEFAULT_SETTINGS = {
         'pt_BR',
         'ro',
         'ru',
+        'sl',
         'sv',
         'ta',
         'th',

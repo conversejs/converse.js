@@ -24,6 +24,7 @@ declare class RTPSession {
     is_initiator: boolean;
     pc: RTCPeerConnection;
     pending_candidates: any[];
+    closed: boolean;
     get sid(): string;
     get initiator(): any;
     get responder(): any;
@@ -35,7 +36,8 @@ declare class RTPSession {
     onConnectionStateChange(): void;
     /** A locally gathered ICE candidate: trickle it to the peer. */
     onLocalCandidate(ev: any): void;
-    addLocalMedia(): Promise<void>;
+    /** @returns {Promise<boolean>} false if the call ended while the browser was asking for permission */
+    addLocalMedia(): Promise<boolean>;
     /**
      * Dispatch an inbound Jingle action (already routed to this session).
      * @param {string} action
@@ -62,8 +64,11 @@ declare class RTPSession {
      * @param {string} reason - one of {@link ENDED_REASONS}
      */
     terminate(reason: string): void;
-    /** @param {Element} jingle - a `<jingle>` payload from {@link sdpToJingle} */
-    sendJingle(jingle: Element): void;
+    /**
+     * @param {Element} jingle - a `<jingle>` payload from {@link sdpToJingle}
+     * @param {boolean} [required=false] - the session can't continue if the peer refuses it
+     */
+    sendJingle(jingle: Element, required?: boolean): void;
     close(): void;
 }
 //# sourceMappingURL=rtp.d.ts.map

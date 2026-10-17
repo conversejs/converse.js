@@ -230,7 +230,14 @@ class RTPSession {
         sizzle('content', jingle).forEach((content) => {
             const mid = content.getAttribute('name');
             sizzle(`transport[xmlns="${Strophe.NS.JINGLE_ICE}"] > candidate`, content).forEach((el) => {
-                const candidate = { candidate: candidateToLine(elementToCandidate(el)), sdpMid: mid };
+                let line;
+                try {
+                    line = candidateToLine(elementToCandidate(el));
+                } catch (e) {
+                    log.warn(e); // drop the malformed candidate, keep the rest
+                    return;
+                }
+                const candidate = { candidate: line, sdpMid: mid };
                 // A peer can trickle candidates before its description is applied;
                 // addIceCandidate rejects until then, so hold them back.
                 if (this.pc.remoteDescription) {

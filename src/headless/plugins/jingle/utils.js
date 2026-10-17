@@ -112,6 +112,10 @@ export function handleJingleMessage(stanza) {
     switch (action) {
         case 'propose': {
             if (is_carbon || call) break; // our own propose echoed back, or a duplicate
+            if (!media.length) {
+                api.send(buildReject(from, sid)); // nothing in it that we support
+                break;
+            }
 
             const live = getLiveCall();
             if (live) {

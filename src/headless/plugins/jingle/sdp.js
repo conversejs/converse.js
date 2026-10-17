@@ -16,6 +16,29 @@ const MEDIA_PROTOCOL = 'UDP/TLS/RTP/SAVPF';
 const MEDIA_PORT = 9;
 
 /**
+ * An optional attribute for an `stx` template. Values can come from the peer,
+ * so they're escaped like any other `stx` interpolation.
+ * @param {string} name
+ * @param {string|number} value
+ */
+function attr(name, value) {
+    return Stanza.unsafeXML(`${name}="${Strophe.xmlescape(String(value))}"`);
+}
+
+/**
+ * Throw if a value taken from a peer's Jingle would end its SDP line early,
+ * which would let the peer add SDP lines of their own.
+ * @param {unknown} value
+ */
+function assertSingleLine(value) {
+    if (typeof value === 'string') {
+        if ((/[\r\n]/).test(value)) throw new Error('Jingle value contains a line break');
+    } else if (value && typeof value === 'object') {
+        Object.values(value).forEach(assertSingleLine);
+    }
+}
+
+/**
  * @param {string} sdp
  * @returns {SessionDescription}
  */
@@ -102,8 +125,8 @@ export function candidateToElement(candidate) {
             port="${candidate.port}"
             priority="${candidate.priority}"
             protocol="${candidate.transport}"
-            ${candidate.raddr ? Stanza.unsafeXML(`rel-addr="${candidate.raddr}"`) : ''}
-            ${candidate.rport !== undefined ? Stanza.unsafeXML(`rel-port="${candidate.rport}"`) : ''}
+            ${candidate.raddr ? attr('rel-addr', candidate.raddr) : ''}
+            ${candidate.rport !== undefined ? attr('rel-port', candidate.rport) : ''}
             type="${candidate.type}"/>`;
 }
 
@@ -146,6 +169,7 @@ export function elementToCandidate(el) {
     const rport = el.getAttribute('rel-port');
     if (raddr) candidate.raddr = raddr;
     if (rport) candidate.rport = Number(rport);
+    assertSingleLine(candidate);
     return candidate;
 }
 
@@ -171,18 +195,18 @@ function buildDescription(media) {
                 <payload-type
                     id="${rtp.payload}"
                     name="${rtp.codec}"
-                    ${rtp.rate ? Stanza.unsafeXML(`clockrate="${rtp.rate}"`) : ''}
-                    ${rtp.encoding && rtp.encoding > 1 ? Stanza.unsafeXML(`channels="${rtp.encoding}"`) : ''}>
-                    ${fmtp ? parseFmtpConfig(fmtp).map((p) => stx`<parameter ${p.name ? Stanza.unsafeXML(`name="${p.name}"`) : ''} value="${p.value}"/>`) : ''}
+                    ${rtp.rate ? attr('clockrate', rtp.rate) : ''}
+                    ${rtp.encoding && rtp.encoding > 1 ? attr('channels', rtp.encoding) : ''}>
+                    ${fmtp ? parseFmtpConfig(fmtp).map((p) => stx`<parameter ${p.name ? attr('name', p.name) : ''} value="${p.value}"/>`) : ''}
                     ${fbs.map(
                         (fb) =>
-                            stx`<rtcp-fb xmlns="${Strophe.NS.JINGLE_RTP_FB}" type="${fb.type}" ${fb.subtype ? Stanza.unsafeXML(`subtype="${fb.subtype}"`) : ''}/>`
+                            stx`<rtcp-fb xmlns="${Strophe.NS.JINGLE_RTP_FB}" type="${fb.type}" ${fb.subtype ? attr('subtype', fb.subtype) : ''}/>`
                     )}
                 </payload-type>`;
             })}
             ${(fb_by_payload['*'] ?? []).map(
                 (fb) =>
-                    stx`<rtcp-fb xmlns="${Strophe.NS.JINGLE_RTP_FB}" type="${fb.type}" ${fb.subtype ? Stanza.unsafeXML(`subtype="${fb.subtype}"`) : ''}/>`
+                    stx`<rtcp-fb xmlns="${Strophe.NS.JINGLE_RTP_FB}" type="${fb.type}" ${fb.subtype ? attr('subtype', fb.subtype) : ''}/>`
             )}
             ${(media.ext ?? []).map(
                 (e) => stx`<rtp-hdrext xmlns="${Strophe.NS.JINGLE_RTP_HDREXT}" id="${e.value}" uri="${e.uri}"/>`
@@ -198,7 +222,7 @@ function buildDescription(media) {
                 ([id, params]) => stx`
                 <source xmlns="${Strophe.NS.JINGLE_RTP_SSMA}" ssrc="${id}">
                     ${/** @type {any[]} */ (params).map(
-                        (s) => stx`<parameter name="${s.attribute}" ${s.value !== undefined ? Stanza.unsafeXML(`value="${s.value}"`) : ''}/>`
+                        (s) => stx`<parameter name="${s.attribute}" ${s.value !== undefined ? attr('value', s.value) : ''}/>`
                     )}
                 </source>`
             )}
@@ -256,10 +280,10 @@ export function sdpToJingle(sdp, options) {
     const bundle = (sdp.groups ?? []).find((g) => g.type === 'BUNDLE');
     return stx`
         <jingle xmlns="${Strophe.NS.JINGLE}"
-                ${action ? Stanza.unsafeXML(`action="${action}"`) : ''}
-                ${sid ? Stanza.unsafeXML(`sid="${sid}"`) : ''}
-                ${initiator ? Stanza.unsafeXML(`initiator="${initiator}"`) : ''}
-                ${responder ? Stanza.unsafeXML(`responder="${responder}"`) : ''}>
+                ${action ? attr('action', action) : ''}
+                ${sid ? attr('sid', sid) : ''}
+                ${initiator ? attr('initiator', initiator) : ''}
+                ${responder ? attr('responder', responder) : ''}>
             ${sdp.media.map((m) => buildContent(m, options, sdp))}
             ${
                 bundle
@@ -283,8 +307,8 @@ export function buildTransportInfo(candidate, options) {
     const { sid, mid, ufrag, pwd, initiator, responder, creator = 'initiator' } = options;
     return stx`
         <jingle xmlns="${Strophe.NS.JINGLE}" action="transport-info" sid="${sid}"
-                ${initiator ? Stanza.unsafeXML(`initiator="${initiator}"`) : ''}
-                ${responder ? Stanza.unsafeXML(`responder="${responder}"`) : ''}>
+                ${initiator ? attr('initiator', initiator) : ''}
+                ${responder ? attr('responder', responder) : ''}>
             <content xmlns="${Strophe.NS.JINGLE}" creator="${creator}" name="${mid}">
                 <transport xmlns="${Strophe.NS.JINGLE_ICE}" ufrag="${ufrag}" pwd="${pwd}">
                     ${candidateToElement(candidate)}
@@ -435,6 +459,7 @@ export function jingleToSDP(jingle, options) {
               },
           ]
         : [];
+    assertSingleLine({ media, groups });
 
     return /** @type {SessionDescription} */ ({
         version: 0,

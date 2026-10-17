@@ -261,6 +261,42 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
+        'drops a trickled candidate with a line break in a value',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+            receiveIq(_converse, `${jid}/phone`, 'accept-iq', jingle('session-accept', sid));
+            await u.waitUntil(() => webrtc_handle.pc.remoteDescription);
+
+            const ti = stx`
+                <jingle xmlns="${JINGLE}" action="transport-info" sid="${sid}">
+                    <content xmlns="${JINGLE}" creator="initiator" name="0">
+                        <transport xmlns="urn:xmpp:jingle:transports:ice-udp:1" ufrag="abc" pwd="pwd">
+                            <candidate
+                                component="1" foundation="1" generation="0" id="c1" ip="192.0.2.8"
+                                network="0" port="20000" priority="2113937151" protocol="udp" type="host"/>
+                            <candidate
+                                component="1" foundation="2" generation="0" id="c2" ip="192.0.2.9"
+                                network="0" port="20000" priority="2113937151" protocol="udp" type="host"/>
+                        </transport>
+                    </content>
+                </jingle>`.tree();
+            // Set directly: a line break in serialised XML would be normalised away.
+            sizzle('candidate', ti).pop().setAttribute('ip', '192.0.2.9\r\na=evil');
+            call.session.handleJingle('transport-info', ti);
+
+            expect(webrtc_handle.pc.candidates.map((c) => c.candidate)).toEqual([
+                'candidate:1 1 udp 2113937151 192.0.2.8 20000 typ host generation 0',
+            ]);
+        })
+    );
+
+    it(
         'goes active and exposes the remote stream once connected',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const webrtc_handle = installFakeWebRTC();

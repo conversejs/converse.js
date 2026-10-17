@@ -329,6 +329,39 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
     );
 
     it(
+        'takes up only the media we support from a <propose>',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="av1">
+                    <description xmlns="${RTP}" media="audio"/>
+                    <description xmlns="${RTP}" media="video"/>
+                </propose>`,
+            );
+            expect(_converse.state.calls.get('av1').get('media')).toEqual(['audio']);
+        }),
+    );
+
+    it(
+        'rejects a <propose> for media we do not support',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="video1"><description xmlns="${RTP}" media="video"/></propose>`,
+            );
+
+            expect(_converse.state.calls.get('video1')).toBeUndefined();
+            const reject = lastJMI(_converse, 'reject');
+            expect(reject.getAttribute('to')).toBe(`${jid}/phone`);
+            expect(sizzle(`reject[xmlns="${JMI}"]`, reject).pop().getAttribute('id')).toBe('video1');
+        }),
+    );
+
+    it(
         'ignores a <propose> sent as a groupchat message',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, (_converse) => {
             const stanza = stx`

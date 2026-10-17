@@ -99,6 +99,30 @@ describe('Jingle/SDP conversion', function () {
         expect(sdp.groups).toEqual([{ type: 'BUNDLE', mids: '0' }]);
     });
 
+    it('escapes peer-supplied values instead of letting them inject markup', function () {
+        // A JID resource may contain quotes, and a session id is whatever the peer chose.
+        const sid = 'x"/><evil xmlns="urn:x"/><jingle a="';
+        const initiator = 'romeo@montague.lit/ph"one';
+        const jingle = sdpToJingle(parseSDP(sample_sdp), {
+            is_initiator: true,
+            action: 'session-accept',
+            sid,
+            initiator,
+        }).tree();
+
+        expect(jingle.getAttribute('sid')).toBe(sid);
+        expect(jingle.getAttribute('initiator')).toBe(initiator);
+        expect(sizzle('evil', jingle).length).toBe(0);
+    });
+
+    it('refuses a Jingle description with a line break in a value', function () {
+        const jingle = sdpToJingle(parseSDP(sample_sdp), { is_initiator: true }).tree();
+        // A line break would end the SDP line and start one of the peer's choosing.
+        sizzle('transport', jingle).pop().setAttribute('ufrag', 'abc\r\na=evil');
+
+        expect(() => jingleToSDP(jingle, { is_initiator: true })).toThrow();
+    });
+
     it('maps senders and direction relative to the initiator role', function () {
         expect(directionToSenders('sendonly', true)).toBe('initiator');
         expect(directionToSenders('sendonly', false)).toBe('responder');

@@ -24,4 +24,5 @@ export function handleJingleMessage(stanza: Element): boolean;
 export function handleJingleIq(iq: Element): boolean;
 /** Register the inbound JMI + Jingle-IQ handlers on the connection (re-run on (re)connect). */
 export function registerCallHandlers(): void;
+export function unregisterCallHandlers(): void;
 //# sourceMappingURL=utils.d.ts.map

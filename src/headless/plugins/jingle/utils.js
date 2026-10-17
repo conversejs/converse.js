@@ -100,6 +100,14 @@ export function handleJingleMessage(stanza) {
     let call = calls.get(sid);
     // Session ids are not secret, so only the call's own peer may act on it.
     const from_peer = !!call && bare_from === call.get('jid');
+    const from_sibling = is_carbon && !is_self;
+    // Each answer only means something while the call still waits for one. A
+    // later copy (e.g. a <proceed> crossing our own hangup) must not revive it.
+    const state = call?.get('state');
+    const direction = call?.get('direction');
+    const outgoing_unanswered =
+        direction === CALL_DIRECTION.OUTGOING && [CALL_STATES.CALLING, CALL_STATES.RINGING].includes(state);
+    const incoming_ringing = direction === CALL_DIRECTION.INCOMING && state === CALL_STATES.RINGING;
 
     switch (action) {
         case 'propose': {
@@ -129,14 +137,14 @@ export function handleJingleMessage(stanza) {
             break;
         }
         case 'ringing':
-            if (from_peer && call.get('direction') === CALL_DIRECTION.OUTGOING) {
+            if (from_peer && direction === CALL_DIRECTION.OUTGOING && state === CALL_STATES.CALLING) {
                 call.set('state', CALL_STATES.RINGING);
             }
             break;
         case 'proceed':
-            if (is_carbon && !is_self) {
-                call?.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
-            } else if (from_peer && call.get('direction') === CALL_DIRECTION.OUTGOING) {
+            if (from_sibling && incoming_ringing) {
+                call.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
+            } else if (from_peer && outgoing_unanswered) {
                 call.set('state', CALL_STATES.CONNECTING);
                 call.startSession(from); // the proceed's full JID is the peer we negotiate with
             }
@@ -144,19 +152,20 @@ export function handleJingleMessage(stanza) {
         case 'accept':
             // A sibling device answered an incoming call we're also ringing for
             // (our own accept echo is filtered out by `is_self`).
-            if (is_carbon && !is_self && call?.get('direction') === CALL_DIRECTION.INCOMING) {
+            if (from_sibling && incoming_ringing) {
                 call.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
             }
             break;
         case 'reject':
-            if (is_carbon && !is_self) {
-                call?.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
-            } else if (from_peer && call.get('direction') === CALL_DIRECTION.OUTGOING) {
+            if (from_sibling && incoming_ringing) {
+                call.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
+            } else if (from_peer && outgoing_unanswered) {
                 call.end(ENDED_REASONS.DECLINED);
             }
             break;
         case 'retract':
-            if (from_peer && call.get('direction') === CALL_DIRECTION.INCOMING) {
+            // Once a session exists the caller ends it with session-terminate instead.
+            if (from_peer && direction === CALL_DIRECTION.INCOMING && call.isPreActive() && !call.session) {
                 call.end(ENDED_REASONS.CANCELLED);
             }
             break;

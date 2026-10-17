@@ -482,6 +482,30 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
+        'ignores <ringing>, <proceed> and <reject> once the callee has proceeded',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+            const { session } = call;
+            const { pc } = webrtc_handle;
+
+            // The callee's other devices may still be ringing and answer late.
+            receive(_converse, `${jid}/laptop`, stx`<ringing xmlns="${JMI}" id="${sid}"/>`);
+            receive(_converse, `${jid}/laptop`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            receive(_converse, `${jid}/laptop`, stx`<reject xmlns="${JMI}" id="${sid}"/>`);
+
+            expect(call.get('state')).toBe('connecting');
+            expect(call.session).toBe(session);
+            expect(webrtc_handle.pc).toBe(pc);
+        })
+    );
+
+    it(
         'does not answer a session-initiate before the user accepts the call',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             let captured = false;

@@ -276,6 +276,59 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
     );
 
     it(
+        'ignores a <proceed> that arrives after the call was hung up',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            call.hangup(); // retracts the propose
+            expect(call.get('state')).toBe('ended');
+
+            // The callee answered before our <retract> reached them.
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
+
+            expect(call.get('state')).toBe('ended');
+            expect(call.session).toBe(null);
+        }),
+    );
+
+    it(
+        'ignores a <ringing> for an ended call, so it does not block new calls',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse, 0);
+            const other = await getContactJid(_converse, 1);
+            const call = _converse.api.calls.dial(jid);
+            call.hangup();
+
+            receive(_converse, `${jid}/phone`, stx`<ringing xmlns="${JMI}" id="${call.get('id')}"/>`);
+            expect(call.get('state')).toBe('ended');
+
+            const next = _converse.api.calls.dial(other);
+            expect(next).not.toBe(call);
+            expect(next.get('jid')).toBe(other);
+        }),
+    );
+
+    it(
+        'ignores a sibling device answering once we have accepted the call ourselves',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="race1"><description xmlns="${RTP}" media="audio"/></propose>`,
+            );
+            const call = _converse.state.calls.get('race1');
+            call.accept();
+
+            receive(_converse, `${_converse.bare_jid}/sibling`, stx`<accept xmlns="${JMI}" id="race1"/>`);
+            receive(_converse, `${_converse.bare_jid}/sibling`, stx`<proceed xmlns="${JMI}" id="race1"/>`);
+            receive(_converse, `${_converse.bare_jid}/sibling`, stx`<reject xmlns="${JMI}" id="race1"/>`);
+
+            expect(call.get('state')).toBe('connecting');
+        }),
+    );
+
+    it(
         'ignores a <propose> sent as a groupchat message',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, (_converse) => {
             const stanza = stx`

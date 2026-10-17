@@ -105,6 +105,7 @@ export function buildAccept(to, sid) {
 }
 
 const JMI_ACTION_NAMES = Object.values(JMI_ACTIONS);
+const SUPPORTED_MEDIA = ['audio'];
 
 /**
  * Read a JMI child out of an inbound `<message>` stanza.
@@ -115,14 +116,16 @@ const JMI_ACTION_NAMES = Object.values(JMI_ACTIONS);
 export function parseJMI(stanza) {
     const el = sizzle(`> *[xmlns="${Strophe.NS.JINGLE_MESSAGE}"]`, stanza).pop();
     if (!el || !JMI_ACTION_NAMES.includes(el.tagName)) return null;
-    const media = sizzle(`description[xmlns="${Strophe.NS.JINGLE_RTP}"]`, el).map(
-        (d) => /** @type {'audio'|'video'} */ (d.getAttribute('media'))
-    );
+    const descriptions = sizzle(`description[xmlns="${Strophe.NS.JINGLE_RTP}"]`, el);
+    // The media decide which devices we capture, so only take up what we support.
+    const media = descriptions
+        .map((d) => /** @type {'audio'|'video'} */ (d.getAttribute('media')))
+        .filter((m) => SUPPORTED_MEDIA.includes(m));
     return {
         action: el.tagName,
         sid: el.getAttribute('id'),
         from: stanza.getAttribute('from'),
         to: stanza.getAttribute('to'),
-        media: media.length ? media : ['audio'],
+        media: descriptions.length ? media : ['audio'],
     };
 }

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
@@ -257,6 +258,58 @@ describe('A Jingle RTP session', function () {
             await u.waitUntil(() => webrtc_handle.pc.candidates.length);
             expect(webrtc_handle.pc.candidates[0].candidate).toContain('192.0.2.9 20000 typ host');
             expect(webrtc_handle.pc.candidates[0].sdpMid).toBe('0');
+        })
+    );
+
+    it(
+        'releases the microphone when the call ends while it is being captured',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const stream = fakeStream();
+            const [track] = stream.getTracks();
+            const stop = vi.spyOn(track, 'stop');
+            let resolveMedia;
+            installFakeWebRTC({ getUserMedia: () => new Promise((resolve) => (resolveMedia = resolve)) });
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
+            await u.waitUntil(() => resolveMedia);
+
+            call.hangup(); // while the browser is still asking for permission
+            resolveMedia(stream);
+
+            await u.waitUntil(() => stop.mock.calls.length);
+            expect(call.local_stream).toBe(null);
+            expect(lastJingleIq(_converse, 'session-initiate')).toBeUndefined();
+            const terminates = _converse.api.connection
+                .get()
+                .sent_stanzas.filter((s) => sizzle(`jingle[action="session-terminate"]`, s).length);
+            expect(terminates.length).toBe(1); // the hangup's own, no second one from a failure
+        })
+    );
+
+    it(
+        'fails the call and releases the microphone when the peer refuses our session-initiate',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const stream = fakeStream();
+            const stop = vi.spyOn(stream.getTracks()[0], 'stop');
+            installFakeWebRTC({ getUserMedia: () => Promise.resolve(stream) });
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
+            const initiate = await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            const error = stx`
+                <iq xmlns="jabber:client" type="error" from="${jid}/phone" to="${_converse.session.get('jid')}"
+                    id="${initiate.getAttribute('id')}">
+                    <error type="cancel"><item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+                </iq>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, error));
+
+            await u.waitUntil(() => call.get('state') === 'failed');
+            expect(call.get('ended_reason')).toBe('failed-application');
+            expect(stop).toHaveBeenCalled();
         })
     );
 

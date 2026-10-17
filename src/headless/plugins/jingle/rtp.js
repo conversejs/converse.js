@@ -70,6 +70,7 @@ class RTPSession {
         this.is_initiator = is_initiator;
         this.pc = null;
         this.pending_candidates = [];
+        this.closed = false;
     }
 
     get sid() {
@@ -88,7 +89,7 @@ class RTPSession {
     async initiate() {
         try {
             this.createConnection();
-            await this.addLocalMedia();
+            if (!(await this.addLocalMedia())) return;
 
             const offer = await this.pc.createOffer();
             await this.pc.setLocalDescription(offer);
@@ -100,7 +101,7 @@ class RTPSession {
                 responder: this.responder,
                 is_initiator: true,
             });
-            this.sendJingle(jingle);
+            this.sendJingle(jingle, true);
         } catch (e) {
             log.error(e);
             this.fail(ENDED_REASONS.NO_MEDIA);
@@ -151,15 +152,21 @@ class RTPSession {
         this.sendJingle(jingle);
     }
 
+    /** @returns {Promise<boolean>} false if the call ended while the browser was asking for permission */
     async addLocalMedia() {
         const media = this.call.get('media');
         const stream = await webrtc.getUserMedia({
             audio: media.includes('audio'),
             video: media.includes('video'),
         });
+        if (this.closed) {
+            stream.getTracks().forEach((track) => track.stop());
+            return false;
+        }
         this.call.local_stream = stream;
         stream.getTracks().forEach((track) => this.pc.addTrack(track, stream));
         this.call.trigger('stream', { kind: 'local' });
+        return true;
     }
 
     /**
@@ -194,7 +201,7 @@ class RTPSession {
             await this.pc.setRemoteDescription({ type: 'offer', sdp: offer });
             this.flushCandidates();
 
-            await this.addLocalMedia();
+            if (!(await this.addLocalMedia())) return;
             const answer = await this.pc.createAnswer();
             await this.pc.setLocalDescription(answer);
 
@@ -205,7 +212,7 @@ class RTPSession {
                 responder: this.responder,
                 is_initiator: false,
             });
-            this.sendJingle(reply);
+            this.sendJingle(reply, true);
         } catch (e) {
             log.error(e);
             this.fail(ENDED_REASONS.NO_MEDIA);
@@ -271,6 +278,7 @@ class RTPSession {
      * @param {string} reason - one of {@link ENDED_REASONS}
      */
     fail(reason) {
+        if (this.closed) return; // the call is already over and the peer was told
         this.terminate(reason);
         this.call.fail(reason);
     }
@@ -288,14 +296,21 @@ class RTPSession {
         this.sendJingle(jingle);
     }
 
-    /** @param {Element} jingle - a `<jingle>` payload from {@link sdpToJingle} */
-    sendJingle(jingle) {
+    /**
+     * @param {Element} jingle - a `<jingle>` payload from {@link sdpToJingle}
+     * @param {boolean} [required=false] - the session can't continue if the peer refuses it
+     */
+    sendJingle(jingle, required = false) {
         if (!api.connection.connected()) return; // nothing to send to (e.g. terminating on disconnect)
         const iq = stx`<iq xmlns="jabber:client" type="set" to="${this.peer_jid}">${jingle}</iq>`;
-        api.sendIQ(iq).catch((e) => log.error(e));
+        api.sendIQ(iq).catch((e) => {
+            log.error(e);
+            if (required) this.fail(ENDED_REASONS.FAILED_APPLICATION);
+        });
     }
 
     close() {
+        this.closed = true;
         // Closing the peer connection doesn't release the mic/camera - the
         // local getUserMedia tracks have to be stopped explicitly, otherwise the
         // OS keeps showing the device as in use after the call ends.

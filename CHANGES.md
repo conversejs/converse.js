@@ -1,6 +1,6 @@
 # Changelog
 
-## 14.0.1 (Unreleased)
+## 14.0.1 (2026-10-17)
 
 - fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`
   attribute. Chromium 153 no longer keeps the redundant namespace declaration on `<from/>` and
@@ -9,6 +9,8 @@
   reacts to after later messages.
 - feat(notifications): Prepend `assets_path` to the notification logo path.
 - #3560: Emoji shortnames are now matched case-sensitively
+- fix(types): Import `Strophe.Builder` from the strophe.js package root, so the generated
+  type definitions resolve for TypeScript consumers.
 
 ## 14.0.0 (2026-06-26)
 

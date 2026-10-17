@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-26 10:16+0200\n"
+"POT-Creation-Date: 2026-10-17 15:43+0200\n"
 "PO-Revision-Date: 2026-02-25 23:09+0000\n"
 "Last-Translator: fran secs <fransecs@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
@@ -27,644 +27,49 @@ msgstr ""
 "X-Is-Fallback-For: es-ar es-bo es-cl es-co es-cr es-do es-ec es-es es-sv es-"
 "gt es-hn es-mx es-ni es-pa es-py es-pe es-pr es-us es-uy es-ve\n"
 
-#: dist/converse-no-dependencies.js:39545
-msgid "A timeout occurred"
-msgstr "S'ha exhaurit un temps d'espera"
-
-#: dist/converse-no-dependencies.js:40102
-msgid "You are blocked from sending messages."
-msgstr "Ara no teniu permís per enviar missatges."
-
-#: dist/converse-no-dependencies.js:40783
-msgid "Timeout Error"
-msgstr "Error de temps d'espera"
-
-#: dist/converse-no-dependencies.js:40784
-msgid ""
-"The server did not return your bookmarks within the allowed time. You can "
-"reload the page to request them again."
-msgstr ""
-"El servidor no ha tornat els vostres marcadors dins del temps permés. Podeu "
-"actualitzar la pàgina per demanar-los una altra vegada."
-
-#: dist/converse-no-dependencies.js:43071
-#, javascript-format
-msgid "%1$s has gone offline"
-msgstr "%1$s s'ha desconnectat"
-
-#: dist/converse-no-dependencies.js:43073
-#: dist/converse-no-dependencies.js:52847
-#: dist/converse-no-dependencies.js:70425
-#, javascript-format
-msgid "%1$s has gone away"
-msgstr "%1$s se n'ha anat"
-
-#: dist/converse-no-dependencies.js:43075
-#, javascript-format
-msgid "%1$s is busy"
-msgstr "%1$s està ocupat/da"
-
-#: dist/converse-no-dependencies.js:43077
-#, javascript-format
-msgid "%1$s is online"
-msgstr "%1$s està en línia"
-
-#: dist/converse-no-dependencies.js:46255
-msgid "Frequently used"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:46256
-msgid "Smileys and emotions"
-msgstr "Emoticones i emocions"
-
-#: dist/converse-no-dependencies.js:46257
-msgid "People"
-msgstr "Gent"
-
-#: dist/converse-no-dependencies.js:46258
-msgid "Activities"
-msgstr "Activitats"
-
-#: dist/converse-no-dependencies.js:46259
-msgid "Travel"
-msgstr "Viatges"
-
-#: dist/converse-no-dependencies.js:46260
-msgid "Objects"
-msgstr "Objectes"
-
-#: dist/converse-no-dependencies.js:46261
-msgid "Animals and nature"
-msgstr "Animals i natura"
-
-#: dist/converse-no-dependencies.js:46262
-msgid "Food and drink"
-msgstr "Aliments i begudes"
-
-#: dist/converse-no-dependencies.js:46263
-msgid "Symbols"
-msgstr "Símbols"
-
-#: dist/converse-no-dependencies.js:46264
-msgid "Flags"
-msgstr "Banderes"
-
-#: dist/converse-no-dependencies.js:46265
-msgid "Stickers"
-msgstr "Enganxines"
-
-#: dist/converse-no-dependencies.js:47722
-msgid "Timeout while trying to fetch archived messages."
-msgstr "S'ha exhaurit el temps d'espera intentant obtindre missatges arxivats."
-
-#: dist/converse-no-dependencies.js:50391
-#: dist/converse-no-dependencies.js:71531
-msgid "You're not allowed to retract your message."
-msgstr "No teniu permís per retractar-vos del missatge."
-
-#: dist/converse-no-dependencies.js:50393
-msgid ""
-"Your retraction was not delivered because you're not present in the "
-"groupchat."
-msgstr "La vostra retractació no s'ha lliurat perquè no esteu present al grup."
-
-#: dist/converse-no-dependencies.js:50395
-#: dist/converse-no-dependencies.js:71533
-msgid "Sorry, an error occurred while trying to retract your message."
-msgstr "S'ha produït un error intentant retractar-vos del missatge."
-
-#: dist/converse-no-dependencies.js:50400
-msgid "Your message was not delivered because you weren't allowed to send it."
-msgstr "El vostre missatge no s'ha lliurat perquè no teníeu permès enviar-lo."
-
-#: dist/converse-no-dependencies.js:50402
-msgid ""
-"Your message was not delivered because you're not present in the groupchat."
-msgstr "El vostre missatge no s'ha lliurat perquè no esteu present al grup."
-
-#: dist/converse-no-dependencies.js:50404
-#: dist/converse-no-dependencies.js:71540
-msgid "Sorry, an error occurred while trying to send your message."
-msgstr "S'ha produït un error intentant enviar el vostre missatge."
-
-#: dist/converse-no-dependencies.js:50745
-msgid "A timeout happened while trying to retract your message."
-msgstr "Temps d'espera exhaurit intentant retractar-vos del missatge."
-
-#: dist/converse-no-dependencies.js:51533
-msgid "Sorry, an error happened while running the command."
-msgstr "S'ha produït un error mentre s'executava l'ordre."
-
-#: dist/converse-no-dependencies.js:51533
-#: dist/converse-no-dependencies.js:132044
-msgid "Check your browser's developer console for details."
-msgstr ""
-"Reviseu la consola de desenvolupador del vostre navegador per a més detalls."
-
-#: dist/converse-no-dependencies.js:51553
-#: dist/converse-no-dependencies.js:51571
-msgid "Error: couldn't find a groupchat participant based on your arguments"
-msgstr ""
-"Error: no s'ha pogut trobar un participant del grup segons els vostres "
-"paràmetres"
-
-#: dist/converse-no-dependencies.js:51561
-msgid "Error: found multiple groupchat participant based on your arguments"
-msgstr ""
-"Error: s'han trobat diversos participants del grup segons els vostres "
-"paràmetres"
-
-#: dist/converse-no-dependencies.js:51586
-#, javascript-format
-msgid ""
-"Error: the \"%1$s\" command takes two arguments, the user's nickname and "
-"optionally a reason."
-msgstr ""
-"Error: l'ordre «%1$s» accepta dos paràmetres, l'àlies de l'usuari i una raó "
-"opcional."
-
-#: dist/converse-no-dependencies.js:51671
-msgid ""
-"Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr "Prohibit: no teniu l'afiliació necessària per a fer això."
-
-#: dist/converse-no-dependencies.js:51702
-msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr "Prohibit: no teniu el rol necessari per a fer això."
-
-#: dist/converse-no-dependencies.js:52051
-msgid "You're not allowed to register yourself in this groupchat."
-msgstr "No teniu permís per registrar-vos en aquest grup."
-
-#: dist/converse-no-dependencies.js:52053
-msgid ""
-"You're not allowed to register in this groupchat because it's members-only."
-msgstr ""
-"No teniu permís per accedir a aquest grup perquè és només per a membres."
-
-#: dist/converse-no-dependencies.js:52387
-#, javascript-format
-msgid "Topic set by %1$s"
-msgstr "Assumpte establit per %1$s"
-
-#: dist/converse-no-dependencies.js:52387
-#, javascript-format
-msgid "Topic cleared by %1$s"
-msgstr "Assumpte eliminat per %1$s"
-
-#: dist/converse-no-dependencies.js:52843
-#: dist/converse-no-dependencies.js:70421
-#, javascript-format
-msgid "%1$s is typing"
-msgstr "%1$s està escrivint"
-
-#: dist/converse-no-dependencies.js:52845
-#: dist/converse-no-dependencies.js:70423
-#, javascript-format
-msgid "%1$s has stopped typing"
-msgstr "%1$s ha deixat d'escriure"
-
-#: dist/converse-no-dependencies.js:52849
-#, javascript-format
-msgid "%1$s has entered the groupchat"
-msgstr "%1$s ha entrat al grup"
-
-#: dist/converse-no-dependencies.js:52851
-#, javascript-format
-msgid "%1$s has left the groupchat"
-msgstr "%1$s ha sortit del grup"
-
-#: dist/converse-no-dependencies.js:52853
-#, javascript-format
-msgid "%1$s is now a moderator"
-msgstr "%1$s ara és moderador/a"
-
-#: dist/converse-no-dependencies.js:52855
-#, javascript-format
-msgid "%1$s is no longer a moderator"
-msgstr "%1$s ja no és moderador/a"
-
-#: dist/converse-no-dependencies.js:52857
-#, javascript-format
-msgid "%1$s has been given a voice"
-msgstr "%1$s ja pot participar en aquest grup"
-
-#: dist/converse-no-dependencies.js:52859
-#, javascript-format
-msgid "%1$s has been muted"
-msgstr "S'ha silenciat a %1$s"
-
-#: dist/converse-no-dependencies.js:52867
-#: dist/converse-no-dependencies.js:152047
-#, javascript-format
-msgid "%1$s and %2$s"
-msgstr "%1$s i %2$s"
-
-#: dist/converse-no-dependencies.js:52870
-#, javascript-format
-msgid "%1$s are typing"
-msgstr "%1$s estan escrivint"
-
-#: dist/converse-no-dependencies.js:52872
-#, javascript-format
-msgid "%1$s have stopped typing"
-msgstr "%1$s han deixat d'escriure"
-
-#: dist/converse-no-dependencies.js:52874
-#, javascript-format
-msgid "%1$s have gone away"
-msgstr "%1$s se n'han anat"
-
-#: dist/converse-no-dependencies.js:52876
-#, javascript-format
-msgid "%1$s have entered the groupchat"
-msgstr "%1$s han entrat al grup"
-
-#: dist/converse-no-dependencies.js:52878
-#, javascript-format
-msgid "%1$s have left the groupchat"
-msgstr "%1$s han sortit del grup"
-
-#: dist/converse-no-dependencies.js:52880
-#, javascript-format
-msgid "%1$s are now moderators"
-msgstr "%1$s ara són moderadors/es"
-
-#: dist/converse-no-dependencies.js:52882
-#, javascript-format
-msgid "%1$s are no longer moderators"
-msgstr "%1$s ja no són moderadors/es"
-
-#: dist/converse-no-dependencies.js:52884
-#, javascript-format
-msgid "%1$s have been given voices"
-msgstr "%1$s ja no estan silenciats"
-
-#: dist/converse-no-dependencies.js:52886
-#, javascript-format
-msgid "%1$s have been muted"
-msgstr "%1$s han estat silenciats"
-
-#: dist/converse-no-dependencies.js:53281
-#, javascript-format
-msgid "%1$s has been banned by %2$s"
-msgstr "%1$s ha estat bandejat per %2$s"
-
-#: dist/converse-no-dependencies.js:53281
-#, javascript-format
-msgid "%1$s has been banned"
-msgstr "%1$s ha estat bandejat"
-
-#: dist/converse-no-dependencies.js:53283
-#, javascript-format
-msgid "%1$s's nickname has changed"
-msgstr "L'àlies de %1$s ha canviat"
-
-#: dist/converse-no-dependencies.js:53285
-#, javascript-format
-msgid "%1$s has been kicked out by %2$s"
-msgstr "%1$s ha estat expulsat per %2$s"
-
-#: dist/converse-no-dependencies.js:53285
-#, javascript-format
-msgid "%1$s has been kicked out"
-msgstr "%1$s ha estat expulsat"
-
-#: dist/converse-no-dependencies.js:53287
-#, javascript-format
-msgid "%1$s has been removed because of an affiliation change"
-msgstr "S'ha eliminat a %1$s a causa d'un canvi d'afiliació"
-
-#: dist/converse-no-dependencies.js:53289
-#, javascript-format
-msgid "%1$s has been removed for not being a member"
-msgstr "S'ha eliminat a %1$s perquè no és membre"
-
-#: dist/converse-no-dependencies.js:53312
-#, javascript-format
-msgid "%1$s is no longer an admin of this groupchat"
-msgstr "%1$s ja no és administrador/a d'aquest grup"
-
-#: dist/converse-no-dependencies.js:53317
-#, javascript-format
-msgid "%1$s is no longer an owner of this groupchat"
-msgstr "%1$s ja no és propietari/a d'aquest grup"
-
-#: dist/converse-no-dependencies.js:53322
-#, javascript-format
-msgid "%1$s is no longer banned from this groupchat"
-msgstr "Aquest grup torna a permetre l'accés de %1$s"
-
-#: dist/converse-no-dependencies.js:53328
-#, javascript-format
-msgid "%1$s is no longer a member of this groupchat"
-msgstr "%1$s ja no és membre d'aquest grup"
-
-#: dist/converse-no-dependencies.js:53334
-#, javascript-format
-msgid "%1$s is now a member of this groupchat"
-msgstr "%1$s ara és membre d'aquest grup"
-
-#: dist/converse-no-dependencies.js:53340
-#, javascript-format
-msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s ara és %2$s d'aquest grup"
-
-#: dist/converse-no-dependencies.js:53466
-msgid ""
-"The nickname you chose is reserved or currently in use, please choose a "
-"different one."
-msgstr ""
-"L'àlies que heu triat està reservat o es troba en ús, si us plau trieu-ne un "
-"altre."
-
-#: dist/converse-no-dependencies.js:53492
-msgid "Password incorrect"
-msgstr "Contrasenya incorrecta"
-
-#: dist/converse-no-dependencies.js:53499
-msgid "You are not on the member list of this groupchat."
-msgstr "No sou a la llista de membres d'aquest grup."
-
-#: dist/converse-no-dependencies.js:53507
-msgid "You are not allowed to create new groupchats."
-msgstr "No teniu permís per crear grups."
-
-#: dist/converse-no-dependencies.js:53510
-msgid "Your nickname doesn't conform to this groupchat's policies."
-msgstr "El vostre àlies no compleix amb la política d'aquest grup."
-
-#: dist/converse-no-dependencies.js:53525
-msgid "This groupchat does not (yet) exist."
-msgstr "Aquest grup no existeix (encara)."
-
-#: dist/converse-no-dependencies.js:53528
-msgid "This groupchat has reached its maximum number of participants."
-msgstr "Aquest grup ha assolit el nombre màxim de participants."
-
-#: dist/converse-no-dependencies.js:53531
-msgid "Remote server not found"
-msgstr "No s'ha trobat el servidor remot"
-
-#: dist/converse-no-dependencies.js:53534
-msgid "You're not allowed to enter this groupchat"
-msgstr "No teniu permís per registrar-vos en aquest grup"
-
-#: dist/converse-no-dependencies.js:53537
-msgid "An error happened while trying to enter this groupchat"
-msgstr "S'ha produït un error en intentar entrar en aquest grup"
-
-#: dist/converse-no-dependencies.js:55029
-msgid "This groupchat is not anonymous"
-msgstr "Aquest grup no és anònim"
-
-#: dist/converse-no-dependencies.js:55030
-msgid "This groupchat now shows unavailable members"
-msgstr "Aquesta sala ara mostra els membres no disponibles"
-
-#: dist/converse-no-dependencies.js:55031
-msgid "This groupchat does not show unavailable members"
-msgstr "Aquesta sala no mostra els membres no disponibles"
-
-#: dist/converse-no-dependencies.js:55032
-msgid "The groupchat configuration has changed"
-msgstr "Ha canviat la configuració del grup"
-
-#: dist/converse-no-dependencies.js:55033
-msgid "Groupchat logging is now enabled"
-msgstr "El registre del grup ara està habilitat"
-
-#: dist/converse-no-dependencies.js:55034
-msgid "Groupchat logging is now disabled"
-msgstr "El registre del grup ara està deshabilitat"
-
-#: dist/converse-no-dependencies.js:55035
-msgid "This groupchat is now no longer anonymous"
-msgstr "Aquest grup ara ja no és anònim"
-
-#: dist/converse-no-dependencies.js:55036
-msgid "This groupchat is now semi-anonymous"
-msgstr "Aquest grup ara és parcialment anònim"
-
-#: dist/converse-no-dependencies.js:55037
-msgid "This groupchat is now fully-anonymous"
-msgstr "Aquest grup ara és totalment anònim"
-
-#: dist/converse-no-dependencies.js:55038
-msgid "A new groupchat has been created"
-msgstr "S'ha creat un grup nou"
-
-#. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:55040
-#, javascript-format
-msgid "Your nickname has been automatically set to %1$s"
-msgstr "El vostre àlies s' ha establit automàticament a %1$s"
-
-#: dist/converse-no-dependencies.js:55041
-msgid "You have been banned from this groupchat"
-msgstr "Se us ha bandejat d'aquest grup"
-
-#. XXX: Note the triple underscore function and not double underscore.
-#: dist/converse-no-dependencies.js:55043
-#, javascript-format
-msgid "Your nickname has been changed to %1$s"
-msgstr "El vostre àlies s'ha canviat a %1$s"
-
-#: dist/converse-no-dependencies.js:55044
-msgid "You have been kicked from this groupchat"
-msgstr "Se us ha expulsat d'aquest grup"
-
-#: dist/converse-no-dependencies.js:55045
-msgid ""
-"You have been removed from this groupchat because of an affiliation change"
-msgstr "Se us ha eliminat d'aquest grup a causa d'un canvi d'afiliació"
-
-#: dist/converse-no-dependencies.js:55046
-msgid ""
-"You have been removed from this groupchat because it has changed to members-"
-"only and you're not a member"
-msgstr ""
-"Se us ha eliminat d'aquest grup perquè ara només permet membres i no ho sou"
-
-#: dist/converse-no-dependencies.js:55047
-msgid ""
-"You have been removed from this groupchat because the service hosting it is "
-"being shut down"
-msgstr ""
-"Se us ha eliminat d'aquest grup perquè s'està tancant el servei que l'està "
-"allotjant"
-
-#: dist/converse-no-dependencies.js:55048
-msgid "You have exited this groupchat due to a technical problem"
-msgstr "Heu sortit d'aquest grup a causa d'un problema tècnic"
-
-#: dist/converse-no-dependencies.js:56811
-msgid ""
-"Received an OMEMO encrypted message which could not be decrypted, because it "
-"was not encrypted for this device."
-msgstr ""
-
-#: dist/converse-no-dependencies.js:56819
-msgid "Sorry, could not decrypt a received OMEMO message due to an error."
-msgstr "No s'ha pogut desxifrar un missatge OMEMO rebut a causa d'un error."
-
-#: dist/converse-no-dependencies.js:56854
-msgid ""
-"Sorry, could not decrypt a received OMEMO message because we don't have the "
-"XMPP address for that user."
-msgstr ""
-"No s'ha pogut desxifrar un missatge OMEMO rebut perquè no tenim l'adreça "
-"XMPP d'aqueix/a usuari/a."
-
-#: dist/converse-no-dependencies.js:59581
-#, javascript-format
-msgid ""
-"Sorry, we're unable to send an encrypted message because %1$s requires you "
-"to be subscribed to their presence in order to see their OMEMO information"
-msgstr ""
-"No és possible enviar un missatge xifrat perquè %1$s requereix que estigueu "
-"subscrits a la seva presència per a poder veure la seva informació OMEMO"
-
-#: dist/converse-no-dependencies.js:59583
-#, javascript-format
-msgid ""
-"Sorry, we're unable to send an encrypted message because the remote server "
-"for %1$s could not be found"
-msgstr ""
-"No s'ha pogut enviar un missatge xifrat perquè el servidor remot %1$s no "
-"s'ha trobat"
-
-#: dist/converse-no-dependencies.js:59585
-msgid "Unable to send an encrypted message due to an unexpected error."
-msgstr "No es pot enviar un missatge xifrat a causa d'un error inesperat."
-
-#: dist/converse-no-dependencies.js:59588
-#: dist/converse-no-dependencies.js:59590
-#: dist/converse-no-dependencies.js:101145
-#: dist/converse-no-dependencies.js:101149
-#: dist/converse-no-dependencies.js:101254
-#: dist/converse-no-dependencies.js:106464
-#: dist/converse-no-dependencies.js:106605
-#: dist/converse-no-dependencies.js:106670
-#: dist/converse-no-dependencies.js:117828
-#: dist/converse-no-dependencies.js:128463
-#: dist/converse-no-dependencies.js:128473
-#: dist/converse-no-dependencies.js:132045
-#: dist/converse-no-dependencies.js:137750
-#: dist/converse-no-dependencies.js:141667
-msgid "Error"
-msgstr "Error"
-
-#: dist/converse-no-dependencies.js:59895
-msgid ""
-"Sorry, no devices found to which we can send an OMEMO encrypted message."
-msgstr ""
-"No s'han trobat dispositius a què es puguin enviar missatges xifrats OMEMO."
-
-#: dist/converse-no-dependencies.js:59905
-msgid ""
-"Cannot use OMEMO in this groupchat — it must be non-anonymous and members-"
-"only."
-msgstr ""
-
-#: dist/converse-no-dependencies.js:60858
-msgid ""
-"This is an OMEMO encrypted message which your client doesn’t seem to "
-"support. Find more information on https://conversations.im/omemo"
-msgstr ""
-"Aquest és un missatge xifrat amb OMEMO, amb el qual el vostre client sembla "
-"no ser compatible. Trobeu més informació a https://conversations.im/omemo"
-
-#: dist/converse-no-dependencies.js:60991
-#, javascript-format
-msgid ""
-"%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
-"will no longer be possible in this grouchat."
-msgstr ""
-"Sembla que el client de %1$s no admet OMEMO. El xat xifrat ja no serà "
-"possible en aquest grup."
-
-#: dist/converse-no-dependencies.js:63381
-#, javascript-format
-msgid "Sorry, an error occurred while trying to add %1$s as a contact."
-msgstr "S'ha produït un error intentant afegir %1$s com a contacte."
-
-#: dist/converse-no-dependencies.js:63650
-msgid "This client does not allow presence subscriptions"
-msgstr "Aquest client no permet les subscripcions presencials"
-
-#: dist/converse-no-dependencies.js:63896
-msgid "Unsaved contacts"
-msgstr "Contactes no desats"
-
-#: dist/converse-no-dependencies.js:63897
-msgid "My contacts"
-msgstr "Els meus contactes"
-
-#: dist/converse-no-dependencies.js:63898
-msgid "Pending contacts"
-msgstr "Contactes pendents"
-
-#: dist/converse-no-dependencies.js:63899
-msgid "Contact requests"
-msgstr "Sol·licituds de contacte"
-
-#: dist/converse-no-dependencies.js:63900
-msgid "Ungrouped"
-msgstr "Sense grup"
-
-#: dist/converse-no-dependencies.js:63901
-#: dist/converse-no-dependencies.js:109292
-msgid "New messages"
-msgstr "Missatges nous"
-
-#: dist/converse-no-dependencies.js:65181
-msgid "me"
-msgstr "jo"
-
-#: dist/converse-no-dependencies.js:68336
+#: dist/converse-no-dependencies.js:37001
 msgid "Could not automatically determine a connection URL"
 msgstr "No s'ha pogut determinar automàticament una URL de connexió"
 
-#: dist/converse-no-dependencies.js:68672
-#: dist/converse-no-dependencies.js:68725
+#: dist/converse-no-dependencies.js:37337
+#: dist/converse-no-dependencies.js:37390
 msgid "An error occurred while connecting to the chat server."
 msgstr "S'ha produït un error en connectar-se al servidor de xat."
 
-#: dist/converse-no-dependencies.js:68732
+#: dist/converse-no-dependencies.js:37397
 msgid "Your XMPP address and/or password is incorrect. Please try again."
 msgstr ""
 "La vostra adreça XMPP i/o contrasenya són incorrectes. Torneu-ho a provar."
 
-#: dist/converse-no-dependencies.js:68741
+#: dist/converse-no-dependencies.js:37406
 #, javascript-format
 msgid "We could not connect to %1$s, is your XMPP address correct?"
 msgstr "No ens hem pogut connectar a %1$s, és correcta l'adreça XMPP?"
 
-#: dist/converse-no-dependencies.js:68743
+#: dist/converse-no-dependencies.js:37408
 msgid "The XMPP server rejected the connection because of a policy violation"
 msgstr ""
 "El servidor XMPP ha rebutjat la connexió a causa d'una infracció de la "
 "directiva"
 
-#: dist/converse-no-dependencies.js:68745
+#: dist/converse-no-dependencies.js:37410
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
 "El servidor XMPP no ha proporcionat cap mecanisme d'autenticació compatible"
 
-#: dist/converse-no-dependencies.js:69893
+#: dist/converse-no-dependencies.js:44370
 msgid "Undecryptable OMEMO message"
 msgstr "Missatge OMEMO indesxifrable"
 
-#: dist/converse-no-dependencies.js:69993
+#: dist/converse-no-dependencies.js:44470
 msgid "Sorry, could not determine upload URL."
 msgstr "No s'ha pogut determinar URL de pujada."
 
-#: dist/converse-no-dependencies.js:70010
+#: dist/converse-no-dependencies.js:44487
 msgid "Sorry, could not determine file upload URL."
 msgstr "No s'ha pogut determinar URL de pujada d'arxius."
 
-#: dist/converse-no-dependencies.js:70086
+#: dist/converse-no-dependencies.js:44563
 #, javascript-format
 msgid ""
 "Sorry, could not successfully upload your file. Your server’s response: "
@@ -672,16 +77,35 @@ msgid ""
 msgstr ""
 "No s'ha pogut carregar el vostre fitxer. Resposta del vostre servidor: «%1$s»"
 
-#: dist/converse-no-dependencies.js:70088
+#: dist/converse-no-dependencies.js:44565
 msgid "Sorry, could not successfully upload your file."
 msgstr "No s'ha pogut completar la pujada del vostre fitxer."
 
-#: dist/converse-no-dependencies.js:70906
-#: dist/converse-no-dependencies.js:70924
+#: dist/converse-no-dependencies.js:45134
+#: dist/converse-no-dependencies.js:52904
+#, javascript-format
+msgid "%1$s is typing"
+msgstr "%1$s està escrivint"
+
+#: dist/converse-no-dependencies.js:45136
+#: dist/converse-no-dependencies.js:52906
+#, javascript-format
+msgid "%1$s has stopped typing"
+msgstr "%1$s ha deixat d'escriure"
+
+#: dist/converse-no-dependencies.js:45138
+#: dist/converse-no-dependencies.js:52908
+#: dist/converse-no-dependencies.js:54829
+#, javascript-format
+msgid "%1$s has gone away"
+msgstr "%1$s se n'ha anat"
+
+#: dist/converse-no-dependencies.js:45619
+#: dist/converse-no-dependencies.js:45637
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr "El vostre servidor no permet pujar fitxers."
 
-#: dist/converse-no-dependencies.js:70955
+#: dist/converse-no-dependencies.js:45668
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server."
@@ -689,7 +113,7 @@ msgstr ""
 "La mida del vostre fitxer, %1$s, excedeix la màxima permesa pel vostre "
 "servidor."
 
-#: dist/converse-no-dependencies.js:70955
+#: dist/converse-no-dependencies.js:45668
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
@@ -698,45 +122,621 @@ msgstr ""
 "La mida del vostre fitxer, %1$s, excedeix la màxima permesa pel vostre "
 "servidor, que és %2$s."
 
-#: dist/converse-no-dependencies.js:71538
+#: dist/converse-no-dependencies.js:46244
+#: dist/converse-no-dependencies.js:50452
+msgid "You're not allowed to retract your message."
+msgstr "No teniu permís per retractar-vos del missatge."
+
+#: dist/converse-no-dependencies.js:46246
+#: dist/converse-no-dependencies.js:50456
+msgid "Sorry, an error occurred while trying to retract your message."
+msgstr "S'ha produït un error intentant retractar-vos del missatge."
+
+#: dist/converse-no-dependencies.js:46251
 msgid "You're not allowed to send a message."
 msgstr "No teniu permís per enviar un missatge."
 
-#: dist/converse-no-dependencies.js:82996
+#: dist/converse-no-dependencies.js:46253
+#: dist/converse-no-dependencies.js:50465
+msgid "Sorry, an error occurred while trying to send your message."
+msgstr "S'ha produït un error intentant enviar el vostre missatge."
+
+#: dist/converse-no-dependencies.js:47576
+msgid "Frequently used"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:47577
+msgid "Smileys and emotions"
+msgstr "Emoticones i emocions"
+
+#: dist/converse-no-dependencies.js:47578
+msgid "People"
+msgstr "Gent"
+
+#: dist/converse-no-dependencies.js:47579
+msgid "Activities"
+msgstr "Activitats"
+
+#: dist/converse-no-dependencies.js:47580
+msgid "Travel"
+msgstr "Viatges"
+
+#: dist/converse-no-dependencies.js:47581
+msgid "Objects"
+msgstr "Objectes"
+
+#: dist/converse-no-dependencies.js:47582
+msgid "Animals and nature"
+msgstr "Animals i natura"
+
+#: dist/converse-no-dependencies.js:47583
+msgid "Food and drink"
+msgstr "Aliments i begudes"
+
+#: dist/converse-no-dependencies.js:47584
+msgid "Symbols"
+msgstr "Símbols"
+
+#: dist/converse-no-dependencies.js:47585
+msgid "Flags"
+msgstr "Banderes"
+
+#: dist/converse-no-dependencies.js:47586
+msgid "Stickers"
+msgstr "Enganxines"
+
+#: dist/converse-no-dependencies.js:50454
+msgid ""
+"Your retraction was not delivered because you're not present in the "
+"groupchat."
+msgstr "La vostra retractació no s'ha lliurat perquè no esteu present al grup."
+
+#: dist/converse-no-dependencies.js:50461
+msgid "Your message was not delivered because you weren't allowed to send it."
+msgstr "El vostre missatge no s'ha lliurat perquè no teníeu permès enviar-lo."
+
+#: dist/converse-no-dependencies.js:50463
+msgid ""
+"Your message was not delivered because you're not present in the groupchat."
+msgstr "El vostre missatge no s'ha lliurat perquè no esteu present al grup."
+
+#: dist/converse-no-dependencies.js:50806
+msgid "A timeout happened while trying to retract your message."
+msgstr "Temps d'espera exhaurit intentant retractar-vos del missatge."
+
+#: dist/converse-no-dependencies.js:51594
+msgid "Sorry, an error happened while running the command."
+msgstr "S'ha produït un error mentre s'executava l'ordre."
+
+#: dist/converse-no-dependencies.js:51594
+#: dist/converse-no-dependencies.js:124945
+msgid "Check your browser's developer console for details."
+msgstr ""
+"Reviseu la consola de desenvolupador del vostre navegador per a més detalls."
+
+#: dist/converse-no-dependencies.js:51614
+#: dist/converse-no-dependencies.js:51632
+msgid "Error: couldn't find a groupchat participant based on your arguments"
+msgstr ""
+"Error: no s'ha pogut trobar un participant del grup segons els vostres "
+"paràmetres"
+
+#: dist/converse-no-dependencies.js:51622
+msgid "Error: found multiple groupchat participant based on your arguments"
+msgstr ""
+"Error: s'han trobat diversos participants del grup segons els vostres "
+"paràmetres"
+
+#: dist/converse-no-dependencies.js:51647
+#, javascript-format
+msgid ""
+"Error: the \"%1$s\" command takes two arguments, the user's nickname and "
+"optionally a reason."
+msgstr ""
+"Error: l'ordre «%1$s» accepta dos paràmetres, l'àlies de l'usuari i una raó "
+"opcional."
+
+#: dist/converse-no-dependencies.js:51732
+msgid ""
+"Forbidden: you do not have the necessary affiliation in order to do that."
+msgstr "Prohibit: no teniu l'afiliació necessària per a fer això."
+
+#: dist/converse-no-dependencies.js:51763
+msgid "Forbidden: you do not have the necessary role in order to do that."
+msgstr "Prohibit: no teniu el rol necessari per a fer això."
+
+#: dist/converse-no-dependencies.js:52112
+msgid "You're not allowed to register yourself in this groupchat."
+msgstr "No teniu permís per registrar-vos en aquest grup."
+
+#: dist/converse-no-dependencies.js:52114
+msgid ""
+"You're not allowed to register in this groupchat because it's members-only."
+msgstr ""
+"No teniu permís per accedir a aquest grup perquè és només per a membres."
+
+#: dist/converse-no-dependencies.js:52448
+#, javascript-format
+msgid "Topic set by %1$s"
+msgstr "Assumpte establit per %1$s"
+
+#: dist/converse-no-dependencies.js:52448
+#, javascript-format
+msgid "Topic cleared by %1$s"
+msgstr "Assumpte eliminat per %1$s"
+
+#: dist/converse-no-dependencies.js:52910
+#, javascript-format
+msgid "%1$s has entered the groupchat"
+msgstr "%1$s ha entrat al grup"
+
+#: dist/converse-no-dependencies.js:52912
+#, javascript-format
+msgid "%1$s has left the groupchat"
+msgstr "%1$s ha sortit del grup"
+
+#: dist/converse-no-dependencies.js:52914
+#, javascript-format
+msgid "%1$s is now a moderator"
+msgstr "%1$s ara és moderador/a"
+
+#: dist/converse-no-dependencies.js:52916
+#, javascript-format
+msgid "%1$s is no longer a moderator"
+msgstr "%1$s ja no és moderador/a"
+
+#: dist/converse-no-dependencies.js:52918
+#, javascript-format
+msgid "%1$s has been given a voice"
+msgstr "%1$s ja pot participar en aquest grup"
+
+#: dist/converse-no-dependencies.js:52920
+#, javascript-format
+msgid "%1$s has been muted"
+msgstr "S'ha silenciat a %1$s"
+
+#: dist/converse-no-dependencies.js:52928
+#: dist/converse-no-dependencies.js:144556
+#, javascript-format
+msgid "%1$s and %2$s"
+msgstr "%1$s i %2$s"
+
+#: dist/converse-no-dependencies.js:52931
+#, javascript-format
+msgid "%1$s are typing"
+msgstr "%1$s estan escrivint"
+
+#: dist/converse-no-dependencies.js:52933
+#, javascript-format
+msgid "%1$s have stopped typing"
+msgstr "%1$s han deixat d'escriure"
+
+#: dist/converse-no-dependencies.js:52935
+#, javascript-format
+msgid "%1$s have gone away"
+msgstr "%1$s se n'han anat"
+
+#: dist/converse-no-dependencies.js:52937
+#, javascript-format
+msgid "%1$s have entered the groupchat"
+msgstr "%1$s han entrat al grup"
+
+#: dist/converse-no-dependencies.js:52939
+#, javascript-format
+msgid "%1$s have left the groupchat"
+msgstr "%1$s han sortit del grup"
+
+#: dist/converse-no-dependencies.js:52941
+#, javascript-format
+msgid "%1$s are now moderators"
+msgstr "%1$s ara són moderadors/es"
+
+#: dist/converse-no-dependencies.js:52943
+#, javascript-format
+msgid "%1$s are no longer moderators"
+msgstr "%1$s ja no són moderadors/es"
+
+#: dist/converse-no-dependencies.js:52945
+#, javascript-format
+msgid "%1$s have been given voices"
+msgstr "%1$s ja no estan silenciats"
+
+#: dist/converse-no-dependencies.js:52947
+#, javascript-format
+msgid "%1$s have been muted"
+msgstr "%1$s han estat silenciats"
+
+#: dist/converse-no-dependencies.js:53342
+#, javascript-format
+msgid "%1$s has been banned by %2$s"
+msgstr "%1$s ha estat bandejat per %2$s"
+
+#: dist/converse-no-dependencies.js:53342
+#, javascript-format
+msgid "%1$s has been banned"
+msgstr "%1$s ha estat bandejat"
+
+#: dist/converse-no-dependencies.js:53344
+#, javascript-format
+msgid "%1$s's nickname has changed"
+msgstr "L'àlies de %1$s ha canviat"
+
+#: dist/converse-no-dependencies.js:53346
+#, javascript-format
+msgid "%1$s has been kicked out by %2$s"
+msgstr "%1$s ha estat expulsat per %2$s"
+
+#: dist/converse-no-dependencies.js:53346
+#, javascript-format
+msgid "%1$s has been kicked out"
+msgstr "%1$s ha estat expulsat"
+
+#: dist/converse-no-dependencies.js:53348
+#, javascript-format
+msgid "%1$s has been removed because of an affiliation change"
+msgstr "S'ha eliminat a %1$s a causa d'un canvi d'afiliació"
+
+#: dist/converse-no-dependencies.js:53350
+#, javascript-format
+msgid "%1$s has been removed for not being a member"
+msgstr "S'ha eliminat a %1$s perquè no és membre"
+
+#: dist/converse-no-dependencies.js:53373
+#, javascript-format
+msgid "%1$s is no longer an admin of this groupchat"
+msgstr "%1$s ja no és administrador/a d'aquest grup"
+
+#: dist/converse-no-dependencies.js:53378
+#, javascript-format
+msgid "%1$s is no longer an owner of this groupchat"
+msgstr "%1$s ja no és propietari/a d'aquest grup"
+
+#: dist/converse-no-dependencies.js:53383
+#, javascript-format
+msgid "%1$s is no longer banned from this groupchat"
+msgstr "Aquest grup torna a permetre l'accés de %1$s"
+
+#: dist/converse-no-dependencies.js:53389
+#, javascript-format
+msgid "%1$s is no longer a member of this groupchat"
+msgstr "%1$s ja no és membre d'aquest grup"
+
+#: dist/converse-no-dependencies.js:53395
+#, javascript-format
+msgid "%1$s is now a member of this groupchat"
+msgstr "%1$s ara és membre d'aquest grup"
+
+#: dist/converse-no-dependencies.js:53401
+#, javascript-format
+msgid "%1$s is now an %2$s of this groupchat"
+msgstr "%1$s ara és %2$s d'aquest grup"
+
+#: dist/converse-no-dependencies.js:53527
+msgid ""
+"The nickname you chose is reserved or currently in use, please choose a "
+"different one."
+msgstr ""
+"L'àlies que heu triat està reservat o es troba en ús, si us plau trieu-ne un "
+"altre."
+
+#: dist/converse-no-dependencies.js:53553
+msgid "Password incorrect"
+msgstr "Contrasenya incorrecta"
+
+#: dist/converse-no-dependencies.js:53560
+msgid "You are not on the member list of this groupchat."
+msgstr "No sou a la llista de membres d'aquest grup."
+
+#: dist/converse-no-dependencies.js:53568
+msgid "You are not allowed to create new groupchats."
+msgstr "No teniu permís per crear grups."
+
+#: dist/converse-no-dependencies.js:53571
+msgid "Your nickname doesn't conform to this groupchat's policies."
+msgstr "El vostre àlies no compleix amb la política d'aquest grup."
+
+#: dist/converse-no-dependencies.js:53586
+msgid "This groupchat does not (yet) exist."
+msgstr "Aquest grup no existeix (encara)."
+
+#: dist/converse-no-dependencies.js:53589
+msgid "This groupchat has reached its maximum number of participants."
+msgstr "Aquest grup ha assolit el nombre màxim de participants."
+
+#: dist/converse-no-dependencies.js:53592
+msgid "Remote server not found"
+msgstr "No s'ha trobat el servidor remot"
+
+#: dist/converse-no-dependencies.js:53595
+msgid "You're not allowed to enter this groupchat"
+msgstr "No teniu permís per registrar-vos en aquest grup"
+
+#: dist/converse-no-dependencies.js:53598
+msgid "An error happened while trying to enter this groupchat"
+msgstr "S'ha produït un error en intentar entrar en aquest grup"
+
+#: dist/converse-no-dependencies.js:54827
+#, javascript-format
+msgid "%1$s has gone offline"
+msgstr "%1$s s'ha desconnectat"
+
+#: dist/converse-no-dependencies.js:54831
+#, javascript-format
+msgid "%1$s is busy"
+msgstr "%1$s està ocupat/da"
+
+#: dist/converse-no-dependencies.js:54833
+#, javascript-format
+msgid "%1$s is online"
+msgstr "%1$s està en línia"
+
+#: dist/converse-no-dependencies.js:57218
+msgid "This groupchat is not anonymous"
+msgstr "Aquest grup no és anònim"
+
+#: dist/converse-no-dependencies.js:57219
+msgid "This groupchat now shows unavailable members"
+msgstr "Aquesta sala ara mostra els membres no disponibles"
+
+#: dist/converse-no-dependencies.js:57220
+msgid "This groupchat does not show unavailable members"
+msgstr "Aquesta sala no mostra els membres no disponibles"
+
+#: dist/converse-no-dependencies.js:57221
+msgid "The groupchat configuration has changed"
+msgstr "Ha canviat la configuració del grup"
+
+#: dist/converse-no-dependencies.js:57222
+msgid "Groupchat logging is now enabled"
+msgstr "El registre del grup ara està habilitat"
+
+#: dist/converse-no-dependencies.js:57223
+msgid "Groupchat logging is now disabled"
+msgstr "El registre del grup ara està deshabilitat"
+
+#: dist/converse-no-dependencies.js:57224
+msgid "This groupchat is now no longer anonymous"
+msgstr "Aquest grup ara ja no és anònim"
+
+#: dist/converse-no-dependencies.js:57225
+msgid "This groupchat is now semi-anonymous"
+msgstr "Aquest grup ara és parcialment anònim"
+
+#: dist/converse-no-dependencies.js:57226
+msgid "This groupchat is now fully-anonymous"
+msgstr "Aquest grup ara és totalment anònim"
+
+#: dist/converse-no-dependencies.js:57227
+msgid "A new groupchat has been created"
+msgstr "S'ha creat un grup nou"
+
+#. XXX: Note the triple underscore function and not double underscore.
+#: dist/converse-no-dependencies.js:57229
+#, javascript-format
+msgid "Your nickname has been automatically set to %1$s"
+msgstr "El vostre àlies s' ha establit automàticament a %1$s"
+
+#: dist/converse-no-dependencies.js:57230
+msgid "You have been banned from this groupchat"
+msgstr "Se us ha bandejat d'aquest grup"
+
+#. XXX: Note the triple underscore function and not double underscore.
+#: dist/converse-no-dependencies.js:57232
+#, javascript-format
+msgid "Your nickname has been changed to %1$s"
+msgstr "El vostre àlies s'ha canviat a %1$s"
+
+#: dist/converse-no-dependencies.js:57233
+msgid "You have been kicked from this groupchat"
+msgstr "Se us ha expulsat d'aquest grup"
+
+#: dist/converse-no-dependencies.js:57234
+msgid ""
+"You have been removed from this groupchat because of an affiliation change"
+msgstr "Se us ha eliminat d'aquest grup a causa d'un canvi d'afiliació"
+
+#: dist/converse-no-dependencies.js:57235
+msgid ""
+"You have been removed from this groupchat because it has changed to members-"
+"only and you're not a member"
+msgstr ""
+"Se us ha eliminat d'aquest grup perquè ara només permet membres i no ho sou"
+
+#: dist/converse-no-dependencies.js:57236
+msgid ""
+"You have been removed from this groupchat because the service hosting it is "
+"being shut down"
+msgstr ""
+"Se us ha eliminat d'aquest grup perquè s'està tancant el servei que l'està "
+"allotjant"
+
+#: dist/converse-no-dependencies.js:57237
+msgid "You have exited this groupchat due to a technical problem"
+msgstr "Heu sortit d'aquest grup a causa d'un problema tècnic"
+
+#: dist/converse-no-dependencies.js:57798
+msgid "Timeout Error"
+msgstr "Error de temps d'espera"
+
+#: dist/converse-no-dependencies.js:57799
+msgid ""
+"The server did not return your bookmarks within the allowed time. You can "
+"reload the page to request them again."
+msgstr ""
+"El servidor no ha tornat els vostres marcadors dins del temps permés. Podeu "
+"actualitzar la pàgina per demanar-los una altra vegada."
+
+#: dist/converse-no-dependencies.js:58989
+msgid "You are blocked from sending messages."
+msgstr "Ara no teniu permís per enviar missatges."
+
+#: dist/converse-no-dependencies.js:59727
+msgid "A timeout occurred"
+msgstr "S'ha exhaurit un temps d'espera"
+
+#: dist/converse-no-dependencies.js:61684
+#, javascript-format
+msgid ""
+"Sorry, we're unable to send an encrypted message because %1$s requires you "
+"to be subscribed to their presence in order to see their OMEMO information"
+msgstr ""
+"No és possible enviar un missatge xifrat perquè %1$s requereix que estigueu "
+"subscrits a la seva presència per a poder veure la seva informació OMEMO"
+
+#: dist/converse-no-dependencies.js:61686
+#, javascript-format
+msgid ""
+"Sorry, we're unable to send an encrypted message because the remote server "
+"for %1$s could not be found"
+msgstr ""
+"No s'ha pogut enviar un missatge xifrat perquè el servidor remot %1$s no "
+"s'ha trobat"
+
+#: dist/converse-no-dependencies.js:61688
+msgid "Unable to send an encrypted message due to an unexpected error."
+msgstr "No es pot enviar un missatge xifrat a causa d'un error inesperat."
+
+#: dist/converse-no-dependencies.js:61691
+#: dist/converse-no-dependencies.js:61693
+#: dist/converse-no-dependencies.js:94577
+#: dist/converse-no-dependencies.js:94581
+#: dist/converse-no-dependencies.js:94686
+#: dist/converse-no-dependencies.js:99790
+#: dist/converse-no-dependencies.js:99931
+#: dist/converse-no-dependencies.js:99996
+#: dist/converse-no-dependencies.js:111150
+#: dist/converse-no-dependencies.js:121476
+#: dist/converse-no-dependencies.js:121486
+#: dist/converse-no-dependencies.js:124946
+#: dist/converse-no-dependencies.js:130520
+#: dist/converse-no-dependencies.js:134400
+msgid "Error"
+msgstr "Error"
+
+#: dist/converse-no-dependencies.js:61998
+msgid ""
+"Sorry, no devices found to which we can send an OMEMO encrypted message."
+msgstr ""
+"No s'han trobat dispositius a què es puguin enviar missatges xifrats OMEMO."
+
+#: dist/converse-no-dependencies.js:62008
+msgid ""
+"Cannot use OMEMO in this groupchat — it must be non-anonymous and members-"
+"only."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:62961
+msgid ""
+"This is an OMEMO encrypted message which your client doesn’t seem to "
+"support. Find more information on https://conversations.im/omemo"
+msgstr ""
+"Aquest és un missatge xifrat amb OMEMO, amb el qual el vostre client sembla "
+"no ser compatible. Trobeu més informació a https://conversations.im/omemo"
+
+#: dist/converse-no-dependencies.js:63094
+#, javascript-format
+msgid ""
+"%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
+"will no longer be possible in this grouchat."
+msgstr ""
+"Sembla que el client de %1$s no admet OMEMO. El xat xifrat ja no serà "
+"possible en aquest grup."
+
+#: dist/converse-no-dependencies.js:63253
+msgid ""
+"Received an OMEMO encrypted message which could not be decrypted, because it "
+"was not encrypted for this device."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:63261
+msgid "Sorry, could not decrypt a received OMEMO message due to an error."
+msgstr "No s'ha pogut desxifrar un missatge OMEMO rebut a causa d'un error."
+
+#: dist/converse-no-dependencies.js:63296
+msgid ""
+"Sorry, could not decrypt a received OMEMO message because we don't have the "
+"XMPP address for that user."
+msgstr ""
+"No s'ha pogut desxifrar un missatge OMEMO rebut perquè no tenim l'adreça "
+"XMPP d'aqueix/a usuari/a."
+
+#: dist/converse-no-dependencies.js:66295
+msgid "Timeout while trying to fetch archived messages."
+msgstr "S'ha exhaurit el temps d'espera intentant obtindre missatges arxivats."
+
+#: dist/converse-no-dependencies.js:68505
+#, javascript-format
+msgid "Sorry, an error occurred while trying to add %1$s as a contact."
+msgstr "S'ha produït un error intentant afegir %1$s com a contacte."
+
+#: dist/converse-no-dependencies.js:68776
+msgid "This client does not allow presence subscriptions"
+msgstr "Aquest client no permet les subscripcions presencials"
+
+#: dist/converse-no-dependencies.js:69159
+msgid "me"
+msgstr "jo"
+
+#: dist/converse-no-dependencies.js:69464
+msgid "Unsaved contacts"
+msgstr "Contactes no desats"
+
+#: dist/converse-no-dependencies.js:69465
+msgid "My contacts"
+msgstr "Els meus contactes"
+
+#: dist/converse-no-dependencies.js:69466
+msgid "Pending contacts"
+msgstr "Contactes pendents"
+
+#: dist/converse-no-dependencies.js:69467
+msgid "Contact requests"
+msgstr "Sol·licituds de contacte"
+
+#: dist/converse-no-dependencies.js:69468
+msgid "Ungrouped"
+msgstr "Sense grup"
+
+#: dist/converse-no-dependencies.js:69469
+#: dist/converse-no-dependencies.js:102567
+msgid "New messages"
+msgstr "Missatges nous"
+
+#: dist/converse-no-dependencies.js:76817
 msgid "Menu"
 msgstr "Menú"
 
-#: dist/converse-no-dependencies.js:83392
+#: dist/converse-no-dependencies.js:77197
 msgid "Click to set a new picture"
 msgstr "Feu clic per establir una imatge nova"
 
-#: dist/converse-no-dependencies.js:83393
+#: dist/converse-no-dependencies.js:77198
 msgid "Clear picture"
 msgstr "Esborrar imatge"
 
-#: dist/converse-no-dependencies.js:84384
+#: dist/converse-no-dependencies.js:78175
 msgid "Older versions"
 msgstr "Versions anteriors"
 
-#: dist/converse-no-dependencies.js:84386
+#: dist/converse-no-dependencies.js:78177
 msgid "No older versions found"
 msgstr "No s'han trobat versions anteriors"
 
-#: dist/converse-no-dependencies.js:84386
+#: dist/converse-no-dependencies.js:78177
 msgid "Current version"
 msgstr "Versió actual"
 
-#: dist/converse-no-dependencies.js:85773
-#: dist/converse-no-dependencies.js:128939
+#: dist/converse-no-dependencies.js:79531
+#: dist/converse-no-dependencies.js:121935
 msgid "Offline"
 msgstr "Fora de línia"
 
-#: dist/converse-no-dependencies.js:85774
+#: dist/converse-no-dependencies.js:79532
 msgid "Unavailable"
 msgstr "No disponible"
 
-#: dist/converse-no-dependencies.js:85775
-#: dist/converse-no-dependencies.js:128938
+#: dist/converse-no-dependencies.js:79533
+#: dist/converse-no-dependencies.js:121934
 msgid "Extended Away"
 msgstr "Llarga absència"
 
@@ -744,105 +744,105 @@ msgstr "Llarga absència"
 #. * @param {import('../modals/profile').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:85776
-#: dist/converse-no-dependencies.js:128937
-#: dist/converse-no-dependencies.js:135592
+#: dist/converse-no-dependencies.js:79534
+#: dist/converse-no-dependencies.js:121933
+#: dist/converse-no-dependencies.js:128408
 msgid "Away"
 msgstr "Absent"
 
-#: dist/converse-no-dependencies.js:85777
+#: dist/converse-no-dependencies.js:79535
 msgid "Do not disturb"
 msgstr "No molestar"
 
-#: dist/converse-no-dependencies.js:85778
-#: dist/converse-no-dependencies.js:128935
+#: dist/converse-no-dependencies.js:79536
+#: dist/converse-no-dependencies.js:121931
 msgid "Chatty"
 msgstr "Xerraire"
 
-#: dist/converse-no-dependencies.js:85779
-#: dist/converse-no-dependencies.js:128934
-#: dist/converse-no-dependencies.js:135594
+#: dist/converse-no-dependencies.js:79537
+#: dist/converse-no-dependencies.js:121930
+#: dist/converse-no-dependencies.js:128410
 msgid "Online"
 msgstr "En línia"
 
-#: dist/converse-no-dependencies.js:89032
-#: dist/converse-no-dependencies.js:89033
-#: dist/converse-no-dependencies.js:92714
-#: dist/converse-no-dependencies.js:116662
-#: dist/converse-no-dependencies.js:123171
+#: dist/converse-no-dependencies.js:82747
+#: dist/converse-no-dependencies.js:82748
+#: dist/converse-no-dependencies.js:86334
+#: dist/converse-no-dependencies.js:110011
+#: dist/converse-no-dependencies.js:116336
 msgid "Close"
 msgstr "Tancar"
 
-#: dist/converse-no-dependencies.js:89882
-#: dist/converse-no-dependencies.js:96915
-#: dist/converse-no-dependencies.js:101063
-#: dist/converse-no-dependencies.js:101109
-#: dist/converse-no-dependencies.js:101182
-#: dist/converse-no-dependencies.js:101219
-#: dist/converse-no-dependencies.js:106428
-#: dist/converse-no-dependencies.js:106568
-#: dist/converse-no-dependencies.js:115349
-#: dist/converse-no-dependencies.js:116920
-#: dist/converse-no-dependencies.js:133454
-#: dist/converse-no-dependencies.js:136461
-#: dist/converse-no-dependencies.js:141701
-#: dist/converse-no-dependencies.js:146386
+#: dist/converse-no-dependencies.js:83563
+#: dist/converse-no-dependencies.js:90430
+#: dist/converse-no-dependencies.js:94495
+#: dist/converse-no-dependencies.js:94541
+#: dist/converse-no-dependencies.js:94614
+#: dist/converse-no-dependencies.js:94651
+#: dist/converse-no-dependencies.js:99754
+#: dist/converse-no-dependencies.js:99894
+#: dist/converse-no-dependencies.js:108735
+#: dist/converse-no-dependencies.js:110264
+#: dist/converse-no-dependencies.js:126319
+#: dist/converse-no-dependencies.js:129257
+#: dist/converse-no-dependencies.js:134434
+#: dist/converse-no-dependencies.js:139029
 msgid "Confirm"
 msgstr "Confirmar"
 
-#: dist/converse-no-dependencies.js:89882
-#: dist/converse-no-dependencies.js:94740
-#: dist/converse-no-dependencies.js:142847
+#: dist/converse-no-dependencies.js:83563
+#: dist/converse-no-dependencies.js:88304
+#: dist/converse-no-dependencies.js:135566
 msgid "Cancel"
 msgstr "Cancel·lar"
 
-#: dist/converse-no-dependencies.js:92714
+#: dist/converse-no-dependencies.js:86334
 msgid "Converse logo"
 msgstr "Logo de Converse"
 
-#: dist/converse-no-dependencies.js:94712
+#: dist/converse-no-dependencies.js:88276
 msgid "Execute"
 msgstr "Executar"
 
-#: dist/converse-no-dependencies.js:94713
+#: dist/converse-no-dependencies.js:88277
 msgid "Previous"
 msgstr "Previ"
 
-#: dist/converse-no-dependencies.js:94714
+#: dist/converse-no-dependencies.js:88278
 msgid "Next"
 msgstr "Següent"
 
-#: dist/converse-no-dependencies.js:94715
+#: dist/converse-no-dependencies.js:88279
 msgid "Complete"
 msgstr "Complet"
 
-#: dist/converse-no-dependencies.js:95004
+#: dist/converse-no-dependencies.js:88556
 #, javascript-format
 msgid "The profile picture of %1$s"
 msgstr "Foto del perfil de %1$s"
 
-#: dist/converse-no-dependencies.js:95215
+#: dist/converse-no-dependencies.js:88765
 msgid "Add to Contacts"
 msgstr "Afegir a contactes"
 
-#: dist/converse-no-dependencies.js:95229
-#: dist/converse-no-dependencies.js:107713
-#: dist/converse-no-dependencies.js:126793
-#: dist/converse-no-dependencies.js:133380
-#: dist/converse-no-dependencies.js:135838
-#: dist/converse-no-dependencies.js:144569
+#: dist/converse-no-dependencies.js:88779
+#: dist/converse-no-dependencies.js:101032
+#: dist/converse-no-dependencies.js:119855
+#: dist/converse-no-dependencies.js:126245
+#: dist/converse-no-dependencies.js:128650
+#: dist/converse-no-dependencies.js:137251
 msgid "Nickname"
 msgstr "Àlies"
 
-#: dist/converse-no-dependencies.js:95229
-#: dist/converse-no-dependencies.js:97515
-#: dist/converse-no-dependencies.js:107710
-#: dist/converse-no-dependencies.js:120004
-#: dist/converse-no-dependencies.js:127502
-#: dist/converse-no-dependencies.js:135836
-#: dist/converse-no-dependencies.js:148027
-#: dist/converse-no-dependencies.js:148482
-#: dist/converse-no-dependencies.js:148876
+#: dist/converse-no-dependencies.js:88779
+#: dist/converse-no-dependencies.js:91028
+#: dist/converse-no-dependencies.js:101029
+#: dist/converse-no-dependencies.js:113273
+#: dist/converse-no-dependencies.js:120540
+#: dist/converse-no-dependencies.js:128648
+#: dist/converse-no-dependencies.js:140635
+#: dist/converse-no-dependencies.js:141076
+#: dist/converse-no-dependencies.js:141456
 msgid "XMPP Address"
 msgstr "Adreça XMPP"
 
@@ -850,36 +850,36 @@ msgstr "Adreça XMPP"
 #. * @param {import('../modtools').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:95229
-#: dist/converse-no-dependencies.js:95787
+#: dist/converse-no-dependencies.js:88779
+#: dist/converse-no-dependencies.js:89324
 msgid "Affiliation"
 msgstr "Afiliació"
 
-#: dist/converse-no-dependencies.js:95231
-#: dist/converse-no-dependencies.js:95791
-#: dist/converse-no-dependencies.js:107714
-#: dist/converse-no-dependencies.js:135839
+#: dist/converse-no-dependencies.js:88781
+#: dist/converse-no-dependencies.js:89328
+#: dist/converse-no-dependencies.js:101033
+#: dist/converse-no-dependencies.js:128651
 msgid "Role"
 msgstr "Rol"
 
-#: dist/converse-no-dependencies.js:95233
+#: dist/converse-no-dependencies.js:88783
 msgid "Hats"
 msgstr "Barrets"
 
-#: dist/converse-no-dependencies.js:95235
+#: dist/converse-no-dependencies.js:88785
 msgid "Occupant Id"
 msgstr "ID de l'ocupant"
 
-#: dist/converse-no-dependencies.js:95349
-#: dist/converse-no-dependencies.js:96080
+#: dist/converse-no-dependencies.js:88890
+#: dist/converse-no-dependencies.js:89606
 msgid "Affiliation changed"
 msgstr "Afiliació canviada"
 
-#: dist/converse-no-dependencies.js:95352
+#: dist/converse-no-dependencies.js:88893
 msgid "role changed"
 msgstr "rol canviat"
 
-#: dist/converse-no-dependencies.js:95743
+#: dist/converse-no-dependencies.js:89280
 msgid ""
 "Moderators are privileged users who can change the roles of other users "
 "(except those with admin or owner affiliations."
@@ -888,18 +888,18 @@ msgstr ""
 "comptes, exceptuant els que tenen afiliació d'administrador/a o de "
 "propietari/a."
 
-#: dist/converse-no-dependencies.js:95745
+#: dist/converse-no-dependencies.js:89282
 msgid "The default role, implies that you can read and write messages."
 msgstr "El rol per defecte, us permet llegir i escriure missatges."
 
-#: dist/converse-no-dependencies.js:95747
+#: dist/converse-no-dependencies.js:89284
 msgid ""
 "Visitors aren't allowed to write messages in a moderated multi-user chat."
 msgstr ""
 "Els/les visitants no tenen permís per a escriure missatges a un grup amb "
 "moderadors."
 
-#: dist/converse-no-dependencies.js:95754
+#: dist/converse-no-dependencies.js:89291
 msgid ""
 "Owner is the highest affiliation. Owners can modify roles and affiliations "
 "of all other users."
@@ -907,7 +907,7 @@ msgstr ""
 "L'afiliació més alta és la de propietari/a, que pot modificar els rols i les "
 "afiliacions de tots els altres comptes."
 
-#: dist/converse-no-dependencies.js:95756
+#: dist/converse-no-dependencies.js:89293
 msgid ""
 "Admin is the 2nd highest affiliation. Admins can modify roles and "
 "affiliations of all other users except owners."
@@ -915,27 +915,27 @@ msgstr ""
 "La segona afiliació més alta és la d'administrador/a, que pot modificar els "
 "rols i les afiliacions de tots els comptes excepte els del propietari."
 
-#: dist/converse-no-dependencies.js:95758
+#: dist/converse-no-dependencies.js:89295
 msgid "To ban a user, you give them the affiliation of \"outcast\"."
 msgstr "Per a bandejar un usuari li heu de donar l'afiliació de «marginat»."
 
-#: dist/converse-no-dependencies.js:95788
+#: dist/converse-no-dependencies.js:89325
 msgid "No users with that affiliation found."
 msgstr "No s'han trobat comptes amb aqueixa afiliació."
 
-#: dist/converse-no-dependencies.js:95789
+#: dist/converse-no-dependencies.js:89326
 msgid "No users with that role found."
 msgstr "No s'han trobat comptes amb aqueix rol."
 
-#: dist/converse-no-dependencies.js:95790
+#: dist/converse-no-dependencies.js:89327
 msgid "Type here to filter the search results"
 msgstr "Escriu aquí per a filtrar els resultats de cerca"
 
-#: dist/converse-no-dependencies.js:95792
+#: dist/converse-no-dependencies.js:89329
 msgid "Show users"
 msgstr "Mostrar comptes"
 
-#: dist/converse-no-dependencies.js:95793
+#: dist/converse-no-dependencies.js:89330
 msgid ""
 "Roles are assigned to users to grant or deny them certain abilities in a "
 "multi-user chat. They're assigned either explicitly or implicitly as part of "
@@ -946,7 +946,7 @@ msgstr ""
 "grup. S'assignen explícitament o implícita com a part d'una afiliació. Un "
 "rol que no es deu a una afiliació, només té validesa durant la sessió."
 
-#: dist/converse-no-dependencies.js:95794
+#: dist/converse-no-dependencies.js:89331
 msgid ""
 "An affiliation is a long-lived entitlement which typically implies a certain "
 "role and which grants privileges and responsibilities. For example admins "
@@ -957,26 +957,26 @@ msgstr ""
 "administradors/es i propietaris/es tenen automàticament el rol de moderador/"
 "a."
 
-#: dist/converse-no-dependencies.js:96085
+#: dist/converse-no-dependencies.js:89611
 msgid "Role changed"
 msgstr "Rol canviat"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:96528
+#: dist/converse-no-dependencies.js:90046
 msgid "Moderator Tools"
 msgstr "Eines de moderació"
 
-#: dist/converse-no-dependencies.js:96863
-#: dist/converse-no-dependencies.js:96865
+#: dist/converse-no-dependencies.js:90378
+#: dist/converse-no-dependencies.js:90380
 msgid "Invitation to a groupchat"
 msgstr "Invitació a un xat en grup"
 
-#: dist/converse-no-dependencies.js:96863
+#: dist/converse-no-dependencies.js:90378
 #, javascript-format
 msgid "%1$s has invited you to join the groupchat \"%2$s\""
 msgstr "%1$s us ha convidat a unir-vos al grup «%2$s»"
 
-#: dist/converse-no-dependencies.js:96865
+#: dist/converse-no-dependencies.js:90380
 #, javascript-format
 msgid ""
 "%1$s has invited you to join the groupchat \"%2$s\", and left the following "
@@ -985,38 +985,38 @@ msgstr ""
 "%1$s us ha convidat a unir-vos al grup «%2$s» i ha deixat el següent motiu: "
 "«%3$s»"
 
-#: dist/converse-no-dependencies.js:96884
+#: dist/converse-no-dependencies.js:90399
 msgid "Are you sure you want to destroy this groupchat?"
 msgstr "Confirmeu que voleu eliminar aquest grup?"
 
-#: dist/converse-no-dependencies.js:96889
+#: dist/converse-no-dependencies.js:90404
 msgid "Please enter the XMPP address of this groupchat to confirm"
 msgstr "Introduïu l'adreça XMPP d'aquest grup per confirmar"
 
-#: dist/converse-no-dependencies.js:96891
-#: dist/converse-no-dependencies.js:148022
+#: dist/converse-no-dependencies.js:90406
+#: dist/converse-no-dependencies.js:140630
 msgid "name@example.org"
 msgstr "nom@exemple.cat"
 
-#: dist/converse-no-dependencies.js:96896
+#: dist/converse-no-dependencies.js:90411
 msgid "Optional reason for destroying this groupchat"
 msgstr "Raó opcional per a eliminar aquest grup"
 
-#: dist/converse-no-dependencies.js:96897
-#: dist/converse-no-dependencies.js:125671
-#: dist/converse-no-dependencies.js:126098
+#: dist/converse-no-dependencies.js:90412
+#: dist/converse-no-dependencies.js:118768
+#: dist/converse-no-dependencies.js:119184
 msgid "Reason"
 msgstr "Raó"
 
-#: dist/converse-no-dependencies.js:96901
+#: dist/converse-no-dependencies.js:90416
 msgid "Optional XMPP address for a new groupchat that replaces this one"
 msgstr "Adreça XMPP opcional d'un grup nou que substitueixi aquest"
 
-#: dist/converse-no-dependencies.js:96902
+#: dist/converse-no-dependencies.js:90417
 msgid "replacement@example.org"
 msgstr "substitut@exemple.cat"
 
-#: dist/converse-no-dependencies.js:97088
+#: dist/converse-no-dependencies.js:90603
 msgid ""
 "Couldn't find a participant with that nickname. They might have left the "
 "groupchat."
@@ -1025,12 +1025,12 @@ msgstr ""
 "sortit del grup."
 
 #. e.g. Your nickname is "coolguy69"
-#: dist/converse-no-dependencies.js:97309
+#: dist/converse-no-dependencies.js:90824
 #, javascript-format
 msgid "Your nickname is \"%1$s\""
 msgstr "El vostre àlies és «%1$s»"
 
-#: dist/converse-no-dependencies.js:97356
+#: dist/converse-no-dependencies.js:90871
 msgid "Error: invalid number of arguments"
 msgstr "Error: nombre de paràmetres no vàlid"
 
@@ -1041,11 +1041,11 @@ msgstr "Error: nombre de paràmetres no vàlid"
 #. * @param {AdHocCommands} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:97511
+#: dist/converse-no-dependencies.js:91024
 msgid "On which entity do you want to run commands?"
 msgstr "A quina entitat voleu executar les ordres?"
 
-#: dist/converse-no-dependencies.js:97512
+#: dist/converse-no-dependencies.js:91025
 msgid ""
 "Certain XMPP services and entities allow privileged users to execute ad-hoc "
 "commands on them."
@@ -1053,31 +1053,31 @@ msgstr ""
 "Alguns serveis i entitats XMPP permeten als comptes amb privilegis executar-"
 "hi ordres ad-hoc."
 
-#: dist/converse-no-dependencies.js:97513
+#: dist/converse-no-dependencies.js:91026
 msgid "Commands found"
 msgstr "S'han trobat ordres"
 
-#: dist/converse-no-dependencies.js:97514
+#: dist/converse-no-dependencies.js:91027
 msgid "List available commands"
 msgstr "Llistar les ordres disponibles"
 
-#: dist/converse-no-dependencies.js:97516
+#: dist/converse-no-dependencies.js:91029
 msgid "No commands found"
 msgstr "No s'han trobat ordres"
 
-#: dist/converse-no-dependencies.js:97844
+#: dist/converse-no-dependencies.js:91346
 msgid "Sorry, an error occurred while looking for commands on that entity."
 msgstr "S'ha produït un error en cercar ordres en aquesta entitat."
 
-#: dist/converse-no-dependencies.js:97858
+#: dist/converse-no-dependencies.js:91360
 msgid "The specified entity doesn't support ad-hoc commands"
 msgstr "L'entitat especificada no admet ordres ad-hoc"
 
-#: dist/converse-no-dependencies.js:97921
+#: dist/converse-no-dependencies.js:91423
 msgid "An error occurred while trying to fetch the command form"
 msgstr "S'ha produït un error en intentar obtenir el formulari d'ordres"
 
-#: dist/converse-no-dependencies.js:98011
+#: dist/converse-no-dependencies.js:91513
 msgid ""
 "Sorry, an error occurred while trying to execute the command. See the "
 "developer console for details"
@@ -1085,16 +1085,16 @@ msgstr ""
 "S'ha produït un error en intentar executar l'ordre. Consulteu la consola de "
 "desenvolupament per obtenir més informació"
 
-#: dist/converse-no-dependencies.js:98024
+#: dist/converse-no-dependencies.js:91526
 msgid "Executing"
 msgstr "Executant"
 
-#: dist/converse-no-dependencies.js:98028
-#: dist/converse-no-dependencies.js:98042
+#: dist/converse-no-dependencies.js:91530
+#: dist/converse-no-dependencies.js:91544
 msgid "Completed"
 msgstr "Completat"
 
-#: dist/converse-no-dependencies.js:98083
+#: dist/converse-no-dependencies.js:91585
 msgid ""
 "An error occurred while trying to cancel the command. See the developer "
 "console for details"
@@ -1102,22 +1102,22 @@ msgstr ""
 "S'ha produït un error en intentar cancel·lar l'ordre. Consulteu la consola "
 "de desenvolupament per obtenir més informació"
 
-#: dist/converse-no-dependencies.js:98090
+#: dist/converse-no-dependencies.js:91592
 msgid "Error: unexpected result"
 msgstr "Error: resultat inesperat"
 
-#: dist/converse-no-dependencies.js:98305
+#: dist/converse-no-dependencies.js:91804
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "Confirmeu l'eliminació del marcador «%1$s»?"
 
-#: dist/converse-no-dependencies.js:98372
+#: dist/converse-no-dependencies.js:91869
 msgid "Unbookmark this groupchat"
 msgstr "Eliminar aquest grup dels marcadors"
 
-#: dist/converse-no-dependencies.js:98373
-#: dist/converse-no-dependencies.js:145393
-#: dist/converse-no-dependencies.js:145932
+#: dist/converse-no-dependencies.js:91870
+#: dist/converse-no-dependencies.js:138056
+#: dist/converse-no-dependencies.js:138582
 msgid "Click to open this groupchat"
 msgstr "Feu clic per obrir aquest grup"
 
@@ -1136,50 +1136,50 @@ msgstr "Feu clic per obrir aquest grup"
 #. * @param {ListFilter} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:98414
-#: dist/converse-no-dependencies.js:128930
-#: dist/converse-no-dependencies.js:149984
+#: dist/converse-no-dependencies.js:91909
+#: dist/converse-no-dependencies.js:121926
+#: dist/converse-no-dependencies.js:142531
 msgid "Filter"
 msgstr "Filtrar"
 
-#: dist/converse-no-dependencies.js:98868
-#: dist/converse-no-dependencies.js:146000
+#: dist/converse-no-dependencies.js:92346
+#: dist/converse-no-dependencies.js:138650
 msgid "Bookmarks"
 msgstr "Marcadors"
 
-#: dist/converse-no-dependencies.js:98927
+#: dist/converse-no-dependencies.js:92403
 #, javascript-format
 msgid "Bookmark for \"%1$s\""
 msgstr "Marcador per «%1$s»"
 
-#: dist/converse-no-dependencies.js:98928
+#: dist/converse-no-dependencies.js:92404
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr "T'agradaria entrar automàticament a aquest grup en iniciar?"
 
-#: dist/converse-no-dependencies.js:98929
-#: dist/converse-no-dependencies.js:147176
-#: dist/converse-no-dependencies.js:147310
+#: dist/converse-no-dependencies.js:92405
+#: dist/converse-no-dependencies.js:139805
+#: dist/converse-no-dependencies.js:139937
 msgid "Remove"
 msgstr "Eliminar"
 
-#: dist/converse-no-dependencies.js:98930
-#: dist/converse-no-dependencies.js:107744
-#: dist/converse-no-dependencies.js:122364
-#: dist/converse-no-dependencies.js:132331
-#: dist/converse-no-dependencies.js:148025
-#: dist/converse-no-dependencies.js:148481
+#: dist/converse-no-dependencies.js:92406
+#: dist/converse-no-dependencies.js:101063
+#: dist/converse-no-dependencies.js:115551
+#: dist/converse-no-dependencies.js:125230
+#: dist/converse-no-dependencies.js:140633
+#: dist/converse-no-dependencies.js:141075
 msgid "Name"
 msgstr "Nom"
 
-#: dist/converse-no-dependencies.js:98931
+#: dist/converse-no-dependencies.js:92407
 msgid "What should your nickname for this groupchat be?"
 msgstr "Quin hauria de ser el vostre àlies per a aquest grup?"
 
-#: dist/converse-no-dependencies.js:98932
+#: dist/converse-no-dependencies.js:92408
 msgid "Password (for a protected groupchat)"
 msgstr "Contrasenya (per a un xat protegit)"
 
-#: dist/converse-no-dependencies.js:98933
+#: dist/converse-no-dependencies.js:92409
 msgid ""
 "If the groupchat requires a password to enter, you can save it here. Note "
 "this is not intended to be a secure storage."
@@ -1187,27 +1187,27 @@ msgstr ""
 "Si el xat requereix una contrasenya, podeu desar-la aquí. Tingueu en compte "
 "que això no pretén ser un emmagatzematge segur."
 
-#: dist/converse-no-dependencies.js:98934
-#: dist/converse-no-dependencies.js:107744
+#: dist/converse-no-dependencies.js:92410
+#: dist/converse-no-dependencies.js:101063
 msgid "Update"
 msgstr "Actualitzar"
 
-#: dist/converse-no-dependencies.js:98934
-#: dist/converse-no-dependencies.js:131608
+#: dist/converse-no-dependencies.js:92410
+#: dist/converse-no-dependencies.js:124521
 msgid "Save"
 msgstr "Desar"
 
-#: dist/converse-no-dependencies.js:99230
+#: dist/converse-no-dependencies.js:92692
 msgid "Bookmark"
 msgstr "Afegir als marcadors"
 
-#: dist/converse-no-dependencies.js:101063
+#: dist/converse-no-dependencies.js:94495
 msgid ""
 "You have an unsent message which will be lost if you continue. Are you sure?"
 msgstr "Teniu un missatge no enviat que es perdrà si continueu. Confirmeu?"
 
-#: dist/converse-no-dependencies.js:101100
-#: dist/converse-no-dependencies.js:101169
+#: dist/converse-no-dependencies.js:94532
+#: dist/converse-no-dependencies.js:94601
 msgid ""
 "Be aware that other XMPP/Jabber clients (and servers) may not yet support "
 "retractions and that this message may not be removed everywhere."
@@ -1216,25 +1216,25 @@ msgstr ""
 "no permeten retractacions, és a dir, aquest missatge potser no s'eliminarà "
 "totalment."
 
-#: dist/converse-no-dependencies.js:101102
-#: dist/converse-no-dependencies.js:101175
-#: dist/converse-no-dependencies.js:101208
+#: dist/converse-no-dependencies.js:94534
+#: dist/converse-no-dependencies.js:94607
+#: dist/converse-no-dependencies.js:94640
 msgid "Are you sure you want to retract this message?"
 msgstr "Comfirmeu que voleu retractar-vos d'aquest missatge?"
 
-#: dist/converse-no-dependencies.js:101144
+#: dist/converse-no-dependencies.js:94576
 msgid "A timeout occurred while trying to retract the message"
 msgstr "Temps d'espera exhaurit intentant retractar-vos del missatge"
 
-#: dist/converse-no-dependencies.js:101148
+#: dist/converse-no-dependencies.js:94580
 msgid "Sorry, you're not allowed to retract this message."
 msgstr "No teniu permís per retractar-vos del missatge."
 
-#: dist/converse-no-dependencies.js:101229
+#: dist/converse-no-dependencies.js:94661
 msgid "You are about to retract this message."
 msgstr "Esteu a punt de retractar-vos d'aquest missatge."
 
-#: dist/converse-no-dependencies.js:101230
+#: dist/converse-no-dependencies.js:94662
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "retraction."
@@ -1242,261 +1242,261 @@ msgstr ""
 "Opcionalment, podeu incloure un missatge explicant el motiu de la "
 "retractació."
 
-#: dist/converse-no-dependencies.js:101241
+#: dist/converse-no-dependencies.js:94673
 msgid "Message Retraction"
 msgstr "Retractació del missatge"
 
-#: dist/converse-no-dependencies.js:101241
+#: dist/converse-no-dependencies.js:94673
 msgid "Optional reason"
 msgstr "Raó (opcional)"
 
-#: dist/converse-no-dependencies.js:101253
+#: dist/converse-no-dependencies.js:94685
 msgid "Sorry, you're not allowed to retract this message"
 msgstr "No teniu permís per retractar-vos d'aquest missatge"
 
-#: dist/converse-no-dependencies.js:101372
+#: dist/converse-no-dependencies.js:94804
 msgid "Show media"
 msgstr "Mostrar mitjans"
 
-#: dist/converse-no-dependencies.js:101372
+#: dist/converse-no-dependencies.js:94804
 msgid "Hide media"
 msgstr "Amagar mitjans"
 
 #. * @type {import('./types').MessageActionButton}
-#: dist/converse-no-dependencies.js:101496
+#: dist/converse-no-dependencies.js:94928
 msgid "Cancel Editing"
 msgstr "Cancel·lar l'edició"
 
-#: dist/converse-no-dependencies.js:101496
-#: dist/converse-no-dependencies.js:107720
+#: dist/converse-no-dependencies.js:94928
+#: dist/converse-no-dependencies.js:101039
 msgid "Edit"
 msgstr "Editar"
 
-#: dist/converse-no-dependencies.js:101525
+#: dist/converse-no-dependencies.js:94957
 msgid "Retract"
 msgstr "Retractar-vos"
 
-#: dist/converse-no-dependencies.js:101544
+#: dist/converse-no-dependencies.js:94976
 msgid "Copy"
 msgstr "Copiar"
 
-#: dist/converse-no-dependencies.js:101556
+#: dist/converse-no-dependencies.js:94988
 msgid "Reply"
 msgstr "Resposta"
 
-#: dist/converse-no-dependencies.js:101566
+#: dist/converse-no-dependencies.js:94998
 msgid "Quote"
 msgstr "Citar"
 
-#: dist/converse-no-dependencies.js:101814
+#: dist/converse-no-dependencies.js:95236
 msgid "Image: "
 msgstr "Imatge: "
 
-#: dist/converse-no-dependencies.js:102416
+#: dist/converse-no-dependencies.js:95821
 msgid "Play"
 msgstr "Reprodueix"
 
-#: dist/converse-no-dependencies.js:102417
+#: dist/converse-no-dependencies.js:95822
 msgid "Pause"
 msgstr "Pausa"
 
-#: dist/converse-no-dependencies.js:102418
+#: dist/converse-no-dependencies.js:95823
 msgid "Mute"
 msgstr "Silencia"
 
-#: dist/converse-no-dependencies.js:102419
+#: dist/converse-no-dependencies.js:95824
 msgid "Unmute"
 msgstr "Activa el so"
 
-#: dist/converse-no-dependencies.js:102420
+#: dist/converse-no-dependencies.js:95825
 msgid "Seek"
 msgstr "Cerca"
 
-#: dist/converse-no-dependencies.js:102421
+#: dist/converse-no-dependencies.js:95826
 msgid "Volume"
 msgstr "Volum"
 
-#: dist/converse-no-dependencies.js:102422
+#: dist/converse-no-dependencies.js:95827
 msgid "Audio player"
 msgstr "Reproductor d'àudio"
 
-#: dist/converse-no-dependencies.js:102423
+#: dist/converse-no-dependencies.js:95828
 msgid "Loading audio..."
 msgstr "S'està carregant l'àudio…"
 
-#: dist/converse-no-dependencies.js:102424
+#: dist/converse-no-dependencies.js:95829
 msgid "Error loading audio"
 msgstr "Error en carregar l'àudio"
 
-#: dist/converse-no-dependencies.js:102425
+#: dist/converse-no-dependencies.js:95830
 msgid "Current time"
 msgstr "Temps actual"
 
-#: dist/converse-no-dependencies.js:102426
+#: dist/converse-no-dependencies.js:95831
 msgid "Duration"
 msgstr "Durada"
 
-#: dist/converse-no-dependencies.js:102427
+#: dist/converse-no-dependencies.js:95832
 msgid "Playback speed"
 msgstr "Velocitat de reproducció"
 
 #. eslint-disable-line class-methods-use-this
-#: dist/converse-no-dependencies.js:106206
+#: dist/converse-no-dependencies.js:99537
 msgid "Message versions"
 msgstr "Versions del missatge"
 
-#: dist/converse-no-dependencies.js:106428
+#: dist/converse-no-dependencies.js:99754
 msgid "Are you sure you want to remove this contact?"
 msgstr "Confirmeu l'eliminació d'aquest contacte?"
 
-#: dist/converse-no-dependencies.js:106465
+#: dist/converse-no-dependencies.js:99791
 #, javascript-format
 msgid "Sorry, an error occurred while trying to remove %1$s as a contact"
 msgstr "S'ha produït un error intentant suprimir %1$s com a contacte"
 
-#: dist/converse-no-dependencies.js:106497
+#: dist/converse-no-dependencies.js:99823
 msgid "Remove and decline contact request"
 msgstr "Eliminar i refusar la sol·licitud de contacte"
 
-#: dist/converse-no-dependencies.js:106498
+#: dist/converse-no-dependencies.js:99824
 #, javascript-format
 msgid "Are you sure you want to decline the contact request from %1$s?"
 msgstr "Confirmeu que voleu refusar la sol·licitud de contacte de %1$s?"
 
-#: dist/converse-no-dependencies.js:106501
+#: dist/converse-no-dependencies.js:99827
 msgid "Also block this user from sending you further messages"
 msgstr "Bloquejar també aquest compte perquè no us enviï més missatges"
 
-#: dist/converse-no-dependencies.js:106526
+#: dist/converse-no-dependencies.js:99852
 msgid "Contact request declined and user blocked"
 msgstr "Sol·licitud de contacte refusada i compte bloquejat"
 
-#: dist/converse-no-dependencies.js:106532
+#: dist/converse-no-dependencies.js:99858
 msgid "Contact request declined"
 msgstr "Sol·licitud de contacte refusada"
 
-#: dist/converse-no-dependencies.js:106565
+#: dist/converse-no-dependencies.js:99891
 msgid "Do you want to block this contact, so they cannot send you messages?"
 msgstr "Voleu bloquejar aquest contacte perquè no us pugui enviar missatges?"
 
-#: dist/converse-no-dependencies.js:106606
+#: dist/converse-no-dependencies.js:99932
 #, javascript-format
 msgid "Sorry, an error occurred while trying to block %1$s"
 msgstr "S'ha produït un error intentant blocar %1$s"
 
-#: dist/converse-no-dependencies.js:106639
+#: dist/converse-no-dependencies.js:99965
 msgid "Do you want to unblock this contact, so they can send you messages?"
 msgstr "Voleu desbloquejar aquest contacte perquè pugui enviar-vos missatges?"
 
-#: dist/converse-no-dependencies.js:106671
+#: dist/converse-no-dependencies.js:99997
 #, javascript-format
 msgid "Sorry, an error occurred while trying to unblock %1$s"
 msgstr "S'ha produït un error intentant desblocar %1$s"
 
-#: dist/converse-no-dependencies.js:107614
+#: dist/converse-no-dependencies.js:100933
 msgid "Neither of you receive presence updates"
 msgstr "Cap de vosaltres rebrà actualitzacions de presència"
 
-#: dist/converse-no-dependencies.js:107616
+#: dist/converse-no-dependencies.js:100935
 msgid "Only you receive presence updates"
 msgstr "Només tu rebràs actualitzacions de presència"
 
-#: dist/converse-no-dependencies.js:107618
+#: dist/converse-no-dependencies.js:100937
 msgid "Only they receive presence updates"
 msgstr "Només ell(e)s reben actualitzacions de presència"
 
-#: dist/converse-no-dependencies.js:107620
+#: dist/converse-no-dependencies.js:100939
 msgid "Both of you receive presence updates"
 msgstr "Totes dues rebeu actualitzacions de presència"
 
-#: dist/converse-no-dependencies.js:107628
+#: dist/converse-no-dependencies.js:100947
 msgid "Remove from blocklist"
 msgstr "Eliminar de la llista de bloqueig"
 
-#: dist/converse-no-dependencies.js:107636
+#: dist/converse-no-dependencies.js:100955
 msgid "Add to blocklist"
 msgstr "Afegir a la llista de bloqueig"
 
-#: dist/converse-no-dependencies.js:107644
+#: dist/converse-no-dependencies.js:100963
 msgid "Add as contact"
 msgstr "Afegir com a contacte"
 
-#: dist/converse-no-dependencies.js:107652
+#: dist/converse-no-dependencies.js:100971
 msgid "Remove as contact"
 msgstr "Eliminar com a contacte"
 
-#: dist/converse-no-dependencies.js:107660
-#: dist/converse-no-dependencies.js:148478
+#: dist/converse-no-dependencies.js:100979
+#: dist/converse-no-dependencies.js:141072
 msgid "Accept"
 msgstr "Acceptar"
 
-#: dist/converse-no-dependencies.js:107668
+#: dist/converse-no-dependencies.js:100987
 msgid "Decline"
 msgstr "Refusar"
 
-#: dist/converse-no-dependencies.js:107711
-#: dist/converse-no-dependencies.js:135834
+#: dist/converse-no-dependencies.js:101030
+#: dist/converse-no-dependencies.js:128646
 msgid "Email"
 msgstr "Correu electrònic"
 
-#: dist/converse-no-dependencies.js:107712
-#: dist/converse-no-dependencies.js:135835
+#: dist/converse-no-dependencies.js:101031
+#: dist/converse-no-dependencies.js:128647
 msgid "Full Name"
 msgstr "Nom complet"
 
-#: dist/converse-no-dependencies.js:107715
-#: dist/converse-no-dependencies.js:135842
+#: dist/converse-no-dependencies.js:101034
+#: dist/converse-no-dependencies.js:128654
 msgid "URL"
 msgstr "URL"
 
-#: dist/converse-no-dependencies.js:107716
-#: dist/converse-no-dependencies.js:148023
-#: dist/converse-no-dependencies.js:148479
+#: dist/converse-no-dependencies.js:101035
+#: dist/converse-no-dependencies.js:140631
+#: dist/converse-no-dependencies.js:141073
 msgid "Groups"
 msgstr "Grups"
 
-#: dist/converse-no-dependencies.js:107717
-#: dist/converse-no-dependencies.js:148024
-#: dist/converse-no-dependencies.js:148480
+#: dist/converse-no-dependencies.js:101036
+#: dist/converse-no-dependencies.js:140632
+#: dist/converse-no-dependencies.js:141074
 msgid "Use commas to separate multiple values"
 msgstr "Utilitzeu comes per separar diversos valors"
 
-#: dist/converse-no-dependencies.js:107718
-#: dist/converse-no-dependencies.js:135844
+#: dist/converse-no-dependencies.js:101037
+#: dist/converse-no-dependencies.js:128656
 msgid "OMEMO"
 msgstr "OMEMO"
 
-#: dist/converse-no-dependencies.js:107719
-#: dist/converse-no-dependencies.js:135845
+#: dist/converse-no-dependencies.js:101038
+#: dist/converse-no-dependencies.js:128657
 msgid "Profile"
 msgstr "Perfil"
 
-#: dist/converse-no-dependencies.js:107738
+#: dist/converse-no-dependencies.js:101057
 msgid "Presence"
 msgstr "Presència"
 
-#: dist/converse-no-dependencies.js:107740
-#: dist/converse-no-dependencies.js:148757
+#: dist/converse-no-dependencies.js:101059
+#: dist/converse-no-dependencies.js:141339
 msgid "Contact Request"
 msgstr "Sol·licitud de contacte"
 
-#: dist/converse-no-dependencies.js:108328
+#: dist/converse-no-dependencies.js:101631
 msgid "Uploading file:"
 msgstr "Pujant fitxer:"
 
-#: dist/converse-no-dependencies.js:108403
+#: dist/converse-no-dependencies.js:101704
 msgid "Retry"
 msgstr "Tornar a provar"
 
-#: dist/converse-no-dependencies.js:109093
+#: dist/converse-no-dependencies.js:102370
 msgid "Replying to a message"
 msgstr "Resposta a un missatge"
 
-#: dist/converse-no-dependencies.js:109100
+#: dist/converse-no-dependencies.js:102377
 msgid "(empty message)"
 msgstr "(missatge buit)"
 
-#: dist/converse-no-dependencies.js:109429
+#: dist/converse-no-dependencies.js:102702
 msgid "This message has been edited"
 msgstr "Aquest missatge ha sigut editat"
 
@@ -1504,87 +1504,87 @@ msgstr "Aquest missatge ha sigut editat"
 #. * @param {import('../message').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:109438
+#: dist/converse-no-dependencies.js:102711
 msgid "Show more"
 msgstr "Mostrar més"
 
-#: dist/converse-no-dependencies.js:109440
+#: dist/converse-no-dependencies.js:102713
 msgid "Show less"
 msgstr "Mostrar menys"
 
-#: dist/converse-no-dependencies.js:109442
+#: dist/converse-no-dependencies.js:102715
 msgid "Message delivery failed."
 msgstr "L'entrega del missatge ha fallat."
 
-#: dist/converse-no-dependencies.js:110112
+#: dist/converse-no-dependencies.js:103368
 msgid "A moderator"
 msgstr "Un/a moderador/a"
 
-#: dist/converse-no-dependencies.js:110113
-#: dist/converse-no-dependencies.js:110115
+#: dist/converse-no-dependencies.js:103369
+#: dist/converse-no-dependencies.js:103371
 #, javascript-format
 msgid "%1$s has removed a message"
 msgstr "%1$s ha eliminat aquest missatge"
 
-#: dist/converse-no-dependencies.js:110115
+#: dist/converse-no-dependencies.js:103371
 msgid "You have removed a message"
 msgstr "Heu eliminat un missatge"
 
-#: dist/converse-no-dependencies.js:113724
+#: dist/converse-no-dependencies.js:107156
 msgid "Search results"
 msgstr "Resultats de la cerca"
 
-#: dist/converse-no-dependencies.js:113784
+#: dist/converse-no-dependencies.js:107216
 msgid "Search"
 msgstr "Cercar"
 
-#: dist/converse-no-dependencies.js:114422
+#: dist/converse-no-dependencies.js:107832
 msgid "Insert emojis"
 msgstr "Inserir emoticones"
 
-#: dist/converse-no-dependencies.js:115324
+#: dist/converse-no-dependencies.js:108710
 msgid "Getting location..."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115324
+#: dist/converse-no-dependencies.js:108710
 msgid "Share current location"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115340
-#: dist/converse-no-dependencies.js:115381
+#: dist/converse-no-dependencies.js:108726
+#: dist/converse-no-dependencies.js:108767
 #, fuzzy
 msgid "Location Error"
 msgstr "S'està establint la connexió"
 
-#: dist/converse-no-dependencies.js:115341
+#: dist/converse-no-dependencies.js:108727
 #, fuzzy
 msgid "Your browser or device does not support sharing your location."
 msgstr "El vostre servidor no admet el restabliment de la contrasenya"
 
-#: dist/converse-no-dependencies.js:115350
+#: dist/converse-no-dependencies.js:108736
 #, fuzzy
 msgid "Are you sure you'd like to share your location in the chat?"
 msgstr "Confirmeu l'eliminació d'aquest contacte?"
 
-#: dist/converse-no-dependencies.js:115370
+#: dist/converse-no-dependencies.js:108756
 msgid ""
 "Location access was denied. Please allow location permissions in your "
 "browser settings and try again."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115373
+#: dist/converse-no-dependencies.js:108759
 msgid ""
 "Your current location could not be determined. Please check your device's "
 "location services and try again."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115376
+#: dist/converse-no-dependencies.js:108762
 msgid ""
 "The request to get your location timed out. Please check your connection and "
 "try again."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:115379
+#: dist/converse-no-dependencies.js:108765
 #, fuzzy
 msgid ""
 "An unexpected error occurred while trying to retrieve your location. Please "
@@ -1595,78 +1595,78 @@ msgstr "S'ha produït un error intentant retractar-vos del missatge."
 #. * @param {number} counter
 #.
 #. export default
-#: dist/converse-no-dependencies.js:115449
+#: dist/converse-no-dependencies.js:108833
 msgid "Message characters remaining"
 msgstr "Caràcters restants del missatge"
 
-#: dist/converse-no-dependencies.js:115661
+#: dist/converse-no-dependencies.js:109034
 msgid "Send the message"
 msgstr "Enviar el missatge"
 
-#: dist/converse-no-dependencies.js:115951
+#: dist/converse-no-dependencies.js:109313
 msgid "Start a call"
 msgstr "Iniciar una trucada"
 
-#: dist/converse-no-dependencies.js:115984
+#: dist/converse-no-dependencies.js:109346
 msgid "Choose a file to send"
 msgstr "Trieu un fitxer per enviar"
 
-#: dist/converse-no-dependencies.js:116001
+#: dist/converse-no-dependencies.js:109363
 msgid "Click to write as a normal (non-spoiler) message"
 msgstr "Feu clic per a escriure un missatge normal (sense spoiler)"
 
-#: dist/converse-no-dependencies.js:116003
+#: dist/converse-no-dependencies.js:109365
 msgid "Click to write your message as a spoiler"
 msgstr "Feu clic per escriure un missatge amb spoiler"
 
-#: dist/converse-no-dependencies.js:116206
+#: dist/converse-no-dependencies.js:109566
 msgid "The User's Profile Image"
 msgstr "Imatge del perfil"
 
-#: dist/converse-no-dependencies.js:116551
-#: dist/converse-no-dependencies.js:133358
-#: dist/converse-no-dependencies.js:147185
+#: dist/converse-no-dependencies.js:109900
+#: dist/converse-no-dependencies.js:126223
+#: dist/converse-no-dependencies.js:139814
 msgid "Details"
 msgstr "Detalls"
 
-#: dist/converse-no-dependencies.js:116552
+#: dist/converse-no-dependencies.js:109901
 msgid "See more information about this person"
 msgstr "Veure més informació sobre aquesta persona"
 
-#: dist/converse-no-dependencies.js:116594
+#: dist/converse-no-dependencies.js:109943
 msgid "Unblock user"
 msgstr "Desblocar usuari/a"
 
-#: dist/converse-no-dependencies.js:116595
+#: dist/converse-no-dependencies.js:109944
 msgid "Are you sure you want to unblock this user?"
 msgstr "Confirmeu que voleu desblocar aquest compte?"
 
-#: dist/converse-no-dependencies.js:116610
+#: dist/converse-no-dependencies.js:109959
 msgid "Unblock this user"
 msgstr "Desblocar aquest/a usuari/a"
 
-#: dist/converse-no-dependencies.js:116611
+#: dist/converse-no-dependencies.js:109960
 msgid "Allow this user to send you messages"
 msgstr "Permetre a aquest compte enviar-vos missatges"
 
-#: dist/converse-no-dependencies.js:116628
+#: dist/converse-no-dependencies.js:109977
 msgid "Block user"
 msgstr "Blocar compte"
 
-#: dist/converse-no-dependencies.js:116629
+#: dist/converse-no-dependencies.js:109978
 #, javascript-format
 msgid "Are you sure you want to prevent %1$s from contacting you further?"
 msgstr "Segur que voleu evitar que %1$s us contacti més?"
 
-#: dist/converse-no-dependencies.js:116647
+#: dist/converse-no-dependencies.js:109996
 msgid "Block this user"
 msgstr "Blocar aquest/a usuari/a"
 
-#: dist/converse-no-dependencies.js:116648
+#: dist/converse-no-dependencies.js:109997
 msgid "Prevent this user from sending you any further messages"
 msgstr "Impediu que aquest usuari us enviï més missatges"
 
-#: dist/converse-no-dependencies.js:116663
+#: dist/converse-no-dependencies.js:110012
 msgid "Close and end this conversation"
 msgstr "Tancar i finalitzar aquesta conversa"
 
@@ -1678,73 +1678,73 @@ msgstr "Tancar i finalitzar aquesta conversa"
 #. * @param {import('../occupant-bottom-panel').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:116770
-#: dist/converse-no-dependencies.js:127052
-#: dist/converse-no-dependencies.js:128129
+#: dist/converse-no-dependencies.js:110117
+#: dist/converse-no-dependencies.js:120106
+#: dist/converse-no-dependencies.js:121154
 msgid "You have unread messages"
 msgstr "Teniu missatges sense llegir"
 
-#: dist/converse-no-dependencies.js:116920
+#: dist/converse-no-dependencies.js:110264
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "Confirmeu la supressió dels missatges d'aquest a conversa?"
 
-#: dist/converse-no-dependencies.js:117235
+#: dist/converse-no-dependencies.js:110571
 #, javascript-format
 msgid "Replying to %1$s"
 msgstr "Responent a %1$s"
 
-#: dist/converse-no-dependencies.js:117237
+#: dist/converse-no-dependencies.js:110573
 msgid "Cancel reply"
 msgstr "Cancel·lar resposta"
 
-#: dist/converse-no-dependencies.js:117325
-#: dist/converse-no-dependencies.js:126370
+#: dist/converse-no-dependencies.js:110659
+#: dist/converse-no-dependencies.js:119448
 msgid "Hidden message"
 msgstr "Missatge amagat"
 
-#: dist/converse-no-dependencies.js:117325
-#: dist/converse-no-dependencies.js:126370
+#: dist/converse-no-dependencies.js:110659
+#: dist/converse-no-dependencies.js:119448
 msgid "Message"
 msgstr "Missatge"
 
-#: dist/converse-no-dependencies.js:117326
-#: dist/converse-no-dependencies.js:126371
+#: dist/converse-no-dependencies.js:110660
+#: dist/converse-no-dependencies.js:119449
 msgid "Optional hint"
 msgstr "Pista opcional"
 
-#: dist/converse-no-dependencies.js:117827
+#: dist/converse-no-dependencies.js:111149
 msgid "Sorry, the connection has been lost, and your message could not be sent"
 msgstr "S'ha perdut la connexió i no s'ha pogut enviar el vostre missatge"
 
-#: dist/converse-no-dependencies.js:119419
+#: dist/converse-no-dependencies.js:112698
 msgid "Remove messages"
 msgstr "Eliminar missatges"
 
-#: dist/converse-no-dependencies.js:119420
+#: dist/converse-no-dependencies.js:112699
 msgid "Close this chat"
 msgstr "Tancar aquest xat"
 
-#: dist/converse-no-dependencies.js:119421
+#: dist/converse-no-dependencies.js:112700
 msgid "Write in the third person"
 msgstr "Escriure en tercera persona"
 
-#: dist/converse-no-dependencies.js:119422
-#: dist/converse-no-dependencies.js:130877
+#: dist/converse-no-dependencies.js:112701
+#: dist/converse-no-dependencies.js:123817
 msgid "Show this menu"
 msgstr "Mostrar aquest menú"
 
-#: dist/converse-no-dependencies.js:119643
-#: dist/converse-no-dependencies.js:127501
-#: dist/converse-no-dependencies.js:148340
-#: dist/converse-no-dependencies.js:149154
+#: dist/converse-no-dependencies.js:112922
+#: dist/converse-no-dependencies.js:120539
+#: dist/converse-no-dependencies.js:140936
+#: dist/converse-no-dependencies.js:141722
 msgid "Please enter a valid XMPP address"
 msgstr "Introduïu una adreça XMPP vàlida"
 
-#: dist/converse-no-dependencies.js:119829
+#: dist/converse-no-dependencies.js:113100
 msgid "A big thank you to our sponsors 🙏"
 msgstr "Moltes gràcies als nostres patrocinadors 🙏"
 
-#: dist/converse-no-dependencies.js:119982
+#: dist/converse-no-dependencies.js:113251
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1759,137 +1759,137 @@ msgstr ""
 "les dades recollides. Quan utilitzeu un dispositiu en què no confieu tingueu "
 "en compte que l'encriptació OMEMO NO està disponible."
 
-#: dist/converse-no-dependencies.js:119983
+#: dist/converse-no-dependencies.js:113252
 msgid "This is a trusted device"
 msgstr "Aquest és un dispositiu de confiança"
 
-#: dist/converse-no-dependencies.js:119984
+#: dist/converse-no-dependencies.js:113253
 msgid "Info"
 msgstr "Info"
 
-#: dist/converse-no-dependencies.js:119987
-#: dist/converse-no-dependencies.js:142957
+#: dist/converse-no-dependencies.js:113256
+#: dist/converse-no-dependencies.js:135676
 msgid "Connection URL"
 msgstr "URL de connexió"
 
-#: dist/converse-no-dependencies.js:119988
+#: dist/converse-no-dependencies.js:113257
 msgid "HTTP or websocket URL that is used to connect to your XMPP server"
 msgstr ""
 "URL HTTP o websocket que s'utilitza per connectar-se al vostre servidor XMPP"
 
-#: dist/converse-no-dependencies.js:119989
+#: dist/converse-no-dependencies.js:113258
 msgid "e.g. wss://example.org/xmpp-websocket"
 msgstr "p. ex. wss://exemple.cat/xmpp-websocket"
 
-#: dist/converse-no-dependencies.js:119994
+#: dist/converse-no-dependencies.js:113263
 msgid "Password"
 msgstr "Contrasenya"
 
-#: dist/converse-no-dependencies.js:120003
+#: dist/converse-no-dependencies.js:113272
 msgid "Log in"
 msgstr "Iniciar sessió"
 
-#: dist/converse-no-dependencies.js:120007
+#: dist/converse-no-dependencies.js:113276
 msgid "Username"
 msgstr "Nom d'usuari/a"
 
-#: dist/converse-no-dependencies.js:120007
+#: dist/converse-no-dependencies.js:113276
 msgid "user@domain"
 msgstr "usuaria@domini"
 
-#: dist/converse-no-dependencies.js:120014
+#: dist/converse-no-dependencies.js:113283
 msgid "Disconnected"
 msgstr "Desconnectat"
 
-#: dist/converse-no-dependencies.js:120015
+#: dist/converse-no-dependencies.js:113284
 msgid "Click here to log in anonymously"
 msgstr "Feu clic aquí per iniciar una sessió anònima"
 
-#: dist/converse-no-dependencies.js:120612
+#: dist/converse-no-dependencies.js:113859
 msgid "Chat"
 msgstr "Xat"
 
-#: dist/converse-no-dependencies.js:121197
+#: dist/converse-no-dependencies.js:114420
 msgid "About Converse"
 msgstr "Sobre Converse"
 
-#: dist/converse-no-dependencies.js:121911
+#: dist/converse-no-dependencies.js:115106
 msgid "Show details about this chat client"
 msgstr "Mostrar més informació sobre aquest client de xat"
 
-#: dist/converse-no-dependencies.js:122350
+#: dist/converse-no-dependencies.js:115537
 msgid "Discover Services"
 msgstr "Descobrir serveis"
 
-#: dist/converse-no-dependencies.js:122352
+#: dist/converse-no-dependencies.js:115539
 msgid "Inspect"
 msgstr "Inspeccionar"
 
-#: dist/converse-no-dependencies.js:122352
+#: dist/converse-no-dependencies.js:115539
 msgid "Service"
 msgstr "Servei"
 
-#: dist/converse-no-dependencies.js:122363
+#: dist/converse-no-dependencies.js:115550
 msgid "Identities"
 msgstr "Identitats"
 
-#: dist/converse-no-dependencies.js:122364
+#: dist/converse-no-dependencies.js:115551
 msgid "Type"
 msgstr "Tipus"
 
-#: dist/converse-no-dependencies.js:122364
-#: dist/converse-no-dependencies.js:142927
+#: dist/converse-no-dependencies.js:115551
+#: dist/converse-no-dependencies.js:135646
 msgid "Category"
 msgstr "Categoria"
 
-#: dist/converse-no-dependencies.js:122368
+#: dist/converse-no-dependencies.js:115555
 msgid "Items"
 msgstr "Articles"
 
-#: dist/converse-no-dependencies.js:122375
-#: dist/converse-no-dependencies.js:132324
+#: dist/converse-no-dependencies.js:115562
+#: dist/converse-no-dependencies.js:125223
 msgid "Features"
 msgstr "Característiques"
 
-#: dist/converse-no-dependencies.js:122756
+#: dist/converse-no-dependencies.js:115934
 msgid "No service found with that XMPP address"
 msgstr "No s'ha trobat cap servei amb aqueixa adreça XMPP"
 
-#: dist/converse-no-dependencies.js:122763
+#: dist/converse-no-dependencies.js:115941
 #, javascript-format
 msgid "Error: %1$s"
 msgstr "Error: %1$s"
 
-#: dist/converse-no-dependencies.js:123172
+#: dist/converse-no-dependencies.js:116337
 msgid "Close these announcements"
 msgstr "Tancar aquests anuncis"
 
-#: dist/converse-no-dependencies.js:123613
+#: dist/converse-no-dependencies.js:116765
 msgid "Click to open this server message"
 msgstr "Feu clic per obrir aquest missatge del servidor"
 
-#: dist/converse-no-dependencies.js:123624
+#: dist/converse-no-dependencies.js:116776
 msgid "Announcements"
 msgstr "Anuncis"
 
-#: dist/converse-no-dependencies.js:124037
+#: dist/converse-no-dependencies.js:117178
 msgid "Click to load missing messages"
 msgstr "Feu clic per carregar els missatges que falten"
 
-#: dist/converse-no-dependencies.js:124799
-#: dist/converse-no-dependencies.js:124821
+#: dist/converse-no-dependencies.js:117917
+#: dist/converse-no-dependencies.js:117939
 msgid "Minimize"
 msgstr "Minimitzar"
 
-#: dist/converse-no-dependencies.js:124800
+#: dist/converse-no-dependencies.js:117918
 msgid "Minimize this chat"
 msgstr "Minimitzar aquest xat"
 
-#: dist/converse-no-dependencies.js:124822
+#: dist/converse-no-dependencies.js:117940
 msgid "Minimize this groupchat"
 msgstr "Minimitzar aquest grup"
 
-#: dist/converse-no-dependencies.js:124956
+#: dist/converse-no-dependencies.js:118072
 msgid "hidden"
 msgstr "amagat"
 
@@ -1897,7 +1897,7 @@ msgstr "amagat"
 #. * @param {import('../minimized-chat').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:125332
+#: dist/converse-no-dependencies.js:118437
 msgid "Click to restore this chat"
 msgstr "Feu clic per restaurar aquest xat"
 
@@ -1905,23 +1905,23 @@ msgstr "Feu clic per restaurar aquest xat"
 #. * @param {import('../affiliation-form').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:125669
+#: dist/converse-no-dependencies.js:118766
 msgid "Change affiliation"
 msgstr "Canviar l'afiliació"
 
-#: dist/converse-no-dependencies.js:125670
+#: dist/converse-no-dependencies.js:118767
 msgid "New affiliation"
 msgstr "Nova afiliació"
 
-#: dist/converse-no-dependencies.js:125986
+#: dist/converse-no-dependencies.js:119074
 msgid "Timeout error while trying to set the affiliation"
 msgstr "Error de temps d'espera intentant establir l'afiliació"
 
-#: dist/converse-no-dependencies.js:125988
+#: dist/converse-no-dependencies.js:119076
 msgid "Sorry, you're not allowed to make that change"
 msgstr "No teniu permís per fer aqueix canvi"
 
-#: dist/converse-no-dependencies.js:125990
+#: dist/converse-no-dependencies.js:119078
 msgid "Sorry, something went wrong while trying to set the affiliation"
 msgstr "S'ha produït un error intentant establir l'afiliació"
 
@@ -1929,57 +1929,57 @@ msgstr "S'ha produït un error intentant establir l'afiliació"
 #. * @param {import('../role-form').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:126096
+#: dist/converse-no-dependencies.js:119182
 msgid "Change role"
 msgstr "Canviar rol"
 
-#: dist/converse-no-dependencies.js:126097
+#: dist/converse-no-dependencies.js:119183
 msgid "New Role"
 msgstr "Nou rol"
 
-#: dist/converse-no-dependencies.js:126265
+#: dist/converse-no-dependencies.js:119345
 msgid "You're not allowed to make that change"
 msgstr "No teniu permís per fer aqueix canvi"
 
-#: dist/converse-no-dependencies.js:126267
+#: dist/converse-no-dependencies.js:119347
 msgid "Sorry, something went wrong while trying to set the role"
 msgstr "S'ha produït un error intentant assignar el rol"
 
-#: dist/converse-no-dependencies.js:126794
+#: dist/converse-no-dependencies.js:119856
 msgid "Change nickname"
 msgstr "Canviar àlies"
 
-#: dist/converse-no-dependencies.js:126794
+#: dist/converse-no-dependencies.js:119856
 msgid "Enter groupchat"
 msgstr "Entrar al grup"
 
-#: dist/converse-no-dependencies.js:126795
+#: dist/converse-no-dependencies.js:119857
 msgid "Choose a nickname to enter"
 msgstr "Trieu un àlies per a entrar"
 
-#: dist/converse-no-dependencies.js:126795
+#: dist/converse-no-dependencies.js:119857
 msgid "Please choose your nickname"
 msgstr "Trieu el vostre àlies"
 
-#: dist/converse-no-dependencies.js:127054
+#: dist/converse-no-dependencies.js:120108
 msgid "You're not allowed to send messages in this room"
 msgstr "No teniu permís per enviar missatges a aquesta sala"
 
 #. export default
-#: dist/converse-no-dependencies.js:127499
-#: dist/converse-no-dependencies.js:128135
+#: dist/converse-no-dependencies.js:120537
+#: dist/converse-no-dependencies.js:121160
 msgid "Invite"
 msgstr "Convidar"
 
-#: dist/converse-no-dependencies.js:127500
+#: dist/converse-no-dependencies.js:120538
 msgid "user@example.org"
 msgstr "usuaria@exemple.cat"
 
-#: dist/converse-no-dependencies.js:127503
+#: dist/converse-no-dependencies.js:120541
 msgid "Optional reason for the invitation"
 msgstr "Raó per la invitació (opcional)"
 
-#: dist/converse-no-dependencies.js:127614
+#: dist/converse-no-dependencies.js:120646
 msgid "Invite someone to this groupchat"
 msgstr "Convidar algú a aquest grup"
 
@@ -1987,86 +1987,86 @@ msgstr "Convidar algú a aquest grup"
 #. * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
 #.
 #. * @param {MUCOccupant} o
-#: dist/converse-no-dependencies.js:127878
+#: dist/converse-no-dependencies.js:120905
 #, javascript-format
 msgid "Click to mention %1$s in your message."
 msgstr "Feu clic per a mencionar a %1$s al vostre missatge."
 
-#: dist/converse-no-dependencies.js:127889
+#: dist/converse-no-dependencies.js:120916
 msgid "Owner"
 msgstr "Propietari/a"
 
-#: dist/converse-no-dependencies.js:127893
+#: dist/converse-no-dependencies.js:120920
 msgid "Admin"
 msgstr "Administrador/a"
 
-#: dist/converse-no-dependencies.js:127897
+#: dist/converse-no-dependencies.js:120924
 msgid "Member"
 msgstr "Membre"
 
-#: dist/converse-no-dependencies.js:127901
+#: dist/converse-no-dependencies.js:120928
 msgid "Moderator"
 msgstr "Moderador/a"
 
-#: dist/converse-no-dependencies.js:127905
+#: dist/converse-no-dependencies.js:120932
 msgid "Visitor"
 msgstr "Visitant"
 
-#: dist/converse-no-dependencies.js:127964
+#: dist/converse-no-dependencies.js:120991
 msgid "This user is a moderator."
 msgstr "Aquest compte és un/a moderador/a."
 
-#: dist/converse-no-dependencies.js:127965
+#: dist/converse-no-dependencies.js:120992
 msgid "This user can send messages in this groupchat."
 msgstr "Aquest compte pot enviar missatges a aquest grup."
 
-#: dist/converse-no-dependencies.js:127966
+#: dist/converse-no-dependencies.js:120993
 msgid "This user can NOT send messages in this groupchat."
 msgstr "Aquest compte NO pot enviar missatges a aquest grup."
 
-#: dist/converse-no-dependencies.js:128131
+#: dist/converse-no-dependencies.js:121156
 msgid ""
 "This user is not currently in this groupchat and can't receive messages."
 msgstr ""
 "Aquest compte no està actualment en aquest grup i no pot rebre missatges."
 
-#: dist/converse-no-dependencies.js:128132
+#: dist/converse-no-dependencies.js:121157
 msgid "Invite this user to join this groupchat"
 msgstr "Convidar aquest compte a unir-se a aquest grup"
 
-#: dist/converse-no-dependencies.js:128133
+#: dist/converse-no-dependencies.js:121158
 msgid "Open a one-on-one chat with this user"
 msgstr "Obrir un xat individual amb aquest compte"
 
-#: dist/converse-no-dependencies.js:128134
+#: dist/converse-no-dependencies.js:121159
 msgid "Open Chat"
 msgstr "Obrir xat"
 
-#: dist/converse-no-dependencies.js:128471
-#: dist/converse-no-dependencies.js:135475
+#: dist/converse-no-dependencies.js:121484
+#: dist/converse-no-dependencies.js:128295
 msgid "Success"
 msgstr "Èxit"
 
-#: dist/converse-no-dependencies.js:128471
+#: dist/converse-no-dependencies.js:121484
 msgid "The user has been invited to join this groupchat"
 msgstr "El compte ha estat convidat a unir-se a aquest grup"
 
-#: dist/converse-no-dependencies.js:128931
+#: dist/converse-no-dependencies.js:121927
 msgid "Filter by name"
 msgstr "Filtrar per nom"
 
-#: dist/converse-no-dependencies.js:128932
-#: dist/converse-no-dependencies.js:149987
+#: dist/converse-no-dependencies.js:121928
+#: dist/converse-no-dependencies.js:142534
 msgid "Filter by status"
 msgstr "Filtrar per estat"
 
-#: dist/converse-no-dependencies.js:128933
-#: dist/converse-no-dependencies.js:149988
+#: dist/converse-no-dependencies.js:121929
+#: dist/converse-no-dependencies.js:142535
 msgid "Any"
 msgstr "Qualsevol"
 
-#: dist/converse-no-dependencies.js:128936
-#: dist/converse-no-dependencies.js:135593
+#: dist/converse-no-dependencies.js:121932
+#: dist/converse-no-dependencies.js:128409
 msgid "Busy"
 msgstr "Ocupat"
 
@@ -2074,125 +2074,125 @@ msgstr "Ocupat"
 #. * @param {import('../occupants').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:129098
+#: dist/converse-no-dependencies.js:122092
 msgid "Participant"
 msgstr "Participant"
 
-#: dist/converse-no-dependencies.js:129098
-#: dist/converse-no-dependencies.js:129305
+#: dist/converse-no-dependencies.js:122092
+#: dist/converse-no-dependencies.js:122297
 msgid "Participants"
 msgstr "Participants"
 
-#: dist/converse-no-dependencies.js:129099
-#: dist/converse-no-dependencies.js:129303
+#: dist/converse-no-dependencies.js:122093
+#: dist/converse-no-dependencies.js:122295
 msgid "Hide"
 msgstr "Amagar"
 
-#: dist/converse-no-dependencies.js:129100
-#: dist/converse-no-dependencies.js:150175
+#: dist/converse-no-dependencies.js:122094
+#: dist/converse-no-dependencies.js:142722
 msgid "Show filter"
 msgstr "Mostrar filtre"
 
-#: dist/converse-no-dependencies.js:129101
-#: dist/converse-no-dependencies.js:150176
+#: dist/converse-no-dependencies.js:122095
+#: dist/converse-no-dependencies.js:142723
 msgid "Hide filter"
 msgstr "Amagar filtre"
 
-#: dist/converse-no-dependencies.js:129103
+#: dist/converse-no-dependencies.js:122097
 msgid "Invite someone"
 msgstr "Convidar algú"
 
-#: dist/converse-no-dependencies.js:129104
+#: dist/converse-no-dependencies.js:122098
 msgid "Invite someone to join this groupchat"
 msgstr "Convidar algú a unir-se a aquest grup"
 
-#: dist/converse-no-dependencies.js:129304
+#: dist/converse-no-dependencies.js:122296
 msgid "No participant data found"
 msgstr "No s'han trobat dades de participants"
 
-#: dist/converse-no-dependencies.js:129306
+#: dist/converse-no-dependencies.js:122298
 msgid "Show details"
 msgstr "Mostrar detalls"
 
-#: dist/converse-no-dependencies.js:130871
+#: dist/converse-no-dependencies.js:123811
 msgid "Change user's affiliation to admin"
 msgstr "Canviar l'afiliació del compte a administrador/a"
 
-#: dist/converse-no-dependencies.js:130872
+#: dist/converse-no-dependencies.js:123812
 msgid "Ban user by changing their affiliation to outcast"
 msgstr "Bandejar compte canviant-li l'afiliació a marginat"
 
-#: dist/converse-no-dependencies.js:130873
+#: dist/converse-no-dependencies.js:123813
 msgid "Clear the chat area"
 msgstr "Esborrar l'àrea de xat"
 
-#: dist/converse-no-dependencies.js:130874
+#: dist/converse-no-dependencies.js:123814
 msgid "Close this groupchat"
 msgstr "Tancar aquest grup"
 
-#: dist/converse-no-dependencies.js:130875
+#: dist/converse-no-dependencies.js:123815
 msgid "Change user role to participant"
 msgstr "Canviar el rol del compte a participant"
 
-#: dist/converse-no-dependencies.js:130876
-#: dist/converse-no-dependencies.js:133428
+#: dist/converse-no-dependencies.js:123816
+#: dist/converse-no-dependencies.js:126293
 msgid "Remove this groupchat"
 msgstr "Esborrar aquest grup"
 
-#: dist/converse-no-dependencies.js:130878
+#: dist/converse-no-dependencies.js:123818
 msgid "Kick user from groupchat"
 msgstr "Expulsar el compte d'aquest grup"
 
-#: dist/converse-no-dependencies.js:130879
+#: dist/converse-no-dependencies.js:123819
 msgid "Write in 3rd person"
 msgstr "Escriure en tercera persona"
 
-#: dist/converse-no-dependencies.js:130880
+#: dist/converse-no-dependencies.js:123820
 msgid "Grant membership to a user"
 msgstr "Atorgar a un compte la pertinença"
 
-#: dist/converse-no-dependencies.js:130881
+#: dist/converse-no-dependencies.js:123821
 msgid "Opens up the moderator tools GUI"
 msgstr "Obre la GUI d'eines de moderació"
 
-#: dist/converse-no-dependencies.js:130882
+#: dist/converse-no-dependencies.js:123822
 msgid "Remove user's ability to post messages"
 msgstr "Eliminar la capacitat del compte de publicar missatges"
 
-#: dist/converse-no-dependencies.js:130883
-#: dist/converse-no-dependencies.js:132645
+#: dist/converse-no-dependencies.js:123823
+#: dist/converse-no-dependencies.js:125527
 msgid "Change your nickname"
 msgstr "Canviar el vostre àlies"
 
-#: dist/converse-no-dependencies.js:130884
+#: dist/converse-no-dependencies.js:123824
 msgid "Grant moderator role to user"
 msgstr "Atorgar el rol de moderador/a al compte"
 
-#: dist/converse-no-dependencies.js:130885
+#: dist/converse-no-dependencies.js:123825
 msgid "Grant ownership of this groupchat"
 msgstr "Atorgar la propietat d'aquest grup"
 
-#: dist/converse-no-dependencies.js:130886
+#: dist/converse-no-dependencies.js:123826
 msgid "Register your nickname"
 msgstr "Registrar el vostre àlies"
 
-#: dist/converse-no-dependencies.js:130887
+#: dist/converse-no-dependencies.js:123827
 msgid "Revoke the user's current affiliation"
 msgstr "Revocar l'afiliació actual del compte"
 
-#: dist/converse-no-dependencies.js:130888
+#: dist/converse-no-dependencies.js:123828
 msgid "Set groupchat subject"
 msgstr "Establir l'assumpte del grup"
 
-#: dist/converse-no-dependencies.js:130889
+#: dist/converse-no-dependencies.js:123829
 msgid "Set groupchat subject (alias for /subject)"
 msgstr "Establir l'assumpte del grup (equivalent a /subject)"
 
-#: dist/converse-no-dependencies.js:130890
+#: dist/converse-no-dependencies.js:123830
 msgid "Allow muted user to post messages"
 msgstr "Permetre a un compte silenciat publicar missatges"
 
-#: dist/converse-no-dependencies.js:130979
+#: dist/converse-no-dependencies.js:123917
 msgid ""
 "The conversation has moved to a new address. Click the link below to enter."
 msgstr ""
@@ -2200,378 +2200,378 @@ msgstr ""
 "entrar-hi."
 
 #. export default
-#: dist/converse-no-dependencies.js:130985
+#: dist/converse-no-dependencies.js:123923
 msgid "This groupchat no longer exists"
 msgstr "Aquest grup ja no existeix"
 
-#: dist/converse-no-dependencies.js:130986
+#: dist/converse-no-dependencies.js:123924
 #, javascript-format
 msgid "The following reason was given: \"%1$s\""
 msgstr "S'ha donat la raó següent: «%1$s»"
 
-#: dist/converse-no-dependencies.js:131463
+#: dist/converse-no-dependencies.js:124378
 #, javascript-format
 msgid "This action was done by %1$s."
 msgstr "Aquesta acció l'ha feta %1$s."
 
-#: dist/converse-no-dependencies.js:131467
+#: dist/converse-no-dependencies.js:124382
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "La raó donada és: «%1$s»."
 
-#: dist/converse-no-dependencies.js:131587
+#: dist/converse-no-dependencies.js:124500
 msgid "Loading configuration form"
 msgstr "Carregant el formulari de configuració"
 
-#: dist/converse-no-dependencies.js:131906
+#: dist/converse-no-dependencies.js:124807
 #, javascript-format
 msgid "Configure %1$s"
 msgstr "Configurar %1$s"
 
-#: dist/converse-no-dependencies.js:132044
+#: dist/converse-no-dependencies.js:124945
 msgid "Sorry, an error occurred while trying to submit the config form."
 msgstr "S'ha produït un error intentant enviar el formulari de configuració."
 
-#: dist/converse-no-dependencies.js:132071
+#: dist/converse-no-dependencies.js:124972
 msgid "Sorry, an error happened while trying to save the groupchat avatar."
 msgstr "S'ha produït un error intentant desar l'avatar del xat de grup."
 
-#: dist/converse-no-dependencies.js:132072
-#: dist/converse-no-dependencies.js:136305
+#: dist/converse-no-dependencies.js:124973
+#: dist/converse-no-dependencies.js:129101
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
 "Podeu comprovar qualsevol error a la consola de desenvolupament del "
 "navegador."
 
-#: dist/converse-no-dependencies.js:132307
+#: dist/converse-no-dependencies.js:125206
 msgid "Topic"
 msgstr "Assumpte"
 
-#: dist/converse-no-dependencies.js:132308
+#: dist/converse-no-dependencies.js:125207
 msgid "Topic author"
 msgstr "Autor de l'assumpte"
 
-#: dist/converse-no-dependencies.js:132320
+#: dist/converse-no-dependencies.js:125219
 msgid "XMPP address"
 msgstr "Adreça XMPP"
 
-#: dist/converse-no-dependencies.js:132321
+#: dist/converse-no-dependencies.js:125220
 msgid "Message archiving"
 msgstr "Arxiu de missatges"
 
-#: dist/converse-no-dependencies.js:132322
+#: dist/converse-no-dependencies.js:125221
 msgid "Messages are archived on the server"
 msgstr "Els missatges són arxivats al servidor"
 
-#: dist/converse-no-dependencies.js:132323
+#: dist/converse-no-dependencies.js:125222
 msgid "Description"
 msgstr "Descripció"
 
-#: dist/converse-no-dependencies.js:132325
-#: dist/converse-no-dependencies.js:145293
+#: dist/converse-no-dependencies.js:125224
+#: dist/converse-no-dependencies.js:137958
 msgid "Hidden"
 msgstr "Amagat"
 
-#: dist/converse-no-dependencies.js:132326
+#: dist/converse-no-dependencies.js:125225
 msgid "This groupchat is not publicly searchable"
 msgstr "Aquest grup no es pot buscar públicament"
 
-#: dist/converse-no-dependencies.js:132327
+#: dist/converse-no-dependencies.js:125226
 msgid "This groupchat is restricted to members only"
 msgstr "Aquest grup està restringit a membres"
 
-#: dist/converse-no-dependencies.js:132328
+#: dist/converse-no-dependencies.js:125227
 msgid "Members only"
 msgstr "Només membres"
 
-#: dist/converse-no-dependencies.js:132329
-#: dist/converse-no-dependencies.js:145295
+#: dist/converse-no-dependencies.js:125228
+#: dist/converse-no-dependencies.js:137960
 msgid "Moderated"
 msgstr "Moderat/da"
 
-#: dist/converse-no-dependencies.js:132330
+#: dist/converse-no-dependencies.js:125229
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr ""
 "Els participants que entren aquest grup han de demanar permís per a escriure"
 
-#: dist/converse-no-dependencies.js:132332
+#: dist/converse-no-dependencies.js:125231
 msgid "This groupchat does not require a password upon entry"
 msgstr "Aquest grup no requereix una contrasenya en entrar"
 
-#: dist/converse-no-dependencies.js:132333
+#: dist/converse-no-dependencies.js:125232
 msgid "No password required"
 msgstr "No es necessita contrasenya"
 
-#: dist/converse-no-dependencies.js:132334
+#: dist/converse-no-dependencies.js:125233
 msgid "Not anonymous"
 msgstr "No és anònima"
 
-#: dist/converse-no-dependencies.js:132335
+#: dist/converse-no-dependencies.js:125234
 msgid "All other groupchat participants can see your XMPP address"
 msgstr "Els/les participants d'aquest grup poden veure la vostra adreça XMPP"
 
-#: dist/converse-no-dependencies.js:132336
+#: dist/converse-no-dependencies.js:125235
 msgid "Not moderated"
 msgstr "No moderada"
 
-#: dist/converse-no-dependencies.js:132337
+#: dist/converse-no-dependencies.js:125236
 msgid "Participants entering this groupchat can write right away"
 msgstr ""
 "Les persones que entren a aquest grup poden escriure sense demanar permís"
 
-#: dist/converse-no-dependencies.js:132338
+#: dist/converse-no-dependencies.js:125237
 msgid "Online users"
 msgstr "Usuaris en línea"
 
-#: dist/converse-no-dependencies.js:132339
-#: dist/converse-no-dependencies.js:145297
+#: dist/converse-no-dependencies.js:125238
+#: dist/converse-no-dependencies.js:137962
 msgid "Open"
 msgstr "Obrir"
 
-#: dist/converse-no-dependencies.js:132340
+#: dist/converse-no-dependencies.js:125239
 msgid "Anyone can join this groupchat"
 msgstr "Qualsevol pot unir-se a aquest grup"
 
-#: dist/converse-no-dependencies.js:132341
+#: dist/converse-no-dependencies.js:125240
 msgid "This groupchat requires a password before entry"
 msgstr "Aquest grup requereix una contrasenya abans d'entrar"
 
-#: dist/converse-no-dependencies.js:132342
+#: dist/converse-no-dependencies.js:125241
 msgid "Password protected"
 msgstr "Protegit per contrasenya"
 
-#: dist/converse-no-dependencies.js:132343
+#: dist/converse-no-dependencies.js:125242
 msgid "Persistent"
 msgstr "Persistent"
 
-#: dist/converse-no-dependencies.js:132344
+#: dist/converse-no-dependencies.js:125243
 msgid "This groupchat persists even if it's unoccupied"
 msgstr "Aquest grup persisteix encara que no hi hagi participants"
 
-#: dist/converse-no-dependencies.js:132345
-#: dist/converse-no-dependencies.js:145299
+#: dist/converse-no-dependencies.js:125244
+#: dist/converse-no-dependencies.js:137964
 msgid "Public"
 msgstr "Pública"
 
-#: dist/converse-no-dependencies.js:132346
+#: dist/converse-no-dependencies.js:125245
 msgid "This groupchat is publicly searchable"
 msgstr "Aquest grup es pot buscar públicament"
 
-#: dist/converse-no-dependencies.js:132347
-#: dist/converse-no-dependencies.js:145300
+#: dist/converse-no-dependencies.js:125246
+#: dist/converse-no-dependencies.js:137965
 msgid "Semi-anonymous"
 msgstr "Semi-anònima"
 
-#: dist/converse-no-dependencies.js:132348
+#: dist/converse-no-dependencies.js:125247
 msgid "Only moderators can see your XMPP address"
 msgstr "Només la moderació pot veure la vostra adreça XMPP"
 
-#: dist/converse-no-dependencies.js:132349
-#: dist/converse-no-dependencies.js:145301
+#: dist/converse-no-dependencies.js:125248
+#: dist/converse-no-dependencies.js:137966
 msgid "Temporary"
 msgstr "Temporal"
 
-#: dist/converse-no-dependencies.js:132350
+#: dist/converse-no-dependencies.js:125249
 msgid "This groupchat will disappear once the last person leaves"
 msgstr "Aquest grup s'eliminarà quan estigui buit"
 
-#: dist/converse-no-dependencies.js:132521
+#: dist/converse-no-dependencies.js:125411
 msgid "Groupchat info"
 msgstr "Informació del grup"
 
-#: dist/converse-no-dependencies.js:132943
+#: dist/converse-no-dependencies.js:125817
 msgid "Hide the groupchat topic"
 msgstr "Amagar l'assumpte del grup"
 
-#: dist/converse-no-dependencies.js:132946
-#: dist/converse-no-dependencies.js:145392
+#: dist/converse-no-dependencies.js:125820
+#: dist/converse-no-dependencies.js:138055
 msgid "Show more information on this groupchat"
 msgstr "Mostrar més informació d'aquest grup"
 
-#: dist/converse-no-dependencies.js:133359
+#: dist/converse-no-dependencies.js:126224
 msgid "Show more information about this groupchat"
 msgstr "Mostrar més informació sobre aquest grup"
 
-#: dist/converse-no-dependencies.js:133369
+#: dist/converse-no-dependencies.js:126234
 msgid "Configure"
 msgstr "Configurar"
 
-#: dist/converse-no-dependencies.js:133370
+#: dist/converse-no-dependencies.js:126235
 msgid "Configure this groupchat"
 msgstr "Configurar aquest grup"
 
-#: dist/converse-no-dependencies.js:133381
+#: dist/converse-no-dependencies.js:126246
 msgid "Change the nickname you're using in this groupchat"
 msgstr "Canvieu l'àlies que feu servir en aquest grup"
 
-#: dist/converse-no-dependencies.js:133392
+#: dist/converse-no-dependencies.js:126257
 msgid "Show topic"
 msgstr "Mostrar l'assumpte"
 
-#: dist/converse-no-dependencies.js:133392
+#: dist/converse-no-dependencies.js:126257
 msgid "Hide topic"
 msgstr "Amagar l'assumpte"
 
-#: dist/converse-no-dependencies.js:133393
+#: dist/converse-no-dependencies.js:126258
 msgid "Show the topic message in the heading"
 msgstr "Mostrar l'assumpte a la capçalera"
 
-#: dist/converse-no-dependencies.js:133393
+#: dist/converse-no-dependencies.js:126258
 msgid "Hide the topic in the heading"
 msgstr "Amaga l'assumpte de la capçalera"
 
-#: dist/converse-no-dependencies.js:133403
+#: dist/converse-no-dependencies.js:126268
 msgid "Show participants"
 msgstr "Mostrar participants"
 
-#: dist/converse-no-dependencies.js:133403
+#: dist/converse-no-dependencies.js:126268
 msgid "Hide participants"
 msgstr "Amagar participants"
 
-#: dist/converse-no-dependencies.js:133404
+#: dist/converse-no-dependencies.js:126269
 msgid "Show the groupchat participants"
 msgstr "Mostrar els/les participants del grup"
 
-#: dist/converse-no-dependencies.js:133404
+#: dist/converse-no-dependencies.js:126269
 msgid "Hide the groupchat participants"
 msgstr "Amagar els/les participants del grup"
 
-#: dist/converse-no-dependencies.js:133415
+#: dist/converse-no-dependencies.js:126280
 msgid "Moderate"
 msgstr "Moderar"
 
-#: dist/converse-no-dependencies.js:133416
+#: dist/converse-no-dependencies.js:126281
 msgid "Moderate this groupchat"
 msgstr "Moderar aquest grup"
 
-#: dist/converse-no-dependencies.js:133427
+#: dist/converse-no-dependencies.js:126292
 msgid "Destroy"
 msgstr "Destruir"
 
-#: dist/converse-no-dependencies.js:133440
+#: dist/converse-no-dependencies.js:126305
 msgid "Leave"
 msgstr "Sortir"
 
-#: dist/converse-no-dependencies.js:133441
+#: dist/converse-no-dependencies.js:126306
 msgid "Leave and close this groupchat"
 msgstr "Sortir i tancar aquest grup"
 
-#: dist/converse-no-dependencies.js:133450
+#: dist/converse-no-dependencies.js:126315
 msgid "Are you sure you want to leave this groupchat?"
 msgstr "Confirmeu la sortida d'aquest grup?"
 
 #. export default
-#: dist/converse-no-dependencies.js:133519
+#: dist/converse-no-dependencies.js:126382
 msgid "This groupchat requires a password"
 msgstr "Aquest grup requereix una contrasenya"
 
-#: dist/converse-no-dependencies.js:133520
+#: dist/converse-no-dependencies.js:126383
 msgid "Password: "
 msgstr "Contrasenya: "
 
 #. export default
-#: dist/converse-no-dependencies.js:133521
-#: dist/converse-no-dependencies.js:135134
+#: dist/converse-no-dependencies.js:126384
+#: dist/converse-no-dependencies.js:127965
 msgid "Submit"
 msgstr "Enviar"
 
-#: dist/converse-no-dependencies.js:134650
+#: dist/converse-no-dependencies.js:127485
 msgid "has gone offline"
 msgstr "s'ha desconnectat"
 
-#: dist/converse-no-dependencies.js:134652
+#: dist/converse-no-dependencies.js:127487
 msgid "has gone away"
 msgstr "ha marxat"
 
-#: dist/converse-no-dependencies.js:134654
+#: dist/converse-no-dependencies.js:127489
 msgid "is busy"
 msgstr "està ocupat/da"
 
-#: dist/converse-no-dependencies.js:134656
+#: dist/converse-no-dependencies.js:127491
 msgid "has come online"
 msgstr "s'ha connectat"
 
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:134688
-#: dist/converse-no-dependencies.js:134694
+#: dist/converse-no-dependencies.js:127523
+#: dist/converse-no-dependencies.js:127529
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr "Notificació de %1$s"
 
-#: dist/converse-no-dependencies.js:134696
-#: dist/converse-no-dependencies.js:134704
-#: dist/converse-no-dependencies.js:134707
+#: dist/converse-no-dependencies.js:127531
+#: dist/converse-no-dependencies.js:127539
+#: dist/converse-no-dependencies.js:127542
 #, javascript-format
 msgid "%1$s says"
 msgstr "%1$s diu"
 
-#: dist/converse-no-dependencies.js:134816
+#: dist/converse-no-dependencies.js:127651
 msgid "wants to be your contact"
 msgstr "vol ser contacte vostre"
 
-#: dist/converse-no-dependencies.js:134923
-#: dist/converse-no-dependencies.js:134933
+#: dist/converse-no-dependencies.js:127756
+#: dist/converse-no-dependencies.js:127766
 msgid "online"
 msgstr "en línia"
 
-#: dist/converse-no-dependencies.js:134925
+#: dist/converse-no-dependencies.js:127758
 msgid "busy"
 msgstr "ocupat"
 
-#: dist/converse-no-dependencies.js:134927
+#: dist/converse-no-dependencies.js:127760
 msgid "away for long"
 msgstr "absent molt de temps"
 
-#: dist/converse-no-dependencies.js:134929
+#: dist/converse-no-dependencies.js:127762
 msgid "away"
 msgstr "absent"
 
-#: dist/converse-no-dependencies.js:134931
+#: dist/converse-no-dependencies.js:127764
 msgid "offline"
 msgstr "fora de línia"
 
-#: dist/converse-no-dependencies.js:135135
+#: dist/converse-no-dependencies.js:127966
 msgid "The new passwords must match"
 msgstr "Les noves contrasenyes han de coincidir"
 
-#: dist/converse-no-dependencies.js:135136
+#: dist/converse-no-dependencies.js:127967
 msgid "New password"
 msgstr "Nova contrasenya"
 
-#: dist/converse-no-dependencies.js:135137
+#: dist/converse-no-dependencies.js:127968
 msgid "Confirm new password"
 msgstr "Confirmeu la nova contrasenya"
 
-#: dist/converse-no-dependencies.js:135439
+#: dist/converse-no-dependencies.js:128259
 msgid "Timeout error"
 msgstr "Error de temps d'espera"
 
-#: dist/converse-no-dependencies.js:135444
+#: dist/converse-no-dependencies.js:128264
 msgid "Your server does not support password reset"
 msgstr "El vostre servidor no admet el restabliment de la contrasenya"
 
-#: dist/converse-no-dependencies.js:135449
+#: dist/converse-no-dependencies.js:128269
 msgid ""
 "Your server responded with an unknown error, check the console for details"
 msgstr ""
 "El vostre servidor ha respost amb un error desconegut, comproveu la consola "
 "per obtenir-ne més detalls"
 
-#: dist/converse-no-dependencies.js:135467
+#: dist/converse-no-dependencies.js:128287
 msgid "Timeout error while trying to set your password"
 msgstr "Error de temps d'espera intentant establir la contrasenya"
 
-#: dist/converse-no-dependencies.js:135469
+#: dist/converse-no-dependencies.js:128289
 msgid "Your server does not allow password reset"
 msgstr "El vostre servidor no permet el restabliment de la contrasenya"
 
-#: dist/converse-no-dependencies.js:135471
-#: dist/converse-no-dependencies.js:135473
+#: dist/converse-no-dependencies.js:128291
+#: dist/converse-no-dependencies.js:128293
 msgid "You are not allowed to change your password"
 msgstr "No teniu permís per canviar la vostra contrasenya"
 
-#: dist/converse-no-dependencies.js:135476
+#: dist/converse-no-dependencies.js:128296
 msgid "Your new password has been set"
 msgstr "S'ha establert la vostra nova contrasenya"
 
@@ -2579,36 +2579,36 @@ msgstr "S'ha establert la vostra nova contrasenya"
 #. * @param {import('../modals/profile').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:135544
+#: dist/converse-no-dependencies.js:128362
 msgid "Log out"
 msgstr "Desconnectar-vos"
 
-#: dist/converse-no-dependencies.js:135595
+#: dist/converse-no-dependencies.js:128411
 msgid "Set status"
 msgstr "Establir l'estat"
 
-#: dist/converse-no-dependencies.js:135596
+#: dist/converse-no-dependencies.js:128412
 msgid "Away for long"
 msgstr "Absent durant un llarg termini"
 
-#: dist/converse-no-dependencies.js:135597
+#: dist/converse-no-dependencies.js:128413
 msgid "Personal status message"
 msgstr "Missatge d'estat personal"
 
-#: dist/converse-no-dependencies.js:135606
+#: dist/converse-no-dependencies.js:128422
 msgid "Clear status message"
 msgstr "Esborrar el missatge d'estat"
 
-#: dist/converse-no-dependencies.js:135837
+#: dist/converse-no-dependencies.js:128649
 #, fuzzy
 msgid "Server"
 msgstr "Servei"
 
-#: dist/converse-no-dependencies.js:135840
+#: dist/converse-no-dependencies.js:128652
 msgid "Save and close"
 msgstr "Desar i tancar"
 
-#: dist/converse-no-dependencies.js:135841
+#: dist/converse-no-dependencies.js:128653
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
@@ -2616,72 +2616,72 @@ msgstr ""
 "Utilitzeu comes per a separar múltiples rols. Els vostres rols es mostren al "
 "costat del vostre nom als vostres missatges."
 
-#: dist/converse-no-dependencies.js:135843
+#: dist/converse-no-dependencies.js:128655
 msgid "Status"
 msgstr "Estat"
 
-#: dist/converse-no-dependencies.js:135846
+#: dist/converse-no-dependencies.js:128658
 msgid "Reset Password"
 msgstr "Restablir la contrasenya"
 
-#: dist/converse-no-dependencies.js:136226
+#: dist/converse-no-dependencies.js:129022
 msgid "Your Profile"
 msgstr "Perfil"
 
-#: dist/converse-no-dependencies.js:136304
+#: dist/converse-no-dependencies.js:129100
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "S'ha produït un error intentant desar les dades del vostre perfil."
 
-#: dist/converse-no-dependencies.js:136398
+#: dist/converse-no-dependencies.js:129194
 msgid "Profile updated successfully"
 msgstr "El perfil s'ha actualitzat correctament"
 
-#: dist/converse-no-dependencies.js:136431
+#: dist/converse-no-dependencies.js:129227
 msgid "Status updated"
 msgstr "Estat actualitzat"
 
-#: dist/converse-no-dependencies.js:136461
+#: dist/converse-no-dependencies.js:129257
 msgid "Are you sure you want to log out?"
 msgstr "Confirmeu la desconnexió?"
 
-#: dist/converse-no-dependencies.js:136638
+#: dist/converse-no-dependencies.js:129432
 msgid "About"
 msgstr "Quant a"
 
-#: dist/converse-no-dependencies.js:136639
+#: dist/converse-no-dependencies.js:129433
 msgid "Commands"
 msgstr "Ordres"
 
-#: dist/converse-no-dependencies.js:136640
+#: dist/converse-no-dependencies.js:129434
 msgid "Services"
 msgstr "Serveis"
 
-#: dist/converse-no-dependencies.js:136657
+#: dist/converse-no-dependencies.js:129451
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
 "%1$s client de xat XMPP %2$s de codi obert facilitat per %3$s Opkode %2$s"
 
-#: dist/converse-no-dependencies.js:136658
+#: dist/converse-no-dependencies.js:129452
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
 msgstr "%1$s Traduir %2$s al vostre idioma"
 
-#: dist/converse-no-dependencies.js:136802
+#: dist/converse-no-dependencies.js:129590
 msgid "Settings"
 msgstr "Configuració"
 
-#: dist/converse-no-dependencies.js:136855
+#: dist/converse-no-dependencies.js:129641
 #, javascript-format
 msgid "I am %1$s"
 msgstr "Estic %1$s"
 
-#: dist/converse-no-dependencies.js:136856
+#: dist/converse-no-dependencies.js:129642
 msgid "Update your profile"
 msgstr "Actualitzar el perfil"
 
-#: dist/converse-no-dependencies.js:136857
+#: dist/converse-no-dependencies.js:129643
 msgid "Click to change your chat status"
 msgstr "Feu clic per canviar el vostre estat de xat"
 
@@ -2690,12 +2690,12 @@ msgstr "Feu clic per canviar el vostre estat de xat"
 #. * @param {String} name
 #.
 #. export default
-#: dist/converse-no-dependencies.js:137113
+#: dist/converse-no-dependencies.js:129891
 #, javascript-format
 msgid "Download file \"%1$s\""
 msgstr "Baixar fitxer «%1$s»"
 
-#: dist/converse-no-dependencies.js:137479
+#: dist/converse-no-dependencies.js:130249
 msgid ""
 "Error: could not decrypt a received encrypted file, because it could not be "
 "downloaded"
@@ -2703,7 +2703,7 @@ msgstr ""
 "Error: no s'ha pogut desxifrar un fitxer xifrat rebut perquè no s'ha pogut "
 "baixar"
 
-#: dist/converse-no-dependencies.js:137743
+#: dist/converse-no-dependencies.js:130513
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
@@ -2711,7 +2711,7 @@ msgstr ""
 "No es pot utilitzar el xifratge d'extrem a extrem en aquest grup, o bé el "
 "grup té una mica d'anonimat o no tots els participants admeten OMEMO."
 
-#: dist/converse-no-dependencies.js:137747
+#: dist/converse-no-dependencies.js:130517
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
@@ -2720,15 +2720,15 @@ msgstr ""
 "No es pot utilitzar el xifratge d'extrem a extrem perquè %1$s utilitza un "
 "client que no és compatible amb OMEMO."
 
-#: dist/converse-no-dependencies.js:137774
+#: dist/converse-no-dependencies.js:130544
 msgid "Messages are being sent in plaintext"
 msgstr "Els missatges s'estan enviant en text simple"
 
-#: dist/converse-no-dependencies.js:137775
+#: dist/converse-no-dependencies.js:130545
 msgid "Messages are sent encrypted"
 msgstr "Els missatges s'envien xifrats"
 
-#: dist/converse-no-dependencies.js:137778
+#: dist/converse-no-dependencies.js:130548
 msgid ""
 "This groupchat needs to be members-only and non-anonymous in order to "
 "support OMEMO encrypted messages"
@@ -2736,95 +2736,95 @@ msgstr ""
 "Aquest grup ha de ser només per a membres i no anònim per admetre missatges "
 "xifrats OMEMO"
 
-#: dist/converse-no-dependencies.js:137780
+#: dist/converse-no-dependencies.js:130550
 msgid "OMEMO encryption is not supported"
 msgstr "El xifratge OMEMO no està suportat"
 
-#: dist/converse-no-dependencies.js:137897
+#: dist/converse-no-dependencies.js:130665
 msgid "Trusted"
 msgstr "De confiança"
 
-#: dist/converse-no-dependencies.js:137898
+#: dist/converse-no-dependencies.js:130666
 msgid "Untrusted"
 msgstr "No és de confiança"
 
-#: dist/converse-no-dependencies.js:137899
+#: dist/converse-no-dependencies.js:130667
 msgid "Choose which devices you trust for OMEMO encrypted communication"
 msgstr "Trieu en quins dispositius confieu per a la comunicació xifrada OMEMO"
 
-#: dist/converse-no-dependencies.js:137904
-#: dist/converse-no-dependencies.js:141244
+#: dist/converse-no-dependencies.js:130672
+#: dist/converse-no-dependencies.js:133986
 msgid "Device ID"
 msgstr "ID del dispositiu"
 
-#: dist/converse-no-dependencies.js:137914
+#: dist/converse-no-dependencies.js:130682
 msgid "OMEMO Fingerprints"
 msgstr "Empremtes digitals OMEMO"
 
-#: dist/converse-no-dependencies.js:137915
+#: dist/converse-no-dependencies.js:130683
 msgid "No OMEMO-enabled devices found"
 msgstr "No s'han trobat dispositius compatibles amb OMEMO"
 
-#: dist/converse-no-dependencies.js:137918
+#: dist/converse-no-dependencies.js:130686
 msgid "Show inactive devices"
 msgstr "Mostrar dispositius inactius"
 
-#: dist/converse-no-dependencies.js:141209
+#: dist/converse-no-dependencies.js:133951
 msgid "Copy fingerprint to clipboard"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:141213
+#: dist/converse-no-dependencies.js:133955
 msgid "Checkbox for selecting the following fingerprint"
 msgstr "Casella per a seleccionar la següent empremta"
 
-#: dist/converse-no-dependencies.js:141217
+#: dist/converse-no-dependencies.js:133959
 msgid "Device without a fingerprint"
 msgstr "Dispositiu sense empremta digital"
 
-#: dist/converse-no-dependencies.js:141218
+#: dist/converse-no-dependencies.js:133960
 msgid "Checkbox for selecting the following device"
 msgstr "Casella per seleccionar el dispositiu següent"
 
-#: dist/converse-no-dependencies.js:141228
+#: dist/converse-no-dependencies.js:133970
 msgid "Other OMEMO-enabled devices"
 msgstr "Altres dispositius compatibles amb OMEMO"
 
-#: dist/converse-no-dependencies.js:141229
+#: dist/converse-no-dependencies.js:133971
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
 "Casella per seleccionar les empremtes de tots els altres dispositius OMEMO"
 
-#: dist/converse-no-dependencies.js:141230
+#: dist/converse-no-dependencies.js:133972
 msgid "Remove checked devices and close"
 msgstr "Esborrar els dispositius marcats i tancar"
 
-#: dist/converse-no-dependencies.js:141231
+#: dist/converse-no-dependencies.js:133973
 msgid "Select all"
 msgstr "Seleccionar-ho tot"
 
-#: dist/converse-no-dependencies.js:141240
+#: dist/converse-no-dependencies.js:133982
 msgid "This device"
 msgstr "Aquest dispositiu"
 
-#: dist/converse-no-dependencies.js:141241
+#: dist/converse-no-dependencies.js:133983
 #, fuzzy
 msgid "OMEMO fingerprint (legacy)"
 msgstr "Empremta OMEMO"
 
-#: dist/converse-no-dependencies.js:141242
+#: dist/converse-no-dependencies.js:133984
 #, fuzzy
 msgid "OMEMO 2 fingerprint"
 msgstr "Empremta OMEMO"
 
-#: dist/converse-no-dependencies.js:141243
+#: dist/converse-no-dependencies.js:133985
 msgid "Generate new keys and fingerprint"
 msgstr "Generar noves claus i empremtes"
 
-#: dist/converse-no-dependencies.js:141668
+#: dist/converse-no-dependencies.js:134401
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "S'ha produït un error intentant eliminar els dispositius."
 
-#: dist/converse-no-dependencies.js:141701
+#: dist/converse-no-dependencies.js:134434
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -2835,13 +2835,13 @@ msgstr ""
 "dispositiu."
 
 #. export default
-#: dist/converse-no-dependencies.js:142457
-#: dist/converse-no-dependencies.js:142967
+#: dist/converse-no-dependencies.js:135180
+#: dist/converse-no-dependencies.js:135686
 msgid "Already have a chat account?"
 msgstr "Teniu ja un compte de xat?"
 
-#: dist/converse-no-dependencies.js:142458
-#: dist/converse-no-dependencies.js:142968
+#: dist/converse-no-dependencies.js:135181
+#: dist/converse-no-dependencies.js:135687
 msgid "Go back to login"
 msgstr "Tornar a l'inici de sessió"
 
@@ -2849,136 +2849,136 @@ msgstr "Tornar a l'inici de sessió"
 #. * @param {import('../form').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:142519
+#: dist/converse-no-dependencies.js:135240
 msgid "Choose a different provider"
 msgstr "Trieu un altre proveïdor"
 
-#: dist/converse-no-dependencies.js:142520
+#: dist/converse-no-dependencies.js:135241
 msgid "Account Registration:"
 msgstr "Registre de compte:"
 
-#: dist/converse-no-dependencies.js:142521
-#: dist/converse-no-dependencies.js:142912
-#: dist/converse-no-dependencies.js:142915
+#: dist/converse-no-dependencies.js:135242
+#: dist/converse-no-dependencies.js:135631
+#: dist/converse-no-dependencies.js:135634
 msgid "Register"
 msgstr "Registrar-se"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "XMPP Compliance"
 msgstr "Compliment de l'XMPP"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "Free of charge"
 msgstr "Gratuït"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "Yes"
 msgstr "Sí"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "No"
 msgstr "No"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "Company"
 msgstr "Empresa"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "Professional hosting"
 msgstr "Allotjament professional"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "Password reset"
 msgstr "Restabliment de contrasenya"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "Legal notice"
 msgstr "Avís legal"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "Online since"
 msgstr "En línia des de"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "Message archive storage time"
 msgstr "Temps d'emmagatzematge de l'arxiu de missatges"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 #, javascript-format
 msgid "%1$s days"
 msgstr "%1$s dies"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "File upload size limit"
 msgstr "Límit de mida de càrrega de fitxers"
 
-#: dist/converse-no-dependencies.js:142888
+#: dist/converse-no-dependencies.js:135607
 msgid "File upload storage time"
 msgstr "Temps d'emmagatzematge de càrrega de fitxers"
 
-#: dist/converse-no-dependencies.js:142944
+#: dist/converse-no-dependencies.js:135663
 msgid "With these providers you can register directly inside this app."
 msgstr ""
 "Amb aquests proveïdors us podeu registrar directament dins d'aquesta "
 "aplicació."
 
-#: dist/converse-no-dependencies.js:142944
+#: dist/converse-no-dependencies.js:135663
 msgid "For these providers, you'll need to register externally via a web page."
 msgstr ""
 "Per a aquests proveïdors, haureu de registrar-vos externament a través d'una "
 "pàgina web."
 
-#: dist/converse-no-dependencies.js:142954
+#: dist/converse-no-dependencies.js:135673
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Consell: hi ha disponible una llista de proveïdors XMPP públics"
 
-#: dist/converse-no-dependencies.js:142955
+#: dist/converse-no-dependencies.js:135674
 msgid "here"
 msgstr "aquí"
 
-#: dist/converse-no-dependencies.js:142956
+#: dist/converse-no-dependencies.js:135675
 msgid "Fetch registration form"
 msgstr "Obtindre formulari de registre"
 
-#: dist/converse-no-dependencies.js:142957
+#: dist/converse-no-dependencies.js:135676
 msgid "Please enter the XMPP provider to register with:"
 msgstr "Introduïu el proveïdor XMPP amb el qual registrar-se:"
 
-#: dist/converse-no-dependencies.js:142957
+#: dist/converse-no-dependencies.js:135676
 msgid "e.g. https://example.org/http-bind"
 msgstr "e.g. https://exemple.cat/http-bind"
 
-#: dist/converse-no-dependencies.js:142965
+#: dist/converse-no-dependencies.js:135684
 msgid "Create your account"
 msgstr "Crear el compte"
 
 #. Show the categorized provider list
-#: dist/converse-no-dependencies.js:142981
+#: dist/converse-no-dependencies.js:135700
 msgid "Choose an XMPP provider to register with:"
 msgstr "Trieu un proveïdor XMPP amb el qual registrar-vos:"
 
-#: dist/converse-no-dependencies.js:142983
+#: dist/converse-no-dependencies.js:135702
 msgid "Browse all providers"
 msgstr "Navega per tots els proveïdors"
 
-#: dist/converse-no-dependencies.js:142985
+#: dist/converse-no-dependencies.js:135704
 #, fuzzy
 msgid "Don't see your provider?"
 msgstr "Actualitzar el perfil"
 
-#: dist/converse-no-dependencies.js:142986
+#: dist/converse-no-dependencies.js:135705
 msgid "Hide manual entry"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:142986
+#: dist/converse-no-dependencies.js:135705
 msgid "Enter a provider manually"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:143428
+#: dist/converse-no-dependencies.js:136134
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "No s'ha pogut connectar al proveïdor que heu triat."
 
-#: dist/converse-no-dependencies.js:143440
+#: dist/converse-no-dependencies.js:136146
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -2986,31 +2986,31 @@ msgstr ""
 "El proveïdor indicat no admet registre de comptes. Proveu amb un altre "
 "proveïdor."
 
-#: dist/converse-no-dependencies.js:143565
+#: dist/converse-no-dependencies.js:136271
 msgid "Invalid connection URL, only HTTPS and WSS accepted"
 msgstr "URL de connexió no vàlida, només s'accepta HTTPS i WSS"
 
 #. automatically log the user in
 #. * @type {string}
 #. * @type {string}
-#: dist/converse-no-dependencies.js:143637
+#: dist/converse-no-dependencies.js:136343
 msgid "Now logging you in"
 msgstr "Iniciant la sessió"
 
-#: dist/converse-no-dependencies.js:143639
+#: dist/converse-no-dependencies.js:136345
 msgid "Registered successfully"
 msgstr "Registre correcte"
 
-#: dist/converse-no-dependencies.js:143728
-#: dist/converse-no-dependencies.js:143735
+#: dist/converse-no-dependencies.js:136434
+#: dist/converse-no-dependencies.js:136441
 msgid "Registration failed."
 msgstr "El registre ha fallat."
 
-#: dist/converse-no-dependencies.js:143728
+#: dist/converse-no-dependencies.js:136434
 msgid "Please try a different username."
 msgstr "Proveu un nom d'usuari diferent."
 
-#: dist/converse-no-dependencies.js:143739
+#: dist/converse-no-dependencies.js:136445
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -3018,19 +3018,19 @@ msgstr ""
 "El proveïdor ha rebutjat l'intent de registre. Comproveu que els valors que "
 "heu introduït són correctes."
 
-#: dist/converse-no-dependencies.js:144063
+#: dist/converse-no-dependencies.js:136761
 msgid "Create an account"
 msgstr "Crear un compte"
 
-#: dist/converse-no-dependencies.js:144064
+#: dist/converse-no-dependencies.js:136762
 msgid "Don't have a chat account?"
 msgstr "No teniu un compte de xat?"
 
-#: dist/converse-no-dependencies.js:144119
+#: dist/converse-no-dependencies.js:136817
 msgid " e.g. conversejs.org"
 msgstr " p. ex. conversejs.org"
 
-#: dist/converse-no-dependencies.js:144570
+#: dist/converse-no-dependencies.js:137252
 msgid "This field is required"
 msgstr "Aquest camp és obligatori"
 
@@ -3038,39 +3038,39 @@ msgstr "Aquest camp és obligatori"
 #. * @param {import('../add-muc.js').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:144576
+#: dist/converse-no-dependencies.js:137258
 msgid "Join"
 msgstr "Unir-se"
 
-#: dist/converse-no-dependencies.js:144579
+#: dist/converse-no-dependencies.js:137261
 msgid "Groupchat name"
 msgstr "Nom del grup"
 
-#: dist/converse-no-dependencies.js:144581
+#: dist/converse-no-dependencies.js:137263
 msgid "Groupchat name or address"
 msgstr "Adreça o nom del grup"
 
-#: dist/converse-no-dependencies.js:144940
+#: dist/converse-no-dependencies.js:137607
 msgid "Enter a new Groupchat"
 msgstr "Entrar a un grup nou"
 
-#: dist/converse-no-dependencies.js:145062
+#: dist/converse-no-dependencies.js:137729
 msgid "Invalid groupchat address, it cannot be empty."
 msgstr "Adreça de grup no vàlida: no pot estar buida."
 
-#: dist/converse-no-dependencies.js:145069
+#: dist/converse-no-dependencies.js:137736
 msgid "Invalid groupchat address, a forward slash is not allowed."
 msgstr "Adreça de grup no vàlida: no es permet una barra inclinada."
 
-#: dist/converse-no-dependencies.js:145076
+#: dist/converse-no-dependencies.js:137743
 msgid "Invalid groupchat address, more than one @ sign is not allowed."
 msgstr "Adreça de grup no vàlida: no es permet més d'un signe @."
 
-#: dist/converse-no-dependencies.js:145082
+#: dist/converse-no-dependencies.js:137749
 msgid "Invalid groupchat address, it cannot start or end with an @ sign."
 msgstr "Adreça de grup no vàlida: no pot començar ni acabar amb un signe @."
 
-#: dist/converse-no-dependencies.js:145098
+#: dist/converse-no-dependencies.js:137765
 msgid ""
 "No default groupchat service found. You'll need to specify the full address, "
 "for example room@conference.example.org"
@@ -3078,169 +3078,169 @@ msgstr ""
 "No s'ha trobat cap servei de xat predeterminat. Haureu d'especificar "
 "l'adreça completa, per exemple sala@conference.exemple.cat"
 
-#: dist/converse-no-dependencies.js:145118
+#: dist/converse-no-dependencies.js:137785
 msgid "Groupchat id is invalid."
 msgstr "L'identificador del grup no és vàlid."
 
 #. export default
-#: dist/converse-no-dependencies.js:145288
+#: dist/converse-no-dependencies.js:137953
 msgid "Description:"
 msgstr "Descripció:"
 
-#: dist/converse-no-dependencies.js:145289
+#: dist/converse-no-dependencies.js:137954
 msgid "Groupchat XMPP Address:"
 msgstr "Adreça XMPP del grup:"
 
-#: dist/converse-no-dependencies.js:145290
+#: dist/converse-no-dependencies.js:137955
 msgid "Participants:"
 msgstr "Participants:"
 
-#: dist/converse-no-dependencies.js:145291
+#: dist/converse-no-dependencies.js:137956
 msgid "Features:"
 msgstr "Característiques:"
 
-#: dist/converse-no-dependencies.js:145292
+#: dist/converse-no-dependencies.js:137957
 msgid "Requires authentication"
 msgstr "Cal autenticar-se"
 
-#: dist/converse-no-dependencies.js:145294
+#: dist/converse-no-dependencies.js:137959
 msgid "Requires an invitation"
 msgstr "Requereix invitació"
 
-#: dist/converse-no-dependencies.js:145296
+#: dist/converse-no-dependencies.js:137961
 msgid "Non-anonymous"
 msgstr "No anònim"
 
-#: dist/converse-no-dependencies.js:145298
+#: dist/converse-no-dependencies.js:137963
 msgid "Permanent"
 msgstr "Permanent"
 
-#: dist/converse-no-dependencies.js:145302
+#: dist/converse-no-dependencies.js:137967
 msgid "Unmoderated"
 msgstr "Sense moderar"
 
-#: dist/converse-no-dependencies.js:145387
+#: dist/converse-no-dependencies.js:138050
 msgid "Show groupchats"
 msgstr "Mostrar grups"
 
-#: dist/converse-no-dependencies.js:145388
+#: dist/converse-no-dependencies.js:138051
 msgid "Server address"
 msgstr "Adreça del servidor"
 
-#: dist/converse-no-dependencies.js:145612
+#: dist/converse-no-dependencies.js:138264
 msgid "conference.example.org"
 msgstr "conferencia@exemple.cat"
 
-#: dist/converse-no-dependencies.js:145633
+#: dist/converse-no-dependencies.js:138285
 msgid "Query for Groupchats"
 msgstr "Cercar grups"
 
-#: dist/converse-no-dependencies.js:145678
+#: dist/converse-no-dependencies.js:138330
 msgid "Groupchats found"
 msgstr "Grups trobats"
 
-#: dist/converse-no-dependencies.js:145686
+#: dist/converse-no-dependencies.js:138338
 msgid "No groupchats found"
 msgstr "No s'ha trobat cap grup"
 
-#: dist/converse-no-dependencies.js:145930
+#: dist/converse-no-dependencies.js:138580
 msgid "Leave this groupchat"
 msgstr "Sortir d'aquest grup"
 
-#: dist/converse-no-dependencies.js:145943
+#: dist/converse-no-dependencies.js:138593
 msgid "Click to hide these rooms"
 msgstr "Feu clic per amagar aquestes sales"
 
-#: dist/converse-no-dependencies.js:145996
+#: dist/converse-no-dependencies.js:138646
 msgid "Click to toggle the list of open groupchats"
 msgstr "Feu clic per alternar la llista de grups oberts"
 
-#: dist/converse-no-dependencies.js:145997
+#: dist/converse-no-dependencies.js:138647
 msgid "Groupchats"
 msgstr "Grups"
 
-#: dist/converse-no-dependencies.js:145998
+#: dist/converse-no-dependencies.js:138648
 msgid "Query server"
 msgstr "Consultar servidor"
 
-#: dist/converse-no-dependencies.js:145999
+#: dist/converse-no-dependencies.js:138649
 msgid "Add groupchat"
 msgstr "Afegir grup"
 
-#: dist/converse-no-dependencies.js:146386
+#: dist/converse-no-dependencies.js:139029
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Confirmeu la sortida del grup %1$s?"
 
-#: dist/converse-no-dependencies.js:147052
+#: dist/converse-no-dependencies.js:139681
 msgid "This contact is busy"
 msgstr "Aquest contacte està ocupat/da"
 
-#: dist/converse-no-dependencies.js:147053
+#: dist/converse-no-dependencies.js:139682
 msgid "This contact is online"
 msgstr "Aquest contacte està en línia"
 
-#: dist/converse-no-dependencies.js:147054
+#: dist/converse-no-dependencies.js:139683
 msgid "This contact is offline"
 msgstr "Aquest contacte està fora de línia"
 
-#: dist/converse-no-dependencies.js:147055
+#: dist/converse-no-dependencies.js:139684
 msgid "This contact is unavailable"
 msgstr "Aquest contacte no està disponible"
 
-#: dist/converse-no-dependencies.js:147056
+#: dist/converse-no-dependencies.js:139685
 msgid "This contact is away for an extended period"
 msgstr "Aquest contacte està absent durant un llarg període"
 
-#: dist/converse-no-dependencies.js:147057
+#: dist/converse-no-dependencies.js:139686
 msgid "This contact is away"
 msgstr "Aquest contacte està absent"
 
-#: dist/converse-no-dependencies.js:147173
+#: dist/converse-no-dependencies.js:139802
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "Feu clic per eliminar %1$s com a contacte"
 
-#: dist/converse-no-dependencies.js:147182
+#: dist/converse-no-dependencies.js:139811
 #, javascript-format
 msgid "Click to show more details about %1$s"
 msgstr "Feu clic per mostrar més detalls sobre %1$s"
 
-#: dist/converse-no-dependencies.js:147210
+#: dist/converse-no-dependencies.js:139839
 msgid "Click to chat with yourself"
 msgstr "Clica per xatejar amb tu mateix/a"
 
-#: dist/converse-no-dependencies.js:147210
-#: dist/converse-no-dependencies.js:147302
-#: dist/converse-no-dependencies.js:147414
+#: dist/converse-no-dependencies.js:139839
+#: dist/converse-no-dependencies.js:139929
+#: dist/converse-no-dependencies.js:140041
 #, javascript-format
 msgid "Click to chat with %1$s (XMPP address: %2$s)"
 msgstr "Feu clic per conversar amb %1$s (adreça XMPP: %2$s)"
 
-#: dist/converse-no-dependencies.js:147300
+#: dist/converse-no-dependencies.js:139927
 #, javascript-format
 msgid "Click to accept the contact request from %1$s (XMPP address: %2$s)"
 msgstr ""
 "Feu clic per acceptar aquesta sol·licitud de contacte de %1$s (adreça XMPP: "
 "%2$s)"
 
-#: dist/converse-no-dependencies.js:147301
+#: dist/converse-no-dependencies.js:139928
 #, javascript-format
 msgid "Click to decline the contact request from %1$s (XMPP address: %2$s)"
 msgstr ""
 "Feu clic per refusar aquesta sol·licitud de contacte de %1$s (adreça XMPP: "
 "%2$s)"
 
-#: dist/converse-no-dependencies.js:147306
+#: dist/converse-no-dependencies.js:139933
 msgid "Accept as contact"
 msgstr "Acceptar com a contacte"
 
-#: dist/converse-no-dependencies.js:147402
+#: dist/converse-no-dependencies.js:140029
 #, javascript-format
 msgid "Click to add %1$s as a contact"
 msgstr "Feu clic per afegir %1$s com a contacte"
 
-#: dist/converse-no-dependencies.js:147405
+#: dist/converse-no-dependencies.js:140032
 msgid "Save as contact"
 msgstr "Desar com a contacte"
 
@@ -3248,32 +3248,32 @@ msgstr "Desar com a contacte"
 #. * @param {import('../add-contact.js').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:148021
-#: dist/converse-no-dependencies.js:150670
+#: dist/converse-no-dependencies.js:140629
+#: dist/converse-no-dependencies.js:143204
 msgid "Add"
 msgstr "Afegir"
 
-#: dist/converse-no-dependencies.js:148028
+#: dist/converse-no-dependencies.js:140636
 msgid "Search name or XMPP address"
 msgstr "Cerca el nom o l'adreça XMPP"
 
-#: dist/converse-no-dependencies.js:148331
+#: dist/converse-no-dependencies.js:140927
 msgid "Add a Contact"
 msgstr "Afegir un contacte"
 
-#: dist/converse-no-dependencies.js:148343
+#: dist/converse-no-dependencies.js:140939
 msgid "This contact has already been added"
 msgstr "Aquest contacte ja s'ha afegit"
 
-#: dist/converse-no-dependencies.js:148368
+#: dist/converse-no-dependencies.js:140964
 msgid "Sorry, something went wrong while adding the contact"
 msgstr "Aguna cosa ha anat malament en afegir el contacte"
 
-#: dist/converse-no-dependencies.js:148377
+#: dist/converse-no-dependencies.js:140973
 msgid "Contact added successfully"
 msgstr "Contacte afegit correctament"
 
-#: dist/converse-no-dependencies.js:148411
+#: dist/converse-no-dependencies.js:141007
 msgid ""
 "Invalid value for the name and XMPP address. Please use the format \"Name "
 "<username@example.org>\"."
@@ -3281,11 +3281,11 @@ msgstr ""
 "Valor no vàlid per al nom i l'adreça XMPP. Si us plau, utilitzeu el format "
 "«Nom <identificador@exemple.cat>»."
 
-#: dist/converse-no-dependencies.js:148807
+#: dist/converse-no-dependencies.js:141389
 msgid "Sorry, something went wrong while accepting the contact request"
 msgstr "Alguna cosa ha anat malament en acceptar la sol·licitud de contacte"
 
-#: dist/converse-no-dependencies.js:148819
+#: dist/converse-no-dependencies.js:141401
 msgid "Successfully accepted the contact request"
 msgstr "Sol·licitud de contacte acceptada correctament"
 
@@ -3293,71 +3293,71 @@ msgstr "Sol·licitud de contacte acceptada correctament"
 #. * @param {import('../new-chat.js').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:148875
+#: dist/converse-no-dependencies.js:141455
 msgid "Start Chat"
 msgstr "Iniciar xat"
 
-#: dist/converse-no-dependencies.js:149145
-#: dist/converse-no-dependencies.js:150161
+#: dist/converse-no-dependencies.js:141713
+#: dist/converse-no-dependencies.js:142708
 msgid "Start a new chat"
 msgstr "Iniciar un nou xat"
 
-#: dist/converse-no-dependencies.js:149191
+#: dist/converse-no-dependencies.js:141759
 msgid "Sorry, something went wrong"
 msgstr "Alguna cosa ha anat malament"
 
-#: dist/converse-no-dependencies.js:149335
+#: dist/converse-no-dependencies.js:141901
 #, javascript-format
 msgid "%1$s blocked users shown"
 msgstr "Es mostren %1$s comptes blocats"
 
-#: dist/converse-no-dependencies.js:149335
+#: dist/converse-no-dependencies.js:141901
 msgid "Unblock selected users"
 msgstr "Desblocar els comptes seleccionats"
 
-#: dist/converse-no-dependencies.js:149335
+#: dist/converse-no-dependencies.js:141901
 msgid "Filter blocked users"
 msgstr "Filtrar els comptes blocats"
 
-#: dist/converse-no-dependencies.js:149341
+#: dist/converse-no-dependencies.js:141907
 msgid "clear"
 msgstr "netejar"
 
-#: dist/converse-no-dependencies.js:149343
+#: dist/converse-no-dependencies.js:141909
 msgid "Select All"
 msgstr "Seleccionar-ho tot"
 
-#: dist/converse-no-dependencies.js:149354
+#: dist/converse-no-dependencies.js:141920
 msgid "No blocked XMPP addresses"
 msgstr "Sense adreces XMPP blocades"
 
-#: dist/converse-no-dependencies.js:149751
+#: dist/converse-no-dependencies.js:142302
 msgid "Blocklist"
 msgstr "Llista de bloqueig"
 
-#: dist/converse-no-dependencies.js:149778
+#: dist/converse-no-dependencies.js:142329
 #, javascript-format
 msgid "Successfully unblocked %1$s XMPP addresses"
 msgstr "S'han desblocat correctament %1$s adreces XMPP"
 
-#: dist/converse-no-dependencies.js:149778
+#: dist/converse-no-dependencies.js:142329
 msgid "Successfully unblocked one XMPP address"
 msgstr "S'ha desblocat correctament una adreça XMPP"
 
 #. export default
-#: dist/converse-no-dependencies.js:149913
+#: dist/converse-no-dependencies.js:142462
 msgid "Click to hide these contacts"
 msgstr "Feu clic per amagar aquests contactes"
 
-#: dist/converse-no-dependencies.js:149985
+#: dist/converse-no-dependencies.js:142532
 msgid "Filter by contact name"
 msgstr "Filtrar per nom de contacte"
 
-#: dist/converse-no-dependencies.js:149986
+#: dist/converse-no-dependencies.js:142533
 msgid "Filter by group name"
 msgstr "Filtrar per nom de grup"
 
-#: dist/converse-no-dependencies.js:149989
+#: dist/converse-no-dependencies.js:142536
 msgid "Unread"
 msgstr "Sense llegir"
 
@@ -3365,23 +3365,23 @@ msgstr "Sense llegir"
 #. * @param {import('../rosterview').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:150158
+#: dist/converse-no-dependencies.js:142705
 msgid "Contacts"
 msgstr "Contactes"
 
-#: dist/converse-no-dependencies.js:150159
+#: dist/converse-no-dependencies.js:142706
 msgid "Click to toggle contacts"
 msgstr "Feu clic per alternar els contactes"
 
-#: dist/converse-no-dependencies.js:150160
+#: dist/converse-no-dependencies.js:142707
 msgid "Add a contact"
 msgstr "Afegir un contacte"
 
-#: dist/converse-no-dependencies.js:150162
+#: dist/converse-no-dependencies.js:142709
 msgid "Show block list"
 msgstr "Mostrar la llista de bloqueig"
 
-#: dist/converse-no-dependencies.js:150198
+#: dist/converse-no-dependencies.js:142745
 msgid "Re-sync contacts"
 msgstr "Tornar a sincronitzar els contactes"
 
@@ -3389,16 +3389,16 @@ msgstr "Tornar a sincronitzar els contactes"
 #. * @param {import('../approval-alert').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:150631
+#: dist/converse-no-dependencies.js:143167
 #, javascript-format
 msgid "%1$s would like to be your contact"
 msgstr "%1$s vol ser contacte vostre"
 
-#: dist/converse-no-dependencies.js:150633
+#: dist/converse-no-dependencies.js:143169
 msgid "Approve"
 msgstr "Aprovar"
 
-#: dist/converse-no-dependencies.js:150635
+#: dist/converse-no-dependencies.js:143171
 msgid "Deny"
 msgstr "Denegar"
 
@@ -3406,27 +3406,27 @@ msgstr "Denegar"
 #. * @param {import('../approval-alert').default} el
 #.
 #. export default
-#: dist/converse-no-dependencies.js:150668
+#: dist/converse-no-dependencies.js:143202
 #, javascript-format
 msgid "Would you like to add %1$s as a contact?"
 msgstr "Voleu afegir %1$s com a contacte?"
 
-#: dist/converse-no-dependencies.js:150672
+#: dist/converse-no-dependencies.js:143206
 msgid "Dismiss"
 msgstr "Ignorar"
 
 #. "Alice, Bob and 1 other" / "Alice, Bob and 3 others"
-#: dist/converse-no-dependencies.js:152051
+#: dist/converse-no-dependencies.js:144560
 #, fuzzy, javascript-format
 msgid "%1$s and 1 other"
 msgstr "%1$s i %2$s"
 
-#: dist/converse-no-dependencies.js:152051
+#: dist/converse-no-dependencies.js:144560
 #, fuzzy, javascript-format
 msgid "%1$s and %2$d others"
 msgstr "%1$s i %2$s"
 
-#: dist/converse-no-dependencies.js:152179
+#: dist/converse-no-dependencies.js:144686
 #, fuzzy
 msgid "Add Reaction"
 msgstr "Afegir un contacte"

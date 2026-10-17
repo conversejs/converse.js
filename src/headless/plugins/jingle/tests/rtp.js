@@ -5,6 +5,7 @@ const { stx, sizzle, u } = converse.env;
 const { webrtc } = converse.env.jingle;
 const JMI = 'urn:xmpp:jingle-message:0';
 const JINGLE = 'urn:xmpp:jingle:1';
+const JINGLE_ERRORS = 'urn:xmpp:jingle:errors:1';
 const RTP = 'urn:xmpp:jingle:apps:rtp:1';
 
 // A minimal but valid audio offer; sdpToJingle round-trips it (see tests/sdp.js).
@@ -415,6 +416,68 @@ describe('A Jingle RTP session', function () {
             expect(call.get('ended_reason')).toBe('failed-application');
             const term = lastJingleIq(_converse, 'session-terminate');
             expect(sizzle('reason > failed-application', term).length).toBe(1);
+        })
+    );
+
+    it(
+        "rejects Jingle IQs from anyone but the session's peer",
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            installFakeWebRTC();
+            const jid = await getContactJid(_converse, 0);
+            const stranger = await getContactJid(_converse, 1);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            const term = stx`
+                <jingle xmlns="${JINGLE}" action="session-terminate" sid="${sid}">
+                    <reason><success/></reason>
+                </jingle>`;
+            receiveIq(_converse, `${stranger}/phone`, 'spoof-iq', term);
+
+            const error = sentIq(_converse, 'error', 'spoof-iq');
+            expect(sizzle('item-not-found', error).length).toBe(1);
+            expect(sizzle(`unknown-session[xmlns="${JINGLE_ERRORS}"]`, error).length).toBe(1);
+            expect(call.get('state')).toBe('connecting');
+        })
+    );
+
+    it(
+        "answers only the proposing resource, ignoring the offer's initiator attribute",
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            installFakeWebRTC();
+            const jid = await getContactJid(_converse, 0);
+            const stranger = await getContactJid(_converse, 1);
+            const { parseSDP, sdpToJingle } = converse.env.jingle;
+
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="in2"><description xmlns="${RTP}" media="audio"/></propose>`
+            );
+            const call = _converse.state.calls.get('in2');
+            call.accept();
+
+            // Someone else can't start the session for this call...
+            receiveIq(_converse, `${stranger}/phone`, 'spoof-iq', jingle('session-initiate', 'in2'));
+            const error = sentIq(_converse, 'error', 'spoof-iq');
+            expect(sizzle('item-not-found', error).length).toBe(1);
+            expect(call.session).toBe(null);
+
+            // ...and the caller can't redirect our answer elsewhere via `initiator`.
+            const offer = sdpToJingle(parseSDP(OFFER_SDP), {
+                action: 'session-initiate',
+                sid: 'in2',
+                initiator: 'mallory@evil.lit/x',
+                is_initiator: false,
+            });
+            receiveIq(_converse, `${jid}/phone`, 'init-iq', offer);
+
+            const accept = await u.waitUntil(() => lastJingleIq(_converse, 'session-accept'));
+            expect(accept.getAttribute('to')).toBe(`${jid}/phone`);
+            expect(sizzle(`jingle[xmlns="${JINGLE}"]`, accept).pop().getAttribute('initiator')).toBe(`${jid}/phone`);
         })
     );
 });

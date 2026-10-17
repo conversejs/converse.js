@@ -24,6 +24,17 @@ function describe(media) {
 }
 
 /**
+ * Says a `<reject>` or `<retract>` only resolves a glare (XEP-0353 § 9.1).
+ * @returns {import('strophe.js').Builder[]}
+ */
+function tieBreak() {
+    return [
+        stx`<reason xmlns="${Strophe.NS.JINGLE}"><expired/><text>Tie-Break</text></reason>`,
+        stx`<tie-break xmlns="${Strophe.NS.JINGLE_MESSAGE}"/>`,
+    ];
+}
+
+/**
  * `<propose>` - invite a peer to a call (the caller's opening stanza).
  * @param {string} to - bare JID of the peer
  * @param {string} sid - Jingle session id
@@ -69,11 +80,12 @@ export function buildProceed(to, sid) {
  * `<reject>` - decline a call (also sent when busy).
  * @param {string} to - bare JID of the caller
  * @param {string} sid
+ * @param {{ tie_break?: boolean }} [opts] - true when it only resolves a glare
  */
-export function buildReject(to, sid) {
+export function buildReject(to, sid, { tie_break = false } = {}) {
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
-            <reject xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}"/>
+            <reject xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}">${tie_break ? tieBreak() : ''}</reject>
             ${store_hint}
         </message>`;
 }
@@ -82,11 +94,12 @@ export function buildReject(to, sid) {
  * `<retract>` - the caller cancels a call it hasn't yet had answered.
  * @param {string} to - bare JID of the callee
  * @param {string} sid
+ * @param {{ tie_break?: boolean }} [opts] - true when it only resolves a glare
  */
-export function buildRetract(to, sid) {
+export function buildRetract(to, sid, { tie_break = false } = {}) {
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
-            <retract xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}"/>
+            <retract xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}">${tie_break ? tieBreak() : ''}</retract>
             ${store_hint}
         </message>`;
 }

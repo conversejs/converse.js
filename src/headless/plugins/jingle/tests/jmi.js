@@ -375,4 +375,82 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
             expect(lastJMI(_converse, 'ringing')).toBeUndefined();
         }),
     );
+
+    describe('when both sides propose at once (glare)', function () {
+        /** Assert a JMI tie-break message: `<reason><expired/></reason>` plus `<tie-break/>`. */
+        function expectTieBreak(stanza, action, sid) {
+            const el = sizzle(`${action}[xmlns="${JMI}"]`, stanza).pop();
+            expect(el.getAttribute('id')).toBe(sid);
+            expect(sizzle(`> reason[xmlns="${Strophe.NS.JINGLE}"] > expired`, el).length).toBe(1);
+            expect(sizzle('> tie-break', el).pop()?.namespaceURI).toBe(JMI);
+        }
+
+        it(
+            'gives way to the lower session id: retracts our call and rings for theirs',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                const ours = _converse.api.calls.dial(jid);
+
+                // "0" sorts before any UUID in i;octet order.
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<propose xmlns="${JMI}" id="0"><description xmlns="${RTP}" media="audio"/></propose>`,
+                );
+
+                const retract = lastJMI(_converse, 'retract');
+                expect(retract.getAttribute('to')).toBe(jid);
+                expectTieBreak(retract, 'retract', ours.get('id'));
+                expect(ours.get('state')).toBe('ended');
+                expect(ours.get('ended_reason')).toBe('cancelled');
+
+                const theirs = _converse.state.calls.get('0');
+                expect(theirs.get('direction')).toBe('incoming');
+                expect(theirs.get('state')).toBe('ringing');
+                expect(lastJMI(_converse, 'reject')).toBeUndefined();
+            }),
+        );
+
+        it(
+            'keeps our call when its session id is lower and rejects theirs',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                const ours = _converse.api.calls.dial(jid);
+
+                // "z" sorts after any UUID.
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<propose xmlns="${JMI}" id="z"><description xmlns="${RTP}" media="audio"/></propose>`,
+                );
+
+                const reject = lastJMI(_converse, 'reject');
+                expect(reject.getAttribute('to')).toBe(`${jid}/phone`);
+                expectTieBreak(reject, 'reject', 'z');
+                expect(ours.get('state')).toBe('calling');
+                expect(_converse.state.calls.get('z')).toBeUndefined();
+                expect(lastJMI(_converse, 'retract')).toBeUndefined();
+            }),
+        );
+
+        it(
+            'does not drop an answered call for a new propose from the same peer',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                const ours = _converse.api.calls.dial(jid);
+                receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${ours.get('id')}"/>`);
+                expect(ours.get('state')).toBe('connecting');
+
+                receive(
+                    _converse,
+                    `${jid}/laptop`,
+                    stx`<propose xmlns="${JMI}" id="z"><description xmlns="${RTP}" media="audio"/></propose>`,
+                );
+
+                expect(ours.get('state')).toBe('connecting');
+                expect(_converse.state.calls.get('z')).toBeUndefined();
+                expect(lastJMI(_converse, 'reject').getAttribute('to')).toBe(`${jid}/laptop`);
+            }),
+        );
+    });
 });

@@ -4,7 +4,7 @@ import converse from '../../shared/api/public.js';
 import { getUniqueId } from '../../utils/index.js';
 import { isCarbon } from '../../shared/parsers.js';
 import Call from './model.js';
-import { buildPropose, buildReject, buildRinging, parseJMI } from './jmi.js';
+import { buildPropose, buildReject, buildRetract, buildRinging, parseJMI } from './jmi.js';
 import { endCallFromTerminate } from './rtp.js';
 import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS } from './constants.js';
 
@@ -53,18 +53,22 @@ export function dial(jid, { audio = true } = {}) {
 }
 
 /**
- * Mutual `<propose>` (glare): both sides run the same deterministic tie-break on
- * the two session ids so they agree on a single winner. The higher sid wins.
- * @param {import('./model.js').default} ours - our outgoing call to the same peer
+ * Mutual `<propose>` (glare): the lower session id wins, in i;octet order
+ * (XEP-0353 § 9.1). The loser retracts its own call and the winner rejects the
+ * other one, both marked as a tie-break.
+ * @param {import('./model.js').default} ours - our unanswered outgoing call to the same peer
  * @param {string} their_sid
+ * @param {string} from - the full JID that sent the other `<propose>`
  * @returns {boolean} true if the incoming propose should be honoured (we lost)
  */
-function resolveGlare(ours, their_sid) {
-    if (their_sid > ours.get('id')) {
-        ours.end(ENDED_REASONS.CANCELLED); // we lost - drop our outgoing call
+function resolveGlare(ours, their_sid, from) {
+    if (their_sid < ours.sid) {
+        api.send(buildRetract(ours.peer, ours.sid, { tie_break: true }));
+        ours.end(ENDED_REASONS.CANCELLED);
         return true;
     }
-    return false; // we won - ignore their propose, they'll drop it by the same rule
+    api.send(buildReject(from, their_sid, { tie_break: true }));
+    return false;
 }
 
 /**
@@ -120,8 +124,12 @@ export function handleJingleMessage(stanza) {
 
             const live = getLiveCall();
             if (live) {
-                if (live.get('jid') === bare_from && live.get('direction') === CALL_DIRECTION.OUTGOING) {
-                    if (!resolveGlare(live, sid)) break; // we won the glare; ignore theirs
+                const glare =
+                    live.get('jid') === bare_from &&
+                    live.get('direction') === CALL_DIRECTION.OUTGOING &&
+                    [CALL_STATES.CALLING, CALL_STATES.RINGING].includes(live.get('state'));
+                if (glare) {
+                    if (!resolveGlare(live, sid, from)) break;
                 } else {
                     api.send(buildReject(from, sid)); // busy with someone/something else
                     break;

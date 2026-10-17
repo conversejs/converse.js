@@ -1,3 +1,16 @@
+/**
+ * Tell `to` that the Jingle session `sid` is over.
+ * @param {string} to
+ * @param {string} sid
+ * @param {string} reason - one of {@link ENDED_REASONS}
+ */
+export function sendSessionTerminate(to: string, sid: string, reason: string): void;
+/**
+ * End a call the way the peer's session-terminate says.
+ * @param {import('./model.js').default} call
+ * @param {Element} jingle - the peer's session-terminate
+ */
+export function endCallFromTerminate(call: import("./model.js").default, jingle: Element): void;
 export namespace webrtc {
     let RTCPeerConnection: {
         new (configuration?: RTCConfiguration): RTCPeerConnection;

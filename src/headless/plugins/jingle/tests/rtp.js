@@ -314,6 +314,74 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
+        'ends an accepted call when the caller terminates it before the session starts',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="in5"><description xmlns="${RTP}" media="audio"/></propose>`
+            );
+            const call = _converse.state.calls.get('in5');
+            call.accept();
+
+            const term = stx`
+                <jingle xmlns="${JINGLE}" action="session-terminate" sid="in5">
+                    <reason><cancel/></reason>
+                </jingle>`;
+            receiveIq(_converse, `${jid}/phone`, 'term-iq', term);
+
+            expect(call.get('state')).toBe('ended');
+            expect(call.get('ended_reason')).toBe('cancelled');
+            expect(sentIq(_converse, 'result', 'term-iq')).toBeDefined();
+        })
+    );
+
+    it(
+        'tells the caller when we hang up an accepted call before the session starts',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="in6"><description xmlns="${RTP}" media="audio"/></propose>`
+            );
+            const call = _converse.state.calls.get('in6');
+            call.accept();
+            call.hangup();
+
+            const term = lastJingleIq(_converse, 'session-terminate');
+            expect(term.getAttribute('to')).toBe(`${jid}/phone`);
+            expect(sizzle(`jingle[sid="in6"] > reason > cancel`, term).length).toBe(1);
+            expect(call.get('state')).toBe('ended');
+        })
+    );
+
+    it(
+        "reads the peer's reason for ending the call even when it includes a text",
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            const term = stx`
+                <jingle xmlns="${JINGLE}" action="session-terminate" sid="${sid}">
+                    <reason><failed-transport/><text>No route to host</text></reason>
+                </jingle>`;
+            receiveIq(_converse, `${jid}/phone`, 'term-iq', term);
+
+            expect(call.get('state')).toBe('failed');
+            expect(call.get('ended_reason')).toBe('connectivity-error');
+        })
+    );
+
+    it(
         'handles each Jingle IQ once after a reconnection',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const webrtc_handle = installFakeWebRTC();

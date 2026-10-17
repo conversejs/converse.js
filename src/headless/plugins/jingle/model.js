@@ -5,7 +5,7 @@ import ModelWithVCard from '../../shared/model-with-vcard.js';
 import ModelWithContact from '../../shared/model-with-contact.js';
 import ColorAwareModel from '../../shared/color.js';
 import { buildAccept, buildProceed, buildReject, buildRetract } from './jmi.js';
-import RTPSession from './rtp.js';
+import RTPSession, { sendSessionTerminate } from './rtp.js';
 import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS } from './constants.js';
 
 /**
@@ -109,6 +109,10 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
             this.end(reason);
         } else if (this.get('direction') === CALL_DIRECTION.OUTGOING && this.isPreActive()) {
             api.send(buildRetract(this.peer, this.sid));
+            this.end(ENDED_REASONS.CANCELLED);
+        } else if (this.get('direction') === CALL_DIRECTION.INCOMING && this.get('state') === CALL_STATES.CONNECTING) {
+            // Accepted, but the caller's session-initiate hasn't arrived yet.
+            sendSessionTerminate(this.peer_full_jid, this.sid, ENDED_REASONS.CANCELLED);
             this.end(ENDED_REASONS.CANCELLED);
         } else {
             this.end(ENDED_REASONS.SUCCESS);

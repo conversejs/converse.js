@@ -46,6 +46,42 @@ const FAILURE_REASONS = [
     ENDED_REASONS.FAILED_APPLICATION,
 ];
 
+/**
+ * Tell `to` that the Jingle session `sid` is over.
+ * @param {string} to
+ * @param {string} sid
+ * @param {string} reason - one of {@link ENDED_REASONS}
+ */
+export function sendSessionTerminate(to, sid, reason) {
+    if (!api.connection.connected()) return; // nothing to send to (e.g. terminating on disconnect)
+    const condition = (REASON_ELEMENT[reason] ?? REASON_ELEMENT[ENDED_REASONS.SUCCESS])();
+    const iq = stx`
+        <iq xmlns="jabber:client" type="set" to="${to}">
+            <jingle xmlns="${Strophe.NS.JINGLE}" action="session-terminate" sid="${sid}">
+                <reason>${condition}</reason>
+            </jingle>
+        </iq>`;
+    api.sendIQ(iq).catch((e) => log.error(e));
+}
+
+/**
+ * End a call the way the peer's session-terminate says.
+ * @param {import('./model.js').default} call
+ * @param {Element} jingle - the peer's session-terminate
+ */
+export function endCallFromTerminate(call, jingle) {
+    // The <reason> may hold a <text/> beside its condition, so pick the condition by name.
+    const condition = sizzle('reason > *', jingle)
+        .map((el) => el.tagName)
+        .find((name) => name in REASON_FROM_JINGLE);
+    const reason = REASON_FROM_JINGLE[condition] ?? ENDED_REASONS.SUCCESS;
+    if (FAILURE_REASONS.includes(reason)) {
+        call.fail(reason);
+    } else {
+        call.end(reason);
+    }
+}
+
 // Swappable WebRTC backend: the browser globals in production, fakes in the
 // signalling specs. The media-loopback test leaves these as the real thing.
 export const webrtc = {
@@ -263,13 +299,7 @@ class RTPSession {
 
     /** @param {Element} jingle - the peer hung up */
     onSessionTerminate(jingle) {
-        const condition = sizzle('reason > *', jingle).pop()?.tagName ?? 'success';
-        const reason = REASON_FROM_JINGLE[condition] ?? ENDED_REASONS.SUCCESS;
-        if (FAILURE_REASONS.includes(reason)) {
-            this.call.fail(reason);
-        } else {
-            this.call.end(reason);
-        }
+        endCallFromTerminate(this.call, jingle);
     }
 
     /**
@@ -288,12 +318,7 @@ class RTPSession {
      * @param {string} reason - one of {@link ENDED_REASONS}
      */
     terminate(reason) {
-        const condition = (REASON_ELEMENT[reason] ?? REASON_ELEMENT[ENDED_REASONS.SUCCESS])();
-        const jingle = stx`
-            <jingle xmlns="${Strophe.NS.JINGLE}" action="session-terminate" sid="${this.sid}">
-                <reason>${condition}</reason>
-            </jingle>`;
-        this.sendJingle(jingle);
+        sendSessionTerminate(this.peer_jid, this.sid, reason);
     }
 
     /**

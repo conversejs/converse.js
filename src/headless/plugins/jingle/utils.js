@@ -5,6 +5,7 @@ import { getUniqueId } from '../../utils/index.js';
 import { isCarbon } from '../../shared/parsers.js';
 import Call from './model.js';
 import { buildPropose, buildReject, buildRinging, parseJMI } from './jmi.js';
+import { endCallFromTerminate } from './rtp.js';
 import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS } from './constants.js';
 
 const { Strophe, sizzle, stx } = converse.env;
@@ -233,6 +234,13 @@ export function handleJingleIq(iq) {
             }
             call.answerSession(from);
         }
+    }
+
+    // The caller may end an accepted call before it starts the session.
+    if (action === 'session-terminate' && call && !call.session && !isTerminal(call) && from === call.peer_full_jid) {
+        endCallFromTerminate(call, jingle);
+        api.send(buildIqResult(iq));
+        return true;
     }
 
     // Anyone other than the session's peer is told the session doesn't exist,

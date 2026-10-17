@@ -180,6 +180,17 @@ function buildUnknownSession(iq) {
         </iq>`;
 }
 
+/** @param {Element} iq */
+function buildOutOfOrder(iq) {
+    return stx`
+        <iq xmlns="jabber:client" type="error" to="${iq.getAttribute('from')}" id="${iq.getAttribute('id')}">
+            <error type="cancel">
+                <unexpected-request xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                <out-of-order xmlns="${Strophe.NS.JINGLE_ERRORS}"/>
+            </error>
+        </iq>`;
+}
+
 /**
  * Route one inbound Jingle IQ to the relevant call's {@link RTPSession} and ack it.
  * @param {Element} iq
@@ -193,11 +204,22 @@ export function handleJingleIq(iq) {
     const from = iq.getAttribute('from');
     const call = _converse.state.calls?.get(jingle.getAttribute('sid'));
 
-    if (action === 'session-initiate' && call?.isPreActive() && !call.session) {
-        if (call.get('direction') !== CALL_DIRECTION.INCOMING) return true; // we initiate outgoing calls
-        // Only the resource that proposed the call may start its session. The
-        // `initiator` attribute is the sender's own claim, so it isn't trusted.
-        if (from === call.peer_full_jid) call.answerSession(from);
+    // Only the resource that proposed the call may start its session. The
+    // `initiator` attribute is the sender's own claim, so it isn't trusted.
+    if (action === 'session-initiate' && call && !isTerminal(call)) {
+        if (from === (call.session?.peer_jid ?? call.peer_full_jid)) {
+            // Answering captures the microphone, so it waits for the user to
+            // accept, and happens once. We start outgoing sessions ourselves.
+            const answerable =
+                call.get('direction') === CALL_DIRECTION.INCOMING &&
+                call.get('state') === CALL_STATES.CONNECTING &&
+                !call.session;
+            if (!answerable) {
+                api.send(buildOutOfOrder(iq));
+                return true;
+            }
+            call.answerSession(from);
+        }
     }
 
     // Anyone other than the session's peer is told the session doesn't exist,

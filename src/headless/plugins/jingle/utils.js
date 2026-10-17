@@ -81,6 +81,9 @@ export function handleJingleMessage(stanza) {
         msg = sizzle(selector, stanza).pop();
     }
 
+    // JMI is one-to-one; a room occupant must not be able to drive our calls.
+    if (!msg || msg.getAttribute('type') === 'groupchat') return true;
+
     const data = parseJMI(msg);
     if (!data) return true;
 
@@ -93,7 +96,10 @@ export function handleJingleMessage(stanza) {
     // action carries that sibling's full JID; ours carries our own. Without this
     // we'd tear down the very call we just accepted as "answered elsewhere".
     const is_self = from === _converse.session.get('jid');
+
     let call = calls.get(sid);
+    // Session ids are not secret, so only the call's own peer may act on it.
+    const from_peer = !!call && bare_from === call.get('jid');
 
     switch (action) {
         case 'propose': {
@@ -123,14 +129,14 @@ export function handleJingleMessage(stanza) {
             break;
         }
         case 'ringing':
-            if (call?.get('direction') === CALL_DIRECTION.OUTGOING) {
+            if (from_peer && call.get('direction') === CALL_DIRECTION.OUTGOING) {
                 call.set('state', CALL_STATES.RINGING);
             }
             break;
         case 'proceed':
             if (is_carbon && !is_self) {
                 call?.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
-            } else if (!is_carbon && call?.get('direction') === CALL_DIRECTION.OUTGOING) {
+            } else if (from_peer && call.get('direction') === CALL_DIRECTION.OUTGOING) {
                 call.set('state', CALL_STATES.CONNECTING);
                 call.startSession(from); // the proceed's full JID is the peer we negotiate with
             }
@@ -145,12 +151,12 @@ export function handleJingleMessage(stanza) {
         case 'reject':
             if (is_carbon && !is_self) {
                 call?.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
-            } else if (!is_carbon && call?.get('direction') === CALL_DIRECTION.OUTGOING) {
+            } else if (from_peer && call.get('direction') === CALL_DIRECTION.OUTGOING) {
                 call.end(ENDED_REASONS.DECLINED);
             }
             break;
         case 'retract':
-            if (call?.get('direction') === CALL_DIRECTION.INCOMING) {
+            if (from_peer && call.get('direction') === CALL_DIRECTION.INCOMING) {
                 call.end(ENDED_REASONS.CANCELLED);
             }
             break;
@@ -164,11 +170,12 @@ function buildIqResult(iq) {
 }
 
 /** @param {Element} iq */
-function buildItemNotFound(iq) {
+function buildUnknownSession(iq) {
     return stx`
         <iq xmlns="jabber:client" type="error" to="${iq.getAttribute('from')}" id="${iq.getAttribute('id')}">
             <error type="cancel">
                 <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                <unknown-session xmlns="${Strophe.NS.JINGLE_ERRORS}"/>
             </error>
         </iq>`;
 }
@@ -183,16 +190,21 @@ export function handleJingleIq(iq) {
     if (!jingle) return true;
 
     const action = jingle.getAttribute('action');
+    const from = iq.getAttribute('from');
     const call = _converse.state.calls?.get(jingle.getAttribute('sid'));
 
     if (action === 'session-initiate' && call?.isPreActive() && !call.session) {
         if (call.get('direction') !== CALL_DIRECTION.INCOMING) return true; // we initiate outgoing calls
-        call.answerSession(jingle.getAttribute('initiator') || iq.getAttribute('from'));
+        // Only the resource that proposed the call may start its session. The
+        // `initiator` attribute is the sender's own claim, so it isn't trusted.
+        if (from === call.peer_full_jid) call.answerSession(from);
     }
 
+    // Anyone other than the session's peer is told the session doesn't exist,
+    // so session ids can't be probed.
     const session = call?.session;
-    if (!session) {
-        api.send(buildItemNotFound(iq));
+    if (!session || from !== session.peer_jid) {
+        api.send(buildUnknownSession(iq));
         return true;
     }
 

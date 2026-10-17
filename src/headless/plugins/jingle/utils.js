@@ -248,9 +248,21 @@ export function handleJingleIq(iq) {
     return true;
 }
 
+let handler_refs = [];
+
 /** Register the inbound JMI + Jingle-IQ handlers on the connection (re-run on (re)connect). */
 export function registerCallHandlers() {
+    // A reconnection keeps the old handlers, so replace them rather than add a second set.
+    unregisterCallHandlers();
     const connection = api.connection.get();
-    connection.addHandler(handleJingleMessage, Strophe.NS.JINGLE_MESSAGE, 'message');
-    connection.addHandler(handleJingleIq, Strophe.NS.JINGLE, 'iq', 'set');
+    handler_refs = [
+        connection.addHandler(handleJingleMessage, Strophe.NS.JINGLE_MESSAGE, 'message'),
+        connection.addHandler(handleJingleIq, Strophe.NS.JINGLE, 'iq', 'set'),
+    ];
+}
+
+export function unregisterCallHandlers() {
+    const connection = api.connection.get();
+    handler_refs.forEach((ref) => connection?.deleteHandler(ref));
+    handler_refs = [];
 }

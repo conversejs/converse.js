@@ -4,7 +4,7 @@ import converse from '../../shared/api/public.js';
 import Call from './model.js';
 import Calls from './calls.js';
 import calls_api from './api.js';
-import { registerCallHandlers } from './utils.js';
+import { registerCallHandlers, unregisterCallHandlers } from './utils.js';
 import { fetchExternalServices } from './extdisco.js';
 
 /** Cache the server's advertised STUN/TURN services (XEP-0215) for new calls. */
@@ -42,6 +42,7 @@ converse.plugins.add('converse-jingle', {
 
         api.listen.on('connected', registerCallHandlers);
         api.listen.on('reconnected', registerCallHandlers);
+        api.listen.on('beforeTearDown', unregisterCallHandlers);
 
         api.listen.on('connected', discoverIceServers);
         api.listen.on('reconnected', discoverIceServers);

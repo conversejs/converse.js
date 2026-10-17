@@ -261,6 +261,41 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
+        'handles each Jingle IQ once after a reconnection',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+            receiveIq(_converse, `${jid}/phone`, 'accept-iq', jingle('session-accept', sid));
+            await u.waitUntil(() => webrtc_handle.pc.remoteDescription);
+
+            _converse.api.trigger('reconnected');
+
+            const ti = stx`
+                <jingle xmlns="${JINGLE}" action="transport-info" sid="${sid}">
+                    <content xmlns="${JINGLE}" creator="initiator" name="0">
+                        <transport xmlns="urn:xmpp:jingle:transports:ice-udp:1" ufrag="abc" pwd="pwd">
+                            <candidate
+                                component="1" foundation="1" generation="0" id="c1" ip="192.0.2.9"
+                                network="0" port="20000" priority="2113937151" protocol="udp" type="host"/>
+                        </transport>
+                    </content>
+                </jingle>`;
+            receiveIq(_converse, `${jid}/phone`, 'ti-iq', ti);
+
+            const results = _converse.api.connection
+                .get()
+                .sent_stanzas.filter((s) => s.getAttribute('type') === 'result' && s.getAttribute('id') === 'ti-iq');
+            expect(results.length).toBe(1);
+            expect(webrtc_handle.pc.candidates.length).toBe(1);
+        })
+    );
+
+    it(
         'drops a trickled candidate with a line break in a value',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const webrtc_handle = installFakeWebRTC();

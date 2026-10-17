@@ -480,4 +480,79 @@ describe('A Jingle RTP session', function () {
             expect(sizzle(`jingle[xmlns="${JINGLE}"]`, accept).pop().getAttribute('initiator')).toBe(`${jid}/phone`);
         })
     );
+
+    it(
+        'does not answer a session-initiate before the user accepts the call',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            let captured = false;
+            installFakeWebRTC({
+                getUserMedia: () => {
+                    captured = true;
+                    return Promise.resolve(fakeStream());
+                },
+            });
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="in3"><description xmlns="${RTP}" media="audio"/></propose>`
+            );
+            const call = _converse.state.calls.get('in3');
+
+            receiveIq(_converse, `${jid}/phone`, 'early-iq', jingle('session-initiate', 'in3'));
+
+            const error = sentIq(_converse, 'error', 'early-iq');
+            expect(sizzle('unexpected-request', error).length).toBe(1);
+            expect(sizzle(`out-of-order[xmlns="${JINGLE_ERRORS}"]`, error).length).toBe(1);
+            expect(call.get('state')).toBe('ringing');
+            expect(call.session).toBe(null);
+            expect(captured).toBe(false);
+            expect(lastJingleIq(_converse, 'session-accept')).toBeUndefined();
+        })
+    );
+
+    it(
+        'rejects a second session-initiate for a session already under way',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="in4"><description xmlns="${RTP}" media="audio"/></propose>`
+            );
+            const call = _converse.state.calls.get('in4');
+            call.accept();
+            receiveIq(_converse, `${jid}/phone`, 'init-iq', jingle('session-initiate', 'in4'));
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-accept'));
+            const { pc } = webrtc_handle;
+            const { local_stream } = call;
+
+            receiveIq(_converse, `${jid}/phone`, 'again-iq', jingle('session-initiate', 'in4'));
+
+            const error = sentIq(_converse, 'error', 'again-iq');
+            expect(sizzle(`out-of-order[xmlns="${JINGLE_ERRORS}"]`, error).length).toBe(1);
+            expect(webrtc_handle.pc).toBe(pc);
+            expect(call.local_stream).toBe(local_stream);
+        })
+    );
+
+    it(
+        'rejects a session-initiate for a call we started ourselves',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            receiveIq(_converse, `${jid}/phone`, 'reverse-iq', jingle('session-initiate', sid));
+
+            const error = sentIq(_converse, 'error', 'reverse-iq');
+            expect(sizzle(`out-of-order[xmlns="${JINGLE_ERRORS}"]`, error).length).toBe(1);
+            expect(lastJingleIq(_converse, 'session-accept')).toBeUndefined();
+        })
+    );
 });

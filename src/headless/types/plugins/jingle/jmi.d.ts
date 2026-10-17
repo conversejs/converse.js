@@ -21,14 +21,20 @@ export function buildProceed(to: string, sid: string): any;
  * `<reject>` - decline a call (also sent when busy).
  * @param {string} to - bare JID of the caller
  * @param {string} sid
+ * @param {{ tie_break?: boolean }} [opts] - true when it only resolves a glare
  */
-export function buildReject(to: string, sid: string): any;
+export function buildReject(to: string, sid: string, { tie_break }?: {
+    tie_break?: boolean;
+}): any;
 /**
  * `<retract>` - the caller cancels a call it hasn't yet had answered.
  * @param {string} to - bare JID of the callee
  * @param {string} sid
+ * @param {{ tie_break?: boolean }} [opts] - true when it only resolves a glare
  */
-export function buildRetract(to: string, sid: string): any;
+export function buildRetract(to: string, sid: string, { tie_break }?: {
+    tie_break?: boolean;
+}): any;
 /**
  * `<accept>` - addressed to our own bare JID so sibling devices stop ringing.
  * @param {string} to - our own bare JID

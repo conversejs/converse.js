@@ -190,9 +190,11 @@ Allows users to be invited to join MUC chatrooms. An "Invite" widget will appear
 
 ### allow_non_roster_messaging
 
-- Default: `false`
+- Default: `true`
 
 Determines whether you'll receive messages from users that are not in your roster. The XMPP specification allows for this (similar to email). Setting this to `true` increases your chances of receiving spam (when using a federated server), while setting it to `false` means that people not on your roster can't contact you unless one (or both) of you subscribe to one another's presence (i.e. adding as a roster contact).
+
+The same applies to incoming audio calls: when this is `false`, calls from people not on your roster are ignored without ringing.
 
 ### allow_public_bookmarks
 

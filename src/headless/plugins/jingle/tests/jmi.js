@@ -453,4 +453,104 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
             }),
         );
     });
+
+    describe("a <propose> from someone who doesn't see our presence", function () {
+        const propose = (sid) =>
+            stx`<propose xmlns="${JMI}" id="${sid}"><description xmlns="${RTP}" media="audio"/></propose>`;
+
+        it(
+            'rings without telling the caller, when strangers may message us',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                await getContactJid(_converse);
+                const invited = [];
+                _converse.api.listen.on('callInvited', (c) => invited.push(c));
+
+                receive(_converse, 'stranger@evil.lit/phone', propose('stranger1'));
+
+                const call = _converse.state.calls.get('stranger1');
+                expect(call.get('state')).toBe('ringing');
+                expect(invited).toEqual([call]);
+                expect(lastJMI(_converse, 'ringing')).toBeUndefined();
+            }),
+        );
+
+        it(
+            'does not reject it as busy or unsupported',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                receive(
+                    _converse,
+                    'stranger@evil.lit/phone',
+                    stx`<propose xmlns="${JMI}" id="video1"><description xmlns="${RTP}" media="video"/></propose>`,
+                );
+                _converse.api.calls.dial(jid); // now busy
+                receive(_converse, 'stranger@evil.lit/phone', propose('busy1'));
+
+                expect(_converse.state.calls.get('video1')).toBeUndefined();
+                expect(_converse.state.calls.get('busy1')).toBeUndefined();
+                expect(lastJMI(_converse, 'reject')).toBeUndefined();
+            }),
+        );
+
+        it(
+            'is ignored from a stranger when strangers may not message us',
+            mock.initConverse(
+                converse,
+                ['rosterInitialized', 'callsInitialized'],
+                { allow_non_roster_messaging: false },
+                async (_converse) => {
+                    await getContactJid(_converse);
+                    const invited = [];
+                    _converse.api.listen.on('callInvited', (c) => invited.push(c));
+
+                    receive(_converse, 'stranger@evil.lit/phone', propose('stranger1'));
+
+                    expect(_converse.state.calls.get('stranger1')).toBeUndefined();
+                    expect(invited).toEqual([]);
+                    expect(lastJMI(_converse, 'ringing')).toBeUndefined();
+                    expect(lastJMI(_converse, 'reject')).toBeUndefined();
+                },
+            ),
+        );
+
+        it(
+            'is ignored from someone who only asked to see our presence, when strangers may not message us',
+            mock.initConverse(
+                converse,
+                ['rosterInitialized', 'callsInitialized'],
+                { allow_non_roster_messaging: false },
+                async (_converse) => {
+                    await getContactJid(_converse);
+                    _converse.state.roster.create({
+                        jid: 'requester@evil.lit',
+                        subscription: 'none',
+                        requesting: true,
+                    });
+
+                    receive(_converse, 'requester@evil.lit/phone', propose('requester1'));
+
+                    expect(_converse.state.calls.get('requester1')).toBeUndefined();
+                    expect(lastJMI(_converse, 'ringing')).toBeUndefined();
+                },
+            ),
+        );
+
+        it(
+            'rings from a contact we asked to subscribe to, without telling them',
+            mock.initConverse(
+                converse,
+                ['rosterInitialized', 'callsInitialized'],
+                { allow_non_roster_messaging: false },
+                async (_converse) => {
+                    await getContactJid(_converse);
+                    _converse.state.roster.create({ jid: 'pending@montague.lit', subscription: 'none', ask: 'subscribe' });
+
+                    receive(_converse, 'pending@montague.lit/phone', propose('pending1'));
+
+                    expect(_converse.state.calls.get('pending1').get('state')).toBe('ringing');
+                    expect(lastJMI(_converse, 'ringing')).toBeUndefined();
+                },
+            ),
+        );
+    });
 });

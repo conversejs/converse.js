@@ -72,6 +72,19 @@ function resolveGlare(ours, their_sid, from) {
 }
 
 /**
+ * Whether a call from `bare_jid` may ring: anyone's, when strangers may message
+ * us, otherwise only a roster contact's that isn't just a subscription request.
+ * @param {string} bare_jid
+ * @returns {boolean}
+ */
+function mayRing(bare_jid) {
+    if (api.settings.get('allow_non_roster_messaging')) return true;
+
+    const contact = _converse.state.roster?.get(bare_jid);
+    return !!contact && !contact.get('requesting');
+}
+
+/**
  * Route one inbound XEP-0353 message to the relevant {@link Call}.
  * @param {Element} stanza
  * @returns {boolean} true so the handler stays registered
@@ -117,8 +130,14 @@ export function handleJingleMessage(stanza) {
     switch (action) {
         case 'propose': {
             if (is_carbon || call) break; // our own propose echoed back, or a duplicate
+            if (!mayRing(bare_from)) break;
+
+            // Answering automatically tells the caller that we are online, so
+            // only do it when they see our presence anyway (XEP-0353 Security
+            // Considerations).
+            const may_answer = !!_converse.state.roster?.get(bare_from)?.seesOurPresence();
             if (!media.length) {
-                api.send(buildReject(from, sid)); // nothing in it that we support
+                if (may_answer) api.send(buildReject(from, sid)); // nothing in it that we support
                 break;
             }
 
@@ -131,7 +150,7 @@ export function handleJingleMessage(stanza) {
                 if (glare) {
                     if (!resolveGlare(live, sid, from)) break;
                 } else {
-                    api.send(buildReject(from, sid)); // busy with someone/something else
+                    if (may_answer) api.send(buildReject(from, sid)); // busy with someone/something else
                     break;
                 }
             }
@@ -146,7 +165,7 @@ export function handleJingleMessage(stanza) {
             });
             calls.add(call);
             api.trigger('callInvited', call);
-            api.send(buildRinging(from, sid));
+            if (may_answer) api.send(buildRinging(from, sid));
             break;
         }
         case 'ringing':

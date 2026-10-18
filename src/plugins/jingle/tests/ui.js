@@ -155,7 +155,7 @@ describe('The calls UI', function () {
             spyOn(_converse.api.calls, 'dial');
 
             _converse.api.trigger('callButtonClicked', { connection: _converse.api.connection.get(), model: chatbox });
-            expect(_converse.api.calls.dial).toHaveBeenCalledWith(jid, { audio: true });
+            expect(_converse.api.calls.dial).toHaveBeenCalledWith(jid);
 
             // A groupchat must not start a 1:1 call.
             _converse.api.calls.dial.calls.reset();

@@ -18,7 +18,7 @@ converse.plugins.add('converse-jingle-views', {
         // The toolbar phone button: dial the open 1:1 chat's contact.
         api.listen.on('callButtonClicked', ({ model }) => {
             if (model.get('type') === 'groupchat') return;
-            api.calls.dial(model.get('jid'), { audio: true });
+            api.calls.dial(model.get('jid'));
         });
     },
 });

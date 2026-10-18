@@ -1,15 +1,12 @@
 /** The single live (non-terminal) call, if any - calls are one-at-a-time. */
 export function getLiveCall(): any;
 /**
- * Start an outgoing call. Calls are one-at-a-time: dialling while busy returns
- * the call already in progress.
+ * Start an outgoing audio call. Calls are one at a time: dialling the peer of
+ * the live call returns that call, and dialling anyone else returns null.
  * @param {string} jid - the peer to call (bare or full)
- * @param {{ audio?: boolean }} [opts]
- * @returns {import('./model.js').default}
+ * @returns {import('./model.js').default|null}
  */
-export function dial(jid: string, { audio }?: {
-    audio?: boolean;
-}): import("./model.js").default;
+export function dial(jid: string): import("./model.js").default | null;
 /**
  * Route one inbound XEP-0353 message to the relevant {@link Call}.
  * @param {Element} stanza

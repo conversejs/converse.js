@@ -1,9 +1,10 @@
 import { html } from 'lit';
 import { __ } from 'i18n';
-import { constants } from '@converse/headless';
-import { getCallName, formatDuration, endedSummary } from '../utils.js';
+import { converse, constants } from '@converse/headless';
+import { getCallName, endedSummary } from '../utils.js';
 
 const { CALL_STATES, CALL_DIRECTION } = constants;
+const { callDuration } = converse.env.jingle;
 
 /**
  * @param {() => void} handler
@@ -65,7 +66,7 @@ function statusText(el) {
         case CALL_STATES.CONNECTING:
             return incoming ? __('Connecting…') : __('Ringing…');
         case CALL_STATES.ACTIVE:
-            return formatDuration(Date.now() - call.get('started_at'));
+            return callDuration(call);
         case CALL_STATES.ENDED:
         case CALL_STATES.FAILED:
             return endedSummary(call);

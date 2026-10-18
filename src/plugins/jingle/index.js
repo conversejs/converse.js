@@ -3,7 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { api, converse } from '@converse/headless';
-import { writeCallHistory } from './utils.js';
 import './calls.js';
 import './call.js';
 
@@ -21,8 +20,5 @@ converse.plugins.add('converse-jingle-views', {
             if (model.get('type') === 'groupchat') return;
             api.calls.dial(model.get('jid'), { audio: true });
         });
-
-        // Leave a history row in the chat once the call is over.
-        api.listen.on('callEnded', (call) => writeCallHistory(call));
     },
 });

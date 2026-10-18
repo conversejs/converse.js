@@ -10,7 +10,7 @@ import {
     writeSDP,
 } from './sdp.js';
 import RTPSession, { webrtc } from './rtp.js';
-import { fetchExternalServices, serviceToIceServer } from './extdisco.js';
+import { fetchExternalServices, getIceServers, serviceToIceServer } from './extdisco.js';
 import { callDuration, reasonText } from './history.js';
 import './plugin.js';
 
@@ -35,6 +35,7 @@ converse.env.jingle = {
     reasonText,
     directionToSenders,
     fetchExternalServices,
+    getIceServers,
     jingleToSDP,
     parseSDP,
     sdpToJingle,

@@ -19,6 +19,7 @@ const { Strophe } = converse.env;
 Strophe.addNamespace('JINGLE', 'urn:xmpp:jingle:1');
 Strophe.addNamespace('JINGLE_ERRORS', 'urn:xmpp:jingle:errors:1');
 Strophe.addNamespace('JINGLE_RTP', 'urn:xmpp:jingle:apps:rtp:1');
+Strophe.addNamespace('JINGLE_RTP_AUDIO', 'urn:xmpp:jingle:apps:rtp:audio');
 Strophe.addNamespace('JINGLE_RTP_INFO', 'urn:xmpp:jingle:apps:rtp:info:1');
 Strophe.addNamespace('JINGLE_RTP_HDREXT', 'urn:xmpp:jingle:apps:rtp:rtp-hdrext:0');
 Strophe.addNamespace('JINGLE_RTP_FB', 'urn:xmpp:jingle:apps:rtp:rtcp-fb:0');

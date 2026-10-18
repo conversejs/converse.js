@@ -138,6 +138,30 @@ describe('A Jingle RTP session', function () {
     afterEach(() => saved && Object.assign(webrtc, saved));
 
     it(
+        'uses a WebRTC implementation installed after Converse loaded',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            installFakeWebRTC();
+            webrtc.RTCPeerConnection = saved.RTCPeerConnection; // no override
+            // As a polyfill under Node.js would be
+            const created = [];
+            vi.stubGlobal('RTCPeerConnection', function (config) {
+                const pc = new FakePeerConnection(config);
+                created.push(pc);
+                return pc;
+            });
+            try {
+                const jid = await getContactJid(_converse);
+                const call = _converse.api.calls.dial(jid);
+                receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
+                await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+                expect(created.length).toBe(1);
+            } finally {
+                vi.unstubAllGlobals();
+            }
+        }),
+    );
+
+    it(
         'sends a session-initiate after the callee <proceed>s',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const webrtc_handle = installFakeWebRTC();

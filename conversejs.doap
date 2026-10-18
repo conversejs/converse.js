@@ -158,8 +158,29 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0166.html"/>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>Used for one-to-one audio calls. Adding, modifying or removing contents, and replacing transports, are refused.</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0167.html"/>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>Audio only, no video. Informational session-info payloads (ringing, mute, hold) are acknowledged but neither acted upon nor sent.</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0172.html"/>
         <xmpp:status>complete</xmpp:status>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0176.html"/>
+        <xmpp:status>complete</xmpp:status>
+        <xmpp:note>UDP candidates only, trickled, with ICE restarts.</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
     <implements>
@@ -209,6 +230,13 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0215.html"/>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>STUN and TURN servers are discovered for calls, and credentials are requested for restricted ones. Pushed service updates are not handled.</xmpp:note>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0223.html"/>
         <xmpp:status>complete</xmpp:status>
       </xmpp:SupportedXep>
@@ -237,6 +265,18 @@
       <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0280.html"/>
         <xmpp:since>0.8.0</xmpp:since>
+        <xmpp:status>complete</xmpp:status>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0293.html"/>
+        <xmpp:status>complete</xmpp:status>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0294.html"/>
         <xmpp:status>complete</xmpp:status>
       </xmpp:SupportedXep>
     </implements>
@@ -275,6 +315,12 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0320.html"/>
+        <xmpp:status>complete</xmpp:status>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0330.html"/>
         <xmpp:status>partial</xmpp:status>
         <xmpp:note>The follow-list backing the "Social" app: publishing and retracting entries on the user's own subscription node as they follow and unfollow, reading a contact's list of followed feeds, and live multi-device synchronisation of the user's own list (a follow or unfollow on one device propagates to the others via a +notify subscription). The followers side is not exposed.</xmpp:note>
@@ -289,9 +335,28 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0338.html"/>
+        <xmpp:status>complete</xmpp:status>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0339.html"/>
+        <xmpp:status>complete</xmpp:status>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0352.html"/>
         <xmpp:since>0.9.4</xmpp:since>
         <xmpp:status>complete</xmpp:status>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0353.html"/>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>&lt;finish/&gt; is neither sent nor handled, and a propose from a peer we are already in a call with is rejected as busy rather than treated as a session migration.</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
     <implements>

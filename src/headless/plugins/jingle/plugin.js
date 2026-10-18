@@ -7,6 +7,9 @@ import calls_api from './api.js';
 import { registerCallHandlers, unregisterCallHandlers } from './utils.js';
 import { discoverIceServers } from './extdisco.js';
 import { writeCallHistory } from './history.js';
+import { getRTCPeerConnection } from './rtp.js';
+
+const { Strophe } = converse.env;
 
 converse.plugins.add('converse-jingle', {
     dependencies: ['converse-chat', 'converse-disco', 'converse-roster', 'converse-vcard'],
@@ -23,8 +26,24 @@ converse.plugins.add('converse-jingle', {
 
         Object.assign(api, { calls: calls_api });
 
-        // We don't advertise Jingle RTP disco features yet: this only does JMI
-        // signalling, so claiming RTP-audio capability would be premature.
+        // Other clients only offer to call us once they see these, e.g.
+        // Conversations needs Jingle, RTP audio, ICE-UDP and DTLS-SRTP.
+        api.listen.on('addClientFeatures', () => {
+            if (!getRTCPeerConnection()) return; // e.g. under Node.js, without a polyfill
+
+            [
+                Strophe.NS.JINGLE,
+                Strophe.NS.JINGLE_RTP,
+                Strophe.NS.JINGLE_RTP_AUDIO,
+                Strophe.NS.JINGLE_ICE,
+                Strophe.NS.JINGLE_DTLS,
+                Strophe.NS.JINGLE_MESSAGE,
+                Strophe.NS.JINGLE_GROUPING,
+                Strophe.NS.JINGLE_RTP_FB,
+                Strophe.NS.JINGLE_RTP_HDREXT,
+                Strophe.NS.JINGLE_RTP_SSMA,
+            ].forEach((feature) => api.disco.own.features.add(feature));
+        });
 
         api.listen.on('pluginsInitialized', () => {
             const calls = new Calls();

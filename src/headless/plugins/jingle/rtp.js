@@ -95,12 +95,19 @@ export function endCallFromTerminate(call, jingle) {
     }
 }
 
-// Swappable WebRTC backend: the browser globals in production, fakes in the
-// signalling specs. The media-loopback test leaves these as the real thing.
+// Swappable WebRTC backend, so that the specs can use fakes. Unset, the
+// globals are used, looked up when needed rather than when this module loads,
+// so that a polyfill installed later (e.g. under Node.js) counts too.
 export const webrtc = {
-    RTCPeerConnection: globalThis.RTCPeerConnection,
+    /** @type {typeof RTCPeerConnection|null} */
+    RTCPeerConnection: null,
     getUserMedia: (constraints) => globalThis.navigator.mediaDevices.getUserMedia(constraints),
 };
+
+/** @returns {typeof RTCPeerConnection|undefined} the implementation calls use, if there is one */
+export function getRTCPeerConnection() {
+    return webrtc.RTCPeerConnection ?? globalThis.RTCPeerConnection;
+}
 
 /**
  * The Jingle RTP session behind a {@link Call}: owns the RTCPeerConnection and
@@ -173,7 +180,8 @@ class RTPSession {
         const configured = api.settings.get('call_ice_servers') ?? [];
         const discovered = await getIceServers();
         if (this.closed) return false;
-        this.pc = new webrtc.RTCPeerConnection({ iceServers: [...configured, ...discovered] });
+        const PeerConnection = getRTCPeerConnection();
+        this.pc = new PeerConnection({ iceServers: [...configured, ...discovered] });
         this.pc.onicecandidate = (ev) => this.onLocalCandidate(ev);
         this.pc.ontrack = (ev) => this.onRemoteTrack(ev);
         this.pc.onconnectionstatechange = () => this.onConnectionStateChange();

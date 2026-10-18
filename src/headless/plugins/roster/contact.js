@@ -68,6 +68,15 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
         return this.presence?.getStatus() || 'offline';
     }
 
+    /**
+     * Whether this contact receives our presence, i.e. a subscription of
+     * 'from' or 'both' (RFC 6121 § 3).
+     * @returns {boolean}
+     */
+    seesOurPresence() {
+        return ['from', 'both'].includes(this.get('subscription'));
+    }
+
     async openChat() {
         return await api.chats.open(this.get('jid'), {}, true);
     }
@@ -163,7 +172,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
             // See: https://datatracker.ietf.org/doc/html/rfc6121#section-3.3.1
             api.send(stx`<presence type="unsubscribe" to="${this.get('jid')}" xmlns="jabber:client"></presence>`);
         }
-        if (unauthorize && ['from', 'both'].includes(subscription)) {
+        if (unauthorize && this.seesOurPresence()) {
             // See: https://datatracker.ietf.org/doc/html/rfc6121#section-3.2.1
             this.unauthorize();
         }

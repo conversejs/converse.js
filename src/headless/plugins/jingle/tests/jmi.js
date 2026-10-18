@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
@@ -551,6 +552,76 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
                     expect(lastJMI(_converse, 'ringing')).toBeUndefined();
                 },
             ),
+        );
+    });
+
+    describe('a call nobody answers', function () {
+        afterEach(() => vi.useRealTimers());
+
+        it(
+            'is retracted after a minute, however long it rang',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                const call = _converse.api.calls.dial(jid);
+                const sid = call.get('id');
+
+                vi.advanceTimersByTime(30_000);
+                receive(_converse, `${jid}/phone`, stx`<ringing xmlns="${JMI}" id="${sid}"/>`);
+                vi.advanceTimersByTime(29_999);
+                expect(call.get('state')).toBe('ringing');
+                expect(lastJMI(_converse, 'retract')).toBeUndefined();
+
+                vi.advanceTimersByTime(1);
+                expect(call.get('state')).toBe('ended');
+                expect(call.get('ended_reason')).toBe('no-answer');
+                const retract = lastJMI(_converse, 'retract');
+                expect(retract.getAttribute('to')).toBe(jid);
+                expect(sizzle(`retract[xmlns="${JMI}"]`, retract).pop().getAttribute('id')).toBe(sid);
+            }),
+        );
+
+        it(
+            'stops ringing after a minute without telling the caller',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<propose xmlns="${JMI}" id="unanswered1"><description xmlns="${RTP}" media="audio"/></propose>`,
+                );
+                const call = _converse.state.calls.get('unanswered1');
+                const sent = _converse.api.connection.get().sent_stanzas.length;
+
+                vi.advanceTimersByTime(60_000);
+                expect(call.get('state')).toBe('ended');
+                expect(call.get('ended_reason')).toBe('no-answer');
+                expect(_converse.api.connection.get().sent_stanzas.length).toBe(sent);
+            }),
+        );
+
+        it(
+            'does not ring when its <propose> was delayed by more than a minute',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                const delayed = (sid, ago) => {
+                    const stamp = new Date(Date.now() - ago).toISOString();
+                    return stx`
+                        <message xmlns="jabber:client" from="${jid}/phone" to="${_converse.bare_jid}" type="chat">
+                            <propose xmlns="${JMI}" id="${sid}"><description xmlns="${RTP}" media="audio"/></propose>
+                            <delay xmlns="urn:xmpp:delay" from="montague.lit" stamp="${stamp}"/>
+                        </message>`;
+                };
+                const connection = _converse.api.connection.get();
+
+                connection._dataRecv(mock.createRequest(_converse, delayed('stale1', 61_000)));
+                expect(_converse.state.calls.get('stale1')).toBeUndefined();
+                expect(lastJMI(_converse, 'ringing')).toBeUndefined();
+
+                connection._dataRecv(mock.createRequest(_converse, delayed('fresh1', 10_000)));
+                expect(_converse.state.calls.get('fresh1').get('state')).toBe('ringing');
+            }),
         );
     });
 });

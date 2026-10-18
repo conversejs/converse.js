@@ -771,4 +771,73 @@ describe('A Jingle RTP session', function () {
             expect(lastJingleIq(_converse, 'session-accept')).toBeUndefined();
         })
     );
+
+    describe('that never connects', function () {
+        afterEach(() => vi.useRealTimers());
+
+        it(
+            'fails half a minute after the callee <proceed>s',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                installFakeWebRTC();
+                const jid = await getContactJid(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                const call = _converse.api.calls.dial(jid);
+                const sid = call.get('id');
+
+                receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+                await vi.advanceTimersByTimeAsync(29_999);
+                expect(lastJingleIq(_converse, 'session-initiate')).toBeDefined();
+                expect(call.get('state')).toBe('connecting');
+
+                await vi.advanceTimersByTimeAsync(1);
+                expect(call.get('state')).toBe('failed');
+                expect(call.get('ended_reason')).toBe('connectivity-error');
+                const terminate = lastJingleIq(_converse, 'session-terminate');
+                expect(terminate.getAttribute('to')).toBe(`${jid}/phone`);
+                expect(sizzle('reason > connectivity-error', terminate).length).toBe(1);
+            }),
+        );
+
+        it(
+            "fails half a minute after we accept when the caller's session-initiate never comes",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                installFakeWebRTC();
+                const jid = await getContactJid(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<propose xmlns="${JMI}" id="in-late"><description xmlns="${RTP}" media="audio"/></propose>`,
+                );
+                const call = _converse.state.calls.get('in-late');
+                call.accept();
+
+                await vi.advanceTimersByTimeAsync(30_000);
+                expect(call.get('state')).toBe('failed');
+                expect(call.get('ended_reason')).toBe('connectivity-error');
+                const terminate = lastJingleIq(_converse, 'session-terminate');
+                expect(terminate.getAttribute('to')).toBe(`${jid}/phone`);
+                expect(sizzle('reason > connectivity-error', terminate).length).toBe(1);
+            }),
+        );
+
+        it(
+            'stays up once connected',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const webrtc_handle = installFakeWebRTC();
+                const jid = await getContactJid(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                const call = _converse.api.calls.dial(jid);
+
+                receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
+                await vi.advanceTimersByTimeAsync(10_000);
+                webrtc_handle.pc.connectionState = 'connected';
+                webrtc_handle.pc.onconnectionstatechange();
+                expect(call.get('state')).toBe('active');
+
+                await vi.advanceTimersByTimeAsync(120_000);
+                expect(call.get('state')).toBe('active');
+            }),
+        );
+    });
 });

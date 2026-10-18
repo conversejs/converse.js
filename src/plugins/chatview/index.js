@@ -47,7 +47,6 @@ converse.plugins.add('converse-chatview', {
                 'show_toolbar': true,
                 'use_system_emojis': true,
                 'visible_toolbar_buttons': {
-                    'call': false,
                     'clear': true,
                     'emoji': true,
                     'fileupload': true,

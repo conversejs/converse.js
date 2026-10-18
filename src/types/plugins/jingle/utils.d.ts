@@ -11,4 +11,11 @@ export function getCallName(call: import("@converse/headless").Call): string;
  * @returns {string}
  */
 export function endedSummary(call: import("@converse/headless").Call): string;
+/**
+ * `getToolbarButtons` handler: an audio call button in 1:1 chats.
+ * @param {import('shared/chat/toolbar').ChatToolbar} toolbar_el
+ * @param {import('lit').TemplateResult[]} buttons
+ * @returns {import('lit').TemplateResult[]}
+ */
+export function getCallButton(toolbar_el: import("shared/chat/toolbar").ChatToolbar, buttons: import("lit").TemplateResult[]): import("lit").TemplateResult[];
 //# sourceMappingURL=utils.d.ts.map

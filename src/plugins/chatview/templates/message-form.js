@@ -17,7 +17,6 @@ export default (el) => {
     const toolbar_buttons = api.settings.get('visible_toolbar_buttons');
     const is_groupchat = el.model.get('type') === CHATROOMS_TYPE;
     const {
-        call: show_call_button,
         emoji: show_emoji_button,
         fileupload: show_fileupload_button,
         location: show_location_button,
@@ -35,7 +34,6 @@ export default (el) => {
                           .model=${el.model}
                           ?composing_spoiler="${composing_spoiler}"
                           ?is_groupchat="${is_groupchat}"
-                          ?show_call_button="${show_call_button}"
                           ?show_emoji_button="${show_emoji_button}"
                           ?show_fileupload_button="${show_fileupload_button}"
                           ?show_location_button="${show_location_button}"

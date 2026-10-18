@@ -157,23 +157,44 @@ describe('The calls UI', function () {
     );
 
     it(
-        'dials when the toolbar call button is clicked in a 1:1 chat',
+        "adds a call button to a 1:1 chat's toolbar that dials the contact",
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const jid = contactJid();
-            await mock.openChatBoxFor(_converse, jid);
-            const chatbox = _converse.state.chatboxes.get(jid);
+            const view = await mock.openChatBoxFor(_converse, jid);
+            const button = await u.waitUntil(() => view.querySelector('.chat-toolbar .start-call'));
 
             spyOn(_converse.api.calls, 'dial');
-
-            _converse.api.trigger('callButtonClicked', { connection: _converse.api.connection.get(), model: chatbox });
+            button.click();
             expect(_converse.api.calls.dial).toHaveBeenCalledWith(jid);
-
-            // A groupchat must not start a 1:1 call.
-            _converse.api.calls.dial.calls.reset();
-            const muc = { get: (k) => (k === 'type' ? 'groupchat' : 'room@conference.montague.lit') };
-            _converse.api.trigger('callButtonClicked', { connection: _converse.api.connection.get(), model: muc });
-            expect(_converse.api.calls.dial).not.toHaveBeenCalled();
         }),
+    );
+
+    it(
+        'adds no call button to a groupchat',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
+            const muc_jid = 'lounge@montague.lit';
+            await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+            const view = _converse.chatboxviews.get(muc_jid);
+            await u.waitUntil(() => view.querySelector('.chat-toolbar .toggle-emojis'));
+
+            expect(view.querySelector('.chat-toolbar .start-call')).toBe(null);
+        }),
+    );
+
+    it(
+        'leaves the call button out when visible_toolbar_buttons turns it off',
+        mock.initConverse(
+            converse,
+            ['rosterInitialized', 'callsInitialized'],
+            { visible_toolbar_buttons: { call: false } },
+            async function (_converse) {
+                await mock.waitForRoster(_converse, 'current');
+                const view = await mock.openChatBoxFor(_converse, contactJid());
+                await u.waitUntil(() => view.querySelector('.chat-toolbar .toggle-emojis'));
+
+                expect(view.querySelector('.chat-toolbar .start-call')).toBe(null);
+            },
+        ),
     );
 });

@@ -12,9 +12,6 @@ export class ChatToolbar extends CustomElement {
         model: {
             type: ObjectConstructor;
         };
-        show_call_button: {
-            type: BooleanConstructor;
-        };
         show_emoji_button: {
             type: BooleanConstructor;
         };
@@ -36,7 +33,6 @@ export class ChatToolbar extends CustomElement {
     hidden_occupants: boolean;
     show_send_button: boolean;
     show_spoiler_button: boolean;
-    show_call_button: boolean;
     show_emoji_button: boolean;
     show_fileupload_button: boolean;
     show_location_button: boolean;
@@ -54,8 +50,6 @@ export class ChatToolbar extends CustomElement {
     onFileSelection(ev: InputEvent): void;
     /** @param {MouseEvent} ev */
     toggleComposeSpoilerMessage(ev: MouseEvent): void;
-    /** @param {MouseEvent} ev */
-    toggleCall(ev: MouseEvent): void;
 }
 import { CustomElement } from 'shared/components/element.js';
 //# sourceMappingURL=toolbar.d.ts.map

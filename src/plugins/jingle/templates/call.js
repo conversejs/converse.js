@@ -81,11 +81,15 @@ function statusText(el) {
 export default (el) => {
     const call = el.model;
     const name = getCallName(call);
+    // The name is the caller's own choice (vCard or JID local part), so it can
+    // imitate someone else. The JID can't.
+    const jid = call.get('jid');
     return html`
         <div class="call-card call-card--${call.get('state')}">
             <converse-avatar .model=${call} name="${name}" height="48" width="48" class="avatar"></converse-avatar>
             <div class="call-info">
                 <span class="call-name">${name}</span>
+                ${name !== jid ? html`<span class="call-jid">${jid}</span>` : ''}
                 <span class="call-status">${statusText(el)}</span>
             </div>
             <div class="call-actions">${tplActions(el)}</div>

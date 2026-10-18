@@ -48,6 +48,18 @@ describe('The calls UI', function () {
     );
 
     it(
+        "shows the caller's JID beside the name they chose",
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            // A stranger picks both their vCard name and their JID's local part.
+            const stranger = await addCall(_converse, { jid: 'mom@evil.lit', direction: 'incoming', state: 'ringing' });
+            const card = await u.waitUntil(() => cardFor(stranger));
+            expect(card.querySelector('.call-name').textContent.trim()).toBe('mom');
+            expect(card.querySelector('.call-jid').textContent.trim()).toBe('mom@evil.lit');
+        }),
+    );
+
+    it(
         'shows a hang-up button while an outgoing call is ringing',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');

@@ -38,6 +38,14 @@ converse-calls {
                 text-overflow: ellipsis;
             }
 
+            .call-jid {
+                font-size: 0.85em;
+                opacity: 0.85;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
             .call-status {
                 font-size: 0.85em;
                 opacity: 0.85;

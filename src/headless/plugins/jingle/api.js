@@ -14,19 +14,19 @@ import { dial } from './utils.js';
  */
 export default {
     /**
-     * Start an outgoing call to a contact. Returns the live call if one is
-     * already in progress (one call at a time).
+     * Start an outgoing audio call. Calls are one at a time: dialling the peer
+     * of the live call returns that call, and dialling anyone else returns null.
      * @method api.calls.dial
      * @param {string} jid - the contact to call
-     * @param {{ audio?: boolean }} [opts]
-     * @returns {Call}
+     * @returns {Call|null}
      */
-    dial(jid, opts) {
-        return dial(jid, opts);
+    dial(jid) {
+        return dial(jid);
     },
 
     /**
-     * Look up a call by its session id or by the peer's JID.
+     * Look up the live call by its session id or by the peer's JID. Ended
+     * calls are no longer kept.
      * @method api.calls.get
      * @param {string} [id_or_jid] - omit to get all live calls
      * @returns {Call|Call[]|undefined}

@@ -662,4 +662,53 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
             }),
         );
     });
+
+    describe('api.calls', function () {
+        it(
+            "won't dial someone else while a call is live",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid_a = await getContactJid(_converse, 0);
+                const jid_b = await getContactJid(_converse, 1);
+                const first = _converse.api.calls.dial(jid_a);
+                const proposes = _converse.api.connection.get().sent_stanzas.filter((s) => sizzle(`propose`, s).length);
+
+                expect(_converse.api.calls.dial(jid_b)).toBe(null);
+                expect(_converse.api.calls.get()).toEqual([first]);
+                const after = _converse.api.connection.get().sent_stanzas.filter((s) => sizzle(`propose`, s).length);
+                expect(after.length).toBe(proposes.length);
+            }),
+        );
+
+        it(
+            'returns the incoming call when dialling the person who is calling us',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<propose xmlns="${JMI}" id="dialback1"><description xmlns="${RTP}" media="audio"/></propose>`,
+                );
+                const incoming = _converse.state.calls.get('dialback1');
+
+                expect(_converse.api.calls.dial(jid)).toBe(incoming);
+            }),
+        );
+
+        it(
+            'gets a live call by session id or by JID, and no longer once it has ended',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                const call = _converse.api.calls.dial(jid);
+
+                expect(_converse.api.calls.get(call.get('id'))).toBe(call);
+                expect(_converse.api.calls.get(`${jid.toUpperCase()}/phone`)).toBe(call);
+                expect(_converse.api.calls.get()).toEqual([call]);
+
+                call.hangup();
+                expect(_converse.api.calls.get(call.get('id'))).toBeUndefined();
+                expect(_converse.api.calls.get(jid)).toBeUndefined();
+                expect(_converse.api.calls.get()).toEqual([]);
+            }),
+        );
+    });
 });

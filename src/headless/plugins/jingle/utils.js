@@ -28,28 +28,26 @@ function isTerminal(call) {
 }
 
 /**
- * Start an outgoing call. Calls are one-at-a-time: dialling while busy returns
- * the call already in progress.
+ * Start an outgoing audio call. Calls are one at a time: dialling the peer of
+ * the live call returns that call, and dialling anyone else returns null.
  * @param {string} jid - the peer to call (bare or full)
- * @param {{ audio?: boolean }} [opts]
- * @returns {import('./model.js').default}
+ * @returns {import('./model.js').default|null}
  */
-export function dial(jid, { audio = true } = {}) {
-    const live = getLiveCall();
-    if (live) return live;
-
+export function dial(jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
-    const media = audio ? ['audio'] : [];
+    const live = getLiveCall();
+    if (live) return live.peer === bare_jid ? live : null;
+
     const sid = getUniqueId();
     const call = new Call({
         id: sid,
         jid: bare_jid,
         direction: CALL_DIRECTION.OUTGOING,
         state: CALL_STATES.CALLING,
-        media,
+        media: ['audio'],
     });
     _converse.state.calls.add(call);
-    api.send(buildPropose(bare_jid, sid, /** @type {('audio'|'video')[]} */ (media)));
+    api.send(buildPropose(bare_jid, sid));
     return call;
 }
 

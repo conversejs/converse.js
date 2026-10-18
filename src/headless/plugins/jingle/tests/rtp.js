@@ -165,6 +165,29 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
+        'connects through the configured and the discovered ICE servers',
+        mock.initConverse(
+            converse,
+            ['rosterInitialized', 'callsInitialized'],
+            { call_ice_servers: [{ urls: 'stun:configured.example.org:3478' }] },
+            async (_converse) => {
+                const webrtc_handle = installFakeWebRTC();
+                const jid = await getContactJid(_converse);
+                _converse.state.ice_servers = { servers: [{ urls: 'stun:discovered.montague.lit:3478' }], expires_at: null };
+                const call = _converse.api.calls.dial(jid);
+
+                receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
+                await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+                expect(webrtc_handle.pc.config.iceServers).toEqual([
+                    { urls: 'stun:configured.example.org:3478' },
+                    { urls: 'stun:discovered.montague.lit:3478' },
+                ]);
+            },
+        ),
+    );
+
+    it(
         'applies the answer and acks when a session-accept arrives',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const webrtc_handle = installFakeWebRTC();

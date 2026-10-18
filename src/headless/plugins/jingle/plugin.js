@@ -5,13 +5,8 @@ import Call from './model.js';
 import Calls from './calls.js';
 import calls_api from './api.js';
 import { registerCallHandlers, unregisterCallHandlers } from './utils.js';
-import { fetchExternalServices } from './extdisco.js';
+import { discoverIceServers } from './extdisco.js';
 import { writeCallHistory } from './history.js';
-
-/** Cache the server's advertised STUN/TURN services (XEP-0215) for new calls. */
-async function discoverIceServers() {
-    _converse.state.ice_servers = await fetchExternalServices();
-}
 
 converse.plugins.add('converse-jingle', {
     dependencies: ['converse-chat', 'converse-disco', 'converse-roster', 'converse-vcard'],

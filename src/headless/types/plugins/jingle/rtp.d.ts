@@ -43,7 +43,8 @@ declare class RTPSession {
     get responder(): any;
     /** Open the peer connection, capture the mic, and send a session-initiate. */
     initiate(): Promise<void>;
-    createConnection(): void;
+    /** @returns {Promise<boolean>} false if the call ended while the ICE servers were being fetched */
+    createConnection(): Promise<boolean>;
     /** The peer's media arrived: expose the remote stream. */
     onRemoteTrack(ev: any): void;
     onConnectionStateChange(): void;

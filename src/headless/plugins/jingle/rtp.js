@@ -15,6 +15,7 @@ import {
     writeSDP,
 } from './sdp.js';
 import { CALL_STATES, ENDED_REASONS } from './constants.js';
+import { getIceServers } from './extdisco.js';
 
 const { Strophe, sizzle, stx } = converse.env;
 
@@ -137,7 +138,7 @@ class RTPSession {
     /** Open the peer connection, capture the mic, and send a session-initiate. */
     async initiate() {
         try {
-            this.createConnection();
+            if (!(await this.createConnection())) return;
             if (!(await this.addLocalMedia())) return;
 
             const offer = await this.pc.createOffer();
@@ -157,15 +158,18 @@ class RTPSession {
         }
     }
 
-    createConnection() {
+    /** @returns {Promise<boolean>} false if the call ended while the ICE servers were being fetched */
+    async createConnection() {
         // The configured servers plus whatever the server advertised via
         // XEP-0215 (discovered on connect, see the jingle plugin).
         const configured = api.settings.get('call_ice_servers') ?? [];
-        const discovered = _converse.state.ice_servers ?? [];
+        const discovered = await getIceServers();
+        if (this.closed) return false;
         this.pc = new webrtc.RTCPeerConnection({ iceServers: [...configured, ...discovered] });
         this.pc.onicecandidate = (ev) => this.onLocalCandidate(ev);
         this.pc.ontrack = (ev) => this.onRemoteTrack(ev);
         this.pc.onconnectionstatechange = () => this.onConnectionStateChange();
+        return true;
     }
 
     /** The peer's media arrived: expose the remote stream. */
@@ -300,7 +304,7 @@ class RTPSession {
     /** @param {Element} jingle - the caller's offer; answer it. */
     async onSessionInitiate(jingle) {
         try {
-            this.createConnection();
+            if (!(await this.createConnection())) return;
             // A remote description carries the peer's perspective, so render it
             // from the builder's role (the caller) - not our own.
             const offer = writeSDP(jingleToSDP(jingle, { is_initiator: true, sid: this.sid }));
@@ -355,7 +359,7 @@ class RTPSession {
                 const candidate = { candidate: line, sdpMid: mid };
                 // A peer can trickle candidates before its description is applied;
                 // addIceCandidate rejects until then, so hold them back.
-                if (this.pc.remoteDescription) {
+                if (this.pc?.remoteDescription) {
                     this.pc.addIceCandidate(candidate).catch((e) => log.error(e));
                 } else {
                     this.pending_candidates.push(candidate);

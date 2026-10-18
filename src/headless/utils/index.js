@@ -28,6 +28,7 @@ import * as url from './url.js';
 const u = {
     bookmarks: null,
     emojis: null,
+    jingle: null,
     mam: null,
     muc: null,
     omemo: null,

@@ -1,15 +1,6 @@
 import { parse, write } from 'sdp-transform';
 import converse from '../../shared/api/public.js';
 
-/**
- * @typedef {import('./types').SessionDescription} SessionDescription
- * @typedef {import('./types').MediaDescription} MediaDescription
- * @typedef {import('./types').JingleSenders} JingleSenders
- * @typedef {import('./types').SdpDirection} SdpDirection
- * @typedef {import('./types').SdpCandidate} SdpCandidate
- * @typedef {import('./types').JingleConversionOptions} JingleConversionOptions
- */
-
 const { Stanza, Strophe, sizzle, stx, u } = converse.env;
 
 const MEDIA_PROTOCOL = 'UDP/TLS/RTP/SAVPF';
@@ -40,14 +31,14 @@ function assertSingleLine(value) {
 
 /**
  * @param {string} sdp
- * @returns {SessionDescription}
+ * @returns {import('./types').SessionDescription}
  */
 export function parseSDP(sdp) {
-    return /** @type {SessionDescription} */ (parse(sdp));
+    return /** @type {import('./types').SessionDescription} */ (parse(sdp));
 }
 
 /**
- * @param {SessionDescription} sdp
+ * @param {import('./types').SessionDescription} sdp
  * @returns {string}
  */
 export function writeSDP(sdp) {
@@ -55,9 +46,9 @@ export function writeSDP(sdp) {
 }
 
 /**
- * @param {SdpDirection} direction
+ * @param {import('./types').SdpDirection} direction
  * @param {boolean} is_initiator
- * @returns {JingleSenders}
+ * @returns {import('./types').JingleSenders}
  */
 export function directionToSenders(direction, is_initiator) {
     switch (direction) {
@@ -75,9 +66,9 @@ export function directionToSenders(direction, is_initiator) {
 }
 
 /**
- * @param {JingleSenders} senders
+ * @param {import('./types').JingleSenders} senders
  * @param {boolean} is_initiator
- * @returns {SdpDirection}
+ * @returns {import('./types').SdpDirection}
  */
 export function sendersToDirection(senders, is_initiator) {
     switch (senders) {
@@ -112,7 +103,7 @@ function parseFmtpConfig(config) {
 /**
  * ICE-UDP (XEP-0176) carries UDP candidates only; a TCP one would lose its
  * `tcptype` on the way.
- * @param {SdpCandidate} candidate
+ * @param {import('./types').SdpCandidate} candidate
  * @returns {boolean}
  */
 export function isUdpCandidate(candidate) {
@@ -122,8 +113,8 @@ export function isUdpCandidate(candidate) {
 /**
  * The ICE credentials of an m-line. Some browsers put them at the session
  * level only, once for all m-lines.
- * @param {MediaDescription} media
- * @param {SessionDescription} [session]
+ * @param {import('./types').MediaDescription} media
+ * @param {import('./types').SessionDescription} [session]
  * @returns {{ ufrag: string, pwd: string }}
  */
 export function iceCredentials(media, session) {
@@ -131,7 +122,7 @@ export function iceCredentials(media, session) {
 }
 
 /**
- * @param {SdpCandidate} candidate
+ * @param {import('./types').SdpCandidate} candidate
  * @returns {Element}
  */
 export function candidateToElement(candidate) {
@@ -152,17 +143,17 @@ export function candidateToElement(candidate) {
 }
 
 /**
- * Parse a browser ICE candidate line ("candidate:...") into an {@link SdpCandidate}.
+ * Parse a browser ICE candidate line ("candidate:...") into an SDP candidate.
  * @param {string} line
- * @returns {SdpCandidate}
+ * @returns {import('./types').SdpCandidate}
  */
 export function candidateFromLine(line) {
     return parse(`m=audio 9 RTP/AVP 0\r\na=${line}\r\n`).media[0].candidates[0];
 }
 
 /**
- * Format an {@link SdpCandidate} back into a browser ICE candidate line.
- * @param {SdpCandidate} c
+ * Format an SDP candidate back into a browser ICE candidate line.
+ * @param {import('./types').SdpCandidate} c
  * @returns {string}
  */
 export function candidateToLine(c) {
@@ -173,10 +164,10 @@ export function candidateToLine(c) {
 
 /**
  * @param {Element} el
- * @returns {SdpCandidate}
+ * @returns {import('./types').SdpCandidate}
  */
 export function elementToCandidate(el) {
-    const candidate = /** @type {SdpCandidate} */ ({
+    const candidate = /** @type {import('./types').SdpCandidate} */ ({
         foundation: el.getAttribute('foundation'),
         component: Number(el.getAttribute('component')),
         transport: el.getAttribute('protocol'),
@@ -195,7 +186,7 @@ export function elementToCandidate(el) {
 }
 
 /**
- * @param {MediaDescription} media
+ * @param {import('./types').MediaDescription} media
  * @returns {Element}
  */
 function buildDescription(media) {
@@ -252,8 +243,8 @@ function buildDescription(media) {
 }
 
 /**
- * @param {MediaDescription} media
- * @param {SessionDescription} [session] - for the session-level DTLS and ICE fallbacks
+ * @param {import('./types').MediaDescription} media
+ * @param {import('./types').SessionDescription} [session] - for the session-level DTLS and ICE fallbacks
  * @returns {Element}
  */
 function buildTransport(media, session) {
@@ -275,14 +266,14 @@ function buildTransport(media, session) {
 }
 
 /**
- * @param {MediaDescription} media
- * @param {JingleConversionOptions} options
- * @param {SessionDescription} [session] - for the session-level DTLS and ICE fallbacks
+ * @param {import('./types').MediaDescription} media
+ * @param {import('./types').JingleConversionOptions} options
+ * @param {import('./types').SessionDescription} [session] - for the session-level DTLS and ICE fallbacks
  * @returns {Element}
  */
 function buildContent(media, options, session) {
     const { is_initiator, creator = 'initiator' } = options;
-    const direction = /** @type {SdpDirection} */ (media.direction ?? 'sendrecv');
+    const direction = /** @type {import('./types').SdpDirection} */ (media.direction ?? 'sendrecv');
     const senders = directionToSenders(direction, is_initiator);
     return stx`
         <content xmlns="${Strophe.NS.JINGLE}" creator="${creator}" name="${media.mid}" senders="${senders}">
@@ -293,8 +284,8 @@ function buildContent(media, options, session) {
 
 /**
  * Convert a parsed SDP offer/answer into a Jingle stanza payload.
- * @param {SessionDescription} sdp
- * @param {JingleConversionOptions} options
+ * @param {import('./types').SessionDescription} sdp
+ * @param {import('./types').JingleConversionOptions} options
  * @returns {Element}
  */
 export function sdpToJingle(sdp, options) {
@@ -320,7 +311,7 @@ export function sdpToJingle(sdp, options) {
 
 /**
  * Build a Jingle transport-info `<jingle>` carrying a single trickled candidate.
- * @param {SdpCandidate} candidate
+ * @param {import('./types').SdpCandidate} candidate
  * @param {{ sid: string, mid: string, ufrag: string, pwd: string,
  *           initiator?: string, responder?: string, creator?: 'initiator'|'responder' }} options
  * @returns {Element}
@@ -342,7 +333,7 @@ export function buildTransportInfo(candidate, options) {
 /**
  * Build a transport-info `<jingle>` that offers an ICE restart (XEP-0176): each
  * content's new credentials, and no candidates.
- * @param {SessionDescription} sdp - our restart offer
+ * @param {import('./types').SessionDescription} sdp - our restart offer
  * @param {{ sid: string, initiator?: string, responder?: string }} options
  * @returns {Element}
  */
@@ -440,8 +431,8 @@ function parsePayloadType(payload) {
 
 /**
  * @param {Element} content
- * @param {JingleConversionOptions} options
- * @returns {MediaDescription}
+ * @param {import('./types').JingleConversionOptions} options
+ * @returns {import('./types').MediaDescription}
  */
 function parseContent(content, options) {
     const description = sizzle(`description[xmlns="${Strophe.NS.JINGLE_RTP}"]`, content).pop();
@@ -449,7 +440,7 @@ function parseContent(content, options) {
     if (!description) throw new Error('Jingle content without an RTP description');
     if (!transport) throw new Error('Jingle content without an ICE-UDP transport');
 
-    const senders = /** @type {JingleSenders} */ (content.getAttribute('senders') ?? 'both');
+    const senders = /** @type {import('./types').JingleSenders} */ (content.getAttribute('senders') ?? 'both');
     const rtp = [];
     const fmtp = [];
     let rtcpFb = [];
@@ -496,7 +487,7 @@ function parseContent(content, options) {
         .map((c) => elementToCandidate(c))
         .filter(isUdpCandidate);
 
-    /** @type {MediaDescription} */
+    /** @type {import('./types').MediaDescription} */
     const media = {
         type: description.getAttribute('media'),
         port: MEDIA_PORT,
@@ -533,8 +524,8 @@ function parseContent(content, options) {
  * Convert a received Jingle stanza payload into a parsed SDP structure that can
  * be serialised with sdp-transform's `write()`.
  * @param {Element} jingle
- * @param {JingleConversionOptions} options
- * @returns {SessionDescription}
+ * @param {import('./types').JingleConversionOptions} options
+ * @returns {import('./types').SessionDescription}
  */
 export function jingleToSDP(jingle, options) {
     const contents = sizzle(`> content[xmlns="${Strophe.NS.JINGLE}"], > content`, jingle);
@@ -553,7 +544,7 @@ export function jingleToSDP(jingle, options) {
         : [];
     assertSingleLine({ media, groups });
 
-    return /** @type {SessionDescription} */ ({
+    return /** @type {import('./types').SessionDescription} */ ({
         version: 0,
         // The same origin for every description of the session, so that a
         // later one reads as a new version of it rather than another session.

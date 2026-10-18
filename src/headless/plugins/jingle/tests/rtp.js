@@ -3,7 +3,7 @@ import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
 const { stx, sizzle, u } = converse.env;
-const { webrtc } = converse.env.jingle;
+const { webrtc } = converse.env.u.jingle;
 const JMI = 'urn:xmpp:jingle-message:0';
 const JINGLE = 'urn:xmpp:jingle:1';
 const JINGLE_ERRORS = 'urn:xmpp:jingle:errors:1';
@@ -64,7 +64,7 @@ function sentIq(_converse, type, id) {
 
 /** Build a `<jingle>` payload from our sample SDP for the given action. */
 function jingle(action, sid) {
-    const { parseSDP, sdpToJingle } = converse.env.jingle;
+    const { parseSDP, sdpToJingle } = converse.env.u.jingle;
     return sdpToJingle(parseSDP(OFFER_SDP), { action, sid, is_initiator: false });
 }
 
@@ -692,7 +692,7 @@ describe('A Jingle RTP session', function () {
             installFakeWebRTC();
             const jid = await getContactJid(_converse, 0);
             const stranger = await getContactJid(_converse, 1);
-            const { parseSDP, sdpToJingle } = converse.env.jingle;
+            const { parseSDP, sdpToJingle } = converse.env.u.jingle;
 
             receive(
                 _converse,
@@ -964,7 +964,7 @@ describe('A Jingle RTP session', function () {
             receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
             await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
 
-            const { parseSDP, sdpToJingle } = converse.env.jingle;
+            const { parseSDP, sdpToJingle } = converse.env.u.jingle;
             const answer = parseSDP(OFFER_SDP.replace('a=setup:actpass', 'a=setup:passive'));
             receiveIq(
                 _converse,

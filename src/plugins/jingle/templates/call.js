@@ -1,10 +1,10 @@
 import { html } from 'lit';
 import { __ } from 'i18n';
-import { converse, constants } from '@converse/headless';
+import { constants, u } from '@converse/headless';
 import { getCallName, endedSummary } from '../utils.js';
 
 const { CALL_STATES, CALL_DIRECTION } = constants;
-const { callDuration } = converse.env.jingle;
+const { callDuration } = u.jingle;
 
 /**
  * @param {() => void} handler

@@ -26,8 +26,6 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
             started_at: null,
             ended_at: null,
             muted_audio: false,
-            muted_video: false,
-            remote_video: false,
         };
     }
 
@@ -170,14 +168,6 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
         const muted = !this.get('muted_audio');
         this.local_stream?.getAudioTracks().forEach((t) => (t.enabled = !muted));
         this.set('muted_audio', muted);
-    }
-
-    toggleVideo() {
-        throw new Error('toggleVideo: not implemented (v1 audio only)');
-    }
-
-    addVideo() {
-        throw new Error('addVideo: not implemented (v1 audio only)');
     }
 
     /**

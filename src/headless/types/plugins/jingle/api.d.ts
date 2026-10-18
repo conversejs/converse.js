@@ -4,18 +4,17 @@ declare namespace _default {
      * of the live call returns that call, and dialling anyone else returns null.
      * @method api.calls.dial
      * @param {string} jid - the contact to call
-     * @returns {Call|null}
+     * @returns {import('./model.js').default|null}
      */
-    function dial(jid: string): Call | null;
+    function dial(jid: string): import("./model.js").default | null;
     /**
      * Look up the live call by its session id or by the peer's JID. Ended
      * calls are no longer kept.
      * @method api.calls.get
      * @param {string} [id_or_jid] - omit to get all live calls
-     * @returns {Call|Call[]|undefined}
+     * @returns {import('./model.js').default|import('./model.js').default[]|undefined}
      */
-    function get(id_or_jid?: string): Call | Call[] | undefined;
+    function get(id_or_jid?: string): import("./model.js").default | import("./model.js").default[] | undefined;
 }
 export default _default;
-export type Call = import("./model.js").default;
 //# sourceMappingURL=api.d.ts.map

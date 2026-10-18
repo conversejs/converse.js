@@ -86,6 +86,7 @@ class FakePeerConnection {
         this.senders = [];
         this.candidates = [];
         this.connectionState = 'new';
+        this.signalingState = 'stable';
         this.onicecandidate = null;
         this.ontrack = null;
         this.onconnectionstatechange = null;
@@ -102,10 +103,12 @@ class FakePeerConnection {
     }
     setLocalDescription(desc) {
         this.localDescription = desc;
+        this.signalingState = desc.type === 'offer' ? 'have-local-offer' : 'stable';
         return Promise.resolve();
     }
     setRemoteDescription(desc) {
         this.remoteDescription = desc;
+        this.signalingState = desc.type === 'offer' ? 'have-remote-offer' : 'stable';
         return Promise.resolve();
     }
     addIceCandidate(candidate) {
@@ -860,6 +863,293 @@ describe('A Jingle RTP session', function () {
 
                 await vi.advanceTimersByTimeAsync(120_000);
                 expect(call.get('state')).toBe('active');
+            }),
+        );
+    });
+
+    describe('that loses connectivity once connected', function () {
+        afterEach(() => vi.useRealTimers());
+
+        // Our offer and answer after an ICE restart: same session, new credentials.
+        const RESTART_OFFER_SDP = OFFER_SDP.replace('ice-ufrag:abc', 'ice-ufrag:ours2').replace(
+            'ice-pwd:thispasswordisatleast22chars',
+            'ice-pwd:ourrestartedpassword22chars',
+        );
+        const RESTART_ANSWER_SDP = OFFER_SDP.replace('ice-ufrag:abc', 'ice-ufrag:ours3')
+            .replace('ice-pwd:thispasswordisatleast22chars', 'ice-pwd:ouransweredpassword22chars')
+            .replace('a=setup:actpass', 'a=setup:active');
+
+        const LOCAL_CANDIDATE = { candidate: 'candidate:1 1 udp 2113937151 192.0.2.1 10000 typ host', sdpMid: '0' };
+
+        /** A transport-info from the peer with new ICE credentials, and optionally a candidate. */
+        function peerRestart(sid, with_candidate = false) {
+            return stx`
+                <jingle xmlns="${JINGLE}" action="transport-info" sid="${sid}">
+                    <content xmlns="${JINGLE}" creator="initiator" name="0">
+                        <transport xmlns="urn:xmpp:jingle:transports:ice-udp:1" ufrag="theirs2"
+                                   pwd="theirrestartedpassword22">
+                            ${
+                                with_candidate
+                                    ? stx`<candidate component="1" foundation="1" generation="1" id="r1"
+                                            ip="192.0.2.7" network="0" port="30000" priority="2113937151"
+                                            protocol="udp" type="host"/>`
+                                    : ''
+                            }
+                        </transport>
+                    </content>
+                </jingle>`;
+        }
+
+        function iqResponse(_converse, from, iq, error = '') {
+            const response = stx`
+                <iq xmlns="jabber:client" type="${error ? 'error' : 'result'}" from="${from}"
+                    to="${_converse.session.get('jid')}" id="${iq.getAttribute('id')}">${error}</iq>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, response));
+        }
+
+        function transportInfos(_converse) {
+            return _converse.api.connection
+                .get()
+                .sent_stanzas.filter((s) => sizzle(`jingle[action="transport-info"]`, s).length);
+        }
+
+        function connect(pc) {
+            pc.connectionState = 'connected';
+            pc.onconnectionstatechange();
+        }
+
+        function failConnection(pc) {
+            pc.connectionState = 'failed';
+            pc.onconnectionstatechange();
+        }
+
+        /** Dial a contact and connect, with the callee as the DTLS server. */
+        async function startOutgoingCall(_converse) {
+            const webrtc_handle = installFakeWebRTC({
+                pcOverrides: {
+                    createOffer(options) {
+                        this.offer_options = options;
+                        const sdp = options?.iceRestart ? RESTART_OFFER_SDP : OFFER_SDP;
+                        return Promise.resolve({ type: 'offer', sdp });
+                    },
+                },
+            });
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+
+            const { parseSDP, sdpToJingle } = converse.env.jingle;
+            const answer = parseSDP(OFFER_SDP.replace('a=setup:actpass', 'a=setup:passive'));
+            receiveIq(
+                _converse,
+                `${jid}/phone`,
+                'accept-iq',
+                sdpToJingle(answer, { action: 'session-accept', sid, is_initiator: false }),
+            );
+            const pc = webrtc_handle.pc;
+            await u.waitUntil(() => pc.remoteDescription);
+            connect(pc);
+            return { pc, call, jid, sid };
+        }
+
+        /** Answer a call from a contact and connect. */
+        async function startIncomingCall(_converse) {
+            const webrtc_handle = installFakeWebRTC({
+                pcOverrides: {
+                    createOffer: () => Promise.resolve({ type: 'offer', sdp: RESTART_OFFER_SDP }),
+                },
+            });
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="in-restart"><description xmlns="${RTP}" media="audio"/></propose>`,
+            );
+            const call = _converse.state.calls.get('in-restart');
+            call.accept();
+            receiveIq(_converse, `${jid}/phone`, 'initiate-iq', jingle('session-initiate', 'in-restart'));
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-accept'));
+            const pc = webrtc_handle.pc;
+            connect(pc);
+            return { pc, call, jid, sid: 'in-restart' };
+        }
+
+        it(
+            'restarts ICE instead of ending the call',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { pc, call } = await startOutgoingCall(_converse);
+
+                failConnection(pc);
+
+                const restart = await u.waitUntil(() => lastJingleIq(_converse, 'transport-info'));
+                expect(pc.offer_options).toEqual({ iceRestart: true });
+                const transport = sizzle('content[name="0"] > transport', restart).pop();
+                expect(transport.getAttribute('ufrag')).toBe('ours2');
+                expect(transport.getAttribute('pwd')).toBe('ourrestartedpassword22chars');
+                // No candidates: that's what marks it as an offer to restart.
+                expect(sizzle('candidate', restart).length).toBe(0);
+                expect(call.get('state')).toBe('active');
+                expect(lastJingleIq(_converse, 'session-terminate')).toBeUndefined();
+            }),
+        );
+
+        it(
+            'sends its new candidates only once the peer acks the restart',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { pc, jid } = await startOutgoingCall(_converse);
+                failConnection(pc);
+                const restart = await u.waitUntil(() => lastJingleIq(_converse, 'transport-info'));
+
+                pc.onicecandidate({ candidate: LOCAL_CANDIDATE });
+                expect(transportInfos(_converse).length).toBe(1);
+
+                iqResponse(_converse, `${jid}/phone`, restart);
+                const trickled = await u.waitUntil(() => transportInfos(_converse)[1]);
+                expect(sizzle('candidate', trickled).pop().getAttribute('ip')).toBe('192.0.2.1');
+                expect(sizzle('transport', trickled).pop().getAttribute('ufrag')).toBe('ours2');
+            }),
+        );
+
+        it(
+            'applies the new credentials the peer answers with',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { pc, jid, sid } = await startOutgoingCall(_converse);
+                failConnection(pc);
+                const restart = await u.waitUntil(() => lastJingleIq(_converse, 'transport-info'));
+                iqResponse(_converse, `${jid}/phone`, restart);
+
+                receiveIq(_converse, `${jid}/phone`, 'answer-iq', peerRestart(sid, true));
+
+                expect(sentIq(_converse, 'result', 'answer-iq')).toBeDefined();
+                await u.waitUntil(() => pc.remoteDescription.sdp.includes('a=ice-ufrag:theirs2'));
+                const sdp = pc.remoteDescription.sdp;
+                expect(pc.remoteDescription.type).toBe('answer');
+                expect(sdp).toContain('a=ice-pwd:theirrestartedpassword22');
+                // The DTLS roles stay as they were negotiated.
+                expect(sdp).toContain('a=setup:passive');
+                expect(pc.signalingState).toBe('stable');
+                await u.waitUntil(() => pc.candidates.length);
+                expect(pc.candidates[0].candidate).toContain('192.0.2.7 30000');
+            }),
+        );
+
+        it(
+            'ends the call when the restarted connection fails too',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { pc, call } = await startOutgoingCall(_converse);
+                failConnection(pc);
+                await u.waitUntil(() => lastJingleIq(_converse, 'transport-info'));
+
+                failConnection(pc);
+
+                expect(call.get('state')).toBe('failed');
+                expect(call.get('ended_reason')).toBe('connectivity-error');
+                const terminate = lastJingleIq(_converse, 'session-terminate');
+                expect(sizzle('reason > connectivity-error', terminate).length).toBe(1);
+            }),
+        );
+
+        it(
+            'ends the call when the peer acks the restart but never answers it',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { pc, call, jid } = await startOutgoingCall(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                failConnection(pc);
+                await vi.advanceTimersByTimeAsync(0);
+                iqResponse(_converse, `${jid}/phone`, lastJingleIq(_converse, 'transport-info'));
+
+                await vi.advanceTimersByTimeAsync(29_999);
+                expect(call.get('state')).toBe('active');
+
+                await vi.advanceTimersByTimeAsync(1);
+                expect(call.get('state')).toBe('failed');
+                expect(call.get('ended_reason')).toBe('connectivity-error');
+                expect(lastJingleIq(_converse, 'session-terminate')).toBeDefined();
+            }),
+        );
+
+        it(
+            'stays up once the restarted connection connects',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { pc, call } = await startOutgoingCall(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                failConnection(pc);
+                await vi.advanceTimersByTimeAsync(10_000);
+
+                connect(pc);
+                await vi.advanceTimersByTimeAsync(120_000);
+                expect(call.get('state')).toBe('active');
+
+                // And it may restart again later.
+                failConnection(pc);
+                expect(call.get('state')).toBe('active');
+            }),
+        );
+
+        it(
+            "answers the peer's restart",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { pc, jid, sid } = await startOutgoingCall(_converse);
+                pc.createAnswer = () => Promise.resolve({ type: 'answer', sdp: RESTART_ANSWER_SDP });
+
+                receiveIq(_converse, `${jid}/phone`, 'restart-iq', peerRestart(sid));
+
+                expect(sentIq(_converse, 'result', 'restart-iq')).toBeDefined();
+                await u.waitUntil(() => pc.localDescription.type === 'answer');
+                expect(pc.remoteDescription.type).toBe('offer');
+                expect(pc.remoteDescription.sdp).toContain('a=ice-ufrag:theirs2');
+                expect(pc.remoteDescription.sdp).toContain('a=setup:actpass');
+
+                // Our candidates carry the answer's credentials, which tells the peer our answer.
+                pc.onicecandidate({ candidate: LOCAL_CANDIDATE });
+                const trickled = await u.waitUntil(() => lastJingleIq(_converse, 'transport-info'));
+                expect(sizzle('transport', trickled).pop().getAttribute('ufrag')).toBe('ours3');
+            }),
+        );
+
+        it(
+            "refuses the responder's restart with a tie-break when both restart at once",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { pc, jid, sid } = await startOutgoingCall(_converse);
+                failConnection(pc);
+                await u.waitUntil(() => lastJingleIq(_converse, 'transport-info'));
+
+                receiveIq(_converse, `${jid}/phone`, 'glare-iq', peerRestart(sid));
+
+                const error = sentIq(_converse, 'error', 'glare-iq');
+                expect(sizzle('conflict', error).length).toBe(1);
+                expect(sizzle(`tie-break[xmlns="${JINGLE_ERRORS}"]`, error).length).toBe(1);
+                expect(pc.remoteDescription.sdp).not.toContain('theirs2');
+            }),
+        );
+
+        it(
+            "yields to the initiator's restart when both restart at once",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { pc, call, jid, sid } = await startIncomingCall(_converse);
+                failConnection(pc);
+                const ours = await u.waitUntil(() => lastJingleIq(_converse, 'transport-info'));
+
+                receiveIq(_converse, `${jid}/phone`, 'glare-iq', peerRestart(sid));
+                expect(sentIq(_converse, 'result', 'glare-iq')).toBeDefined();
+                await u.waitUntil(() => pc.remoteDescription.sdp.includes('a=ice-ufrag:theirs2'));
+                expect(pc.remoteDescription.type).toBe('offer');
+                await u.waitUntil(() => pc.localDescription.type === 'answer');
+
+                iqResponse(
+                    _converse,
+                    `${jid}/phone`,
+                    ours,
+                    stx`<error type="cancel">
+                        <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                        <tie-break xmlns="${JINGLE_ERRORS}"/>
+                    </error>`,
+                );
+                await new Promise((resolve) => setTimeout(resolve)); // let the error handler run
+                expect(call.get('state')).toBe('active');
+                expect(lastJingleIq(_converse, 'session-terminate')).toBeUndefined();
             }),
         );
     });

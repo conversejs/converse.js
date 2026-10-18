@@ -340,6 +340,70 @@ export function buildTransportInfo(candidate, options) {
 }
 
 /**
+ * Build a transport-info `<jingle>` that offers an ICE restart (XEP-0176): each
+ * content's new credentials, and no candidates.
+ * @param {SessionDescription} sdp - our restart offer
+ * @param {{ sid: string, initiator?: string, responder?: string }} options
+ * @returns {Element}
+ */
+export function buildIceRestart(sdp, options) {
+    const { sid, initiator, responder } = options;
+    return stx`
+        <jingle xmlns="${Strophe.NS.JINGLE}" action="transport-info" sid="${sid}"
+                ${initiator ? attr('initiator', initiator) : ''}
+                ${responder ? attr('responder', responder) : ''}>
+            ${sdp.media.map((media) => {
+                const { ufrag, pwd } = iceCredentials(media, sdp);
+                return stx`
+                    <content xmlns="${Strophe.NS.JINGLE}" creator="initiator" name="${media.mid}">
+                        <transport xmlns="${Strophe.NS.JINGLE_ICE}" ufrag="${ufrag}" pwd="${pwd}"/>
+                    </content>`;
+            })}
+        </jingle>`;
+}
+
+/**
+ * The ICE credentials a transport-info carries, by content name.
+ * @param {Element} jingle
+ * @returns {Map<string, { ufrag: string, pwd: string }>}
+ */
+export function transportCredentials(jingle) {
+    const credentials = new Map();
+    sizzle('> content', jingle).forEach((content) => {
+        const transport = sizzle(`> transport[xmlns="${Strophe.NS.JINGLE_ICE}"]`, content).pop();
+        const ufrag = transport?.getAttribute('ufrag');
+        const pwd = transport?.getAttribute('pwd');
+        if (ufrag && pwd) credentials.set(content.getAttribute('name'), { ufrag, pwd });
+    });
+    return credentials;
+}
+
+/**
+ * The peer's description again, with the new ICE credentials of a restart.
+ * @param {string} sdp - the peer's current description
+ * @param {Map<string, { ufrag: string, pwd: string }>} credentials - by content name; a
+ *      content left out takes the first ones, as its transport is bundled
+ * @param {string} setup - the DTLS role: `actpass` in an offer, else the role the peer took
+ * @returns {string}
+ */
+export function restartedDescription(sdp, credentials, setup) {
+    const session = parseSDP(sdp);
+    const bundled = credentials.values().next().value;
+    assertSingleLine([...credentials.values()]);
+    delete session.iceUfrag;
+    delete session.icePwd;
+    session.origin.sessionVersion = Number(session.origin.sessionVersion) + 1;
+    session.media.forEach((media) => {
+        const { ufrag, pwd } = credentials.get(String(media.mid)) ?? bundled;
+        Object.assign(media, { iceUfrag: ufrag, icePwd: pwd, setup });
+        // The old candidates belong to the old credentials.
+        delete media.candidates;
+        delete media.endOfCandidates;
+    });
+    return writeSDP(session);
+}
+
+/**
  * @param {Element} payload
  * @returns {{ rtp: object, fmtp: object|null, rtcpFb: object[] }}
  */

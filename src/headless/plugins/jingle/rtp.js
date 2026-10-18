@@ -3,6 +3,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '@converse/log';
 import {
+    buildIceRestart,
     buildTransportInfo,
     candidateFromLine,
     candidateToLine,
@@ -11,10 +12,12 @@ import {
     isUdpCandidate,
     jingleToSDP,
     parseSDP,
+    restartedDescription,
     sdpToJingle,
+    transportCredentials,
     writeSDP,
 } from './sdp.js';
-import { CALL_STATES, ENDED_REASONS } from './constants.js';
+import { CALL_STATES, CONNECT_TIMEOUT, ENDED_REASONS } from './constants.js';
 import { getIceServers } from './extdisco.js';
 
 const { Strophe, sizzle, stx } = converse.env;
@@ -54,11 +57,7 @@ const HANDLED_ACTIONS = [
 ];
 
 // End reasons that land the call in `failed` rather than `ended`.
-const FAILURE_REASONS = [
-    ENDED_REASONS.NO_MEDIA,
-    ENDED_REASONS.CONNECTIVITY_ERROR,
-    ENDED_REASONS.FAILED_APPLICATION,
-];
+const FAILURE_REASONS = [ENDED_REASONS.NO_MEDIA, ENDED_REASONS.CONNECTIVITY_ERROR, ENDED_REASONS.FAILED_APPLICATION];
 
 /**
  * Tell `to` that the Jingle session `sid` is over.
@@ -121,6 +120,15 @@ class RTPSession {
         this.pc = null;
         this.pending_candidates = [];
         this.closed = false;
+        // Whether ICE connected since the session started or was last restarted.
+        this.has_connected = false;
+        // Our pending offer to restart ICE, until the peer answers it.
+        this.ice_restart = null;
+        // Local candidates of our restart, held back until the peer has acked it.
+        this.held_candidates = null;
+        // Whether the peer's restart is being applied; its candidates wait for it.
+        this.applying_restart = false;
+        this.restart_timeout = null;
     }
 
     get sid() {
@@ -181,26 +189,138 @@ class RTPSession {
     onConnectionStateChange() {
         if (!this.pc) return;
         if (this.pc.connectionState === 'connected') {
+            this.has_connected = true;
+            clearTimeout(this.restart_timeout);
             if (this.call.get('state') !== CALL_STATES.ACTIVE) {
                 this.call.set({ state: CALL_STATES.ACTIVE, started_at: Date.now() });
             }
         } else if (this.pc.connectionState === 'failed') {
-            this.fail(ENDED_REASONS.CONNECTIVITY_ERROR);
+            // A connection that worked can often be recovered, e.g. after a network change.
+            if (this.has_connected) {
+                this.restartIce();
+            } else {
+                this.fail(ENDED_REASONS.CONNECTIVITY_ERROR);
+            }
         }
+    }
+
+    /**
+     * Restart ICE: offer new credentials in a transport-info without candidates,
+     * the way Conversations does, and trickle our new candidates once the peer
+     * has acked it. The peer answers with candidates under its new credentials.
+     */
+    async restartIce() {
+        this.#beginIceRestart();
+        const restart = { peer_setup: this.#peerDtlsSetup() };
+        const held = [];
+
+        this.ice_restart = restart;
+        this.held_candidates = held;
+
+        try {
+            const offer = await this.pc.createOffer({ iceRestart: true });
+            if (this.closed || this.ice_restart !== restart) return; // we answered the peer's restart instead
+            await this.pc.setLocalDescription(offer);
+            const jingle = buildIceRestart(parseSDP(offer.sdp), {
+                sid: this.sid,
+                initiator: this.initiator,
+                responder: this.responder,
+            });
+            await api.sendIQ(stx`<iq xmlns="jabber:client" type="set" to="${this.peer_jid}">${jingle}</iq>`);
+        } catch (e) {
+            // On a tie-break we wait for the initiator's own restart.
+            if (this.closed || this.held_candidates !== held || isTieBreak(e)) return;
+            log.error(e);
+            this.fail(ENDED_REASONS.FAILED_APPLICATION);
+            return;
+        }
+
+        if (this.closed || this.held_candidates !== held) return;
+
+        this.held_candidates = null;
+        held.forEach((ev) => this.onLocalCandidate(ev));
+    }
+
+    /** Whoever restarted, the restart has to connect, or the call ends. */
+    #beginIceRestart() {
+        this.has_connected = false;
+        clearTimeout(this.restart_timeout);
+        this.restart_timeout = setTimeout(() => {
+            if (this.pc?.connectionState !== 'connected') this.fail(ENDED_REASONS.CONNECTIVITY_ERROR);
+        }, CONNECT_TIMEOUT);
+    }
+
+    /** @returns {string} the DTLS role the peer took, which a restart doesn't change */
+    #peerDtlsSetup() {
+        const remote = parseSDP(this.pc.remoteDescription.sdp).media[0]?.setup;
+        if (remote && remote !== 'actpass') return remote;
+
+        const local = parseSDP(this.pc.localDescription.sdp).media[0]?.setup;
+        return local === 'active' ? 'passive' : 'active';
+    }
+
+    /**
+     * The ICE restart a transport-info carries, if its credentials are new.
+     * Without candidates it offers one; with candidates while ours is pending,
+     * it answers ours.
+     * @param {Element} jingle
+     * @returns {{ credentials: Map<string, { ufrag: string, pwd: string }>, is_offer: boolean }|null}
+     */
+    #iceRestartIn(jingle) {
+        if (!this.pc?.remoteDescription) return null;
+
+        const credentials = transportCredentials(jingle);
+        const remote = parseSDP(this.pc.remoteDescription.sdp);
+        const is_new = [...credentials].some(([mid, { ufrag }]) => {
+            const media = remote.media.find((m) => String(m.mid) === mid);
+            return ufrag !== iceCredentials(media, remote).ufrag;
+        });
+        if (!is_new) return null;
+
+        const has_candidates = sizzle(`transport[xmlns="${Strophe.NS.JINGLE_ICE}"] > candidate`, jingle).length > 0;
+        return { credentials, is_offer: !(has_candidates && this.ice_restart) };
+    }
+
+    /** @param {{ credentials: Map<string, { ufrag: string, pwd: string }>, is_offer: boolean }} restart */
+    async #applyIceRestart({ credentials, is_offer }) {
+        const remote_sdp = this.pc.remoteDescription.sdp;
+        try {
+            if (is_offer) {
+                // If we offered a restart too, the browser rolls ours back.
+                this.#beginIceRestart();
+                this.ice_restart = null;
+                this.held_candidates = null;
+                const sdp = restartedDescription(remote_sdp, credentials, 'actpass');
+                await this.pc.setRemoteDescription({ type: 'offer', sdp });
+                await this.pc.setLocalDescription(await this.pc.createAnswer());
+            } else {
+                const sdp = restartedDescription(remote_sdp, credentials, this.ice_restart.peer_setup);
+                this.ice_restart = null;
+                await this.pc.setRemoteDescription({ type: 'answer', sdp });
+            }
+        } catch (e) {
+            log.error(e);
+            this.fail(ENDED_REASONS.FAILED_APPLICATION);
+        } finally {
+            this.applying_restart = false;
+        }
+        if (!this.closed) this.flushCandidates();
     }
 
     /** A locally gathered ICE candidate: trickle it to the peer. */
     onLocalCandidate(ev) {
         if (!ev.candidate?.candidate) return; // a null candidate marks the end of gathering
+        if (this.held_candidates) {
+            this.held_candidates.push(ev);
+            return;
+        }
 
         const candidate = candidateFromLine(ev.candidate.candidate);
         if (!isUdpCandidate(candidate)) return;
 
         const local = parseSDP(this.pc.localDescription.sdp);
         const { sdpMid, sdpMLineIndex } = ev.candidate;
-        const media =
-            local.media.find((m) => String(m.mid) === sdpMid) ??
-            local.media[sdpMLineIndex ?? 0];
+        const media = local.media.find((m) => String(m.mid) === sdpMid) ?? local.media[sdpMLineIndex ?? 0];
         const { ufrag, pwd } = iceCredentials(media, local);
         const jingle = buildTransportInfo(candidate, {
             sid: this.sid,
@@ -244,14 +364,20 @@ class RTPSession {
      * The error to refuse an inbound Jingle action with, if any (XEP-0166).
      * @param {string} action
      * @param {Element} jingle
-     * @returns {'feature-not-implemented'|'unsupported-info'|null}
+     * @returns {'feature-not-implemented'|'unsupported-info'|'tie-break'|null}
      */
     refusal(action, jingle) {
         if (!HANDLED_ACTIONS.includes(action)) return 'feature-not-implemented';
+
+        // Both sides offered to restart ICE: the initiator's offer wins.
+        const glare = action === 'transport-info' && this.is_initiator && this.ice_restart;
+        if (glare && this.#iceRestartIn(jingle)?.is_offer) return 'tie-break';
+
         // An empty session-info is a ping; XEP-0167 info payloads (ringing, mute,
         // hold...) are only informational, so there is nothing to act on.
         const payload = action === 'session-info' ? jingle.firstElementChild : null;
         if (payload && payload.namespaceURI !== Strophe.NS.JINGLE_RTP_INFO) return 'unsupported-info';
+
         return null;
     }
 
@@ -292,7 +418,7 @@ class RTPSession {
      */
     rejectContents(jingle, action, condition) {
         const contents = sizzle('> content', jingle).map(
-            (c) => stx`<content creator="${c.getAttribute('creator')}" name="${c.getAttribute('name')}"/>`
+            (c) => stx`<content creator="${c.getAttribute('creator')}" name="${c.getAttribute('name')}"/>`,
         );
         this.sendJingle(stx`
             <jingle xmlns="${Strophe.NS.JINGLE}" action="${action}" sid="${this.sid}">
@@ -312,6 +438,7 @@ class RTPSession {
             this.flushCandidates();
 
             if (!(await this.addLocalMedia())) return;
+
             const answer = await this.pc.createAnswer();
             await this.pc.setLocalDescription(answer);
 
@@ -342,8 +469,14 @@ class RTPSession {
         }
     }
 
-    /** @param {Element} jingle - a transport-info carrying one or more candidates */
+    /** @param {Element} jingle - a transport-info carrying candidates, or an ICE restart */
     onTransportInfo(jingle) {
+        const restart = this.applying_restart ? null : this.#iceRestartIn(jingle);
+        if (restart) {
+            this.applying_restart = true;
+            this.#applyIceRestart(restart);
+        }
+
         sizzle('content', jingle).forEach((content) => {
             const mid = content.getAttribute('name');
             sizzle(`transport[xmlns="${Strophe.NS.JINGLE_ICE}"] > candidate`, content).forEach((el) => {
@@ -355,11 +488,12 @@ class RTPSession {
                     return;
                 }
                 if (!isUdpCandidate(parsed)) return;
+
                 const line = candidateToLine(parsed);
                 const candidate = { candidate: line, sdpMid: mid };
                 // A peer can trickle candidates before its description is applied;
                 // addIceCandidate rejects until then, so hold them back.
-                if (this.pc?.remoteDescription) {
+                if (this.pc?.remoteDescription && !this.applying_restart) {
                     this.pc.addIceCandidate(candidate).catch((e) => log.error(e));
                 } else {
                     this.pending_candidates.push(candidate);
@@ -412,6 +546,7 @@ class RTPSession {
 
     close() {
         this.closed = true;
+        clearTimeout(this.restart_timeout);
         // Closing the peer connection doesn't release the mic/camera - the
         // local getUserMedia tracks have to be stopped explicitly, otherwise the
         // OS keeps showing the device as in use after the call ends.
@@ -421,6 +556,11 @@ class RTPSession {
         this.pc?.close();
         this.pc = null;
     }
+}
+
+/** @param {unknown} error - what a refused IQ rejects with */
+function isTieBreak(error) {
+    return error instanceof Element && sizzle(`tie-break[xmlns="${Strophe.NS.JINGLE_ERRORS}"]`, error).length > 0;
 }
 
 export default RTPSession;

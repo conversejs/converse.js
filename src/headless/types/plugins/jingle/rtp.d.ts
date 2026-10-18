@@ -38,6 +38,13 @@ declare class RTPSession {
     pc: RTCPeerConnection;
     pending_candidates: any[];
     closed: boolean;
+    has_connected: boolean;
+    ice_restart: {
+        peer_setup: string;
+    };
+    held_candidates: any[];
+    applying_restart: boolean;
+    restart_timeout: number;
     get sid(): string;
     get initiator(): any;
     get responder(): any;
@@ -48,6 +55,12 @@ declare class RTPSession {
     /** The peer's media arrived: expose the remote stream. */
     onRemoteTrack(ev: any): void;
     onConnectionStateChange(): void;
+    /**
+     * Restart ICE: offer new credentials in a transport-info without candidates,
+     * the way Conversations does, and trickle our new candidates once the peer
+     * has acked it. The peer answers with candidates under its new credentials.
+     */
+    restartIce(): Promise<void>;
     /** A locally gathered ICE candidate: trickle it to the peer. */
     onLocalCandidate(ev: any): void;
     /**
@@ -59,9 +72,9 @@ declare class RTPSession {
      * The error to refuse an inbound Jingle action with, if any (XEP-0166).
      * @param {string} action
      * @param {Element} jingle
-     * @returns {'feature-not-implemented'|'unsupported-info'|null}
+     * @returns {'feature-not-implemented'|'unsupported-info'|'tie-break'|null}
      */
-    refusal(action: string, jingle: Element): "feature-not-implemented" | "unsupported-info" | null;
+    refusal(action: string, jingle: Element): "feature-not-implemented" | "unsupported-info" | "tie-break" | null;
     /**
      * Dispatch an inbound Jingle action (already routed to this session and acked).
      * @param {string} action
@@ -78,7 +91,7 @@ declare class RTPSession {
     onSessionInitiate(jingle: Element): Promise<void>;
     /** @param {Element} jingle */
     onSessionAccept(jingle: Element): Promise<void>;
-    /** @param {Element} jingle - a transport-info carrying one or more candidates */
+    /** @param {Element} jingle - a transport-info carrying candidates, or an ICE restart */
     onTransportInfo(jingle: Element): void;
     flushCandidates(): void;
     /** @param {Element} jingle - the peer hung up */
@@ -100,5 +113,6 @@ declare class RTPSession {
      */
     sendJingle(jingle: Element, required?: boolean): void;
     close(): void;
+    #private;
 }
 //# sourceMappingURL=rtp.d.ts.map

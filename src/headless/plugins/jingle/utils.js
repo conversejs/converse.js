@@ -243,6 +243,17 @@ function buildNotImplemented(iq, refusal) {
 }
 
 /** @param {Element} iq */
+function buildTieBreak(iq) {
+    return stx`
+        <iq xmlns="jabber:client" type="error" to="${iq.getAttribute('from')}" id="${iq.getAttribute('id')}">
+            <error type="cancel">
+                <conflict xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                <tie-break xmlns="${Strophe.NS.JINGLE_ERRORS}"/>
+            </error>
+        </iq>`;
+}
+
+/** @param {Element} iq */
 function buildOutOfOrder(iq) {
     return stx`
         <iq xmlns="jabber:client" type="error" to="${iq.getAttribute('from')}" id="${iq.getAttribute('id')}">
@@ -300,6 +311,10 @@ export function handleJingleIq(iq) {
     }
 
     const refusal = session.refusal(action, jingle);
+    if (refusal === 'tie-break') {
+        api.send(buildTieBreak(iq));
+        return true;
+    }
     if (refusal) {
         api.send(buildNotImplemented(iq, refusal));
         return true;

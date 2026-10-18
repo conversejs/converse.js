@@ -922,4 +922,182 @@ describe('A Jingle RTP session', function () {
             }),
         );
     });
+
+    describe('when setting up the session fails for a reason other than the microphone', function () {
+        it(
+            'fails an outgoing call as an application failure',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                installFakeWebRTC({ pcOverrides: { createOffer: () => Promise.reject(new Error('no offer')) } });
+                const jid = await getContactJid(_converse);
+                const call = _converse.api.calls.dial(jid);
+
+                receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
+
+                await u.waitUntil(() => call.get('state') === 'failed');
+                expect(call.get('ended_reason')).toBe('failed-application');
+                const term = lastJingleIq(_converse, 'session-terminate');
+                expect(sizzle('reason > failed-application', term).length).toBe(1);
+            }),
+        );
+
+        it(
+            "fails an incoming call whose offer can't be applied as an application failure",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const gum = vi.fn(() => Promise.resolve(fakeStream()));
+                installFakeWebRTC({
+                    getUserMedia: gum,
+                    pcOverrides: { setRemoteDescription: () => Promise.reject(new Error('bad sdp')) },
+                });
+                const jid = await getContactJid(_converse);
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<propose xmlns="${JMI}" id="in-bad"><description xmlns="${RTP}" media="audio"/></propose>`,
+                );
+                const call = _converse.state.calls.get('in-bad');
+                call.accept();
+
+                receiveIq(_converse, `${jid}/phone`, 'init-iq', jingle('session-initiate', 'in-bad'));
+
+                await u.waitUntil(() => call.get('state') === 'failed');
+                expect(call.get('ended_reason')).toBe('failed-application');
+                const term = lastJingleIq(_converse, 'session-terminate');
+                expect(sizzle('reason > failed-application', term).length).toBe(1);
+                expect(gum).not.toHaveBeenCalled();
+            }),
+        );
+    });
+
+    describe('with a Jingle action we do not implement', function () {
+        async function startSession(_converse) {
+            installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+            receiveIq(_converse, `${jid}/phone`, 'accept-iq', jingle('session-accept', sid));
+            return { jid, sid, call };
+        }
+
+        /** The error a sent IQ carries, as [xmpp condition, jingle condition]. */
+        function errorOf(iq) {
+            const error = sizzle('error', iq).pop();
+            return [
+                sizzle('[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).pop()?.tagName,
+                sizzle(`[xmlns="${JINGLE_ERRORS}"]`, error).pop()?.tagName,
+            ];
+        }
+
+        it(
+            'acks a session-info that is empty or carries an RTP info payload',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid } = await startSession(_converse);
+
+                receiveIq(_converse, `${jid}/phone`, 'ping-iq', stx`<jingle xmlns="${JINGLE}" action="session-info" sid="${sid}"/>`);
+                receiveIq(
+                    _converse,
+                    `${jid}/phone`,
+                    'mute-iq',
+                    stx`<jingle xmlns="${JINGLE}" action="session-info" sid="${sid}">
+                        <mute xmlns="urn:xmpp:jingle:apps:rtp:info:1" creator="initiator" name="0"/>
+                    </jingle>`,
+                );
+
+                expect(sentIq(_converse, 'result', 'ping-iq')).toBeDefined();
+                expect(sentIq(_converse, 'result', 'mute-iq')).toBeDefined();
+            }),
+        );
+
+        it(
+            "refuses a session-info whose payload it doesn't understand",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid } = await startSession(_converse);
+
+                receiveIq(
+                    _converse,
+                    `${jid}/phone`,
+                    'info-iq',
+                    stx`<jingle xmlns="${JINGLE}" action="session-info" sid="${sid}">
+                        <hold xmlns="urn:x:other"/>
+                    </jingle>`,
+                );
+
+                expect(errorOf(sentIq(_converse, 'error', 'info-iq'))).toEqual([
+                    'feature-not-implemented',
+                    'unsupported-info',
+                ]);
+            }),
+        );
+
+        it(
+            'rejects added content, such as video',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid, call } = await startSession(_converse);
+
+                receiveIq(
+                    _converse,
+                    `${jid}/phone`,
+                    'add-iq',
+                    stx`<jingle xmlns="${JINGLE}" action="content-add" sid="${sid}">
+                        <content creator="responder" name="video" senders="both">
+                            <description xmlns="${RTP}" media="video"/>
+                        </content>
+                    </jingle>`,
+                );
+
+                expect(sentIq(_converse, 'result', 'add-iq')).toBeDefined();
+                const reject = lastJingleIq(_converse, 'content-reject');
+                expect(reject.getAttribute('to')).toBe(`${jid}/phone`);
+                const content = sizzle('content', reject).pop();
+                expect(content.getAttribute('name')).toBe('video');
+                expect(content.getAttribute('creator')).toBe('responder');
+                expect(call.get('state')).not.toBe('failed');
+            }),
+        );
+
+        it(
+            'rejects a replacement transport',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid } = await startSession(_converse);
+
+                receiveIq(
+                    _converse,
+                    `${jid}/phone`,
+                    'replace-iq',
+                    stx`<jingle xmlns="${JINGLE}" action="transport-replace" sid="${sid}">
+                        <content creator="initiator" name="0">
+                            <transport xmlns="urn:xmpp:jingle:transports:s5b:1"/>
+                        </content>
+                    </jingle>`,
+                );
+
+                expect(sentIq(_converse, 'result', 'replace-iq')).toBeDefined();
+                const reject = lastJingleIq(_converse, 'transport-reject');
+                expect(sizzle('content', reject).pop().getAttribute('name')).toBe('0');
+            }),
+        );
+
+        it(
+            'answers any other one with feature-not-implemented',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid } = await startSession(_converse);
+
+                receiveIq(
+                    _converse,
+                    `${jid}/phone`,
+                    'modify-iq',
+                    stx`<jingle xmlns="${JINGLE}" action="content-modify" sid="${sid}">
+                        <content creator="initiator" name="0" senders="initiator"/>
+                    </jingle>`,
+                );
+
+                expect(sentIq(_converse, 'result', 'modify-iq')).toBeUndefined();
+                expect(errorOf(sentIq(_converse, 'error', 'modify-iq'))).toEqual([
+                    'feature-not-implemented',
+                    undefined,
+                ]);
+            }),
+        );
+    });
 });

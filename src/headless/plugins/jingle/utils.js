@@ -223,6 +223,22 @@ function buildUnknownSession(iq) {
         </iq>`;
 }
 
+/**
+ * @param {Element} iq
+ * @param {'feature-not-implemented'|'unsupported-info'} refusal
+ */
+function buildNotImplemented(iq, refusal) {
+    const jingle_condition =
+        refusal === 'unsupported-info' ? stx`<unsupported-info xmlns="${Strophe.NS.JINGLE_ERRORS}"/>` : '';
+    return stx`
+        <iq xmlns="jabber:client" type="error" to="${iq.getAttribute('from')}" id="${iq.getAttribute('id')}">
+            <error type="cancel">
+                <feature-not-implemented xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                ${jingle_condition}
+            </error>
+        </iq>`;
+}
+
 /** @param {Element} iq */
 function buildOutOfOrder(iq) {
     return stx`
@@ -280,8 +296,13 @@ export function handleJingleIq(iq) {
         return true;
     }
 
-    session.handleJingle(action, jingle);
+    const refusal = session.refusal(action, jingle);
+    if (refusal) {
+        api.send(buildNotImplemented(iq, refusal));
+        return true;
+    }
     api.send(buildIqResult(iq));
+    session.handleJingle(action, jingle);
     return true;
 }
 

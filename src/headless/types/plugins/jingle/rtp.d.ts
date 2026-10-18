@@ -49,14 +49,30 @@ declare class RTPSession {
     onConnectionStateChange(): void;
     /** A locally gathered ICE candidate: trickle it to the peer. */
     onLocalCandidate(ev: any): void;
-    /** @returns {Promise<boolean>} false if the call ended while the browser was asking for permission */
+    /**
+     * @returns {Promise<boolean>} false if the microphone couldn't be captured,
+     *      or the call ended while the browser was asking for permission
+     */
     addLocalMedia(): Promise<boolean>;
     /**
-     * Dispatch an inbound Jingle action (already routed to this session).
+     * The error to refuse an inbound Jingle action with, if any (XEP-0166).
+     * @param {string} action
+     * @param {Element} jingle
+     * @returns {'feature-not-implemented'|'unsupported-info'|null}
+     */
+    refusal(action: string, jingle: Element): "feature-not-implemented" | "unsupported-info" | null;
+    /**
+     * Dispatch an inbound Jingle action (already routed to this session and acked).
      * @param {string} action
      * @param {Element} jingle
      */
     handleJingle(action: string, jingle: Element): void;
+    /**
+     * @param {Element} jingle - the peer's content-add or transport-replace
+     * @param {'content-reject'|'transport-reject'} action
+     * @param {import('strophe.js').Builder} condition - the Jingle reason condition
+     */
+    rejectContents(jingle: Element, action: "content-reject" | "transport-reject", condition: import("strophe.js").Builder): void;
     /** @param {Element} jingle - the caller's offer; answer it. */
     onSessionInitiate(jingle: Element): Promise<void>;
     /** @param {Element} jingle */

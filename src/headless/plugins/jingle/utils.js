@@ -6,7 +6,7 @@ import { isCarbon } from '../../shared/parsers.js';
 import Call from './model.js';
 import { buildPropose, buildReject, buildRetract, buildRinging, parseJMI } from './jmi.js';
 import { endCallFromTerminate } from './rtp.js';
-import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS } from './constants.js';
+import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS, RING_TIMEOUT } from './constants.js';
 
 const { Strophe, sizzle, stx } = converse.env;
 
@@ -105,7 +105,7 @@ export function handleJingleMessage(stanza) {
     const data = parseJMI(msg);
     if (!data) return true;
 
-    const { action, sid, from, media } = data;
+    const { action, sid, from, media, delayed_by } = data;
     const { calls } = _converse.state;
     const bare_from = Strophe.getBareJidFromJid(from);
     const is_carbon = bare_from === _converse.session.get('bare_jid');
@@ -130,6 +130,7 @@ export function handleJingleMessage(stanza) {
     switch (action) {
         case 'propose': {
             if (is_carbon || call) break; // our own propose echoed back, or a duplicate
+            if (delayed_by > RING_TIMEOUT) break; // held offline until after the caller gave up
             if (!mayRing(bare_from)) break;
 
             // Answering automatically tells the caller that we are online, so

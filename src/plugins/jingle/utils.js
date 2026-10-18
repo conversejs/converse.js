@@ -39,6 +39,8 @@ export function reasonText(reason) {
             return __('Answered on another device');
         case ENDED_REASONS.CANCELLED:
             return __('Call cancelled');
+        case ENDED_REASONS.NO_ANSWER:
+            return __('No answer');
         case ENDED_REASONS.NO_MEDIA:
             return __('No microphone access');
         case ENDED_REASONS.CONNECTIVITY_ERROR:

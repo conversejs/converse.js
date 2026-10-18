@@ -17,11 +17,18 @@ export const ENDED_REASONS = {
     SUCCESS: 'success',
     DECLINED: 'declined',
     CANCELLED: 'cancelled',
+    NO_ANSWER: 'no-answer',
     ANSWERED_ELSEWHERE: 'answered-elsewhere',
     NO_MEDIA: 'no-media',
     CONNECTIVITY_ERROR: 'connectivity-error',
     FAILED_APPLICATION: 'failed-application',
 };
+
+/** How long a call may wait for an answer, in milliseconds. */
+export const RING_TIMEOUT = 60_000;
+
+/** How long an answered call may take to connect, in milliseconds. */
+export const CONNECT_TIMEOUT = 30_000;
 
 export const JMI_ACTIONS = {
     PROPOSE: 'propose',

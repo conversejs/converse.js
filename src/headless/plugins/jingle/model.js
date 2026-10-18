@@ -6,7 +6,7 @@ import ModelWithContact from '../../shared/model-with-contact.js';
 import ColorAwareModel from '../../shared/color.js';
 import { buildAccept, buildProceed, buildReject, buildRetract } from './jmi.js';
 import RTPSession, { sendSessionTerminate } from './rtp.js';
-import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS } from './constants.js';
+import { CALL_DIRECTION, CALL_STATES, CONNECT_TIMEOUT, ENDED_REASONS, RING_TIMEOUT } from './constants.js';
 
 /**
  * A single 1:1 call. The UI only reads these attributes and calls these methods;
@@ -44,6 +44,51 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
 
         // The Jingle RTP session, created lazily by startSession().
         this.session = null;
+
+        this.timeout = null;
+        this.timed_phase = null;
+        this.on('change:state', () => this.armTimeout());
+        this.armTimeout();
+    }
+
+    /**
+     * Give up on a call that waits too long for an answer, or for its media to
+     * connect. Ringing after calling is still the same wait for an answer.
+     */
+    armTimeout() {
+        const state = this.get('state');
+        const phase = [CALL_STATES.CALLING, CALL_STATES.RINGING].includes(state)
+            ? 'answer'
+            : state === CALL_STATES.CONNECTING
+              ? 'connect'
+              : null;
+        if (phase === this.timed_phase) return;
+
+        clearTimeout(this.timeout);
+        this.timed_phase = phase;
+        if (phase === 'answer') {
+            this.timeout = setTimeout(() => this.onNoAnswer(), RING_TIMEOUT);
+        } else if (phase === 'connect') {
+            this.timeout = setTimeout(() => this.onConnectTimeout(), CONNECT_TIMEOUT);
+        }
+    }
+
+    /** Our outgoing call is retracted; an incoming one stops ringing without telling the caller. */
+    onNoAnswer() {
+        if (this.get('direction') === CALL_DIRECTION.OUTGOING) {
+            api.send(buildRetract(this.peer, this.sid));
+        }
+        this.end(ENDED_REASONS.NO_ANSWER);
+    }
+
+    onConnectTimeout() {
+        if (this.session) {
+            this.session.fail(ENDED_REASONS.CONNECTIVITY_ERROR);
+        } else {
+            // Accepted, but the caller's session-initiate never came.
+            sendSessionTerminate(this.peer_full_jid, this.sid, ENDED_REASONS.CONNECTIVITY_ERROR);
+            this.fail(ENDED_REASONS.CONNECTIVITY_ERROR);
+        }
     }
 
     initialize() {

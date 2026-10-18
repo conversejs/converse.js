@@ -124,7 +124,8 @@ const SUPPORTED_MEDIA = ['audio'];
  * Read a JMI child out of an inbound `<message>` stanza.
  * @param {Element} stanza
  * @returns {{ action: string, sid: string, from: string, to: string,
- *             media: ('audio'|'video')[] }|null} null when the stanza carries no JMI element
+ *             media: ('audio'|'video')[], delayed_by: number }|null} null when the stanza
+ *             carries no JMI element. `delayed_by` is in milliseconds, 0 without a `<delay>`.
  */
 export function parseJMI(stanza) {
     const el = sizzle(`> *[xmlns="${Strophe.NS.JINGLE_MESSAGE}"]`, stanza).pop();
@@ -134,11 +135,13 @@ export function parseJMI(stanza) {
     const media = descriptions
         .map((d) => /** @type {'audio'|'video'} */ (d.getAttribute('media')))
         .filter((m) => SUPPORTED_MEDIA.includes(m));
+    const stamp = sizzle(`> delay[xmlns="${Strophe.NS.DELAY}"]`, stanza).pop()?.getAttribute('stamp');
     return {
         action: el.tagName,
         sid: el.getAttribute('id'),
         from: stanza.getAttribute('from'),
         to: stanza.getAttribute('to'),
         media: descriptions.length ? media : ['audio'],
+        delayed_by: stamp ? Math.max(0, Date.now() - Date.parse(stamp)) : 0,
     };
 }

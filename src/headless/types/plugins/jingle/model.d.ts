@@ -285,6 +285,16 @@ declare class Call extends Call_base {
     local_stream: any;
     remote_stream: any;
     session: RTPSession;
+    timeout: number;
+    timed_phase: any;
+    /**
+     * Give up on a call that waits too long for an answer, or for its media to
+     * connect. Ringing after calling is still the same wait for an answer.
+     */
+    armTimeout(): void;
+    /** Our outgoing call is retracted; an incoming one stops ringing without telling the caller. */
+    onNoAnswer(): void;
+    onConnectTimeout(): void;
     initialize(): void;
     /** @returns {string} the Jingle session id */
     get sid(): string;

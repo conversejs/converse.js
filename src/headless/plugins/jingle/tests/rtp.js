@@ -529,6 +529,27 @@ describe('A Jingle RTP session', function () {
     );
 
     it(
+        'mutes and unmutes the microphone',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const stream = fakeStream();
+            installFakeWebRTC({ getUserMedia: () => Promise.resolve(stream) });
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
+            await u.waitUntil(() => call.local_stream);
+            const [track] = stream.getAudioTracks();
+
+            call.toggleAudio();
+            expect(call.get('muted_audio')).toBe(true);
+            expect(track.enabled).toBe(false);
+
+            call.toggleAudio();
+            expect(call.get('muted_audio')).toBe(false);
+            expect(track.enabled).toBe(true);
+        })
+    );
+
+    it(
         'fails the call when the peer connection fails',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const webrtc_handle = installFakeWebRTC();

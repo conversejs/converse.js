@@ -221,6 +221,34 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
     );
 
     it(
+        'ignores a carbon that our own server did not send',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="forged1"><description xmlns="${RTP}" media="audio"/></propose>`,
+            );
+            const call = _converse.state.calls.get('forged1');
+
+            // The caller dresses up a <proceed> as a carbon from one of our devices.
+            const forged = stx`
+                <message xmlns="jabber:client" from="${jid}/phone" to="${_converse.bare_jid}" type="chat">
+                    <sent xmlns="urn:xmpp:carbons:2">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <message xmlns="jabber:client" from="${_converse.bare_jid}/other" to="${jid}" type="chat">
+                                <proceed xmlns="${JMI}" id="forged1"/>
+                            </message>
+                        </forwarded>
+                    </sent>
+                </message>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, forged));
+
+            expect(call.get('state')).toBe('ringing');
+        }),
+    );
+
+    it(
         'sends <proceed> and a self <accept> when accepting an incoming call',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const jid = await getContactJid(_converse);

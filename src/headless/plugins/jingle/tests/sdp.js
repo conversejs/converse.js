@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import converse from '../../../dist/converse-headless.js';
 
 const { sizzle } = converse.env;
@@ -130,5 +131,47 @@ describe('Jingle/SDP conversion', function () {
 
         expect(sendersToDirection('initiator', true)).toBe('sendonly');
         expect(sendersToDirection('initiator', false)).toBe('recvonly');
+    });
+
+    it('leaves out TCP candidates, which ICE-UDP cannot carry', function () {
+        const sdp = sample_sdp + 'a=candidate:2 1 tcp 1518280447 192.0.2.1 9 typ host tcptype active generation 0\r\n';
+        const jingle = sdpToJingle(parseSDP(sdp), { is_initiator: true }).tree();
+        expect(sizzle('transport candidate', jingle).map((c) => c.getAttribute('protocol'))).toEqual(['udp']);
+
+        sizzle('transport candidate', jingle).pop().setAttribute('protocol', 'tcp');
+        expect(jingleToSDP(jingle, { is_initiator: true }).media[0].candidates).toEqual([]);
+    });
+
+    it('falls back to session-level ICE credentials', function () {
+        const sdp = sample_sdp
+            .replace('a=ice-ufrag:abc\r\na=ice-pwd:thispasswordisatleast22chars\r\n', '')
+            .replace('a=group:BUNDLE 0\r\n', 'a=group:BUNDLE 0\r\na=ice-ufrag:sess\r\na=ice-pwd:sessionpasswordatleast22chars\r\n');
+        const transport = sizzle('transport', sdpToJingle(parseSDP(sdp), { is_initiator: true }).tree()).pop();
+        expect(transport.getAttribute('ufrag')).toBe('sess');
+        expect(transport.getAttribute('pwd')).toBe('sessionpasswordatleast22chars');
+    });
+
+    it('refuses a content without an RTP description or an ICE-UDP transport', function () {
+        const without = (name) => {
+            const jingle = sdpToJingle(parseSDP(sample_sdp), { is_initiator: true }).tree();
+            const el = sizzle(name, jingle).pop();
+            el.parentNode.removeChild(el);
+            return jingle;
+        };
+        expect(() => jingleToSDP(without('description'), { is_initiator: true })).toThrow(/RTP description/);
+        expect(() => jingleToSDP(without('transport'), { is_initiator: true })).toThrow(/ICE-UDP transport/);
+    });
+
+    it('gives the same origin to every description of a session', function () {
+        const jingle = sdpToJingle(parseSDP(sample_sdp), { is_initiator: true }).tree();
+        vi.useFakeTimers({ toFake: ['Date'] });
+        try {
+            vi.setSystemTime(1_000);
+            const first = jingleToSDP(jingle, { is_initiator: true }).origin;
+            vi.setSystemTime(2_000);
+            expect(jingleToSDP(jingle, { is_initiator: true }).origin).toEqual(first);
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });

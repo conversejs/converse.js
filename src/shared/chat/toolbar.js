@@ -19,7 +19,6 @@ export class ChatToolbar extends CustomElement {
             is_groupchat: { type: Boolean },
             message_limit: { type: Number },
             model: { type: Object },
-            show_call_button: { type: Boolean },
             show_emoji_button: { type: Boolean },
             show_fileupload_button: { type: Boolean },
             show_location_button: { type: Boolean },
@@ -35,7 +34,6 @@ export class ChatToolbar extends CustomElement {
         this.hidden_occupants = false;
         this.show_send_button = false;
         this.show_spoiler_button = false;
-        this.show_call_button = false;
         this.show_emoji_button = false;
         this.show_fileupload_button = false;
         this.show_location_button = false;
@@ -65,21 +63,6 @@ export class ChatToolbar extends CustomElement {
 
         if (this.show_emoji_button) {
             buttons.push(html`<converse-emoji-dropdown .model=${this.model}></converse-emoji-dropdown>`);
-        }
-
-        if (this.show_call_button) {
-            const color = this.is_groupchat ? '--muc-color' : '--chat-color';
-            const i18n_start_call = __('Start a call');
-            buttons.push(
-                html` <button
-                    type="button"
-                    class="btn toggle-call"
-                    @click=${this.toggleCall}
-                    title="${i18n_start_call}"
-                >
-                    <converse-icon color="var(${color})" class="fa fa-phone" size="1em"></converse-icon>
-                </button>`,
-            );
         }
 
         if (this.show_spoiler_button) {
@@ -205,24 +188,6 @@ export class ChatToolbar extends CustomElement {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         this.model.set('composing_spoiler', !this.model.get('composing_spoiler'));
-    }
-
-    /** @param {MouseEvent} ev */
-    toggleCall(ev) {
-        ev?.preventDefault?.();
-        ev?.stopPropagation?.();
-        /**
-         * When a call button (i.e. with class .toggle-call) on a chatbox has been clicked.
-         * @event _converse#callButtonClicked
-         * @type { object }
-         * @property { Strophe.Connection } connection - The XMPP Connection object
-         * @property { _converse.ChatBox | _converse.ChatRoom } model
-         * @example _converse.api.listen.on('callButtonClicked', (connection, model) => { ... });
-         */
-        api.trigger('callButtonClicked', {
-            connection: api.connection.get(),
-            model: this.model,
-        });
     }
 }
 

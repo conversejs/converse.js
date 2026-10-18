@@ -295,42 +295,6 @@ describe('Chatboxes', function () {
                     expect(counter).toBe(null);
                 }),
             );
-
-            it(
-                'can contain a button for starting a call',
-                mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
-                    const { api } = _converse;
-                    await mock.waitForRoster(_converse, 'current');
-                    await mock.openControlBox(_converse);
-
-                    let toolbar, call_button;
-                    const contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-                    spyOn(_converse.api, 'trigger').and.callThrough();
-                    // First check that the button doesn't show if it's not enabled
-                    // via "visible_toolbar_buttons"
-
-                    let buttons = api.settings.get('visible_toolbar_buttons');
-                    api.settings.set('visible_toolbar_buttons', Object.assign({}, buttons, { 'call': false }));
-
-                    await mock.openChatBoxFor(_converse, contact_jid);
-                    let view = _converse.chatboxviews.get(contact_jid);
-                    toolbar = view.querySelector('.chat-toolbar');
-                    call_button = toolbar.querySelector('.toggle-call');
-                    expect(call_button === null).toBeTruthy();
-                    view.close();
-                    // Now check that it's shown if enabled and that it emits
-                    // callButtonClicked
-                    buttons = api.settings.get('visible_toolbar_buttons');
-                    api.settings.set('visible_toolbar_buttons', Object.assign({}, buttons, { 'call': true }));
-
-                    await mock.openChatBoxFor(_converse, contact_jid);
-                    view = await u.waitUntil(() => _converse.chatboxviews.get(contact_jid));
-                    toolbar = view.querySelector('.chat-toolbar');
-                    call_button = toolbar.querySelector('.toggle-call');
-                    call_button.click();
-                    expect(_converse.api.trigger).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
-                }),
-            );
         });
 
         describe('A Chat Status Notification', function () {

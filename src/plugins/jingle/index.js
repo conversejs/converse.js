@@ -3,6 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { api, converse } from '@converse/headless';
+import { getCallButton } from './utils.js';
 import './calls.js';
 import './call.js';
 
@@ -11,14 +12,10 @@ converse.plugins.add('converse-jingle-views', {
 
     initialize() {
         api.settings.extend({
-            // Show the core toolbar phone button (off by default in chatview).
+            // Show the audio call button in 1:1 chat toolbars.
             visible_toolbar_buttons: { call: true },
         });
 
-        // The toolbar phone button: dial the open 1:1 chat's contact.
-        api.listen.on('callButtonClicked', ({ model }) => {
-            if (model.get('type') === 'groupchat') return;
-            api.calls.dial(model.get('jid'));
-        });
+        api.listen.on('getToolbarButtons', getCallButton);
     },
 });

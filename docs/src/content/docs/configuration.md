@@ -1866,15 +1866,9 @@ See also [emoji_image_path](#emoji_image_path).
 Allows you to show or hide buttons on the chatboxes' toolbars.
 
 - _call_:
-  Shows a telephone button in 1:1 chats that starts an audio call with the contact. Pressing it also emits a `callButtonClicked` event, which a third-party library can use to initiate a call of its own instead:
-
-    ```javascript
-    converse.listen.on('callButtonClicked', function (data) {
-        console.log('Strophe connection is', data.connection);
-        console.log('Bare buddy JID is', data.model.get('jid'));
-        // ... Third-party library code ...
-    });
-    ```
+  Shows a telephone button in 1:1 chats that starts an audio call with the contact.
+  To add a call button of your own, for example for another calling service, use the
+  `getToolbarButtons` [hook](/docs/development/plugin-development/#hooks).
 
 - _emoji_:
   Enables rendering of emoji and provides a toolbar button for choosing them.

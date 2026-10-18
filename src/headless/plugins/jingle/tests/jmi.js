@@ -624,4 +624,42 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
             }),
         );
     });
+
+    describe('with a JID that differs only in case', function () {
+        it(
+            'treats the caller as the roster contact',
+            mock.initConverse(
+                converse,
+                ['rosterInitialized', 'callsInitialized'],
+                { allow_non_roster_messaging: false },
+                async (_converse) => {
+                    const jid = await getContactJid(_converse);
+                    const shouted = jid.replace(/^./, (c) => c.toUpperCase()).replace('montague', 'Montague');
+
+                    receive(
+                        _converse,
+                        `${shouted}/phone`,
+                        stx`<propose xmlns="${JMI}" id="case1"><description xmlns="${RTP}" media="audio"/></propose>`,
+                    );
+
+                    const call = _converse.state.calls.get('case1');
+                    expect(call.get('jid')).toBe(jid);
+                    expect(call.get('state')).toBe('ringing');
+                    expect(lastJMI(_converse, 'ringing').getAttribute('to')).toBe(`${shouted}/phone`);
+                },
+            ),
+        );
+
+        it(
+            'lets the callee answer a call dialled with different case',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                const call = _converse.api.calls.dial(jid.toUpperCase());
+                expect(call.get('jid')).toBe(jid);
+
+                receive(_converse, `${jid}/phone`, stx`<ringing xmlns="${JMI}" id="${call.get('id')}"/>`);
+                expect(call.get('state')).toBe('ringing');
+            }),
+        );
+    });
 });

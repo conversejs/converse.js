@@ -38,7 +38,7 @@ export default {
         const call = calls.get(id_or_jid);
         if (call) return call;
 
-        const bare_jid = Strophe.getBareJidFromJid(id_or_jid);
+        const bare_jid = Strophe.getBareJidFromJid(id_or_jid).toLowerCase();
         return calls.find((c) => c.get('jid') === bare_jid);
     },
 };

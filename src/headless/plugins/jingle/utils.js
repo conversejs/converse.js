@@ -37,7 +37,7 @@ export function dial(jid, { audio = true } = {}) {
     const live = getLiveCall();
     if (live) return live;
 
-    const bare_jid = Strophe.getBareJidFromJid(jid);
+    const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const media = audio ? ['audio'] : [];
     const sid = getUniqueId();
     const call = new Call({
@@ -107,7 +107,8 @@ export function handleJingleMessage(stanza) {
 
     const { action, sid, from, media, delayed_by } = data;
     const { calls } = _converse.state;
-    const bare_from = Strophe.getBareJidFromJid(from);
+    // Bare JIDs are compared, and stored in the roster, lowercased.
+    const bare_from = Strophe.getBareJidFromJid(from).toLowerCase();
     const is_carbon = bare_from === _converse.session.get('bare_jid');
     // Our own `<accept>` is addressed to our bare JID so sibling devices stop
     // ringing, but the server routes it back to this device too. A real sibling

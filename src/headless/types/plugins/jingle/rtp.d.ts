@@ -11,12 +11,10 @@ export function sendSessionTerminate(to: string, sid: string, reason: string): v
  * @param {Element} jingle - the peer's session-terminate
  */
 export function endCallFromTerminate(call: import("./model.js").default, jingle: Element): void;
+/** @returns {typeof RTCPeerConnection|undefined} the implementation calls use, if there is one */
+export function getRTCPeerConnection(): typeof RTCPeerConnection | undefined;
 export namespace webrtc {
-    let RTCPeerConnection: {
-        new (configuration?: RTCConfiguration): RTCPeerConnection;
-        prototype: RTCPeerConnection;
-        generateCertificate(keygenAlgorithm: AlgorithmIdentifier): Promise<RTCCertificate>;
-    };
+    let RTCPeerConnection: typeof globalThis.RTCPeerConnection | null;
     function getUserMedia(constraints: any): Promise<MediaStream>;
 }
 export default RTPSession;

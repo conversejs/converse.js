@@ -280,8 +280,6 @@ declare class Call extends Call_base {
         started_at: any;
         ended_at: any;
         muted_audio: boolean;
-        muted_video: boolean;
-        remote_video: boolean;
     };
     local_stream: any;
     remote_stream: any;
@@ -322,8 +320,6 @@ declare class Call extends Call_base {
     hangup(): void;
     /** Toggle the local microphone. */
     toggleAudio(): void;
-    toggleVideo(): void;
-    addVideo(): void;
     /**
      * End the call. Fires the app-wide `callEnded` event for toolbar/notification
      * listeners; the call view removes itself from the collection once dismissed.

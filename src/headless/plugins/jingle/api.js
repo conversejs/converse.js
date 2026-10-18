@@ -1,13 +1,10 @@
-/**
- * @typedef {import('./model.js').default} Call
- */
 import _converse from '../../shared/_converse.js';
 import { Strophe } from 'strophe.js';
 import { dial } from './utils.js';
 
 /**
  * The "calls" namespace - the imperative entry the UI uses to start a call.
- * Per-call verbs (accept/reject/hangup/toggleAudio) live on the {@link Call} model.
+ * Per-call verbs (accept/reject/hangup/toggleAudio) live on the Call model.
  *
  * @namespace api.calls
  * @memberOf api
@@ -18,7 +15,7 @@ export default {
      * of the live call returns that call, and dialling anyone else returns null.
      * @method api.calls.dial
      * @param {string} jid - the contact to call
-     * @returns {Call|null}
+     * @returns {import('./model.js').default|null}
      */
     dial(jid) {
         return dial(jid);
@@ -29,7 +26,7 @@ export default {
      * calls are no longer kept.
      * @method api.calls.get
      * @param {string} [id_or_jid] - omit to get all live calls
-     * @returns {Call|Call[]|undefined}
+     * @returns {import('./model.js').default|import('./model.js').default[]|undefined}
      */
     get(id_or_jid) {
         const { calls } = _converse.state;

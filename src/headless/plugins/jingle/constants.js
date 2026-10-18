@@ -37,7 +37,6 @@ export const JMI_ACTIONS = {
     REJECT: 'reject',
     RETRACT: 'retract',
     ACCEPT: 'accept',
-    FINISH: 'finish',
 };
 
 export const CALL_DIRECTION = {

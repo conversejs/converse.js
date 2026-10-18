@@ -2,9 +2,9 @@
  * `<propose>` - invite a peer to a call (the caller's opening stanza).
  * @param {string} to - bare JID of the peer
  * @param {string} sid - Jingle session id
- * @param {('audio'|'video')[]} [media]
+ * @param {import('./types').CallMedia[]} [media]
  */
-export function buildPropose(to: string, sid: string, media?: ("audio" | "video")[]): any;
+export function buildPropose(to: string, sid: string, media?: import("./types").CallMedia[]): any;
 /**
  * `<ringing>` - acknowledge a `<propose>`; the callee is alerting.
  * @param {string} to - bare JID of the caller
@@ -45,7 +45,7 @@ export function buildAccept(to: string, sid: string): any;
  * Read a JMI child out of an inbound `<message>` stanza.
  * @param {Element} stanza
  * @returns {{ action: string, sid: string, from: string, to: string,
- *             media: ('audio'|'video')[], stamp: string|null }|null} null when the stanza
+ *             media: import('./types').CallMedia[], stamp: string|null }|null} null when the stanza
  *             carries no JMI element. `stamp` is the `<delay>` timestamp, if it was held offline.
  */
 export function parseJMI(stanza: Element): {
@@ -53,7 +53,7 @@ export function parseJMI(stanza: Element): {
     sid: string;
     from: string;
     to: string;
-    media: ("audio" | "video")[];
+    media: import("./types").CallMedia[];
     stamp: string | null;
 } | null;
 //# sourceMappingURL=jmi.d.ts.map

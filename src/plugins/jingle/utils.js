@@ -1,9 +1,9 @@
 import { html } from 'lit';
-import { api, converse, constants } from '@converse/headless';
+import { api, converse, constants, u } from '@converse/headless';
 import { __ } from 'i18n';
 
 const { Strophe } = converse.env;
-const { callDuration, reasonText } = converse.env.jingle;
+const { callDuration, reasonText } = u.jingle;
 const { PRIVATE_CHAT_TYPE } = constants;
 
 /**

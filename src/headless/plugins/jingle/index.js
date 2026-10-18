@@ -1,4 +1,5 @@
 import converse from '../../shared/api/public.js';
+import u from '../../utils/index.js';
 import Call from './model.js';
 import Calls from './calls.js';
 import {
@@ -30,20 +31,22 @@ Strophe.addNamespace('JINGLE_GROUPING', 'urn:xmpp:jingle:apps:grouping:0');
 Strophe.addNamespace('JINGLE_MESSAGE', 'urn:xmpp:jingle-message:0');
 Strophe.addNamespace('EXTDISCO', 'urn:xmpp:extdisco:2');
 
-converse.env.jingle = {
-    RTPSession,
-    callDuration,
-    reasonText,
-    directionToSenders,
-    fetchExternalServices,
-    getIceServers,
-    jingleToSDP,
-    parseSDP,
-    sdpToJingle,
-    sendersToDirection,
-    serviceToIceServer,
-    webrtc,
-    writeSDP,
-};
+Object.assign(u, {
+    jingle: {
+        RTPSession,
+        callDuration,
+        reasonText,
+        directionToSenders,
+        fetchExternalServices,
+        getIceServers,
+        jingleToSDP,
+        parseSDP,
+        sdpToJingle,
+        sendersToDirection,
+        serviceToIceServer,
+        webrtc,
+        writeSDP,
+    },
+});
 
 export { Call, Calls, RTPSession };

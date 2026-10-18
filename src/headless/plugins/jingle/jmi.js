@@ -16,7 +16,7 @@ const { Strophe, sizzle, stx } = converse.env;
 const store_hint = stx`<store xmlns="${Strophe.NS.HINTS}"/>`;
 
 /**
- * @param {('audio'|'video')[]} media
+ * @param {import('./types').CallMedia[]} media
  * @returns {import('strophe.js').Builder[]}
  */
 function describe(media) {
@@ -38,7 +38,7 @@ function tieBreak() {
  * `<propose>` - invite a peer to a call (the caller's opening stanza).
  * @param {string} to - bare JID of the peer
  * @param {string} sid - Jingle session id
- * @param {('audio'|'video')[]} [media]
+ * @param {import('./types').CallMedia[]} [media]
  */
 export function buildPropose(to, sid, media = ['audio']) {
     return stx`
@@ -124,7 +124,7 @@ const SUPPORTED_MEDIA = ['audio'];
  * Read a JMI child out of an inbound `<message>` stanza.
  * @param {Element} stanza
  * @returns {{ action: string, sid: string, from: string, to: string,
- *             media: ('audio'|'video')[], stamp: string|null }|null} null when the stanza
+ *             media: import('./types').CallMedia[], stamp: string|null }|null} null when the stanza
  *             carries no JMI element. `stamp` is the `<delay>` timestamp, if it was held offline.
  */
 export function parseJMI(stanza) {
@@ -133,7 +133,7 @@ export function parseJMI(stanza) {
     const descriptions = sizzle(`description[xmlns="${Strophe.NS.JINGLE_RTP}"]`, el);
     // The media decide which devices we capture, so only take up what we support.
     const media = descriptions
-        .map((d) => /** @type {'audio'|'video'} */ (d.getAttribute('media')))
+        .map((d) => /** @type {import('./types').CallMedia} */ (d.getAttribute('media')))
         .filter((m) => SUPPORTED_MEDIA.includes(m));
     const stamp = sizzle(`> delay[xmlns="${Strophe.NS.DELAY}"]`, stanza).pop()?.getAttribute('stamp');
     return {

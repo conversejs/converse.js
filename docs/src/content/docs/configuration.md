@@ -1869,6 +1869,7 @@ Allows you to show or hide buttons on the chatboxes' toolbars.
 
 - _call_:
   Shows a telephone button in 1:1 chats that starts an audio call with the contact.
+  The button comes with the `converse-jingle-views` plugin, so without it there is none.
   To add a call button of your own, for example for another calling service, use the
   `getToolbarButtons` [hook](/docs/development/plugin-development/#hooks).
 

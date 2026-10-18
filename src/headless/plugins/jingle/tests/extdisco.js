@@ -2,7 +2,7 @@ import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
 const { stx, sizzle, u } = converse.env;
-const { getIceServers, serviceToIceServer } = converse.env.jingle;
+const { getIceServers, serviceToIceServer } = converse.env.u.jingle;
 const EXTDISCO = 'urn:xmpp:extdisco:2';
 
 /**

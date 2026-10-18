@@ -2,7 +2,7 @@ import { vi } from 'vitest';
 import converse from '../../../dist/converse-headless.js';
 
 const { sizzle } = converse.env;
-const { directionToSenders, jingleToSDP, parseSDP, sdpToJingle, sendersToDirection } = converse.env.jingle;
+const { directionToSenders, jingleToSDP, parseSDP, sdpToJingle, sendersToDirection } = converse.env.u.jingle;
 
 const sample_sdp =
     'v=0\r\n' +

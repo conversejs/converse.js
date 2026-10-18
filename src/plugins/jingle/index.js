@@ -9,7 +9,7 @@ import './calls.js';
 import './call.js';
 
 converse.plugins.add('converse-jingle-views', {
-    dependencies: ['converse-chatview'],
+    dependencies: ['converse-chatview', 'converse-jingle'],
 
     initialize() {
         api.settings.extend({

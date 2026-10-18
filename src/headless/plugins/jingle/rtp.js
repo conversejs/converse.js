@@ -41,6 +41,17 @@ const REASON_FROM_JINGLE = {
     'failed-application': ENDED_REASONS.FAILED_APPLICATION,
 };
 
+// Actions RTPSession.handleJingle answers. Anything else is refused.
+const HANDLED_ACTIONS = [
+    'session-initiate',
+    'session-accept',
+    'session-info',
+    'session-terminate',
+    'transport-info',
+    'content-add',
+    'transport-replace',
+];
+
 // End reasons that land the call in `failed` rather than `ended`.
 const FAILURE_REASONS = [
     ENDED_REASONS.NO_MEDIA,
@@ -142,7 +153,7 @@ class RTPSession {
             this.sendJingle(jingle, true);
         } catch (e) {
             log.error(e);
-            this.fail(ENDED_REASONS.NO_MEDIA);
+            this.fail(ENDED_REASONS.FAILED_APPLICATION);
         }
     }
 
@@ -198,13 +209,23 @@ class RTPSession {
         this.sendJingle(jingle);
     }
 
-    /** @returns {Promise<boolean>} false if the call ended while the browser was asking for permission */
+    /**
+     * @returns {Promise<boolean>} false if the microphone couldn't be captured,
+     *      or the call ended while the browser was asking for permission
+     */
     async addLocalMedia() {
         const media = this.call.get('media');
-        const stream = await webrtc.getUserMedia({
-            audio: media.includes('audio'),
-            video: media.includes('video'),
-        });
+        let stream;
+        try {
+            stream = await webrtc.getUserMedia({
+                audio: media.includes('audio'),
+                video: media.includes('video'),
+            });
+        } catch (e) {
+            log.error(e);
+            this.fail(ENDED_REASONS.NO_MEDIA);
+            return false;
+        }
         if (this.closed) {
             stream.getTracks().forEach((track) => track.stop());
             return false;
@@ -216,7 +237,22 @@ class RTPSession {
     }
 
     /**
-     * Dispatch an inbound Jingle action (already routed to this session).
+     * The error to refuse an inbound Jingle action with, if any (XEP-0166).
+     * @param {string} action
+     * @param {Element} jingle
+     * @returns {'feature-not-implemented'|'unsupported-info'|null}
+     */
+    refusal(action, jingle) {
+        if (!HANDLED_ACTIONS.includes(action)) return 'feature-not-implemented';
+        // An empty session-info is a ping; XEP-0167 info payloads (ringing, mute,
+        // hold...) are only informational, so there is nothing to act on.
+        const payload = action === 'session-info' ? jingle.firstElementChild : null;
+        if (payload && payload.namespaceURI !== Strophe.NS.JINGLE_RTP_INFO) return 'unsupported-info';
+        return null;
+    }
+
+    /**
+     * Dispatch an inbound Jingle action (already routed to this session and acked).
      * @param {string} action
      * @param {Element} jingle
      */
@@ -234,7 +270,31 @@ class RTPSession {
             case 'session-terminate':
                 this.onSessionTerminate(jingle);
                 break;
+            // Each content-add and transport-replace must be answered, and we
+            // support neither more media nor another transport.
+            case 'content-add':
+                this.rejectContents(jingle, 'content-reject', stx`<unsupported-applications/>`);
+                break;
+            case 'transport-replace':
+                this.rejectContents(jingle, 'transport-reject', stx`<unsupported-transports/>`);
+                break;
         }
+    }
+
+    /**
+     * @param {Element} jingle - the peer's content-add or transport-replace
+     * @param {'content-reject'|'transport-reject'} action
+     * @param {import('strophe.js').Builder} condition - the Jingle reason condition
+     */
+    rejectContents(jingle, action, condition) {
+        const contents = sizzle('> content', jingle).map(
+            (c) => stx`<content creator="${c.getAttribute('creator')}" name="${c.getAttribute('name')}"/>`
+        );
+        this.sendJingle(stx`
+            <jingle xmlns="${Strophe.NS.JINGLE}" action="${action}" sid="${this.sid}">
+                ${contents}
+                <reason>${condition}</reason>
+            </jingle>`);
     }
 
     /** @param {Element} jingle - the caller's offer; answer it. */
@@ -261,7 +321,7 @@ class RTPSession {
             this.sendJingle(reply, true);
         } catch (e) {
             log.error(e);
-            this.fail(ENDED_REASONS.NO_MEDIA);
+            this.fail(ENDED_REASONS.FAILED_APPLICATION);
         }
     }
 

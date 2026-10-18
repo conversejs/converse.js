@@ -10,9 +10,8 @@ export default class CallView extends CustomElement {
     };
     model: any;
     timer: number;
-    dismiss_timer: number;
     render(): import("lit-html").TemplateResult<1>;
-    /** Run the call timer while active, and clean up the card once it's over. */
+    /** Run the call timer while active. */
     onStateChanged(): void;
     /** @param {Event} [ev] */
     accept(ev?: Event): void;

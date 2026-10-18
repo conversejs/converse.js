@@ -11,6 +11,7 @@ import {
 } from './sdp.js';
 import RTPSession, { webrtc } from './rtp.js';
 import { fetchExternalServices, serviceToIceServer } from './extdisco.js';
+import { callDuration, reasonText } from './history.js';
 import './plugin.js';
 
 const { Strophe } = converse.env;
@@ -30,6 +31,8 @@ Strophe.addNamespace('EXTDISCO', 'urn:xmpp:extdisco:2');
 
 converse.env.jingle = {
     RTPSession,
+    callDuration,
+    reasonText,
     directionToSenders,
     fetchExternalServices,
     jingleToSDP,

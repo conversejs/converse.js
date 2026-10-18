@@ -22,6 +22,7 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
             media: ['audio'],
             state: CALL_STATES.CALLING,
             ended_reason: null,
+            missed: false,
             started_at: null,
             ended_at: null,
             muted_audio: false,
@@ -203,12 +204,19 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     markEnded(state, reason) {
         if ([CALL_STATES.ENDED, CALL_STATES.FAILED].includes(this.get('state'))) return;
 
-        this.set({ state, ended_reason: reason, ended_at: Date.now() });
+        // Only an incoming call that was still ringing when it ended went unanswered.
+        const missed =
+            this.get('direction') === CALL_DIRECTION.INCOMING &&
+            this.get('state') === CALL_STATES.RINGING &&
+            [ENDED_REASONS.CANCELLED, ENDED_REASONS.NO_ANSWER].includes(reason);
+        this.set({ state, ended_reason: reason, ended_at: Date.now(), missed });
 
         this.session?.close?.();
         this.session = null;
 
         api.trigger('callEnded', this);
+        // Only live calls are kept. A view that shows the ended call keeps its own reference.
+        this.collection?.remove(this);
     }
 
     /**

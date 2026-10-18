@@ -45,8 +45,8 @@ export function buildAccept(to: string, sid: string): any;
  * Read a JMI child out of an inbound `<message>` stanza.
  * @param {Element} stanza
  * @returns {{ action: string, sid: string, from: string, to: string,
- *             media: ('audio'|'video')[], delayed_by: number }|null} null when the stanza
- *             carries no JMI element. `delayed_by` is in milliseconds, 0 without a `<delay>`.
+ *             media: ('audio'|'video')[], stamp: string|null }|null} null when the stanza
+ *             carries no JMI element. `stamp` is the `<delay>` timestamp, if it was held offline.
  */
 export function parseJMI(stanza: Element): {
     action: string;
@@ -54,6 +54,6 @@ export function parseJMI(stanza: Element): {
     from: string;
     to: string;
     media: ("audio" | "video")[];
-    delayed_by: number;
+    stamp: string | null;
 } | null;
 //# sourceMappingURL=jmi.d.ts.map

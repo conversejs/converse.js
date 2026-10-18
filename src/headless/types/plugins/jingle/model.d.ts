@@ -276,6 +276,7 @@ declare class Call extends Call_base {
         media: string[];
         state: string;
         ended_reason: any;
+        missed: boolean;
         started_at: any;
         ended_at: any;
         muted_audio: boolean;

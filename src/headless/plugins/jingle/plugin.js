@@ -6,6 +6,7 @@ import Calls from './calls.js';
 import calls_api from './api.js';
 import { registerCallHandlers, unregisterCallHandlers } from './utils.js';
 import { fetchExternalServices } from './extdisco.js';
+import { writeCallHistory } from './history.js';
 
 /** Cache the server's advertised STUN/TURN services (XEP-0215) for new calls. */
 async function discoverIceServers() {
@@ -13,7 +14,7 @@ async function discoverIceServers() {
 }
 
 converse.plugins.add('converse-jingle', {
-    dependencies: ['converse-disco', 'converse-roster', 'converse-vcard'],
+    dependencies: ['converse-chat', 'converse-disco', 'converse-roster', 'converse-vcard'],
 
     initialize() {
         api.promises.add(['callsInitialized']);
@@ -44,11 +45,14 @@ converse.plugins.add('converse-jingle', {
         api.listen.on('reconnected', registerCallHandlers);
         api.listen.on('beforeTearDown', unregisterCallHandlers);
 
+        api.listen.on('callEnded', (call) => writeCallHistory(call));
+
         api.listen.on('connected', discoverIceServers);
         api.listen.on('reconnected', discoverIceServers);
 
         api.listen.on('clearSession', () => {
-            _converse.state.calls?.forEach((c) => c.hangup());
+            // Ending a call removes it from the collection, so iterate over a copy.
+            [...(_converse.state.calls?.models ?? [])].forEach((c) => c.hangup());
             _converse.state.calls?.reset();
             delete _converse.state.ice_servers;
         });

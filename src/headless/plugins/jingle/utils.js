@@ -6,6 +6,7 @@ import { isCarbon } from '../../shared/parsers.js';
 import Call from './model.js';
 import { buildPropose, buildReject, buildRetract, buildRinging, parseJMI } from './jmi.js';
 import { endCallFromTerminate } from './rtp.js';
+import { writeMissedCall } from './history.js';
 import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS, RING_TIMEOUT } from './constants.js';
 
 const { Strophe, sizzle, stx } = converse.env;
@@ -105,7 +106,7 @@ export function handleJingleMessage(stanza) {
     const data = parseJMI(msg);
     if (!data) return true;
 
-    const { action, sid, from, media, delayed_by } = data;
+    const { action, sid, from, media, stamp } = data;
     const { calls } = _converse.state;
     // Bare JIDs are compared, and stored in the roster, lowercased.
     const bare_from = Strophe.getBareJidFromJid(from).toLowerCase();
@@ -131,7 +132,11 @@ export function handleJingleMessage(stanza) {
     switch (action) {
         case 'propose': {
             if (is_carbon || call) break; // our own propose echoed back, or a duplicate
-            if (delayed_by > RING_TIMEOUT) break; // held offline until after the caller gave up
+            if (stamp && Date.now() - Date.parse(stamp) > RING_TIMEOUT) {
+                // Held offline until after the caller gave up: too late to ring.
+                if (mayRing(bare_from)) writeMissedCall(bare_from, stamp);
+                break;
+            }
             if (!mayRing(bare_from)) break;
 
             // Answering automatically tells the caller that we are online, so

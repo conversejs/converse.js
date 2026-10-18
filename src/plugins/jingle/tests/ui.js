@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
@@ -96,13 +97,10 @@ describe('The calls UI', function () {
     );
 
     it(
-        'dismisses the card and writes a history message when the call ends',
+        'keeps showing an ended call for a few seconds after it leaves the calls collection',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
             const jid = contactJid();
-            await mock.openChatBoxFor(_converse, jid);
-            const chatbox = _converse.state.chatboxes.get(jid);
-
             const call = await addCall(_converse, {
                 jid,
                 direction: 'outgoing',
@@ -111,13 +109,38 @@ describe('The calls UI', function () {
             });
             await u.waitUntil(() => cardFor(call));
 
-            call.end('success');
+            vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+            try {
+                call.end('success');
+                await vi.advanceTimersByTimeAsync(0);
+                expect(_converse.state.calls.get(call.get('id'))).toBeUndefined();
+                const card = cardFor(call);
+                expect(card.querySelector('.call-status').textContent.trim()).toBe('Call ended · 2:14');
+
+                await vi.advanceTimersByTimeAsync(4_999);
+                expect(cardFor(call)).toBe(card);
+                await vi.advanceTimersByTimeAsync(1);
+                expect(cardFor(call)).toBeUndefined();
+            } finally {
+                vi.useRealTimers();
+            }
+
+            const msg = await u.waitUntil(() => _converse.state.chatboxes.get(jid)?.messages.findWhere({ type: 'info' }));
+            expect(msg.get('message')).toBe('Outgoing call · 2:14');
+        }),
+    );
+
+    it(
+        'shows a missed call as missed',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const call = await addCall(_converse, { jid: contactJid(), direction: 'incoming', state: 'ringing' });
+            await u.waitUntil(() => cardFor(call));
+
+            call.end('cancelled'); // the caller gave up
 
             const card = await u.waitUntil(() => cardFor(call));
-            expect(card.querySelector('.call-status').textContent.trim()).toBe('Call ended · 2:14');
-
-            const msg = await u.waitUntil(() => chatbox.messages.findWhere({ type: 'info' }));
-            expect(msg.get('message')).toBe('Outgoing call · 2:14');
+            await u.waitUntil(() => card.querySelector('.call-status').textContent.trim() === 'Missed call');
         }),
     );
 

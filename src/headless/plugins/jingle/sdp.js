@@ -110,6 +110,27 @@ function parseFmtpConfig(config) {
 }
 
 /**
+ * ICE-UDP (XEP-0176) carries UDP candidates only; a TCP one would lose its
+ * `tcptype` on the way.
+ * @param {SdpCandidate} candidate
+ * @returns {boolean}
+ */
+export function isUdpCandidate(candidate) {
+    return candidate.transport?.toLowerCase() === 'udp';
+}
+
+/**
+ * The ICE credentials of an m-line. Some browsers put them at the session
+ * level only, once for all m-lines.
+ * @param {MediaDescription} media
+ * @param {SessionDescription} [session]
+ * @returns {{ ufrag: string, pwd: string }}
+ */
+export function iceCredentials(media, session) {
+    return { ufrag: media?.iceUfrag ?? session?.iceUfrag, pwd: media?.icePwd ?? session?.icePwd };
+}
+
+/**
  * @param {SdpCandidate} candidate
  * @returns {Element}
  */
@@ -232,7 +253,7 @@ function buildDescription(media) {
 
 /**
  * @param {MediaDescription} media
- * @param {SessionDescription} [session] - for the session-level DTLS fallback
+ * @param {SessionDescription} [session] - for the session-level DTLS and ICE fallbacks
  * @returns {Element}
  */
 function buildTransport(media, session) {
@@ -245,17 +266,18 @@ function buildTransport(media, session) {
     const fingerprint = fp
         ? stx`<fingerprint xmlns="${dtls}" hash="${fp.type}" setup="${setup}">${fp.hash}</fingerprint>`
         : '';
+    const { ufrag, pwd } = iceCredentials(media, session);
     return stx`
-        <transport xmlns="${Strophe.NS.JINGLE_ICE}" ufrag="${media.iceUfrag}" pwd="${media.icePwd}">
+        <transport xmlns="${Strophe.NS.JINGLE_ICE}" ufrag="${ufrag}" pwd="${pwd}">
             ${fingerprint}
-            ${(media.candidates ?? []).map((c) => candidateToElement(c))}
+            ${(media.candidates ?? []).filter(isUdpCandidate).map((c) => candidateToElement(c))}
         </transport>`;
 }
 
 /**
  * @param {MediaDescription} media
  * @param {JingleConversionOptions} options
- * @param {SessionDescription} [session] - for the session-level DTLS fallback
+ * @param {SessionDescription} [session] - for the session-level DTLS and ICE fallbacks
  * @returns {Element}
  */
 function buildContent(media, options, session) {
@@ -360,11 +382,14 @@ function parsePayloadType(payload) {
 function parseContent(content, options) {
     const description = sizzle(`description[xmlns="${Strophe.NS.JINGLE_RTP}"]`, content).pop();
     const transport = sizzle(`transport[xmlns="${Strophe.NS.JINGLE_ICE}"]`, content).pop();
-    const senders = /** @type {JingleSenders} */ (content.getAttribute('senders') ?? 'both');
+    if (!description) throw new Error('Jingle content without an RTP description');
+    if (!transport) throw new Error('Jingle content without an ICE-UDP transport');
 
+    const senders = /** @type {JingleSenders} */ (content.getAttribute('senders') ?? 'both');
     const rtp = [];
     const fmtp = [];
     let rtcpFb = [];
+
     sizzle('payload-type', description).forEach((p) => {
         const parsed = parsePayloadType(p);
         rtp.push(parsed.rtp);
@@ -403,7 +428,9 @@ function parseContent(content, options) {
     });
 
     const fingerprint_el = sizzle(`fingerprint[xmlns="${Strophe.NS.JINGLE_DTLS}"]`, transport).pop();
-    const candidates = sizzle('candidate', transport).map((c) => elementToCandidate(c));
+    const candidates = sizzle('candidate', transport)
+        .map((c) => elementToCandidate(c))
+        .filter(isUdpCandidate);
 
     /** @type {MediaDescription} */
     const media = {
@@ -422,6 +449,7 @@ function parseContent(content, options) {
         fmtp,
         candidates,
     };
+
     if (rtcpFb.length) media.rtcpFb = rtcpFb;
     if (ext.length) media.ext = ext;
     if (ssrcGroups.length) media.ssrcGroups = ssrcGroups;
@@ -463,9 +491,11 @@ export function jingleToSDP(jingle, options) {
 
     return /** @type {SessionDescription} */ ({
         version: 0,
+        // The same origin for every description of the session, so that a
+        // later one reads as a new version of it rather than another session.
         origin: {
             username: '-',
-            sessionId: Date.now(),
+            sessionId: 0,
             sessionVersion: 2,
             netType: 'IN',
             ipVer: 4,

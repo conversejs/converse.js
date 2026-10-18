@@ -7,6 +7,8 @@ import {
     candidateFromLine,
     candidateToLine,
     elementToCandidate,
+    iceCredentials,
+    isUdpCandidate,
     jingleToSDP,
     parseSDP,
     sdpToJingle,
@@ -176,12 +178,20 @@ class RTPSession {
     onLocalCandidate(ev) {
         if (!ev.candidate?.candidate) return; // a null candidate marks the end of gathering
 
-        const local = parseSDP(this.pc.localDescription.sdp).media[0];
-        const jingle = buildTransportInfo(candidateFromLine(ev.candidate.candidate), {
+        const candidate = candidateFromLine(ev.candidate.candidate);
+        if (!isUdpCandidate(candidate)) return;
+
+        const local = parseSDP(this.pc.localDescription.sdp);
+        const { sdpMid, sdpMLineIndex } = ev.candidate;
+        const media =
+            local.media.find((m) => String(m.mid) === sdpMid) ??
+            local.media[sdpMLineIndex ?? 0];
+        const { ufrag, pwd } = iceCredentials(media, local);
+        const jingle = buildTransportInfo(candidate, {
             sid: this.sid,
-            mid: ev.candidate.sdpMid ?? local.mid,
-            ufrag: local.iceUfrag,
-            pwd: local.icePwd,
+            mid: sdpMid ?? String(media.mid),
+            ufrag,
+            pwd,
             initiator: this.initiator,
             responder: this.responder,
         });
@@ -273,13 +283,15 @@ class RTPSession {
         sizzle('content', jingle).forEach((content) => {
             const mid = content.getAttribute('name');
             sizzle(`transport[xmlns="${Strophe.NS.JINGLE_ICE}"] > candidate`, content).forEach((el) => {
-                let line;
+                let parsed;
                 try {
-                    line = candidateToLine(elementToCandidate(el));
+                    parsed = elementToCandidate(el);
                 } catch (e) {
                     log.warn(e); // drop the malformed candidate, keep the rest
                     return;
                 }
+                if (!isUdpCandidate(parsed)) return;
+                const line = candidateToLine(parsed);
                 const candidate = { candidate: line, sdpMid: mid };
                 // A peer can trickle candidates before its description is applied;
                 // addIceCandidate rejects until then, so hold them back.

@@ -840,4 +840,86 @@ describe('A Jingle RTP session', function () {
             }),
         );
     });
+
+    describe('trickling ICE candidates', function () {
+        // Two m-lines with their own ICE credentials, as with BUNDLE disabled.
+        const TWO_MEDIA_SDP =
+            OFFER_SDP +
+            'm=audio 9 UDP/TLS/RTP/SAVPF 111\r\n' +
+            'c=IN IP4 0.0.0.0\r\n' +
+            'a=mid:1\r\n' +
+            'a=sendrecv\r\n' +
+            'a=ice-ufrag:second\r\n' +
+            'a=ice-pwd:secondpasswordatleast22chars\r\n' +
+            'a=rtpmap:111 opus/48000/2\r\n';
+
+        async function startCall(_converse, pcOverrides) {
+            const webrtc_handle = installFakeWebRTC({ pcOverrides });
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+            return { webrtc_handle, jid, sid: call.get('id') };
+        }
+
+        it(
+            "sends a candidate with its own m-line's ICE credentials",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { webrtc_handle } = await startCall(_converse, {
+                    createOffer: () => Promise.resolve({ type: 'offer', sdp: TWO_MEDIA_SDP }),
+                });
+
+                webrtc_handle.pc.onicecandidate({
+                    candidate: { candidate: 'candidate:1 1 udp 2113937151 192.0.2.1 10000 typ host', sdpMid: '1' },
+                });
+
+                const ti = await u.waitUntil(() => lastJingleIq(_converse, 'transport-info'));
+                const transport = sizzle('content[name="1"] > transport', ti).pop();
+                expect(transport.getAttribute('ufrag')).toBe('second');
+                expect(transport.getAttribute('pwd')).toBe('secondpasswordatleast22chars');
+            }),
+        );
+
+        it(
+            'does not send a TCP candidate',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { webrtc_handle } = await startCall(_converse);
+
+                webrtc_handle.pc.onicecandidate({
+                    candidate: {
+                        candidate: 'candidate:2 1 tcp 1518280447 192.0.2.1 9 typ host tcptype active',
+                        sdpMid: '0',
+                    },
+                });
+
+                expect(lastJingleIq(_converse, 'transport-info')).toBeUndefined();
+            }),
+        );
+
+        it(
+            'does not apply a TCP candidate from the peer',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { webrtc_handle, jid, sid } = await startCall(_converse);
+                receiveIq(_converse, `${jid}/phone`, 'accept-iq', jingle('session-accept', sid));
+                await u.waitUntil(() => webrtc_handle.pc.remoteDescription);
+
+                const ti = stx`
+                    <jingle xmlns="${JINGLE}" action="transport-info" sid="${sid}">
+                        <content xmlns="${JINGLE}" creator="initiator" name="0">
+                            <transport
+                                xmlns="urn:xmpp:jingle:transports:ice-udp:1" ufrag="abc"
+                                pwd="thispasswordisatleast22chars">
+                                <candidate
+                                    component="1" foundation="2" generation="0" id="c1" ip="192.0.2.9"
+                                    network="0" port="9" priority="1518280447" protocol="tcp" type="host"/>
+                            </transport>
+                        </content>
+                    </jingle>`;
+                receiveIq(_converse, `${jid}/phone`, 'ti-iq', ti);
+
+                expect(sentIq(_converse, 'result', 'ti-iq')).toBeDefined();
+                expect(webrtc_handle.pc.candidates).toEqual([]);
+            }),
+        );
+    });
 });

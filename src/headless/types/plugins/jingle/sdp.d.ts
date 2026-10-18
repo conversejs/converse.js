@@ -21,6 +21,24 @@ export function directionToSenders(direction: SdpDirection, is_initiator: boolea
  */
 export function sendersToDirection(senders: JingleSenders, is_initiator: boolean): SdpDirection;
 /**
+ * ICE-UDP (XEP-0176) carries UDP candidates only; a TCP one would lose its
+ * `tcptype` on the way.
+ * @param {SdpCandidate} candidate
+ * @returns {boolean}
+ */
+export function isUdpCandidate(candidate: SdpCandidate): boolean;
+/**
+ * The ICE credentials of an m-line. Some browsers put them at the session
+ * level only, once for all m-lines.
+ * @param {MediaDescription} media
+ * @param {SessionDescription} [session]
+ * @returns {{ ufrag: string, pwd: string }}
+ */
+export function iceCredentials(media: MediaDescription, session?: SessionDescription): {
+    ufrag: string;
+    pwd: string;
+};
+/**
  * @param {SdpCandidate} candidate
  * @returns {Element}
  */

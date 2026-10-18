@@ -42,9 +42,7 @@ async function mayShareTimeWith(from) {
     // api.time.get) and stop asking for the rest of the session.
     await api.waitUntil('rosterContactsFetched');
 
-    // 'from' and 'both' are the two states in which they receive our presence.
-    const contact = _converse.state.roster?.get(bare_jid);
-    return ['from', 'both'].includes(contact?.get('subscription'));
+    return !!_converse.state.roster?.get(bare_jid)?.seesOurPresence();
 }
 
 /**

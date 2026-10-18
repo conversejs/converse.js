@@ -178,6 +178,12 @@ declare class RosterContact extends RosterContact_base {
     setPresence(): Promise<void>;
     presence: any;
     getStatus(): any;
+    /**
+     * Whether this contact receives our presence, i.e. a subscription of
+     * 'from' or 'both' (RFC 6121 § 3).
+     * @returns {boolean}
+     */
+    seesOurPresence(): boolean;
     openChat(): Promise<any>;
     /**
      * @param {import('./types').ContactDisplayNameOptions} [options]

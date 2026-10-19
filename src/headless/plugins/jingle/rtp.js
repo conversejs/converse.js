@@ -19,18 +19,9 @@ import {
 } from './sdp.js';
 import { CALL_STATES, CONNECT_TIMEOUT, ENDED_REASONS } from './constants.js';
 import { getIceServers } from './extdisco.js';
+import { reasonCondition } from './reasons.js';
 
 const { Strophe, sizzle, stx } = converse.env;
-
-// Our end reason -> the Jingle <reason> condition we send on session-terminate.
-const REASON_ELEMENT = {
-    [ENDED_REASONS.SUCCESS]: () => stx`<success/>`,
-    [ENDED_REASONS.CANCELLED]: () => stx`<cancel/>`,
-    [ENDED_REASONS.DECLINED]: () => stx`<decline/>`,
-    [ENDED_REASONS.NO_MEDIA]: () => stx`<media-error/>`,
-    [ENDED_REASONS.CONNECTIVITY_ERROR]: () => stx`<connectivity-error/>`,
-    [ENDED_REASONS.FAILED_APPLICATION]: () => stx`<failed-application/>`,
-};
 
 // A received Jingle <reason> condition -> our end reason.
 const REASON_FROM_JINGLE = {
@@ -67,11 +58,10 @@ const FAILURE_REASONS = [ENDED_REASONS.NO_MEDIA, ENDED_REASONS.CONNECTIVITY_ERRO
  */
 export function sendSessionTerminate(to, sid, reason) {
     if (!api.connection.connected()) return; // nothing to send to (e.g. terminating on disconnect)
-    const condition = (REASON_ELEMENT[reason] ?? REASON_ELEMENT[ENDED_REASONS.SUCCESS])();
     const iq = stx`
         <iq xmlns="jabber:client" type="set" to="${to}">
             <jingle xmlns="${Strophe.NS.JINGLE}" action="session-terminate" sid="${sid}">
-                <reason>${condition}</reason>
+                <reason>${reasonCondition(reason)}</reason>
             </jingle>
         </iq>`;
     api.sendIQ(iq).catch((e) => log.error(e));

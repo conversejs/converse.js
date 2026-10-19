@@ -301,8 +301,9 @@ declare class Call extends Call_base {
     get peer(): string;
     /**
      * The peer's full JID when known - the caller's resource for an incoming
-     * call (the `<propose>`'s `from`), else the bare JID. JMI `<proceed>`,
-     * `<ringing>` and `<reject>` must be addressed to the initiator's full JID:
+     * call (the `<propose>`'s `from`), the callee's for an answered outgoing
+     * one (the `<proceed>`'s `from`), else the bare JID. JMI `<proceed>`,
+     * `<ringing>`, `<reject>` and `<finish>` must be addressed to a full JID:
      * peers (e.g. Conversations) ignore them otherwise.
      * @returns {string}
      */

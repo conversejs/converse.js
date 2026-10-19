@@ -8,6 +8,7 @@
 import converse from '../../shared/api/public.js';
 import { getUniqueId } from '../../utils/index.js';
 import { JMI_ACTIONS } from './constants.js';
+import { reasonCondition } from './reasons.js';
 
 const { Strophe, sizzle, stx } = converse.env;
 
@@ -113,6 +114,23 @@ export function createAcceptStanza(to, sid) {
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
             <accept xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}"/>
+            ${store_hint}
+        </message>`;
+}
+
+/**
+ * `<finish>` - the call we took part in is over (XEP-0353 § 8). Both sides
+ * send one, so that all their devices and archives learn how it ended.
+ * @param {string} to - full JID of the peer that took part in the call
+ * @param {string} sid
+ * @param {string} reason - one of {@link import('./constants.js').ENDED_REASONS}
+ */
+export function createFinishStanza(to, sid, reason) {
+    return stx`
+        <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
+            <finish xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}">
+                <reason xmlns="${Strophe.NS.JINGLE}">${reasonCondition(reason)}</reason>
+            </finish>
             ${store_hint}
         </message>`;
 }

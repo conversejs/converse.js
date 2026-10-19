@@ -4,26 +4,26 @@
  * @param {string} sid - Jingle session id
  * @param {import('./types').CallMedia[]} [media]
  */
-export function buildPropose(to: string, sid: string, media?: import("./types").CallMedia[]): any;
+export function createProposeStanza(to: string, sid: string, media?: import("./types").CallMedia[]): any;
 /**
  * `<ringing>` - acknowledge a `<propose>`; the callee is alerting.
  * @param {string} to - bare JID of the caller
  * @param {string} sid
  */
-export function buildRinging(to: string, sid: string): any;
+export function createRingingStanza(to: string, sid: string): any;
 /**
  * `<proceed>` - the callee accepts; tells the caller to send a session-initiate.
  * @param {string} to - bare JID of the caller
  * @param {string} sid
  */
-export function buildProceed(to: string, sid: string): any;
+export function createProceedStanza(to: string, sid: string): any;
 /**
  * `<reject>` - decline a call (also sent when busy).
  * @param {string} to - bare JID of the caller
  * @param {string} sid
  * @param {{ tie_break?: boolean }} [opts] - true when it only resolves a glare
  */
-export function buildReject(to: string, sid: string, { tie_break }?: {
+export function createRejectStanza(to: string, sid: string, { tie_break }?: {
     tie_break?: boolean;
 }): any;
 /**
@@ -32,7 +32,7 @@ export function buildReject(to: string, sid: string, { tie_break }?: {
  * @param {string} sid
  * @param {{ tie_break?: boolean }} [opts] - true when it only resolves a glare
  */
-export function buildRetract(to: string, sid: string, { tie_break }?: {
+export function createRetractStanza(to: string, sid: string, { tie_break }?: {
     tie_break?: boolean;
 }): any;
 /**
@@ -40,7 +40,7 @@ export function buildRetract(to: string, sid: string, { tie_break }?: {
  * @param {string} to - our own bare JID
  * @param {string} sid
  */
-export function buildAccept(to: string, sid: string): any;
+export function createAcceptStanza(to: string, sid: string): any;
 /**
  * Read a JMI child out of an inbound `<message>` stanza.
  * @param {Element} stanza

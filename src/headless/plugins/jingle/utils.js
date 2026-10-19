@@ -4,7 +4,7 @@ import converse from '../../shared/api/public.js';
 import { getUniqueId } from '../../utils/index.js';
 import { isCarbon } from '../../shared/parsers.js';
 import Call from './model.js';
-import { buildPropose, buildReject, buildRetract, buildRinging, parseJMI } from './jmi.js';
+import { createProposeStanza, createRejectStanza, createRetractStanza, createRingingStanza, parseJMI } from './jmi.js';
 import { endCallFromTerminate } from './rtp.js';
 import { writeMissedCall } from './history.js';
 import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS, RING_TIMEOUT } from './constants.js';
@@ -47,7 +47,7 @@ export function dial(jid) {
         media: ['audio'],
     });
     _converse.state.calls.add(call);
-    api.send(buildPropose(bare_jid, sid));
+    api.send(createProposeStanza(bare_jid, sid));
     return call;
 }
 
@@ -62,11 +62,11 @@ export function dial(jid) {
  */
 function resolveGlare(ours, their_sid, from) {
     if (their_sid < ours.sid) {
-        api.send(buildRetract(ours.peer, ours.sid, { tie_break: true }));
+        api.send(createRetractStanza(ours.peer, ours.sid, { tie_break: true }));
         ours.end(ENDED_REASONS.TIE_BREAK);
         return true;
     }
-    api.send(buildReject(from, their_sid, { tie_break: true }));
+    api.send(createRejectStanza(from, their_sid, { tie_break: true }));
     return false;
 }
 
@@ -142,7 +142,7 @@ export function handleJingleMessage(stanza) {
             // Considerations).
             const may_answer = !!_converse.state.roster?.get(bare_from)?.seesOurPresence();
             if (!media.length) {
-                if (may_answer) api.send(buildReject(from, sid)); // nothing in it that we support
+                if (may_answer) api.send(createRejectStanza(from, sid)); // nothing in it that we support
                 break;
             }
 
@@ -155,7 +155,7 @@ export function handleJingleMessage(stanza) {
                 if (glare) {
                     if (!resolveGlare(live, sid, from)) break;
                 } else {
-                    if (may_answer) api.send(buildReject(from, sid)); // busy with someone/something else
+                    if (may_answer) api.send(createRejectStanza(from, sid)); // busy with someone/something else
                     break;
                 }
             }
@@ -170,7 +170,7 @@ export function handleJingleMessage(stanza) {
             });
             calls.add(call);
             api.trigger('callInvited', call);
-            if (may_answer) api.send(buildRinging(from, sid));
+            if (may_answer) api.send(createRingingStanza(from, sid));
             break;
         }
         case 'ringing':

@@ -849,4 +849,173 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
             }),
         );
     });
+
+    describe('a <finish/> from the peer', function () {
+        const finish = (sid, reason = stx`<success/>`) =>
+            stx`<finish xmlns="${JMI}" id="${sid}"><reason xmlns="${Strophe.NS.JINGLE}">${reason}</reason></finish>`;
+
+        /** Ring for a call from a contact, and accept it. */
+        async function acceptedCall(_converse, sid) {
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="${sid}"><description xmlns="${RTP}" media="audio"/></propose>`,
+            );
+            const call = _converse.state.calls.get(sid);
+            call.accept();
+            return { jid, call };
+        }
+
+        /** Feed in a stanza as it arrived. */
+        function receiveStanza(_converse, stanza) {
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+        }
+
+        it(
+            'ends the call, and we send our own',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse, 'fin1');
+                receive(_converse, `${jid}/phone`, finish('fin1'));
+
+                expect(call.get('state')).toBe('ended');
+                expect(call.get('ended_reason')).toBe('success');
+                const ours = lastJMI(_converse, 'finish');
+                expect(ours.getAttribute('to')).toBe(`${jid}/phone`);
+                expect(sizzle(`finish[xmlns="${JMI}"][id="fin1"] > reason > success`, ours).length).toBe(1);
+            }),
+        );
+
+        it(
+            'fails the call when it gives a failure as its reason, whatever its text',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse, 'fin2');
+                receive(_converse, `${jid}/phone`, finish('fin2', stx`<connectivity-error/><text>Lost it</text>`));
+
+                expect(call.get('state')).toBe('failed');
+                expect(call.get('ended_reason')).toBe('connectivity-error');
+            }),
+        );
+
+        it(
+            'ends the call normally when it says the session migrated',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse, 'fin3');
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<finish xmlns="${JMI}" id="fin3">
+                        <reason xmlns="${Strophe.NS.JINGLE}"><expired/><text>Session migrated</text></reason>
+                        <migrated to="fin3-new"/>
+                    </finish>`,
+                );
+
+                expect(call.get('state')).toBe('ended');
+                expect(call.get('ended_reason')).toBe('success');
+            }),
+        );
+
+        it(
+            'does nothing once the call has ended',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse, 'fin4');
+                call.hangup();
+                receive(_converse, `${jid}/phone`, finish('fin4', stx`<connectivity-error/>`));
+
+                expect(call.get('state')).toBe('ended');
+                expect(call.get('ended_reason')).toBe('cancelled');
+                const finishes = _converse.api.connection
+                    .get()
+                    .sent_stanzas.filter((s) => sizzle(`finish[xmlns="${JMI}"]`, s).length);
+                expect(finishes.length).toBe(1);
+            }),
+        );
+
+        it(
+            'is ignored from anyone but the peer',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { call } = await acceptedCall(_converse, 'fin5');
+                const stranger = await getContactJid(_converse, 1);
+                receive(_converse, `${stranger}/phone`, finish('fin5'));
+                receive(_converse, `${_converse.bare_jid}/other`, finish('fin5'));
+
+                expect(call.get('state')).toBe('connecting');
+            }),
+        );
+
+        it(
+            'is ignored for a session id we do not know',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse, 'fin6');
+                receive(_converse, `${jid}/phone`, finish('no-such-sid'));
+
+                expect(call.get('state')).toBe('connecting');
+                expect(sentFinish(_converse)).toBe(false);
+            }),
+        );
+
+        it(
+            'is ignored in a carbon that our own server did not send',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse, 'fin7');
+                receiveStanza(
+                    _converse,
+                    stx`<message xmlns="jabber:client" from="${jid}/phone" to="${_converse.bare_jid}" type="chat">
+                        <received xmlns="urn:xmpp:carbons:2">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <message xmlns="jabber:client" from="${jid}/phone" to="${_converse.bare_jid}/other"
+                                         type="chat">${finish('fin7')}</message>
+                            </forwarded>
+                        </received>
+                    </message>`,
+                );
+
+                expect(call.get('state')).toBe('connecting');
+            }),
+        );
+
+        it(
+            'is ignored when copied to us from a call on another of our devices',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse, 'fin8');
+                const carbon = (direction, from, to) =>
+                    stx`<message xmlns="jabber:client" from="${_converse.bare_jid}" to="${_converse.bare_jid}/this"
+                                 type="chat">
+                        <${direction} xmlns="urn:xmpp:carbons:2">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <message xmlns="jabber:client" from="${from}" to="${to}" type="chat">
+                                    ${finish('fin8')}
+                                </message>
+                            </forwarded>
+                        </${direction}>
+                    </message>`;
+                // Our other device's own <finish/>, and the peer's to that device.
+                receiveStanza(_converse, carbon('sent', `${_converse.bare_jid}/other`, `${jid}/phone`));
+                receiveStanza(_converse, carbon('received', `${jid}/phone`, `${_converse.bare_jid}/other`));
+
+                expect(call.get('state')).toBe('connecting');
+            }),
+        );
+
+        it(
+            'is ignored when it comes from the archive',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse, 'fin9');
+                receiveStanza(
+                    _converse,
+                    stx`<message xmlns="jabber:client" from="${_converse.bare_jid}" to="${_converse.session.get('jid')}">
+                        <result xmlns="urn:xmpp:mam:2" queryid="q1" id="archived1">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <delay xmlns="urn:xmpp:delay" stamp="${new Date().toISOString()}"/>
+                                <message xmlns="jabber:client" from="${jid}/phone" to="${_converse.bare_jid}"
+                                         type="chat">${finish('fin9')}</message>
+                            </forwarded>
+                        </result>
+                    </message>`,
+                );
+
+                expect(call.get('state')).toBe('connecting');
+            }),
+        );
+    });
 });

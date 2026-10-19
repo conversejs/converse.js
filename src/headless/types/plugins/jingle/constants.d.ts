@@ -29,6 +29,7 @@ export namespace JMI_ACTIONS {
     export let REJECT: string;
     export let RETRACT: string;
     export let ACCEPT: string;
+    export let FINISH: string;
 }
 export namespace CALL_DIRECTION {
     let INCOMING: string;

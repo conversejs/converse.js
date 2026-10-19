@@ -53,8 +53,9 @@ export function createFinishStanza(to: string, sid: string, reason: string): any
  * Read a JMI child out of an inbound `<message>` stanza.
  * @param {Element} stanza
  * @returns {{ action: string, sid: string, from: string, to: string,
- *             media: import('./types').CallMedia[], stamp: string|null }|null} null when the stanza
- *             carries no JMI element. `stamp` is the `<delay>` timestamp, if it was held offline.
+ *             media: import('./types').CallMedia[], stamp: string|null, element: Element }|null} null
+ *             when the stanza carries no JMI element. `stamp` is the `<delay>` timestamp, if it was
+ *             held offline, and `element` the JMI element itself.
  */
 export function parseJMI(stanza: Element): {
     action: string;
@@ -63,5 +64,6 @@ export function parseJMI(stanza: Element): {
     to: string;
     media: import("./types").CallMedia[];
     stamp: string | null;
+    element: Element;
 } | null;
 //# sourceMappingURL=jmi.d.ts.map

@@ -19,22 +19,9 @@ import {
 } from './sdp.js';
 import { CALL_STATES, CONNECT_TIMEOUT, ENDED_REASONS } from './constants.js';
 import { getIceServers } from './extdisco.js';
-import { reasonCondition } from './reasons.js';
+import { endCallFromReason, reasonCondition } from './reasons.js';
 
 const { Strophe, sizzle, stx } = converse.env;
-
-// A received Jingle <reason> condition -> our end reason.
-const REASON_FROM_JINGLE = {
-    success: ENDED_REASONS.SUCCESS,
-    decline: ENDED_REASONS.DECLINED,
-    busy: ENDED_REASONS.DECLINED,
-    cancel: ENDED_REASONS.CANCELLED,
-    'connectivity-error': ENDED_REASONS.CONNECTIVITY_ERROR,
-    'failed-transport': ENDED_REASONS.CONNECTIVITY_ERROR,
-    timeout: ENDED_REASONS.CONNECTIVITY_ERROR,
-    'media-error': ENDED_REASONS.NO_MEDIA,
-    'failed-application': ENDED_REASONS.FAILED_APPLICATION,
-};
 
 // Actions RTPSession.handleJingle answers. Anything else is refused.
 const HANDLED_ACTIONS = [
@@ -46,9 +33,6 @@ const HANDLED_ACTIONS = [
     'content-add',
     'transport-replace',
 ];
-
-// End reasons that land the call in `failed` rather than `ended`.
-const FAILURE_REASONS = [ENDED_REASONS.NO_MEDIA, ENDED_REASONS.CONNECTIVITY_ERROR, ENDED_REASONS.FAILED_APPLICATION];
 
 /**
  * Tell `to` that the Jingle session `sid` is over.
@@ -65,24 +49,6 @@ export function sendSessionTerminate(to, sid, reason) {
             </jingle>
         </iq>`;
     api.sendIQ(iq).catch((e) => log.error(e));
-}
-
-/**
- * End a call the way the peer's session-terminate says.
- * @param {import('./model.js').default} call
- * @param {Element} jingle - the peer's session-terminate
- */
-export function endCallFromTerminate(call, jingle) {
-    // The <reason> may hold a <text/> beside its condition, so pick the condition by name.
-    const condition = sizzle('reason > *', jingle)
-        .map((el) => el.tagName)
-        .find((name) => name in REASON_FROM_JINGLE);
-    const reason = REASON_FROM_JINGLE[condition] ?? ENDED_REASONS.SUCCESS;
-    if (FAILURE_REASONS.includes(reason)) {
-        call.fail(reason);
-    } else {
-        call.end(reason);
-    }
 }
 
 // Swappable WebRTC backend, so that the specs can use fakes. Unset, the
@@ -507,7 +473,7 @@ class RTPSession {
 
     /** @param {Element} jingle - the peer hung up */
     onSessionTerminate(jingle) {
-        endCallFromTerminate(this.call, jingle);
+        endCallFromReason(this.call, jingle);
     }
 
     /**

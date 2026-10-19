@@ -356,7 +356,7 @@
       <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0353.html"/>
         <xmpp:status>partial</xmpp:status>
-        <xmpp:note>&lt;finish/&gt; is neither sent nor handled, and a propose from a peer we are already in a call with is rejected as busy rather than treated as a session migration.</xmpp:note>
+        <xmpp:note>A propose from a peer we are already in a call with is rejected as busy rather than treated as a session migration.</xmpp:note>
       </xmpp:SupportedXep>
     </implements>
     <implements>

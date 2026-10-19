@@ -1491,8 +1491,8 @@ describe('A Jingle RTP session', function () {
         afterEach(() => vi.useRealTimers());
 
         /** Dial a contact, have them proceed, and connect. */
-        async function connectedCall(_converse) {
-            const webrtc_handle = installFakeWebRTC();
+        async function connectedCall(_converse, { stream } = {}) {
+            const webrtc_handle = installFakeWebRTC(stream ? { getUserMedia: () => Promise.resolve(stream) } : {});
             const jid = await getContactJid(_converse);
             const call = _converse.api.calls.dial(jid);
             const sid = call.get('id');
@@ -1502,7 +1502,7 @@ describe('A Jingle RTP session', function () {
             webrtc_handle.pc.connectionState = 'connected';
             webrtc_handle.pc.onconnectionstatechange();
             expect(call.get('state')).toBe('active');
-            return { jid, sid, call };
+            return { jid, sid, call, pc: webrtc_handle.pc };
         }
 
         it(
@@ -1592,6 +1592,29 @@ describe('A Jingle RTP session', function () {
 
                 expect(lastJingleIq(_converse, 'session-terminate')).toBeDefined();
                 expectOneFinish(_converse, { to: `${jid}/phone`, sid: 'in-fin', condition: 'cancel' });
+            }),
+        );
+
+        it(
+            'ends a connected call when the peer sends a <finish/>, without a session-terminate of ours',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const stream = fakeStream();
+                const stop = vi.spyOn(stream.getTracks()[0], 'stop');
+                const { jid, sid, call, pc } = await connectedCall(_converse, { stream });
+
+                // The peer lost power mid-call, and its <finish/> reaches us once it is back.
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<finish xmlns="${JMI}" id="${sid}"><reason xmlns="${JINGLE}"><success/></reason></finish>`,
+                );
+
+                expect(call.get('state')).toBe('ended');
+                expect(call.get('ended_reason')).toBe('success');
+                expect(pc.closed).toBe(true);
+                expect(stop).toHaveBeenCalled();
+                expect(lastJingleIq(_converse, 'session-terminate')).toBeUndefined();
+                expectOneFinish(_converse, { to: `${jid}/phone`, sid, condition: 'success' });
             }),
         );
     });

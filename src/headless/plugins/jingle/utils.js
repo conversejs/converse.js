@@ -5,8 +5,8 @@ import { getUniqueId } from '../../utils/index.js';
 import { isCarbon } from '../../shared/parsers.js';
 import Call from './model.js';
 import { createProposeStanza, createRejectStanza, createRetractStanza, createRingingStanza, parseJMI } from './jmi.js';
-import { endCallFromTerminate } from './rtp.js';
 import { writeMissedCall } from './history.js';
+import { endCallFromReason } from './reasons.js';
 import { CALL_DIRECTION, CALL_STATES, ENDED_REASONS, RING_TIMEOUT } from './constants.js';
 
 const { Strophe, sizzle, stx } = converse.env;
@@ -90,7 +90,8 @@ function mayRing(bare_jid) {
  */
 export function handleJingleMessage(stanza) {
     let msg = stanza;
-    if (isCarbon(stanza)) {
+    const is_forwarded = isCarbon(stanza);
+    if (is_forwarded) {
         // Only trust carbons forwarded by our own server: the envelope's `from`
         // must be our bare JID, else it's a forging attempt (XEP-0280 security).
         if (stanza.getAttribute('from') !== _converse.session.get('bare_jid')) return true;
@@ -104,7 +105,7 @@ export function handleJingleMessage(stanza) {
     const data = parseJMI(msg);
     if (!data) return true;
 
-    const { action, sid, from, media, stamp } = data;
+    const { action, sid, from, media, stamp, element } = data;
     const { calls } = _converse.state;
     // Bare JIDs are compared, and stored in the roster, lowercased.
     const bare_from = Strophe.getBareJidFromJid(from).toLowerCase();
@@ -206,6 +207,13 @@ export function handleJingleMessage(stanza) {
                 call.end(ENDED_REASONS.CANCELLED);
             }
             break;
+        case 'finish':
+            // A copy of a <finish/> to or from another of our devices is about
+            // a call on that device, never one on this.
+            if (from_peer && !is_forwarded && !isTerminal(call)) {
+                endCallFromReason(call, element);
+            }
+            break;
     }
     return true;
 }
@@ -297,7 +305,7 @@ export function handleJingleIq(iq) {
 
     // The caller may end an accepted call before it starts the session.
     if (action === 'session-terminate' && call && !call.session && !isTerminal(call) && from === call.peer_full_jid) {
-        endCallFromTerminate(call, jingle);
+        endCallFromReason(call, jingle);
         api.send(buildIqResult(iq));
         return true;
     }

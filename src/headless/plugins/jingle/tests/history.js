@@ -165,6 +165,33 @@ describe('The call history', function () {
             },
         ),
     );
+
+    it(
+        'writes one line, and nothing else, when both the Jingle session and JMI say the call is over',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            receive(_converse, `${jid}/phone`, propose('both1'));
+            _converse.state.calls.get('both1').accept();
+
+            const terminate = stx`
+                <iq xmlns="jabber:client" type="set" from="${jid}/phone" to="${_converse.session.get('jid')}" id="t1">
+                    <jingle xmlns="urn:xmpp:jingle:1" action="session-terminate" sid="both1">
+                        <reason><success/></reason>
+                    </jingle>
+                </iq>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, terminate));
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<finish xmlns="${JMI}" id="both1"><reason xmlns="urn:xmpp:jingle:1"><success/></reason></finish>`,
+            );
+
+            expect(await historyIn(_converse, jid)).toBe('Call ended');
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            const messages = _converse.state.chatboxes.get(jid).messages;
+            expect(messages.map((m) => [m.get('type'), m.get('message')])).toEqual([['info', 'Call ended']]);
+        }),
+    );
 });
 
 describe('An ended call', function () {

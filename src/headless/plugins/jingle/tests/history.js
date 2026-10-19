@@ -125,6 +125,26 @@ describe('The call history', function () {
     );
 
     it(
+        'logs one line for a call the peer moved to new sessions, as the call we made, for as long as it lasted',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            call.set({ state: 'active', started_at: Date.now() - 134_000 });
+
+            receive(_converse, `${jid}/tablet`, propose('moved1'));
+            call.set({ state: 'active' });
+            receive(_converse, `${jid}/laptop`, propose('moved2'));
+            call.set({ state: 'active' });
+            call.hangup();
+
+            expect(await historyIn(_converse, jid)).toBe('Outgoing call · 2:14');
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            const lines = _converse.state.chatboxes.get(jid).messages.where({ type: 'info' });
+            expect(lines.map((m) => m.get('message'))).toEqual(['Outgoing call · 2:14']);
+        }),
+    );
+
+    it(
         'logs a call held offline until after the caller gave up as missed, at the time it was made',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const jid = await getContactJid(_converse);

@@ -143,6 +143,24 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
     );
 
     it(
+        "doesn't ring again for a <propose> resent after its call ended",
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            const invited = vi.fn();
+            _converse.api.listen.on('callInvited', invited);
+            const propose = stx`
+                <propose xmlns="${JMI}" id="resent1"><description xmlns="${RTP}" media="audio"/></propose>`;
+
+            receive(_converse, `${jid}/phone`, propose);
+            receive(_converse, `${jid}/phone`, stx`<retract xmlns="${JMI}" id="resent1"/>`);
+            receive(_converse, `${jid}/phone`, propose);
+
+            expect(invited).toHaveBeenCalledOnce();
+            expect(_converse.state.calls.length).toBe(0);
+        }),
+    );
+
+    it(
         'ends an outgoing call when the callee <reject>s it',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const jid = await getContactJid(_converse);
@@ -499,7 +517,7 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
         );
 
         it(
-            'does not drop an answered call for a new propose from the same peer',
+            'does not apply once the call was answered, which moves it to the new session instead',
             mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
                 const jid = await getContactJid(_converse);
                 const ours = _converse.api.calls.dial(jid);
@@ -512,9 +530,143 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
                     stx`<propose xmlns="${JMI}" id="z"><description xmlns="${RTP}" media="audio"/></propose>`,
                 );
 
+                expect(_converse.state.calls.get('z')).toBe(ours);
                 expect(ours.get('state')).toBe('connecting');
-                expect(_converse.state.calls.get('z')).toBeUndefined();
-                expect(lastJMI(_converse, 'reject').getAttribute('to')).toBe(`${jid}/laptop`);
+                expect(lastJMI(_converse, 'proceed').getAttribute('to')).toBe(`${jid}/laptop`);
+                expect(lastJMI(_converse, 'reject')).toBeUndefined();
+                expect(lastJMI(_converse, 'retract')).toBeUndefined();
+            }),
+        );
+    });
+
+    describe('a new <propose> while a call was answered', function () {
+        const propose = (sid, media = 'audio') =>
+            stx`<propose xmlns="${JMI}" id="${sid}"><description xmlns="${RTP}" media="${media}"/></propose>`;
+
+        /** Ring for a call from a contact, and accept it. */
+        async function acceptedCall(_converse) {
+            const jid = await getContactJid(_converse);
+            receive(_converse, `${jid}/phone`, propose('old'));
+            const call = _converse.state.calls.get('old');
+            call.accept();
+            return { jid, call };
+        }
+
+        /** Whether the call is still the live one, untouched. */
+        function expectUntouched(_converse, call) {
+            expect(call.get('state')).toBe('connecting');
+            expect(_converse.state.calls.length).toBe(1);
+            expect(sentFinish(_converse)).toBe(false);
+            const sent = _converse.api.connection.get().sent_stanzas;
+            expect(sent.some((s) => sizzle(`proceed[xmlns="${JMI}"][id="new"]`, s).length)).toBe(false);
+        }
+
+        it(
+            'is rejected as busy from anyone but the peer, whatever session it claims',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { call } = await acceptedCall(_converse);
+                const other = await getContactJid(_converse, 1);
+                receive(_converse, `${other}/phone`, propose('new'));
+
+                expectUntouched(_converse, call);
+                expect(lastJMI(_converse, 'reject').getAttribute('to')).toBe(`${other}/phone`);
+            }),
+        );
+
+        it(
+            'is rejected, leaving the call alone, when it carries no media we support',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse);
+                receive(_converse, `${jid}/tablet`, propose('new', 'video'));
+
+                expectUntouched(_converse, call);
+                expect(lastJMI(_converse, 'reject').getAttribute('to')).toBe(`${jid}/tablet`);
+            }),
+        );
+
+        it(
+            'from the peer, resent for the session the call moved from, does not move it back',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse);
+                receive(_converse, `${jid}/tablet`, propose('new'));
+                expect(call.get('id')).toBe('new');
+                const sent = _converse.api.connection.get().sent_stanzas;
+                const sent_before = sent.length;
+
+                receive(_converse, `${jid}/phone`, propose('old'));
+
+                expect(call.get('id')).toBe('new');
+                expect(call.get('full_jid')).toBe(`${jid}/tablet`);
+                expect(_converse.state.calls.length).toBe(1);
+                expect(sent.length).toBe(sent_before);
+            }),
+        );
+
+        it(
+            'from the peer does not move the call, nor log it as missed, when it was held offline for more than a minute',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse);
+                const get_chat = vi.spyOn(_converse.api.chats, 'get');
+                const stamp = new Date(Date.now() - 120_000).toISOString();
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<message xmlns="jabber:client" from="${jid}/tablet" to="${_converse.bare_jid}" type="chat">
+                            ${propose('new')}
+                            <delay xmlns="urn:xmpp:delay" from="montague.lit" stamp="${stamp}"/>
+                        </message>`,
+                    ),
+                );
+
+                expectUntouched(_converse, call);
+                expect(get_chat).not.toHaveBeenCalled();
+            }),
+        );
+
+        it(
+            'from the peer to another of our devices, copied to us, does not move the call',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse);
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<message xmlns="jabber:client" from="${_converse.bare_jid}"
+                                     to="${_converse.session.get('jid')}" type="chat">
+                            <received xmlns="urn:xmpp:carbons:2">
+                                <forwarded xmlns="urn:xmpp:forward:0">
+                                    <message xmlns="jabber:client" from="${jid}/tablet"
+                                             to="${_converse.bare_jid}/other" type="chat">${propose('new')}</message>
+                                </forwarded>
+                            </received>
+                        </message>`,
+                    ),
+                );
+
+                expectUntouched(_converse, call);
+                expect(lastJMI(_converse, 'reject')).toBeUndefined();
+            }),
+        );
+
+        it(
+            'copied to us from another of our devices does not move the call',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await acceptedCall(_converse);
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<message xmlns="jabber:client" from="${_converse.bare_jid}"
+                                     to="${_converse.session.get('jid')}" type="chat">
+                            <sent xmlns="urn:xmpp:carbons:2">
+                                <forwarded xmlns="urn:xmpp:forward:0">
+                                    <message xmlns="jabber:client" from="${_converse.bare_jid}/other" to="${jid}"
+                                             type="chat">${propose('new')}</message>
+                                </forwarded>
+                            </sent>
+                        </message>`,
+                    ),
+                );
+
+                expectUntouched(_converse, call);
             }),
         );
     });

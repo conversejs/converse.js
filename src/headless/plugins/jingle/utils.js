@@ -130,8 +130,24 @@ export function handleJingleMessage(stanza) {
 
     switch (action) {
         case 'propose': {
-            if (is_carbon || call) break; // our own propose echoed back, or a duplicate
-            if (stamp && Date.now() - Date.parse(stamp) > RING_TIMEOUT) {
+            // Our own propose echoed back, or a copy of one we already had.
+            if (is_carbon || calls.hasSeen(sid)) break;
+            calls.see(sid);
+
+            const held_too_long = !!stamp && Date.now() - Date.parse(stamp) > RING_TIMEOUT;
+            const live = getLiveCall();
+            // The peer of an answered call proposes again to carry it on in a
+            // new session, e.g. from another device or after losing its connection.
+            const migrates = live?.get('jid') === bare_from && live.isAnswered();
+            if (migrates && media.length) {
+                // A copy of a propose to another of our devices is for that
+                // device to take up, and one held offline too long is stale.
+                // Neither ends the call, nor did the user miss one.
+                if (!is_forwarded && !held_too_long) live.migrate(sid, from, media);
+                break;
+            }
+
+            if (held_too_long) {
                 // Held offline until after the caller gave up: too late to ring.
                 if (mayRing(bare_from)) writeMissedCall(bare_from, stamp);
                 break;
@@ -147,7 +163,6 @@ export function handleJingleMessage(stanza) {
                 break;
             }
 
-            const live = getLiveCall();
             if (live) {
                 const glare =
                     live.get('jid') === bare_from &&
@@ -291,11 +306,7 @@ export function handleJingleIq(iq) {
         if (from === (call.session?.peer_jid ?? call.peer_full_jid)) {
             // Answering captures the microphone, so it waits for the user to
             // accept, and happens once. We start outgoing sessions ourselves.
-            const answerable =
-                call.get('direction') === CALL_DIRECTION.INCOMING &&
-                call.get('state') === CALL_STATES.CONNECTING &&
-                !call.session;
-            if (!answerable) {
+            if (!call.awaitsSession()) {
                 api.send(buildOutOfOrder(iq));
                 return true;
             }

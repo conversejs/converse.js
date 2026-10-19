@@ -15,6 +15,7 @@ const REASON_ELEMENT = {
     [ENDED_REASONS.NO_MEDIA]: () => stx`<media-error/>`,
     [ENDED_REASONS.CONNECTIVITY_ERROR]: () => stx`<connectivity-error/>`,
     [ENDED_REASONS.FAILED_APPLICATION]: () => stx`<failed-application/>`,
+    [ENDED_REASONS.MIGRATED]: () => stx`<expired/>`,
 };
 
 /**

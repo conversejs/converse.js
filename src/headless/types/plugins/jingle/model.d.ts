@@ -289,13 +289,18 @@ declare class Call extends Call_base {
     /**
      * Give up on a call that waits too long for an answer, or for its media to
      * connect. Ringing after calling is still the same wait for an answer.
+     * @param {boolean} [restart=false] - wait afresh, even if still in the same phase
      */
-    armTimeout(): void;
+    armTimeout(restart?: boolean): void;
     /** Our outgoing call is retracted; an incoming one stops ringing without telling the caller. */
     onNoAnswer(): void;
     onConnectTimeout(): void;
     initialize(): void;
-    /** @returns {string} the Jingle session id */
+    /**
+     * The call is keyed by its Jingle session id, which changes if the peer
+     * carries the call on in a new session (see {@link Call#migrate}).
+     * @returns {string} the Jingle session id
+     */
     get sid(): string;
     /** @returns {string} the peer's bare JID */
     get peer(): string;
@@ -311,6 +316,20 @@ declare class Call extends Call_base {
     /** True while the call hasn't connected media yet (calling/ringing/connecting). */
     isPreActive(): boolean;
     /**
+     * Whether the call ended without anything to show for it: it gave way to
+     * the peer's, proposed at the same time, which gets its own history line
+     * and summary.
+     */
+    leavesNoTrace(): boolean;
+    /** Whether the call got past `<proceed>` and isn't over yet. */
+    isAnswered(): boolean;
+    /**
+     * Whether the call was answered and waits for the peer's session-initiate.
+     * We start our own sessions as soon as the call is answered, so only a
+     * session the peer proposed is ever waited for.
+     */
+    awaitsSession(): boolean;
+    /**
      * Incoming call: accept it. Sends `<proceed>` to the caller and `<accept>`
      * to our own other devices so they stop ringing.
      */
@@ -319,6 +338,18 @@ declare class Call extends Call_base {
     reject(): void;
     /** End the call from our side: retract a not-yet-answered outgoing call, otherwise terminate. */
     hangup(): void;
+    /**
+     * The peer carries this answered call on in a new session it proposed
+     * (XEP-0353 § 9.2), e.g. from another device or after losing its
+     * connection. Finish the old session as migrated, and take up the new one
+     * without ringing, since the user already took the call. It stays the same
+     * call, so what the user sees of it (how long it has lasted, whether they
+     * muted it) carries on too.
+     * @param {string} sid - the new session's id
+     * @param {string} from - the full JID that proposed it
+     * @param {import('./types').CallMedia[]} media
+     */
+    migrate(sid: string, from: string, media: import("./types").CallMedia[]): void;
     /** Toggle the local microphone. */
     toggleAudio(): void;
     /**
@@ -349,6 +380,7 @@ declare class Call extends Call_base {
      * @param {string} peer_jid - full JID of the caller
      */
     answerSession(peer_jid: string): void;
+    #private;
 }
 import { Model } from '@converse/skeletor';
 import RTPSession from './rtp.js';

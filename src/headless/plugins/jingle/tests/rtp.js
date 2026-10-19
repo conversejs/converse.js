@@ -1618,4 +1618,303 @@ describe('A Jingle RTP session', function () {
             }),
         );
     });
+
+    describe('whose peer proposes a new session once the call was answered', function () {
+        afterEach(() => vi.useRealTimers());
+
+        const propose = (sid) =>
+            stx`<propose xmlns="${JMI}" id="${sid}"><description xmlns="${RTP}" media="audio"/></propose>`;
+
+        function connect(pc) {
+            pc.connectionState = 'connected';
+            pc.onconnectionstatechange();
+        }
+
+        /** The last sent stanza with an element matching `selector` for session `sid`. */
+        function sentFor(_converse, selector, sid) {
+            return _converse.api.connection
+                .get()
+                .sent_stanzas.filter((s) => sizzle(`${selector}[id="${sid}"], ${selector}[sid="${sid}"]`, s).length)
+                .pop();
+        }
+
+        /** Dial a contact, have them proceed, and connect. */
+        async function outgoingCall(_converse) {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+            receiveIq(_converse, `${jid}/phone`, 'accept-iq', jingle('session-accept', sid));
+            await u.waitUntil(() => webrtc_handle.pc.remoteDescription);
+            connect(webrtc_handle.pc);
+            return { jid, sid, call, pc: webrtc_handle.pc, webrtc_handle };
+        }
+
+        /** Answer a call from a contact, and connect. */
+        async function incomingCall(_converse) {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            receive(_converse, `${jid}/phone`, propose('old-in'));
+            const call = _converse.state.calls.get('old-in');
+            call.accept();
+            receiveIq(_converse, `${jid}/phone`, 'initiate-iq', jingle('session-initiate', 'old-in'));
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-accept'));
+            connect(webrtc_handle.pc);
+            return { jid, sid: 'old-in', call, pc: webrtc_handle.pc };
+        }
+
+        /**
+         * Assert that we terminated and finished the old session as migrated, and
+         * then proceeded with the new one, in that order.
+         */
+        function expectMigration(_converse, { jid, old_sid, new_sid, new_from }) {
+            const sent = _converse.api.connection.get().sent_stanzas;
+            const terminate = sentFor(_converse, `jingle[xmlns="${JINGLE}"][action="session-terminate"]`, old_sid);
+            expect(terminate.getAttribute('to')).toBe(`${jid}/phone`);
+            expect(sizzle('reason > expired', terminate).length).toBe(1);
+
+            expect(sentFinishes(_converse).length).toBe(1);
+            const [msg] = sentFinishes(_converse);
+            expect(msg.getAttribute('to')).toBe(jid);
+            expect(msg.getAttribute('type')).toBe('chat');
+            expect(sizzle('> store[xmlns="urn:xmpp:hints"]', msg).length).toBe(1);
+            const finish = sizzle(`finish[xmlns="${JMI}"]`, msg).pop();
+            expect(finish.getAttribute('id')).toBe(old_sid);
+            expect(sizzle(`> reason[xmlns="${JINGLE}"] > expired`, finish).length).toBe(1);
+            expect(sizzle(`> reason[xmlns="${JINGLE}"] > text`, finish).pop().textContent).toBe('Session migrated');
+            const migrated = sizzle('> migrated', finish).pop();
+            expect(migrated.namespaceURI).toBe(JMI);
+            expect(migrated.getAttribute('to')).toBe(new_sid);
+
+            const proceed = sentFor(_converse, `proceed[xmlns="${JMI}"]`, new_sid);
+            expect(proceed.getAttribute('to')).toBe(new_from);
+            const accept = sentFor(_converse, `accept[xmlns="${JMI}"]`, new_sid);
+            expect(accept.getAttribute('to')).toBe(_converse.bare_jid);
+
+            const order = [terminate, msg, proceed, accept].map((s) => sent.indexOf(s));
+            expect(order).toEqual([...order].sort((a, b) => a - b));
+        }
+
+        it(
+            'carries our connected outgoing call on in the new session, finishing the old one as migrated',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid, call, pc } = await outgoingCall(_converse);
+                const invited = vi.fn();
+                const ended = vi.fn();
+                _converse.api.listen.on('callInvited', invited);
+                _converse.api.listen.on('callEnded', ended);
+
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+
+                expect(pc.closed).toBe(true);
+                expectMigration(_converse, { jid, old_sid: sid, new_sid: 'moved', new_from: `${jid}/tablet` });
+
+                expect(_converse.state.calls.length).toBe(1);
+                expect(_converse.state.calls.get('moved')).toBe(call);
+                expect(_converse.state.calls.get(sid)).toBeUndefined();
+                expect(call.get('state')).toBe('connecting');
+                expect(call.get('direction')).toBe('outgoing');
+                expect(call.peer_full_jid).toBe(`${jid}/tablet`);
+                expect(call.session).toBeNull();
+                expect(ended).not.toHaveBeenCalled();
+                expect(invited).not.toHaveBeenCalled();
+                expect(sentFor(_converse, `ringing[xmlns="${JMI}"]`, 'moved')).toBeUndefined();
+            }),
+        );
+
+        it(
+            "answers the new session of our outgoing call, as the peer's",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call, webrtc_handle } = await outgoingCall(_converse);
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+
+                receiveIq(_converse, `${jid}/tablet`, 'initiate-moved', jingle('session-initiate', 'moved'));
+                const accept = await u.waitUntil(() =>
+                    sentFor(_converse, `jingle[xmlns="${JINGLE}"][action="session-accept"]`, 'moved'),
+                );
+                expect(accept.getAttribute('to')).toBe(`${jid}/tablet`);
+                expect(accept.querySelector('jingle').getAttribute('responder')).toBe(_converse.session.get('jid'));
+                connect(webrtc_handle.pc);
+                expect(call.get('state')).toBe('active');
+            }),
+        );
+
+        it(
+            'ends the new session, rather than retracting the call, when we hang up before it started',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await outgoingCall(_converse);
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+
+                call.hangup();
+
+                const terminate = sentFor(_converse, `jingle[xmlns="${JINGLE}"][action="session-terminate"]`, 'moved');
+                expect(terminate.getAttribute('to')).toBe(`${jid}/tablet`);
+                expect(sentFor(_converse, `retract[xmlns="${JMI}"]`, 'moved')).toBeUndefined();
+                expect(call.get('state')).toBe('ended');
+            }),
+        );
+
+        it(
+            'carries a connected incoming call on in the new session, finishing the old one as migrated',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid, call, pc } = await incomingCall(_converse);
+                const stop = vi.spyOn(call.local_stream.getTracks()[0], 'stop');
+
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+
+                expect(pc.closed).toBe(true);
+                expect(stop).toHaveBeenCalled();
+                expect(call.local_stream).toBeNull();
+                expectMigration(_converse, { jid, old_sid: sid, new_sid: 'moved', new_from: `${jid}/tablet` });
+                expect(_converse.state.calls.get('moved')).toBe(call);
+                expect(call.get('state')).toBe('connecting');
+                expect(call.get('direction')).toBe('incoming');
+            }),
+        );
+
+        it(
+            'carries an accepted call on in the new session before its old one started',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                installFakeWebRTC();
+                const jid = await getContactJid(_converse);
+                receive(_converse, `${jid}/phone`, propose('old-in'));
+                const call = _converse.state.calls.get('old-in');
+                call.accept();
+
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+
+                expectMigration(_converse, { jid, old_sid: 'old-in', new_sid: 'moved', new_from: `${jid}/tablet` });
+                expect(_converse.state.calls.get('moved')).toBe(call);
+                expect(call.get('state')).toBe('connecting');
+            }),
+        );
+
+        it(
+            'gives the new session its own time to connect',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                installFakeWebRTC();
+                const jid = await getContactJid(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                receive(_converse, `${jid}/phone`, propose('old-in'));
+                const call = _converse.state.calls.get('old-in');
+                call.accept();
+                await vi.advanceTimersByTimeAsync(20_000);
+
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+
+                await vi.advanceTimersByTimeAsync(29_999);
+                expect(call.get('state')).toBe('connecting');
+                await vi.advanceTimersByTimeAsync(1);
+                expect(call.get('state')).toBe('failed');
+                expect(call.get('ended_reason')).toBe('connectivity-error');
+            }),
+        );
+
+        it(
+            'keeps the time the call connected, and the mute, in the new session',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call, webrtc_handle } = await outgoingCall(_converse);
+                call.toggleAudio();
+                call.set('started_at', Date.now() - 60_000);
+                const started_at = call.get('started_at');
+
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+                expect(call.get('started_at')).toBe(started_at);
+                expect(call.get('muted_audio')).toBe(true);
+
+                receiveIq(_converse, `${jid}/tablet`, 'initiate-moved', jingle('session-initiate', 'moved'));
+                await u.waitUntil(() =>
+                    sentFor(_converse, `jingle[xmlns="${JINGLE}"][action="session-accept"]`, 'moved'),
+                );
+                expect(call.local_stream.getAudioTracks()[0].enabled).toBe(false);
+
+                connect(webrtc_handle.pc);
+                expect(call.get('state')).toBe('active');
+                expect(call.get('started_at')).toBe(started_at);
+            }),
+        );
+
+        it(
+            'can move the call to a new session more than once',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call, webrtc_handle } = await outgoingCall(_converse);
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+                receiveIq(_converse, `${jid}/tablet`, 'initiate-moved', jingle('session-initiate', 'moved'));
+                await u.waitUntil(() => call.local_stream);
+                const pc = webrtc_handle.pc;
+                connect(pc);
+
+                receive(_converse, `${jid}/laptop`, propose('moved-again'));
+
+                expect(pc.closed).toBe(true);
+                const terminate = sentFor(_converse, `jingle[xmlns="${JINGLE}"][action="session-terminate"]`, 'moved');
+                expect(terminate.getAttribute('to')).toBe(`${jid}/tablet`);
+                const finish = sentFor(_converse, `finish[xmlns="${JMI}"]`, 'moved');
+                expect(finish.getAttribute('to')).toBe(jid);
+                expect(sizzle('migrated', finish).pop().getAttribute('to')).toBe('moved-again');
+                const proceed = sentFor(_converse, `proceed[xmlns="${JMI}"]`, 'moved-again');
+                expect(proceed.getAttribute('to')).toBe(`${jid}/laptop`);
+                expect(_converse.state.calls.get('moved-again')).toBe(call);
+                expect(call.get('state')).toBe('connecting');
+            }),
+        );
+
+        it(
+            'fails the new session with a connectivity error when it never connects',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, call } = await outgoingCall(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+
+                await vi.advanceTimersByTimeAsync(29_999);
+                expect(call.get('state')).toBe('connecting');
+                await vi.advanceTimersByTimeAsync(1);
+                expect(call.get('state')).toBe('failed');
+                expect(call.get('ended_reason')).toBe('connectivity-error');
+            }),
+        );
+
+        it(
+            "leaves the new session alone when the peer's <finish/> for the old one comes in late",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid } = await outgoingCall(_converse);
+                receive(_converse, `${jid}/tablet`, propose('moved'));
+
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<finish xmlns="${JMI}" id="${sid}">
+                        <reason xmlns="${JINGLE}"><expired/><text>Session migrated</text></reason>
+                        <migrated to="moved"/>
+                    </finish>`,
+                );
+
+                expect(_converse.state.calls.get('moved').get('state')).toBe('connecting');
+                expect(sentFinishes(_converse).length).toBe(1);
+            }),
+        );
+
+        it(
+            "moves an accepted call from a stranger, although they don't see our presence",
+            mock.initConverse(
+                converse,
+                ['rosterInitialized', 'callsInitialized'],
+                { allow_non_roster_messaging: true },
+                async (_converse) => {
+                    await getContactJid(_converse);
+                    const jid = 'stranger@evil.lit';
+                    receive(_converse, `${jid}/phone`, propose('old-in'));
+                    _converse.state.calls.get('old-in').accept();
+
+                    receive(_converse, `${jid}/tablet`, propose('moved'));
+
+                    expect(_converse.state.calls.get('old-in')).toBeUndefined();
+                    const proceed = sentFor(_converse, `proceed[xmlns="${JMI}"]`, 'moved');
+                    expect(proceed.getAttribute('to')).toBe(`${jid}/tablet`);
+                },
+            ),
+        );
+    });
 });

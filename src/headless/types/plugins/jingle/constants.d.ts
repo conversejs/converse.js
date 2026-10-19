@@ -16,6 +16,7 @@ export namespace ENDED_REASONS {
     let CONNECTIVITY_ERROR: string;
     let FAILED_APPLICATION: string;
     let TIE_BREAK: string;
+    let MIGRATED: string;
 }
 /** How long a call may wait for an answer, in milliseconds. */
 export const RING_TIMEOUT: 60000;

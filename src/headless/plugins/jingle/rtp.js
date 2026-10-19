@@ -78,6 +78,8 @@ class RTPSession {
      */
     constructor(call, peer_jid, is_initiator = true) {
         this.call = call;
+        // Kept, as the call takes another session's id if the peer moves it to one.
+        this.sid = call.sid;
         this.peer_jid = peer_jid;
         this.is_initiator = is_initiator;
         this.pc = null;
@@ -92,10 +94,6 @@ class RTPSession {
         // Whether the peer's restart is being applied; its candidates wait for it.
         this.applying_restart = false;
         this.restart_timeout = null;
-    }
-
-    get sid() {
-        return this.call.sid;
     }
 
     get initiator() {
@@ -156,7 +154,8 @@ class RTPSession {
             this.has_connected = true;
             clearTimeout(this.restart_timeout);
             if (this.call.get('state') !== CALL_STATES.ACTIVE) {
-                this.call.set({ state: CALL_STATES.ACTIVE, started_at: Date.now() });
+                // A call the peer moved to a new session keeps the time it first connected.
+                this.call.set({ state: CALL_STATES.ACTIVE, started_at: this.call.get('started_at') ?? Date.now() });
             }
         } else if (this.pc.connectionState === 'failed') {
             // A connection that worked can often be recovered, e.g. after a network change.
@@ -317,6 +316,10 @@ class RTPSession {
         if (this.closed) {
             stream.getTracks().forEach((track) => track.stop());
             return false;
+        }
+        // Muted before a migration, the call stays muted in its new session.
+        if (this.call.get('muted_audio')) {
+            stream.getAudioTracks().forEach((track) => (track.enabled = false));
         }
         this.call.local_stream = stream;
         stream.getTracks().forEach((track) => this.pc.addTrack(track, stream));

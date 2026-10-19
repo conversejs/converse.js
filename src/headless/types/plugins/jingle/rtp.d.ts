@@ -25,6 +25,7 @@ declare class RTPSession {
      */
     constructor(call: import("./model.js").default, peer_jid: string, is_initiator?: boolean);
     call: import("./model.js").default;
+    sid: string;
     peer_jid: string;
     is_initiator: boolean;
     pc: RTCPeerConnection;
@@ -37,7 +38,6 @@ declare class RTPSession {
     held_candidates: any[];
     applying_restart: boolean;
     restart_timeout: number;
-    get sid(): string;
     get initiator(): any;
     get responder(): any;
     /** Open the peer connection, capture the mic, and send a session-initiate. */

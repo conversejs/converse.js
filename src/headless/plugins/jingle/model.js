@@ -59,15 +59,16 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     /**
      * Give up on a call that waits too long for an answer, or for its media to
      * connect. Ringing after calling is still the same wait for an answer.
+     * @param {boolean} [restart=false] - wait afresh, even if still in the same phase
      */
-    armTimeout() {
+    armTimeout(restart = false) {
         const state = this.get('state');
         const phase = [CALL_STATES.CALLING, CALL_STATES.RINGING].includes(state)
             ? 'answer'
             : state === CALL_STATES.CONNECTING
               ? 'connect'
               : null;
-        if (phase === this.timed_phase) return;
+        if (phase === this.timed_phase && !restart) return;
 
         clearTimeout(this.timeout);
         this.timed_phase = phase;
@@ -105,7 +106,11 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
         return 'id';
     }
 
-    /** @returns {string} the Jingle session id */
+    /**
+     * The call is keyed by its Jingle session id, which changes if the peer
+     * carries the call on in a new session (see {@link Call#migrate}).
+     * @returns {string} the Jingle session id
+     */
     get sid() {
         return /** @type {string} */ (this.get('id'));
     }
@@ -133,15 +138,43 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     }
 
     /**
+     * Whether the call ended without anything to show for it: it gave way to
+     * the peer's, proposed at the same time, which gets its own history line
+     * and summary.
+     */
+    leavesNoTrace() {
+        return this.get('ended_reason') === ENDED_REASONS.TIE_BREAK;
+    }
+
+    /** Whether the call got past `<proceed>` and isn't over yet. */
+    isAnswered() {
+        return [CALL_STATES.CONNECTING, CALL_STATES.ACTIVE].includes(this.get('state'));
+    }
+
+    /**
+     * Whether the call was answered and waits for the peer's session-initiate.
+     * We start our own sessions as soon as the call is answered, so only a
+     * session the peer proposed is ever waited for.
+     */
+    awaitsSession() {
+        return this.get('state') === CALL_STATES.CONNECTING && !this.session;
+    }
+
+    /**
      * Incoming call: accept it. Sends `<proceed>` to the caller and `<accept>`
      * to our own other devices so they stop ringing.
      */
     accept() {
         if (this.get('direction') !== CALL_DIRECTION.INCOMING || !this.isPreActive()) return;
 
+        this.#proceed();
+        this.set('state', CALL_STATES.CONNECTING);
+    }
+
+    /** Take up the session the peer proposed. */
+    #proceed() {
         api.send(createProceedStanza(this.peer_full_jid, this.sid));
         api.send(createAcceptStanza(_converse.session.get('bare_jid'), this.sid));
-        this.set('state', CALL_STATES.CONNECTING);
     }
 
     /** Incoming call: decline it before it's active. */
@@ -158,16 +191,47 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
             const reason = this.get('state') === CALL_STATES.ACTIVE ? ENDED_REASONS.SUCCESS : ENDED_REASONS.CANCELLED;
             this.session.terminate(reason);
             this.end(reason);
-        } else if (this.get('direction') === CALL_DIRECTION.OUTGOING && this.isPreActive()) {
+        } else if (
+            this.get('direction') === CALL_DIRECTION.OUTGOING &&
+            [CALL_STATES.CALLING, CALL_STATES.RINGING].includes(this.get('state'))
+        ) {
             api.send(createRetractStanza(this.peer, this.sid));
             this.end(ENDED_REASONS.CANCELLED);
-        } else if (this.get('direction') === CALL_DIRECTION.INCOMING && this.get('state') === CALL_STATES.CONNECTING) {
-            // Accepted, but the caller's session-initiate hasn't arrived yet.
+        } else if (this.awaitsSession()) {
+            // Accepted, but the peer's session-initiate hasn't arrived yet.
             sendSessionTerminate(this.peer_full_jid, this.sid, ENDED_REASONS.CANCELLED);
             this.end(ENDED_REASONS.CANCELLED);
         } else {
             this.end(ENDED_REASONS.SUCCESS);
         }
+    }
+
+    /**
+     * The peer carries this answered call on in a new session it proposed
+     * (XEP-0353 § 9.2), e.g. from another device or after losing its
+     * connection. Finish the old session as migrated, and take up the new one
+     * without ringing, since the user already took the call. It stays the same
+     * call, so what the user sees of it (how long it has lasted, whether they
+     * muted it) carries on too.
+     * @param {string} sid - the new session's id
+     * @param {string} from - the full JID that proposed it
+     * @param {import('./types').CallMedia[]} media
+     */
+    migrate(sid, from, media) {
+        const old_sid = this.sid;
+        if (this.session) {
+            this.session.terminate(ENDED_REASONS.MIGRATED);
+            this.session.close();
+            this.session = null;
+        } else {
+            sendSessionTerminate(this.peer_full_jid, old_sid, ENDED_REASONS.MIGRATED);
+        }
+        // Told to all the peer's devices, as the new session may be on another.
+        api.send(createFinishStanza(this.peer, old_sid, ENDED_REASONS.MIGRATED, { migrated_to: sid }));
+
+        this.set({ id: sid, full_jid: from, media, state: CALL_STATES.CONNECTING });
+        this.armTimeout(true); // the new session gets its own time to connect
+        this.#proceed();
     }
 
     /** Toggle the local microphone. */
@@ -207,7 +271,7 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
             this.get('state') === CALL_STATES.RINGING &&
             [ENDED_REASONS.CANCELLED, ENDED_REASONS.NO_ANSWER].includes(reason);
         // Only a call that got past <proceed> is finished; the others ended with a JMI message of their own.
-        const answered = [CALL_STATES.CONNECTING, CALL_STATES.ACTIVE].includes(this.get('state'));
+        const answered = this.isAnswered();
         this.set({ state, ended_reason: reason, ended_at: Date.now(), missed });
 
         if (answered && api.connection.connected()) {

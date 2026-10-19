@@ -121,15 +121,20 @@ export function createAcceptStanza(to, sid) {
 /**
  * `<finish>` - the call we took part in is over (XEP-0353 § 8). Both sides
  * send one, so that all their devices and archives learn how it ended.
- * @param {string} to - full JID of the peer that took part in the call
+ * @param {string} to - full JID of the peer that took part in the call, or its bare JID for a migration
  * @param {string} sid
  * @param {string} reason - one of {@link import('./constants.js').ENDED_REASONS}
+ * @param {{ migrated_to?: string }} [opts] - the session the call carries on in, if it was migrated
  */
-export function createFinishStanza(to, sid, reason) {
+export function createFinishStanza(to, sid, reason, { migrated_to } = {}) {
+    // A migrated session's <finish> also names the session the call carries on in (XEP-0353 § 9.2).
+    const text = migrated_to ? stx`<text>Session migrated</text>` : '';
+    const migrated = migrated_to ? stx`<migrated xmlns="${Strophe.NS.JINGLE_MESSAGE}" to="${migrated_to}"/>` : '';
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
             <finish xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}">
-                <reason xmlns="${Strophe.NS.JINGLE}">${reasonCondition(reason)}</reason>
+                <reason xmlns="${Strophe.NS.JINGLE}">${reasonCondition(reason)}${text}</reason>
+                ${migrated}
             </finish>
             ${store_hint}
         </message>`;

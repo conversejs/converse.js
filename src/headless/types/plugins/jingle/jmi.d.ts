@@ -44,11 +44,14 @@ export function createAcceptStanza(to: string, sid: string): any;
 /**
  * `<finish>` - the call we took part in is over (XEP-0353 § 8). Both sides
  * send one, so that all their devices and archives learn how it ended.
- * @param {string} to - full JID of the peer that took part in the call
+ * @param {string} to - full JID of the peer that took part in the call, or its bare JID for a migration
  * @param {string} sid
  * @param {string} reason - one of {@link import('./constants.js').ENDED_REASONS}
+ * @param {{ migrated_to?: string }} [opts] - the session the call carries on in, if it was migrated
  */
-export function createFinishStanza(to: string, sid: string, reason: string): any;
+export function createFinishStanza(to: string, sid: string, reason: string, { migrated_to }?: {
+    migrated_to?: string;
+}): any;
 /**
  * Read a JMI child out of an inbound `<message>` stanza.
  * @param {Element} stanza

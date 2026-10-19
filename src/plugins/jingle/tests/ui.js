@@ -156,6 +156,40 @@ describe('The calls UI', function () {
     );
 
     it(
+        'keeps showing a call the peer moved to a new session in the same card',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const jid = contactJid();
+            const call = await addCall(_converse, {
+                jid,
+                full_jid: `${jid}/phone`,
+                direction: 'outgoing',
+                state: 'active',
+                started_at: Date.now() - 134000,
+            });
+            await u.waitUntil(() => cardFor(call));
+
+            const { stx } = converse.env;
+            const propose = stx`
+                <message xmlns="jabber:client" from="${jid}/tablet" to="${_converse.bare_jid}" type="chat">
+                    <propose xmlns="urn:xmpp:jingle-message:0" id="moved">
+                        <description xmlns="urn:xmpp:jingle:apps:rtp:1" media="audio"/>
+                    </propose>
+                </message>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, propose));
+
+            const card = cardFor(call);
+            await u.waitUntil(() => _converse.state.calls.get('moved') === call);
+            await u.waitUntil(() => call.get('state') === 'connecting');
+            const calls_el = document.querySelector('converse-calls');
+            calls_el.requestUpdate();
+            await calls_el.updateComplete;
+            expect(cardFor(call)).toBe(card);
+            expect(document.querySelectorAll('converse-calls converse-call').length).toBe(1);
+        }),
+    );
+
+    it(
         'shows a missed call as missed',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');

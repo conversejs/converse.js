@@ -63,7 +63,7 @@ export function dial(jid) {
 function resolveGlare(ours, their_sid, from) {
     if (their_sid < ours.sid) {
         api.send(buildRetract(ours.peer, ours.sid, { tie_break: true }));
-        ours.end(ENDED_REASONS.CANCELLED);
+        ours.end(ENDED_REASONS.TIE_BREAK);
         return true;
     }
     api.send(buildReject(from, their_sid, { tie_break: true }));

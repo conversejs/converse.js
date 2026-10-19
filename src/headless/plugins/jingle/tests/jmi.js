@@ -462,7 +462,7 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
                 expect(retract.getAttribute('to')).toBe(jid);
                 expectTieBreak(retract, 'retract', ours.get('id'));
                 expect(ours.get('state')).toBe('ended');
-                expect(ours.get('ended_reason')).toBe('cancelled');
+                expect(ours.get('ended_reason')).toBe('tie-break');
 
                 const theirs = _converse.state.calls.get('0');
                 expect(theirs.get('direction')).toBe('incoming');

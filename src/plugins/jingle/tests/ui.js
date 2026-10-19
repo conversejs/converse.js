@@ -143,6 +143,19 @@ describe('The calls UI', function () {
     );
 
     it(
+        "doesn't keep showing a call that gave way to the peer's in a tie-break",
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current');
+            const call = await addCall(_converse, { jid: contactJid(), direction: 'outgoing', state: 'calling' });
+            await u.waitUntil(() => cardFor(call));
+
+            call.end('tie-break');
+            await u.waitUntil(() => !cardFor(call));
+            expect(_converse.state.calls.get(call.get('id'))).toBeUndefined();
+        }),
+    );
+
+    it(
         'shows a missed call as missed',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');

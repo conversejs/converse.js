@@ -5,7 +5,7 @@ import { CustomElement } from 'shared/components/element.js';
 
 import './styles/calls.scss';
 
-const { CALL_STATES } = constants;
+const { CALL_STATES, ENDED_REASONS } = constants;
 
 // How long an ended call's card lingers, so its summary can be read.
 const DISMISS_DELAY = 5000;
@@ -39,7 +39,9 @@ export class Calls extends CustomElement {
 
     /** @param {import('@converse/headless').Call} call */
     onRemoved(call) {
-        if ([CALL_STATES.ENDED, CALL_STATES.FAILED].includes(call.get('state'))) {
+        const ended = [CALL_STATES.ENDED, CALL_STATES.FAILED].includes(call.get('state'));
+        // A call that gave way to the peer's in a tie-break has no summary worth showing.
+        if (ended && call.get('ended_reason') !== ENDED_REASONS.TIE_BREAK) {
             this.ended.push(call);
             this.dismiss_timers.push(
                 setTimeout(() => {

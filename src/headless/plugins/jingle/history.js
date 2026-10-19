@@ -81,6 +81,9 @@ async function writeToChat(jid, message, time) {
 
 /** @param {import('./model.js').default} call */
 export function writeCallHistory(call) {
+    // The call that won the tie-break gets its own line.
+    if (call.get('ended_reason') === ENDED_REASONS.TIE_BREAK) return;
+
     return writeToChat(call.peer, historyText(call));
 }
 

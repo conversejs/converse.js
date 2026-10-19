@@ -108,6 +108,23 @@ describe('The call history', function () {
     );
 
     it(
+        'logs only the surviving call when both sides call at once',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            const ours = _converse.api.calls.dial(jid);
+            // "0" sorts before any UUID, so our call gives way to theirs.
+            receive(_converse, `${jid}/phone`, propose('0'));
+            expect(ours.get('ended_reason')).toBe('tie-break');
+
+            receive(_converse, `${jid}/phone`, stx`<retract xmlns="${JMI}" id="0"/>`);
+
+            expect(await historyIn(_converse, jid)).toBe('Missed call');
+            const lines = _converse.state.chatboxes.get(jid).messages.where({ type: 'info' });
+            expect(lines.map((m) => m.get('message'))).toEqual(['Missed call']);
+        }),
+    );
+
+    it(
         'logs a call held offline until after the caller gave up as missed, at the time it was made',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const jid = await getContactJid(_converse);

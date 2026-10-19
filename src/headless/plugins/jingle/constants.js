@@ -22,6 +22,8 @@ export const ENDED_REASONS = {
     NO_MEDIA: 'no-media',
     CONNECTIVITY_ERROR: 'connectivity-error',
     FAILED_APPLICATION: 'failed-application',
+    // Our call gave way to the peer's, proposed at the same time. It leaves no trace.
+    TIE_BREAK: 'tie-break',
 };
 
 /** How long a call may wait for an answer, in milliseconds. */

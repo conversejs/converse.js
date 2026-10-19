@@ -182,7 +182,7 @@ export function handleJingleMessage(stanza) {
             if (from_sibling && incoming_ringing) {
                 call.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
             } else if (from_peer && outgoing_unanswered) {
-                call.set('state', CALL_STATES.CONNECTING);
+                call.set({ state: CALL_STATES.CONNECTING, full_jid: from });
                 call.startSession(from); // the proceed's full JID is the peer we negotiate with
             }
             break;

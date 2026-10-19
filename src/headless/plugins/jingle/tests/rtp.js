@@ -38,6 +38,34 @@ function lastJingleIq(_converse, action) {
         .pop();
 }
 
+/** The `<finish/>` messages we sent, oldest first. */
+function sentFinishes(_converse) {
+    return _converse.api.connection
+        .get()
+        .sent_stanzas.filter((s) => s.nodeName === 'message' && sizzle(`finish[xmlns="${JMI}"]`, s).length);
+}
+
+/**
+ * Assert that we sent exactly one `<finish/>` for `sid`, to `to`, giving
+ * `condition` as the reason, and after any session-terminate.
+ */
+function expectOneFinish(_converse, { to, sid, condition }) {
+    const finishes = sentFinishes(_converse);
+    expect(finishes.length).toBe(1);
+    const [msg] = finishes;
+    expect(msg.getAttribute('to')).toBe(to);
+    expect(msg.getAttribute('type')).toBe('chat');
+    expect(msg.getAttribute('id')).toBeTruthy();
+    const finish = sizzle(`finish[xmlns="${JMI}"]`, msg).pop();
+    expect(finish.getAttribute('id')).toBe(sid);
+    expect(sizzle(`> reason[xmlns="${JINGLE}"] > ${condition}`, finish).length).toBe(1);
+    expect(sizzle('> store[xmlns="urn:xmpp:hints"]', msg).length).toBe(1);
+
+    const sent = _converse.api.connection.get().sent_stanzas;
+    const terminate = lastJingleIq(_converse, 'session-terminate');
+    if (terminate) expect(sent.indexOf(terminate)).toBeLessThan(sent.indexOf(msg));
+}
+
 function receive(_converse, from, child) {
     const stanza = stx`
         <message xmlns="jabber:client" from="${from}" to="${_converse.bare_jid}" type="chat">
@@ -1455,6 +1483,115 @@ describe('A Jingle RTP session', function () {
                     'feature-not-implemented',
                     undefined,
                 ]);
+            }),
+        );
+    });
+
+    describe('that ends after the call was answered', function () {
+        afterEach(() => vi.useRealTimers());
+
+        /** Dial a contact, have them proceed, and connect. */
+        async function connectedCall(_converse) {
+            const webrtc_handle = installFakeWebRTC();
+            const jid = await getContactJid(_converse);
+            const call = _converse.api.calls.dial(jid);
+            const sid = call.get('id');
+            receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+            await u.waitUntil(() => lastJingleIq(_converse, 'session-initiate'));
+            receiveIq(_converse, `${jid}/phone`, 'accept-iq', jingle('session-accept', sid));
+            webrtc_handle.pc.connectionState = 'connected';
+            webrtc_handle.pc.onconnectionstatechange();
+            expect(call.get('state')).toBe('active');
+            return { jid, sid, call };
+        }
+
+        it(
+            "sends a <finish/> to the peer's full JID when we hang up",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid, call } = await connectedCall(_converse);
+                call.hangup();
+                expectOneFinish(_converse, { to: `${jid}/phone`, sid, condition: 'success' });
+            }),
+        );
+
+        it(
+            'sends its own <finish/> when the peer hangs up',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid, call } = await connectedCall(_converse);
+                const term = stx`
+                    <jingle xmlns="${JINGLE}" action="session-terminate" sid="${sid}">
+                        <reason><success/></reason>
+                    </jingle>`;
+                receiveIq(_converse, `${jid}/phone`, 'term-iq', term);
+
+                expect(call.get('state')).toBe('ended');
+                expectOneFinish(_converse, { to: `${jid}/phone`, sid, condition: 'success' });
+            }),
+        );
+
+        it(
+            'sends one <finish/> however many ways the call ends',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const { jid, sid, call } = await connectedCall(_converse);
+                call.hangup();
+                // The peer hung up at the same time.
+                const term = stx`
+                    <jingle xmlns="${JINGLE}" action="session-terminate" sid="${sid}">
+                        <reason><success/></reason>
+                    </jingle>`;
+                receiveIq(_converse, `${jid}/phone`, 'term-iq', term);
+                call.hangup();
+
+                expect(sentFinishes(_converse).length).toBe(1);
+            }),
+        );
+
+        it(
+            'sends a <finish/> with a connectivity error when the call never connects',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                installFakeWebRTC();
+                const jid = await getContactJid(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                const call = _converse.api.calls.dial(jid);
+                const sid = call.get('id');
+                receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+
+                await vi.advanceTimersByTimeAsync(30_000);
+                expect(call.get('state')).toBe('failed');
+                expectOneFinish(_converse, { to: `${jid}/phone`, sid, condition: 'connectivity-error' });
+            }),
+        );
+
+        it(
+            "sends a <finish/> with a media error when the microphone can't be opened",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                installFakeWebRTC({ getUserMedia: () => Promise.reject(new Error('NotAllowedError')) });
+                const jid = await getContactJid(_converse);
+                const call = _converse.api.calls.dial(jid);
+                const sid = call.get('id');
+                receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${sid}"/>`);
+
+                await u.waitUntil(() => call.get('state') === 'failed');
+                expectOneFinish(_converse, { to: `${jid}/phone`, sid, condition: 'media-error' });
+            }),
+        );
+
+        it(
+            'sends a <finish/> when we hang up an accepted call before its session starts',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                installFakeWebRTC();
+                const jid = await getContactJid(_converse);
+                receive(
+                    _converse,
+                    `${jid}/phone`,
+                    stx`<propose xmlns="${JMI}" id="in-fin"><description xmlns="${RTP}" media="audio"/></propose>`,
+                );
+                const call = _converse.state.calls.get('in-fin');
+                call.accept();
+                call.hangup();
+
+                expect(lastJingleIq(_converse, 'session-terminate')).toBeDefined();
+                expectOneFinish(_converse, { to: `${jid}/phone`, sid: 'in-fin', condition: 'cancel' });
             }),
         );
     });

@@ -42,6 +42,14 @@ export function createRetractStanza(to: string, sid: string, { tie_break }?: {
  */
 export function createAcceptStanza(to: string, sid: string): any;
 /**
+ * `<finish>` - the call we took part in is over (XEP-0353 § 8). Both sides
+ * send one, so that all their devices and archives learn how it ended.
+ * @param {string} to - full JID of the peer that took part in the call
+ * @param {string} sid
+ * @param {string} reason - one of {@link import('./constants.js').ENDED_REASONS}
+ */
+export function createFinishStanza(to: string, sid: string, reason: string): any;
+/**
  * Read a JMI child out of an inbound `<message>` stanza.
  * @param {Element} stanza
  * @returns {{ action: string, sid: string, from: string, to: string,

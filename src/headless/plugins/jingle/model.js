@@ -4,7 +4,13 @@ import api from '../../shared/api/index.js';
 import ModelWithVCard from '../../shared/model-with-vcard.js';
 import ModelWithContact from '../../shared/model-with-contact.js';
 import ColorAwareModel from '../../shared/color.js';
-import { createAcceptStanza, createProceedStanza, createRejectStanza, createRetractStanza } from './jmi.js';
+import {
+    createAcceptStanza,
+    createFinishStanza,
+    createProceedStanza,
+    createRejectStanza,
+    createRetractStanza,
+} from './jmi.js';
 import RTPSession, { sendSessionTerminate } from './rtp.js';
 import { CALL_DIRECTION, CALL_STATES, CONNECT_TIMEOUT, ENDED_REASONS, RING_TIMEOUT } from './constants.js';
 
@@ -111,8 +117,9 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
 
     /**
      * The peer's full JID when known - the caller's resource for an incoming
-     * call (the `<propose>`'s `from`), else the bare JID. JMI `<proceed>`,
-     * `<ringing>` and `<reject>` must be addressed to the initiator's full JID:
+     * call (the `<propose>`'s `from`), the callee's for an answered outgoing
+     * one (the `<proceed>`'s `from`), else the bare JID. JMI `<proceed>`,
+     * `<ringing>`, `<reject>` and `<finish>` must be addressed to a full JID:
      * peers (e.g. Conversations) ignore them otherwise.
      * @returns {string}
      */
@@ -199,7 +206,13 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
             this.get('direction') === CALL_DIRECTION.INCOMING &&
             this.get('state') === CALL_STATES.RINGING &&
             [ENDED_REASONS.CANCELLED, ENDED_REASONS.NO_ANSWER].includes(reason);
+        // Only a call that got past <proceed> is finished; the others ended with a JMI message of their own.
+        const answered = [CALL_STATES.CONNECTING, CALL_STATES.ACTIVE].includes(this.get('state'));
         this.set({ state, ended_reason: reason, ended_at: Date.now(), missed });
+
+        if (answered && api.connection.connected()) {
+            api.send(createFinishStanza(this.peer_full_jid, this.sid, reason));
+        }
 
         this.session?.close?.();
         this.session = null;

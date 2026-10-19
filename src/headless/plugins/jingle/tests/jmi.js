@@ -14,6 +14,11 @@ function lastJMI(_converse, action) {
         .pop();
 }
 
+/** Whether we sent any `<finish/>`. */
+function sentFinish(_converse) {
+    return !!lastJMI(_converse, 'finish');
+}
+
 /** Inject an inbound JMI `<message>` as if it arrived from the peer. */
 function receive(_converse, from, child) {
     const stanza = stx`
@@ -767,6 +772,80 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
                 expect(_converse.api.calls.get(call.get('id'))).toBeUndefined();
                 expect(_converse.api.calls.get(jid)).toBeUndefined();
                 expect(_converse.api.calls.get()).toEqual([]);
+            }),
+        );
+    });
+
+    describe('sends no <finish/> for a call that was never answered', function () {
+        afterEach(() => vi.useRealTimers());
+
+        const propose = (sid) =>
+            stx`<propose xmlns="${JMI}" id="${sid}"><description xmlns="${RTP}" media="audio"/></propose>`;
+
+        it(
+            'when we decline it',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                receive(_converse, `${jid}/phone`, propose('nofin1'));
+                _converse.state.calls.get('nofin1').reject();
+                expect(sentFinish(_converse)).toBe(false);
+            }),
+        );
+
+        it(
+            'when we give up before it is answered',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                const call = _converse.api.calls.dial(jid);
+                receive(_converse, `${jid}/phone`, stx`<ringing xmlns="${JMI}" id="${call.get('id')}"/>`);
+                call.hangup();
+                expect(lastJMI(_converse, 'retract')).toBeDefined();
+                expect(sentFinish(_converse)).toBe(false);
+            }),
+        );
+
+        it(
+            'when nobody answers it',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+                const call = _converse.api.calls.dial(jid);
+                vi.advanceTimersByTime(60_000);
+                expect(call.get('ended_reason')).toBe('no-answer');
+                expect(sentFinish(_converse)).toBe(false);
+            }),
+        );
+
+        it(
+            "when it gives way to the peer's call in a tie-break",
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                const ours = _converse.api.calls.dial(jid);
+                receive(_converse, `${jid}/phone`, propose('0'));
+                expect(ours.get('ended_reason')).toBe('tie-break');
+                expect(sentFinish(_converse)).toBe(false);
+            }),
+        );
+
+        it(
+            'when another of our devices answers it',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                receive(_converse, `${jid}/phone`, propose('nofin2'));
+                receive(_converse, `${_converse.bare_jid}/sibling`, stx`<accept xmlns="${JMI}" id="nofin2"/>`);
+                expect(_converse.state.calls.get('nofin2')).toBeUndefined();
+                expect(sentFinish(_converse)).toBe(false);
+            }),
+        );
+
+        it(
+            'when another of our devices declines it',
+            mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+                const jid = await getContactJid(_converse);
+                receive(_converse, `${jid}/phone`, propose('nofin3'));
+                receive(_converse, `${_converse.bare_jid}/sibling`, stx`<reject xmlns="${JMI}" id="nofin3"/>`);
+                expect(_converse.state.calls.get('nofin3')).toBeUndefined();
+                expect(sentFinish(_converse)).toBe(false);
             }),
         );
     });

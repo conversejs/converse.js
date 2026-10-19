@@ -191,6 +191,37 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
     );
 
     it(
+        'ends an incoming call as declined when a sibling device rejects it, carbon-wrapped',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse);
+            receive(
+                _converse,
+                `${jid}/phone`,
+                stx`<propose xmlns="${JMI}" id="rejected1"><description xmlns="${RTP}" media="audio"/></propose>`,
+            );
+            const call = _converse.state.calls.get('rejected1');
+
+            // Our other device sent <reject> to the caller; the server copies it
+            // back to us as an XEP-0280 <sent> carbon.
+            const carbon = stx`
+                <message xmlns="jabber:client" from="${_converse.bare_jid}" to="${_converse.bare_jid}/this" type="chat">
+                    <sent xmlns="urn:xmpp:carbons:2">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                            <message xmlns="jabber:client" from="${_converse.bare_jid}/other" to="${jid}" type="chat">
+                                <reject xmlns="${JMI}" id="rejected1"/>
+                            </message>
+                        </forwarded>
+                    </sent>
+                </message>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, carbon));
+
+            expect(call.get('state')).toBe('ended');
+            expect(call.get('ended_reason')).toBe('declined');
+            expect(call.get('missed')).toBe(false);
+        }),
+    );
+
+    it(
         'ends an incoming call when a sibling device proceeds, carbon-wrapped',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const jid = await getContactJid(_converse);

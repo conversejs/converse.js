@@ -195,7 +195,7 @@ export function handleJingleMessage(stanza) {
             break;
         case 'reject':
             if (from_sibling && incoming_ringing) {
-                call.end(ENDED_REASONS.ANSWERED_ELSEWHERE);
+                call.end(ENDED_REASONS.DECLINED); // declined on another of our devices
             } else if (from_peer && outgoing_unanswered) {
                 call.end(ENDED_REASONS.DECLINED);
             }

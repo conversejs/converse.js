@@ -40,7 +40,7 @@ function tieBreak() {
  * @param {string} sid - Jingle session id
  * @param {import('./types').CallMedia[]} [media]
  */
-export function buildPropose(to, sid, media = ['audio']) {
+export function createProposeStanza(to, sid, media = ['audio']) {
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
             <propose xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}">
@@ -55,7 +55,7 @@ export function buildPropose(to, sid, media = ['audio']) {
  * @param {string} to - bare JID of the caller
  * @param {string} sid
  */
-export function buildRinging(to, sid) {
+export function createRingingStanza(to, sid) {
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
             <ringing xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}"/>
@@ -68,7 +68,7 @@ export function buildRinging(to, sid) {
  * @param {string} to - bare JID of the caller
  * @param {string} sid
  */
-export function buildProceed(to, sid) {
+export function createProceedStanza(to, sid) {
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
             <proceed xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}"/>
@@ -82,7 +82,7 @@ export function buildProceed(to, sid) {
  * @param {string} sid
  * @param {{ tie_break?: boolean }} [opts] - true when it only resolves a glare
  */
-export function buildReject(to, sid, { tie_break = false } = {}) {
+export function createRejectStanza(to, sid, { tie_break = false } = {}) {
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
             <reject xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}">${tie_break ? tieBreak() : ''}</reject>
@@ -96,7 +96,7 @@ export function buildReject(to, sid, { tie_break = false } = {}) {
  * @param {string} sid
  * @param {{ tie_break?: boolean }} [opts] - true when it only resolves a glare
  */
-export function buildRetract(to, sid, { tie_break = false } = {}) {
+export function createRetractStanza(to, sid, { tie_break = false } = {}) {
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
             <retract xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}">${tie_break ? tieBreak() : ''}</retract>
@@ -109,7 +109,7 @@ export function buildRetract(to, sid, { tie_break = false } = {}) {
  * @param {string} to - our own bare JID
  * @param {string} sid
  */
-export function buildAccept(to, sid) {
+export function createAcceptStanza(to, sid) {
     return stx`
         <message id="${getUniqueId()}" to="${to}" type="chat" xmlns="jabber:client">
             <accept xmlns="${Strophe.NS.JINGLE_MESSAGE}" id="${sid}"/>

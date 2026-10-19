@@ -4,7 +4,7 @@ import api from '../../shared/api/index.js';
 import ModelWithVCard from '../../shared/model-with-vcard.js';
 import ModelWithContact from '../../shared/model-with-contact.js';
 import ColorAwareModel from '../../shared/color.js';
-import { buildAccept, buildProceed, buildReject, buildRetract } from './jmi.js';
+import { createAcceptStanza, createProceedStanza, createRejectStanza, createRetractStanza } from './jmi.js';
 import RTPSession, { sendSessionTerminate } from './rtp.js';
 import { CALL_DIRECTION, CALL_STATES, CONNECT_TIMEOUT, ENDED_REASONS, RING_TIMEOUT } from './constants.js';
 
@@ -75,7 +75,7 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     /** Our outgoing call is retracted; an incoming one stops ringing without telling the caller. */
     onNoAnswer() {
         if (this.get('direction') === CALL_DIRECTION.OUTGOING) {
-            api.send(buildRetract(this.peer, this.sid));
+            api.send(createRetractStanza(this.peer, this.sid));
         }
         this.end(ENDED_REASONS.NO_ANSWER);
     }
@@ -132,15 +132,15 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     accept() {
         if (this.get('direction') !== CALL_DIRECTION.INCOMING || !this.isPreActive()) return;
 
-        api.send(buildProceed(this.peer_full_jid, this.sid));
-        api.send(buildAccept(_converse.session.get('bare_jid'), this.sid));
+        api.send(createProceedStanza(this.peer_full_jid, this.sid));
+        api.send(createAcceptStanza(_converse.session.get('bare_jid'), this.sid));
         this.set('state', CALL_STATES.CONNECTING);
     }
 
     /** Incoming call: decline it before it's active. */
     reject() {
         if (this.get('direction') !== CALL_DIRECTION.INCOMING || !this.isPreActive()) return;
-        api.send(buildReject(this.peer_full_jid, this.sid));
+        api.send(createRejectStanza(this.peer_full_jid, this.sid));
         this.end(ENDED_REASONS.DECLINED);
     }
 
@@ -152,7 +152,7 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
             this.session.terminate(reason);
             this.end(reason);
         } else if (this.get('direction') === CALL_DIRECTION.OUTGOING && this.isPreActive()) {
-            api.send(buildRetract(this.peer, this.sid));
+            api.send(createRetractStanza(this.peer, this.sid));
             this.end(ENDED_REASONS.CANCELLED);
         } else if (this.get('direction') === CALL_DIRECTION.INCOMING && this.get('state') === CALL_STATES.CONNECTING) {
             // Accepted, but the caller's session-initiate hasn't arrived yet.

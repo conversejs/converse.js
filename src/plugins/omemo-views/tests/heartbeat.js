@@ -213,7 +213,7 @@ describe('The OMEMO heartbeat', function () {
             window.libomemo.mock_ratchet = { counter: 53, key: new Uint8Array([5, 9, 9, 9]).buffer };
             await receiveOMEMO2Message(_converse, contact_jid, '555', conn);
 
-            const heartbeat = await u.waitUntil(() => sentHeartbeats(conn).pop(), 1500);
+            const heartbeat = await u.waitUntil(() => sentHeartbeats(conn).pop());
             // Addressed to the contact's v2 device, carries the store hint, no payload.
             const enc = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO2}"]`, heartbeat).pop();
             expect(sizzle(`keys[jid="${contact_jid}"] key[rid="555"]`, enc).length).toBe(1);
@@ -243,7 +243,7 @@ describe('The OMEMO heartbeat', function () {
             // Two messages on the same ratchet key, both past the threshold.
             window.libomemo.mock_ratchet = { counter: 53, key: new Uint8Array([5, 9, 9, 9]).buffer };
             await receiveOMEMO2Message(_converse, contact_jid, '555', conn);
-            await u.waitUntil(() => sentHeartbeats(conn).length === 1, 1500);
+            await u.waitUntil(() => sentHeartbeats(conn).length === 1);
 
             window.libomemo.mock_ratchet = { counter: 54, key: new Uint8Array([5, 9, 9, 9]).buffer };
             await receiveOMEMO2Message(_converse, contact_jid, '555', conn);
@@ -268,7 +268,7 @@ describe('The OMEMO heartbeat', function () {
             conn._dataRecv(mock.createRequest(_converse, s1));
             conn._dataRecv(mock.createRequest(_converse, s2));
 
-            await u.waitUntil(() => sentHeartbeats(conn).length >= 1, 1500);
+            await u.waitUntil(() => sentHeartbeats(conn).length >= 1);
             // Let any erroneous second heartbeat have a chance to be sent.
             await new Promise((resolve) => setTimeout(resolve, 500));
             expect(sentHeartbeats(conn).length).toBe(1);
@@ -283,7 +283,7 @@ describe('The OMEMO heartbeat', function () {
             window.libomemo.mock_ratchet = { counter: 53, key: new Uint8Array([5, 7, 7, 7]).buffer };
             await receiveLegacyMessage(_converse, contact_jid, '555', conn);
 
-            const heartbeat = await u.waitUntil(() => sentHeartbeats(conn, Strophe.NS.OMEMO).pop(), 1500);
+            const heartbeat = await u.waitUntil(() => sentHeartbeats(conn, Strophe.NS.OMEMO).pop());
             const enc = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, heartbeat).pop();
             // A KeyTransportElement: header with <key>s and an <iv>, but no <payload>.
             expect(sizzle(`key[rid="555"]`, enc).length).toBe(1);
@@ -373,7 +373,7 @@ describe('The OMEMO heartbeat', function () {
             </message>`;
             conn._dataRecv(mock.createRequest(_converse, incoming));
 
-            const heartbeat = await u.waitUntil(() => sentHeartbeats(conn, Strophe.NS.OMEMO).pop(), 1500);
+            const heartbeat = await u.waitUntil(() => sentHeartbeats(conn, Strophe.NS.OMEMO).pop());
             // The heartbeat must be a groupchat addressed to the room JID.
             expect(heartbeat.getAttribute('type')).toBe('groupchat');
             expect(heartbeat.getAttribute('to')).toBe(muc_jid);
@@ -437,7 +437,7 @@ describe('Receiving an OMEMO heartbeat', function () {
             window.libomemo.mock_ratchet = { counter: 53, key: new Uint8Array([5, 6, 6, 6]).buffer };
             await receiveOMEMO2Heartbeat(_converse, contact_jid, '555', conn);
 
-            await u.waitUntil(() => sentHeartbeats(conn).length === 1, 1500);
+            await u.waitUntil(() => sentHeartbeats(conn).length === 1);
             // Still no visible message for the (empty) incoming heartbeat itself.
             expect(view.model.messages.length).toBe(1);
         }),

@@ -52,6 +52,7 @@ converse.plugins.add('converse-chatview', {
                     'fileupload': true,
                     'location': false,
                     'spoiler': false,
+                    'voice_message': true,
                 },
             },
             { deep_merge: ['visible_toolbar_buttons'] },

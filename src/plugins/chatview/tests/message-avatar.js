@@ -36,7 +36,7 @@ describe('A Chat Message', function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
             el = view.querySelector(
-                `converse-chat-message div[data-from="${contact_jid}"] converse-avatar .avatar-initials`,
+                `converse-chat-message .chat-msg[data-from="${contact_jid}"] converse-avatar .avatar-initials`,
             );
             expect(el.textContent.trim()).toBe('M');
             expect(getComputedStyle(el).backgroundColor).toBe('rgb(195, 0, 249)');
@@ -53,7 +53,7 @@ describe('A Chat Message', function () {
 
             xmppstatus.vcard.set('fullname', 'Restless Romeo');
             el = view.querySelector(
-                `converse-chat-message div[data-from="${own_jid}"] converse-avatar .avatar-initials`,
+                `converse-chat-message .chat-msg[data-from="${own_jid}"] converse-avatar .avatar-initials`,
             );
             await u.waitUntil(() => el.textContent === 'RR');
             expect(getComputedStyle(el).backgroundColor).toBe('rgb(198, 84, 0)');
@@ -72,7 +72,7 @@ describe('A Chat Message', function () {
             el = await u.waitUntil(
                 () =>
                     view.querySelector(
-                        `converse-chat-message div[data-from="${contact_jid}"] converse-avatar svg image`,
+                        `converse-chat-message .chat-msg[data-from="${contact_jid}"] converse-avatar svg image`,
                     ),
                 2000,
             );
@@ -85,7 +85,7 @@ describe('A Chat Message', function () {
                 vcard_updated: new Date().toISOString(),
             });
             el = await u.waitUntil(() =>
-                view.querySelector(`converse-chat-message div[data-from="${own_jid}"] converse-avatar svg image`),
+                view.querySelector(`converse-chat-message .chat-msg[data-from="${own_jid}"] converse-avatar svg image`),
             );
             expect(el.getAttribute('href')).toBe(`data:image/svg+xml;base64,${image}`);
         }),

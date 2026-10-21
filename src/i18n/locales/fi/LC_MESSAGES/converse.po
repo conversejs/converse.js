@@ -1558,12 +1558,12 @@ msgstr "Moderaattori"
 #: dist/converse-no-dependencies.js:110113
 #: dist/converse-no-dependencies.js:110115
 #, fuzzy, javascript-format
-msgid "%1$s has removed a message"
+msgid "%1$s removed a message"
 msgstr "%1$s on poistanut tämän viestin"
 
 #: dist/converse-no-dependencies.js:110115
 #, fuzzy
-msgid "You have removed a message"
+msgid "You removed a message"
 msgstr "Sinulla on lukemattomia viestejä"
 
 #: dist/converse-no-dependencies.js:113724

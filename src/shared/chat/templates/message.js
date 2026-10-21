@@ -34,6 +34,10 @@ export default (el) => {
     const username = el.model.getDisplayName();
 
     const is_action = is_me_message || is_retracted;
+    // An action row states an event, so its timestamp is when that event
+    // happened: for a retraction, when the message was removed, not sent.
+    // Moderations carry no such time, so they fall back to the sent time.
+    const action_time = (is_retracted && el.model.get('retracted')) || edited || time;
     const should_show_header = !is_action && !is_followup;
     const should_show_avatar = el.shouldShowAvatar() && should_show_header;
 
@@ -126,15 +130,13 @@ export default (el) => {
                     style="position: relative;"
                 >
                     <div class="chat-msg__message">
-                        ${is_action
-                            ? html`<converse-time timestamp="${edited || time}" class="chat-msg__time"></converse-time>
-                                  ${is_me_message
-                                      ? html`<span class="chat-msg__author" style="${author_style}"
-                                                >${is_me_message ? '**' : ''}${username}</span
-                                            >&nbsp;`
-                                      : ''}`
+                        ${is_me_message
+                            ? html`<span class="chat-msg__author" style="${author_style}">**${username}</span>&nbsp;`
                             : ''}
                         ${is_retracted ? el.renderRetraction() : el.renderMessageText()}
+                        ${is_action
+                            ? html`<converse-time timestamp="${action_time}" class="chat-msg__time"></converse-time>`
+                            : ''}
                     </div>
                     <converse-message-actions
                         .model=${el.model}

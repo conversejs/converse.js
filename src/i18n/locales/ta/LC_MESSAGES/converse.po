@@ -1520,11 +1520,11 @@ msgstr "ஒரு மதிப்பீட்டாளர்"
 #: dist/converse-no-dependencies.js:110113
 #: dist/converse-no-dependencies.js:110115
 #, javascript-format
-msgid "%1$s has removed a message"
+msgid "%1$s removed a message"
 msgstr "%1$s ஒரு செய்தியை அகற்றிவிட்டது"
 
 #: dist/converse-no-dependencies.js:110115
-msgid "You have removed a message"
+msgid "You removed a message"
 msgstr "நீங்கள் ஒரு செய்தியை அகற்றிவிட்டீர்கள்"
 
 #: dist/converse-no-dependencies.js:113724

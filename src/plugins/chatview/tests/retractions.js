@@ -47,7 +47,13 @@ describe('A sent chat message', function () {
             expect(message.get('editable')).toBeFalsy();
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
-            expect(el.firstElementChild.textContent.trim()).toBe('You have removed a message');
+            expect(el.firstElementChild.textContent.trim()).toBe('You removed a message');
+
+            // The timestamp trails the text and shows when the message was
+            // removed, not when it was sent.
+            const time_el = view.querySelector('.chat-msg--retracted .chat-msg__message').lastElementChild;
+            expect(time_el.matches('converse-time.chat-msg__time')).toBe(true);
+            expect(time_el.getAttribute('timestamp')).toBe(message.get('retracted'));
         }),
     );
 });
@@ -96,7 +102,7 @@ describe('A received chat message', function () {
             expect(message.get('retracted')).toBeTruthy();
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
-            expect(msg_el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
+            expect(msg_el.firstElementChild.textContent.trim()).toBe('Mercutio removed a message');
         }),
     );
 
@@ -142,7 +148,7 @@ describe('A received chat message', function () {
             expect(message.get('retracted')).toBeTruthy();
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
-            expect(msg_el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
+            expect(msg_el.firstElementChild.textContent.trim()).toBe('Mercutio removed a message');
         }),
     );
 });
@@ -283,7 +289,7 @@ describe('A message retraction', function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction');
-            expect(el.firstElementChild.textContent.trim()).toBe('Mercutio has removed a message');
+            expect(el.firstElementChild.textContent.trim()).toBe('Mercutio removed a message');
             expect(u.hasClass('chat-msg--followup', el.parentElement)).toBe(false);
         }),
     );
@@ -352,7 +358,7 @@ describe('A Received Chat Message', function () {
             expect(message.get('retracted')).toBeTruthy();
             expect(view.querySelectorAll('.chat-msg--retracted').length).toBe(1);
             const msg_el = view.querySelector('.chat-msg--retracted .chat-msg__message .retraction span');
-            expect(msg_el.textContent.trim()).toBe('Mercutio has removed a message');
+            expect(msg_el.textContent.trim()).toBe('Mercutio removed a message');
         }),
     );
 });

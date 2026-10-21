@@ -10,8 +10,10 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { parseErrorStanza } from '../../shared/parsers.js';
+import { StanzaError } from '../../shared/errors.js';
 import log from '@converse/log';
 import { initStorage } from '../../utils/storage.js';
+import { isErrorStanza } from '../../utils/stanza.js';
 import { parseStanzaForBookmarks } from './parsers.js';
 import '../../plugins/muc/index.js';
 import { getStorageKeys, isPinnedExtension } from './utils.js';
@@ -54,7 +56,16 @@ class Bookmarks extends Collection {
         this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on(
             'remove',
-            /** @param {Bookmark} bookmark */ (bookmark) => {
+            /**
+             * @param {Bookmark} bookmark
+             * @param {Bookmarks} _collection
+             * @param {{ rollback?: boolean }} [options]
+             */
+            (bookmark, _collection, options) => {
+                // A rolled back bookmark never reached the server, so there's
+                // nothing to retract, and its room must stay open.
+                if (options?.rollback) return;
+
                 this.sendRemoveBookmarkStanza(bookmark);
                 this.leaveRoom(bookmark);
             },
@@ -131,7 +142,7 @@ class Bookmarks extends Collection {
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      * @param {boolean} [create=true]
-     * @param {import('@converse/skeletor').FetchOrCreateOptions} [options]
+     * @param {import('./types').SetBookmarkOptions} [options]
      * @returns {Promise<Bookmark|undefined>}
      */
     async setBookmark(attrs, create = true, options = {}) {
@@ -143,6 +154,8 @@ class Bookmarks extends Collection {
         const persistence_options = { ...options, promise: true };
         let send_stanza = false;
         let bookmark = this.get(attrs.jid);
+        // The changed attributes' previous values, or `null` for a new bookmark
+        let previous = null;
 
         try {
             if (bookmark) {
@@ -151,6 +164,7 @@ class Bookmarks extends Collection {
                     return result || (attrs[k] ?? '') !== (bookmark.attributes[k] ?? '');
                 }, false);
                 if (has_changed) {
+                    previous = Object.fromEntries(Object.keys(attrs).map((k) => [k, bookmark.get(k)]));
                     await bookmark.save(attrs, persistence_options);
                     send_stanza = true;
                 }
@@ -160,12 +174,45 @@ class Bookmarks extends Collection {
             }
 
             if (bookmark && send_stanza) {
-                await this.sendBookmarkStanza(bookmark);
+                try {
+                    await this.sendBookmarkStanza(bookmark);
+                } catch (error) {
+                    // Only a refusal tells us the server doesn't have the
+                    // change. After a timeout it might, so we keep it.
+                    const refused = isErrorStanza(error) || error instanceof StanzaError;
+                    if (refused && !options.keep_on_error) {
+                        await this.#rollBack(bookmark, previous, options);
+                    }
+                    throw error;
+                }
             }
             return bookmark;
         } catch (error) {
             this.onBookmarkError(error);
             throw error;
+        }
+    }
+
+    /**
+     * Undoes a local bookmark change that the server didn't accept, so that
+     * our bookmarks don't claim something the server doesn't have.
+     * @param {Bookmark} bookmark
+     * @param {Object|null} previous - The changed attributes' previous values,
+     *  or `null` if the bookmark was newly created.
+     * @param {import('./types').SetBookmarkOptions} options
+     */
+    async #rollBack(bookmark, previous, options) {
+        try {
+            if (previous) {
+                await bookmark.save(previous, /** @type {Object} */ ({ ...options, rollback: true, promise: true }));
+            } else {
+                await new Promise((success, error) =>
+                    bookmark.destroy(/** @type {Object} */ ({ rollback: true, success, error })),
+                );
+            }
+        } catch (e) {
+            log.error('Could not roll back a bookmark that failed to publish');
+            log.error(e);
         }
     }
 
@@ -282,8 +329,14 @@ class Bookmarks extends Collection {
 
     /**
      * @param {Bookmark} bookmark
+     * @param {boolean} _autojoin
+     * @param {{ rollback?: boolean }} [options]
      */
-    onAutoJoinChanged(bookmark) {
+    onAutoJoinChanged(bookmark, _autojoin, options) {
+        // A rolled back change never reached the server, so the room should
+        // stay as the user left it.
+        if (options?.rollback) return;
+
         if (bookmark.get('autojoin')) {
             this.openBookmarkedRoom(bookmark);
         } else {

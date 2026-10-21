@@ -345,7 +345,7 @@ describe('Pinned groupchats in the list of open groupchats', function () {
     );
 
     it(
-        'stay listed once when the server refuses a pin',
+        'stay where they were when the server refuses a pin',
         mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
@@ -365,9 +365,15 @@ describe('Pinned groupchats in the list of open groupchats', function () {
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] item[id="${muc_jid}"] extensions pinned`,
                 false,
             );
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            expect(getRoomJIDs(list).filter((jid) => jid === muc_jid).length).toBe(1);
-            expect(getRoomJIDs(list).length).toBe(2);
+            await u.waitUntil(() => !_converse.state.bookmarks.get(muc_jid));
+            await list.updateComplete;
+
+            // The room isn't shown as pinned, since the server doesn't have
+            // the pin, and it stays open.
+            expect(getRoomJIDs(list)).toEqual(['aardvark@montague.lit', muc_jid]);
+            expect(getPinnedLabels(list).length).toBe(0);
+            expect(getRoomAction(list, muc_jid, 'Pin to top')).not.toBeNull();
+            expect(_converse.state.chatboxes.get(muc_jid).get('closed')).toBeFalsy();
         }),
     );
 

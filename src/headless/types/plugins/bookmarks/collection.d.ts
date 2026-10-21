@@ -26,10 +26,10 @@ declare class Bookmarks extends Collection<Bookmark> {
     /**
      * @param {import('./types').BookmarkAttrs} attrs
      * @param {boolean} [create=true]
-     * @param {import('@converse/skeletor').FetchOrCreateOptions} [options]
+     * @param {import('./types').SetBookmarkOptions} [options]
      * @returns {Promise<Bookmark|undefined>}
      */
-    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean, options?: import("@converse/skeletor").FetchOrCreateOptions): Promise<Bookmark | undefined>;
+    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean, options?: import("./types").SetBookmarkOptions): Promise<Bookmark | undefined>;
     /**
      * @param {Bookmark} bookmark
      * @returns {Promise<void|Element>}
@@ -56,8 +56,12 @@ declare class Bookmarks extends Collection<Bookmark> {
     fetchBookmarksFromServer(deferred: Promise<any>): Promise<void>;
     /**
      * @param {Bookmark} bookmark
+     * @param {boolean} _autojoin
+     * @param {{ rollback?: boolean }} [options]
      */
-    onAutoJoinChanged(bookmark: Bookmark): void;
+    onAutoJoinChanged(bookmark: Bookmark, _autojoin: boolean, options?: {
+        rollback?: boolean;
+    }): void;
     /**
      * @param {Bookmark} bookmark
      */

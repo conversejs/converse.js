@@ -71,7 +71,7 @@ export default class AudioPlayer extends CustomElement {
         this.duration = 0;
         this.volume = 1;
         this.is_muted = false;
-        this.is_loading = true;
+        this.is_loading = false;
         this.has_error = false;
         this.playback_speed = 1;
         /** @type {HTMLAudioElement|null} */
@@ -126,7 +126,6 @@ export default class AudioPlayer extends CustomElement {
 
     #onLoadedMetadata = () => {
         this.duration = this.audio?.duration || 0;
-        this.is_loading = false;
         this.requestUpdate();
     };
 
@@ -142,6 +141,7 @@ export default class AudioPlayer extends CustomElement {
 
     #onPause = () => {
         this.is_playing = false;
+        this.is_loading = false;
         this.requestUpdate();
     };
 
@@ -197,6 +197,9 @@ export default class AudioPlayer extends CustomElement {
             this.audio.pause();
         } else {
             this.audio.play().catch((error) => {
+                // Pausing before playback starts rejects the pending play()
+                if (error.name === "AbortError") return;
+
                 console.error("Audio playback failed:", error);
                 this.has_error = true;
                 this.requestUpdate();

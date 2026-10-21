@@ -23,6 +23,7 @@ export default class AdHocCommands extends CustomElement {
             jid: { type: String },
             showform: { type: String },
             view: { type: String },
+            note: { type: String },
         };
     }
 
@@ -32,6 +33,7 @@ export default class AdHocCommands extends CustomElement {
         this.fetching = false;
         this.showform = '';
         this.jid = _converse.session?.get('domain') ?? '';
+        this.note = '';
         this.commands = /** @type {AdHocCommandUIProps[]} */ ([]);
     }
 
@@ -195,9 +197,15 @@ export default class AdHocCommands extends CustomElement {
                 cmd.alert = __('Command completed successfully');
                 cmd.alert_type = 'primary';
             }
+            if (fields && fields.length > 0) {
+                // Show any result fields
+                cmd.fields = fields;
+            }
+            // Clear actions to only show close button
+            cmd.actions = [];
         } else {
             log.error(`Unexpected status for ad-hoc command: ${status}`);
-            cmd.alert = __('Completed');
+            cmd.alert = __('Command completed');
             cmd.alert_type = 'primary';
         }
         this.requestUpdate();

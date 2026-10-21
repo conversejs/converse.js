@@ -5,16 +5,20 @@ import { getChatStyle } from 'shared/chat/utils.js';
 
 const { CHATROOMS_TYPE } = constants;
 
-/**
- * @param {import('../chat').default} el
- */
 export default (el) => {
     const help_messages = el.getHelpMessages();
     const show_help_messages = el.model.get('show_help_messages');
     const is_overlayed = api.settings.get('view_mode') === 'overlayed';
     const style = getChatStyle(el.model);
+    const contact_name = el.model.getDisplayName?.() || el.model.get('jid');
+
     return html`
-        <div class="flyout box-flyout" style="${style || nothing}">
+        <div
+            class="flyout box-flyout"
+            style="${style || nothing}"
+            role="complementary"
+            aria-label="${__('Chat with %1$s', contact_name)}"
+        >
             ${is_overlayed ? html`<converse-dragresize></converse-dragresize>` : ''}
             ${el.model
                 ? html`
@@ -47,7 +51,12 @@ export default (el) => {
                                   : ''}
                           </div>
                           <converse-entity-time-alert .model="${el.model}"></converse-entity-time-alert>
-                          <converse-chat-bottom-panel .model="${el.model}" class="bottom-panel">
+                          <converse-chat-bottom-panel
+                              .model="${el.model}"
+                              class="bottom-panel"
+                              role="form"
+                              aria-label="${__('Message composition form')}"
+                          >
                           </converse-chat-bottom-panel>
                       </div>
                   `

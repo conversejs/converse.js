@@ -29,6 +29,7 @@ import './apps/social/index.js'; // XEP-0277 Microblogging ("Social" app)
  * --------------
  * Plugin imports may be removed if the plugin if unneeded (rebuild required)
  */
+import './plugins/accessibility/index.js'; // Accessibility features for screen readers and keyboard navigation
 import './plugins/modal/index.js';
 import './plugins/adhoc-views/index.js'; // Views for XEP-0050 Ad-Hoc commands
 import './plugins/bookmark-views/index.js'; // Views for XEP-0048 Bookmarks
@@ -53,6 +54,7 @@ import './plugins/time-views/index.js'; // Views for XEP-0202 Entity Time
 import './plugins/dragresize/index.js'; // Allows chat boxes to be resized by dragging them
 import './plugins/fullscreen/index.js';
 import './plugins/reactions-views/index.js'; // XEP-0444 Reactions
+import './plugins/voice-messages/index.js'; // Voice message recording and playback with accessibility
 /* END: Plugins */
 
 _converse.exports.CustomElement = CustomElement;

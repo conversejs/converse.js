@@ -67,6 +67,7 @@ export default (el) => {
             data-from="${el.model.get('from')}"
             data-encrypted="${el.model.get('is_encrypted')}"
             aria-label="${aria_label}"
+            tabindex="0"
         >
             <!-- Anchor to allow us to scroll the message into view -->
             <a id="${msgid}" aria-hidden="true"></a>
@@ -102,7 +103,7 @@ export default (el) => {
                                   style="${author_style}"
                               >${username}</button>
                           </span>
-                          ${hats.map((h) => html`<span class="badge badge-secondary">${h.title}</span>`)}
+                          ${hats.map((h) => html`<span class="badge badge-secondary" role="status">${h.title}</span>`)}
 
                           <converse-time timestamp="${display_time}" class="chat-msg__time"></converse-time>
                           ${el.model.get('is_encrypted')
@@ -127,6 +128,8 @@ export default (el) => {
                         ? 'chat-msg__body--received'
                         : ''} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}"
                     style="position: relative;"
+                    role="region"
+                    aria-label="${__('Message content')}"
                 >
                     <div class="chat-msg__message">
                         ${is_me_message
@@ -139,6 +142,8 @@ export default (el) => {
                     <converse-message-actions
                         .model=${el.model}
                         ?is_retracted=${is_retracted}
+                        aria-label="${__('Message actions')}"
+                        role="toolbar"
                     ></converse-message-actions>
                 </div>
 

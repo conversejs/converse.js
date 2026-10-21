@@ -24,6 +24,7 @@ export class ChatToolbar extends CustomElement {
             show_location_button: { type: Boolean },
             show_send_button: { type: Boolean },
             show_spoiler_button: { type: Boolean },
+            show_voice_message_button: { type: Boolean },
         };
     }
 
@@ -37,6 +38,7 @@ export class ChatToolbar extends CustomElement {
         this.show_emoji_button = false;
         this.show_fileupload_button = false;
         this.show_location_button = false;
+        this.show_voice_message_button = false;
     }
 
     connectedCallback() {
@@ -89,6 +91,10 @@ export class ChatToolbar extends CustomElement {
             );
         }
 
+        if (this.show_voice_message_button) {
+            buttons.push(this.getVoiceMessageButton());
+        }
+
         /**
          * *Hook* which allows plugins to add more buttons to a chat's toolbar
          * @event _converse#getToolbarButtons
@@ -127,6 +133,32 @@ export class ChatToolbar extends CustomElement {
         } else {
             return '';
         }
+    }
+
+    getVoiceMessageButton() {
+        if (!api.settings.get('enable_voice_messages')) {
+            return '';
+        }
+
+        // Check if browser supports audio recording
+        const is_supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+
+        if (!is_supported) {
+            return '';
+        }
+
+        const i18n_voice_message = __('Record voice message');
+        const color = this.is_groupchat ? '--muc-color' : '--chat-color';
+
+        return html` <button
+            type="button"
+            class="btn toggle-voice-message"
+            title="${i18n_voice_message} (Alt+Shift+V)"
+            aria-label="${i18n_voice_message}"
+            @click=${this.toggleVoiceRecording}
+        >
+            <converse-icon color="var(${color})" class="fa fa-microphone" size="1em"></converse-icon>
+        </button>`;
     }
 
     getSpoilerButton() {
@@ -188,6 +220,24 @@ export class ChatToolbar extends CustomElement {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         this.model.set('composing_spoiler', !this.model.get('composing_spoiler'));
+    }
+
+    /** @param {MouseEvent} ev */
+    toggleVoiceRecording(ev) {
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
+
+        // Emit event to start recording
+        this.model.trigger('startVoiceRecording');
+
+        /**
+         * When a voice message button has been clicked.
+         * @event _converse#voiceMessageButtonClicked
+         * @type { object }
+         * @property { _converse.ChatBox | _converse.ChatRoom } model
+         * @example _converse.api.listen.on('voiceMessageButtonClicked', (model) => { ... });
+         */
+        api.trigger('voiceMessageButtonClicked', { model: this.model });
     }
 }
 

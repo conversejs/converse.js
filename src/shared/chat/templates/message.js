@@ -1,4 +1,5 @@
 import { html, nothing } from 'lit';
+import { converse } from '@converse/headless';
 import { shouldRenderMediaFromURL } from '../../../utils/url.js';
 import { getAuthorStyle } from '../../../utils/color.js';
 import { getHats } from '../utils.js';
@@ -7,6 +8,8 @@ import 'shared/avatar/avatar.js';
 import 'shared/chat/unfurl.js';
 import 'shared/chat/reply-context.js';
 import 'shared/components/time.js';
+
+const { dayjs } = converse.env;
 
 /**
  * @param {import('../message').default} el
@@ -22,6 +25,7 @@ export default (el) => {
     const msgid = el.model.get('msgid');
     const sender = el.model.get('sender');
     const time = el.model.get('time');
+    const pretty_time = dayjs(edited || time).format('llll');
 
     const contact = el.model.occupant || el.model.contact;
     const author_style = getAuthorStyle(contact);
@@ -37,24 +41,41 @@ export default (el) => {
     // Note: it can happen that the contact has not the vcard attribute but the message has.
     const avatar_model = contact?.vcard ? contact : el.model;
 
+    const aria_label = [
+        is_retracted
+            ? __('Retracted message from %1$s', username)
+            : is_me_message
+              ? __('Action by %1$s', username)
+              : __('Message from %1$s', username),
+        pretty_time,
+        ...(el.model.get('is_encrypted') ? [__('Encrypted')] : []),
+    ].join(', ');
+
     return html`${is_first_unread
-            ? html`<div class="message separator">
+            ? html`<div class="message separator" role="separator" aria-label="${i18n_new_messages}">
                   <hr class="separator" />
                   <span class="separator-text">${i18n_new_messages}</span>
               </div>`
             : ''}
-        <div
+        <article
             class="message chat-msg ${el.getExtraMessageClasses()}"
             data-isodate="${time}"
             data-msgid="${msgid}"
             data-from="${el.model.get('from')}"
             data-encrypted="${el.model.get('is_encrypted')}"
+            aria-label="${aria_label}"
         >
             <!-- Anchor to allow us to scroll the message into view -->
-            <a id="${msgid}"></a>
+            <a id="${msgid}" aria-hidden="true"></a>
 
             ${should_show_avatar
-                ? html`<a class="show-msg-author-modal" @click=${el.showUserModal}>
+                ? html`<button
+                      type="button"
+                      class="show-msg-author-modal"
+                      @click=${el.showUserModal}
+                      aria-hidden="true"
+                      tabindex="-1"
+                  >
                       <converse-avatar
                           .model=${avatar_model}
                           class="avatar align-self-center"
@@ -62,23 +83,32 @@ export default (el) => {
                           nonce="${avatar_model.vcard?.get('vcard_updated')}"
                           height="40"
                           width="40"
+                          aria-hidden="true"
                       ></converse-avatar>
-                  </a>`
+                  </button>`
                 : ''}
 
             <div class="chat-msg__content chat-msg__content--${sender} ${is_action ? 'chat-msg__content--action' : ''}">
                 ${should_show_header
                     ? html`<span class="chat-msg__heading">
                           <span class="chat-msg__author">
-                              <a class="show-msg-author-modal" @click=${el.showUserModal} style="${author_style}"
-                                  >${username}</a
-                              >
+                              <button
+                                  type="button"
+                                  class="show-msg-author-modal"
+                                  @click=${el.showUserModal}
+                                  style="${author_style}"
+                              >${username}</button>
                           </span>
                           ${hats.map((h) => html`<span class="badge badge-secondary">${h.title}</span>`)}
 
                           <converse-time timestamp="${edited || time}" class="chat-msg__time"></converse-time>
                           ${el.model.get('is_encrypted')
-                              ? html`<converse-icon class="fa fa-lock" size="1.1em"></converse-icon>`
+                              ? html`<converse-icon
+                                  class="fa fa-lock"
+                                  size="1.1em"
+                                  aria-label="${__('Encrypted message')}"
+                                  role="img"
+                              ></converse-icon>`
                               : ''}
                       </span>`
                     : ''}
@@ -135,5 +165,5 @@ export default (el) => {
                           )
                     : ''}
             </div>
-        </div>`;
+        </article>`;
 };

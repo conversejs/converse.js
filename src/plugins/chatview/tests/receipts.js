@@ -139,6 +139,9 @@ describe('A delivery receipt', function () {
             </message>`;
             api.connection.get()._dataRecv(mock.createRequest(_converse, msg));
             await u.waitUntil(() => view.querySelectorAll('.chat-msg__receipt').length === 1);
+            const receipt = view.querySelector('.chat-msg__receipt');
+            expect(receipt.getAttribute('role')).toBe('img');
+            expect(receipt.getAttribute('aria-label')).toBe('Delivered');
 
             // Also handle receipts with type 'chat'. See #1353
             spyOn(_converse.exports, 'handleMessageStanza').and.callThrough();

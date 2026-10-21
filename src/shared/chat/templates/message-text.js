@@ -16,7 +16,14 @@ function tplEditedIcon(el) {
 }
 
 function tplCheckmark() {
-    return html`<converse-icon size="0.75em" class="fa fa-check chat-msg__receipt"></converse-icon>`;
+    const i18n_delivered = __('Delivered');
+    return html`<converse-icon
+        size="0.75em"
+        class="fa fa-check chat-msg__receipt"
+        role="img"
+        aria-label="${i18n_delivered}"
+        title="${i18n_delivered}"
+    ></converse-icon>`;
 }
 
 /**

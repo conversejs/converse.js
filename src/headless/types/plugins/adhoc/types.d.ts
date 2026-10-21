@@ -5,9 +5,10 @@ export type AdHocCommand = {
     sessionid: string;
     status: string;
 };
-type AdHocCommandResultNote = {
+export type AdHocCommandNoteType = 'info' | 'warn' | 'error';
+export type AdHocCommandResultNote = {
     text: string;
-    type: 'info' | 'warn' | 'error';
+    type: AdHocCommandNoteType;
 };
 export type AdHocCommandAttrs = {
     sessionid: string;
@@ -16,5 +17,4 @@ export type AdHocCommandAttrs = {
 };
 export type AdHocCommandResult = XForm & AdHocCommandAttrs;
 export type AdHocCommandAction = 'execute' | 'cancel' | 'prev' | 'next' | 'complete';
-export {};
 //# sourceMappingURL=types.d.ts.map

@@ -2,7 +2,7 @@ import log from "@converse/log";
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
-import { parseCommandResult, parseForCommands } from './utils.js';
+import { parseCommandNote, parseCommandResult, parseForCommands } from './utils.js';
 
 const { Strophe, u, stx } = converse.env;
 
@@ -81,7 +81,10 @@ export default {
                 const { __ } = _converse;
                 return {
                     status: 'error',
-                    note: __('A timeout occurred'),
+                    note: /** @type {import('./types').AdHocCommandResultNote} */ ({
+                        text: __('A timeout occurred'),
+                        type: 'error',
+                    }),
                 }
             } else if (u.isErrorStanza(result)) {
                 log.error('Error while trying to execute an ad-hoc command');
@@ -94,7 +97,7 @@ export default {
             return {
                 status,
                 ...(status === 'executing' || (status === 'completed' && resultData) ? parseCommandResult(result) : {}),
-                note: result.querySelector('note')?.textContent
+                note: parseCommandNote(command),
             }
         }
     }

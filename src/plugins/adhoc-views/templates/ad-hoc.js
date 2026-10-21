@@ -20,7 +20,6 @@ export default (el) => {
     const i18n_no_commands_found = __('No commands found');
     return html`
         ${el.alert ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert}</div>` : ''}
-        ${el.note ? html`<p class="form-help">${el.note}</p>` : ''}
 
         <form class="converse-form" @submit=${el.fetchCommands}>
             <fieldset>

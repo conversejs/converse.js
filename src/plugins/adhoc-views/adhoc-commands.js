@@ -98,6 +98,7 @@ export default class AdHocCommands extends CustomElement {
             this.showform = '';
             this.requestUpdate();
         } else {
+            this.clearCommand(cmd);
             try {
                 const xform = await api.adhoc.fetchCommandForm(jid, node);
                 Object.assign(cmd, xform);
@@ -139,6 +140,7 @@ export default class AdHocCommands extends CustomElement {
         delete cmd.sessionid;
         delete cmd.alert_type;
         delete cmd.status;
+        delete cmd.note;
         cmd.fields = [];
         cmd.actions = [];
         this.showform = '';
@@ -186,19 +188,30 @@ export default class AdHocCommands extends CustomElement {
             cmd.alert = __('Executing');
             cmd.alert_type = 'primary';
         } else if (status === 'completed') {
-            this.alert_type = 'primary';
-            this.alert = __('Completed');
-            this.note = note;
-            if (response.type === 'result') {
-                Object.assign(cmd, { fields, instructions, actions, status });
-            } else {
-                this.clearCommand(cmd);
+            const { type, title, reported, items } = response;
+            Object.assign(cmd, { type, title, reported, items, instructions, note, status, fields: fields ?? [] });
+            if (!note) {
+                // The server's note, when present, is the more informative completion message
+                cmd.alert = __('Command completed successfully');
+                cmd.alert_type = 'primary';
             }
         } else {
             log.error(`Unexpected status for ad-hoc command: ${status}`);
             cmd.alert = __('Completed');
             cmd.alert_type = 'primary';
         }
+        this.requestUpdate();
+    }
+
+    /**
+     * Dismiss a command which the server has already completed.
+     * Its session has ended, so unlike `cancel` there's nothing to tell the server.
+     * @param {MouseEvent} ev
+     * @param {AdHocCommandUIProps} cmd
+     */
+    close(ev, cmd) {
+        ev.preventDefault();
+        this.clearCommand(cmd);
         this.requestUpdate();
     }
 

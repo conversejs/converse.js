@@ -55,7 +55,13 @@ export default class AdHocCommands extends CustomElement {
      * @param {AdHocCommandAction} action
      */
     runCommand(form: HTMLFormElement, action: import("@converse/headless/types/plugins/adhoc/types").AdHocCommandAction): Promise<void>;
-    note: any;
+    /**
+     * Dismiss a command which the server has already completed.
+     * Its session has ended, so unlike `cancel` there's nothing to tell the server.
+     * @param {MouseEvent} ev
+     * @param {AdHocCommandUIProps} cmd
+     */
+    close(ev: MouseEvent, cmd: import("./types").AdHocCommandUIProps): void;
     /**
      * @param {MouseEvent} ev
      */

@@ -16,6 +16,20 @@ export function parseForCommands(stanza) {
 }
 
 /**
+ * @param {Element} [cmd_el] - The `<command>` element of an ad-hoc command response
+ * @returns {import('./types').AdHocCommandResultNote|null}
+ */
+export function parseCommandNote(cmd_el) {
+    const note = cmd_el?.querySelector('note');
+    return note
+        ? {
+              text: note.textContent,
+              type: /** @type {import('./types').AdHocCommandNoteType} */ (note.getAttribute('type')),
+          }
+        : null;
+}
+
+/**
  * Given a "result" IQ stanza containing the outcome of an Ad-hoc command that
  * was executed, parse it and return the values as a JSON object.
  * @param {Element} iq
@@ -23,17 +37,11 @@ export function parseForCommands(stanza) {
  */
 export function parseCommandResult(iq) {
     const cmd_el = sizzle(`command[xmlns="${Strophe.NS.ADHOC}"]`, iq).pop();
-    const note = cmd_el.querySelector('note');
 
     return {
         ...parseXForm(iq),
         sessionid: cmd_el.getAttribute('sessionid'),
-        note: note
-            ? {
-                  text: note.textContent,
-                  type: /** @type {'info'|'warn'|'error'} */ (note.getAttribute('type')),
-              }
-            : null,
+        note: parseCommandNote(cmd_el),
         actions: Array.from(cmd_el.querySelector('actions')?.children ?? []).map((a) => a.nodeName.toLowerCase()),
     };
 }

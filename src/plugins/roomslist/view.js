@@ -32,8 +32,21 @@ export class RoomsList extends CustomElement {
         this.listenTo(chatboxes, 'change', this.renderIfRelevantChange);
         this.listenTo(chatboxes, 'vcard:add', () => this.requestUpdate());
         this.listenTo(chatboxes, 'vcard:change', () => this.requestUpdate());
-        this.listenTo(chatboxes, 'bookmark:change', () => this.requestUpdate());
         this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.listenTo(_converse, 'bookmarksInitialized', this.onBookmarksInitialized);
+        this.onBookmarksInitialized(_converse.state.bookmarks);
+    }
+
+    /** @param {import('@converse/headless').Bookmarks} bookmarks */
+    onBookmarksInitialized(bookmarks) {
+        if (!bookmarks) return;
+        this.stopListening(bookmarks, 'add remove change', this.onBookmarksChanged);
+        this.listenTo(bookmarks, 'add remove change', this.onBookmarksChanged);
+        this.requestUpdate();
+    }
+
+    onBookmarksChanged() {
+        this.requestUpdate();
     }
 
     render() {
@@ -47,7 +60,7 @@ export class RoomsList extends CustomElement {
 
     /** @param {import('@converse/headless').Model} model */
     renderIfRelevantChange(model) {
-        const attrs = ['hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity'];
+        const attrs = ['closed', 'hidden', 'name', 'num_unread', 'num_unread_general', 'has_activity'];
         const changed = model.changed || {};
         if (u.muc.isChatRoom(model) && Object.keys(changed).filter((m) => attrs.includes(m)).length) {
             this.requestUpdate();
@@ -57,9 +70,25 @@ export class RoomsList extends CustomElement {
     /** @returns {import('@converse/headless').MUC[]} */
     getRoomsToShow() {
         const { chatboxes } = _converse.state;
-        const rooms = chatboxes.filter((m) => m.get('type') === CHATROOMS_TYPE && !m.get('closed') && !m.bookmark?.get('pinned'));
+        const rooms = chatboxes.filter(
+            (m) => m.get('type') === CHATROOMS_TYPE && !m.get('closed') && !this.isRoomPinned(m),
+        );
         rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
         return rooms;
+    }
+
+    /** @returns {import('@converse/headless').Bookmarks|undefined} */
+    getBookmarks() {
+        return _converse.state.bookmarks;
+    }
+
+    canPinRooms() {
+        return this.getBookmarks()?.supportsPinning() === true;
+    }
+
+    /** @param {import('@converse/headless').MUC} room */
+    isRoomPinned(room) {
+        return this.getBookmarks()?.get(room.get('jid'))?.get('pinned') === true;
     }
 
     /** @param {Event} ev */
@@ -90,24 +119,21 @@ export class RoomsList extends CustomElement {
     /** @param {Event} ev */
     pinRoom(ev) {
         ev.preventDefault();
+        const bookmarks = this.getBookmarks();
+        if (!bookmarks?.supportsPinning()) return;
         const target = /** @type {HTMLElement} */ (ev.currentTarget);
         const jid = target.getAttribute('data-room-jid');
-        const { bookmarks } = _converse.state;
-        bookmarks
-            .where({ jid })
-            .forEach(/** @param {import('@converse/headless').Bookmark} b */ (b) =>
-                bookmarks.pinBookmark(b));
+        bookmarks.pinRoom(jid).catch(() => undefined);
     }
 
     /** @param {Event} ev */
     unpinRoom(ev) {
         ev.preventDefault();
+        const bookmarks = this.getBookmarks();
+        if (!bookmarks?.supportsPinning()) return;
         const target = /** @type {HTMLElement} */ (ev.currentTarget);
         const jid = target.getAttribute('data-room-jid');
-        const { bookmarks } = _converse.state;
-        bookmarks
-            .where({ jid })
-            .forEach((b) => bookmarks.unpinBookmark(b));
+        bookmarks.unpinRoom(jid).catch(() => undefined);
     }
 
     /** @param {Event} [ev] */

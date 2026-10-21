@@ -1,6 +1,9 @@
 export class RoomsList extends CustomElement {
     model: RoomsListModel;
     addEventListeners(): void;
+    /** @param {import('@converse/headless').Bookmarks} bookmarks */
+    onBookmarksInitialized(bookmarks: import("@converse/headless").Bookmarks): void;
+    onBookmarksChanged(): void;
     render(): import("lit-html").TemplateResult<1>;
     /** @param {import('@converse/headless').Model} model */
     renderIfChatRoom(model: import("@converse/headless").Model): void;
@@ -8,6 +11,11 @@ export class RoomsList extends CustomElement {
     renderIfRelevantChange(model: import("@converse/headless").Model): void;
     /** @returns {import('@converse/headless').MUC[]} */
     getRoomsToShow(): import("@converse/headless").MUC[];
+    /** @returns {import('@converse/headless').Bookmarks|undefined} */
+    getBookmarks(): import("@converse/headless").Bookmarks | undefined;
+    canPinRooms(): boolean;
+    /** @param {import('@converse/headless').MUC} room */
+    isRoomPinned(room: import("@converse/headless").MUC): boolean;
     /** @param {Event} ev */
     openRoom(ev: Event): void;
     /** @param {Event} ev */

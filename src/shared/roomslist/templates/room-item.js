@@ -3,26 +3,24 @@
  * @typedef {import('plugins/bookmark-views/components/bookmarks-pin-list').PinnedBookmarksView} PinnedBookmarksView
  * @typedef {import('@converse/headless').MUC} MUC
  */
-import { html } from "lit";
-import { api, u } from "@converse/headless";
-import 'plugins/muc-views/modals/add-muc.js';
-import 'plugins/muc-views/modals/muc-list.js';
+import { html } from 'lit';
+import { api, u } from '@converse/headless';
 import { __ } from 'i18n';
-import { getUnreadMsgsDisplay } from "shared/chat/utils.js";
+import { getUnreadMsgsDisplay } from 'shared/chat/utils.js';
 
 const { isUniView } = u;
 
 /** @param {MUC} room */
-function isCurrentlyOpen (room) {
+function isCurrentlyOpen(room) {
     return isUniView() && !room.get('hidden');
 }
 
 /** @param {MUC} room */
-function tplUnreadIndicator (room) {
-    return html`<span class="list-item-badge badge badge--muc msgs-indicator">${ getUnreadMsgsDisplay(room) }</span>`;
+function tplUnreadIndicator(room) {
+    return html`<span class="list-item-badge badge badge--muc msgs-indicator">${getUnreadMsgsDisplay(room)}</span>`;
 }
 
-function tplActivityIndicator () {
+function tplActivityIndicator() {
     return html`<span class="list-item-badge badge badge--muc msgs-indicator"></span>`;
 }
 
@@ -30,7 +28,7 @@ function tplActivityIndicator () {
  * @param {RoomsList|PinnedBookmarksView} el
  * @param {MUC} room
  */
-export function tplRoomItem (el, room) {
+export function tplRoomItem(el, room) {
     const i18n_leave_room = __('Leave this groupchat');
     const has_unread_msgs = room.get('num_unread_general') || room.get('has_activity');
 
@@ -41,55 +39,69 @@ export function tplRoomItem (el, room) {
             text: __('Leave'),
             icon_class: 'fa-sign-out-alt',
             btn_class: 'close-room',
-            handler: (ev) => el.closeRoom(ev)
+            handler: (ev) => el.closeRoom(ev),
         }),
     ];
 
-    if (api.settings.get('allow_bookmarks')) {
-        if (!room.bookmark?.get('pinned')) {
-            buttons.push(tplRoomMenuItem({
-                room,
-                alt_text: __('Pin this groupchat to the top of the list'),
-                text: __('Pin'),
-                icon_class: 'fa-bookmark',
-                btn_class: 'pin-room',
-                handler: (ev) => el.pinRoom(ev)
-            }))
+    if (api.settings.get('allow_bookmarks') && el.canPinRooms()) {
+        if (!el.isRoomPinned(room)) {
+            buttons.push(
+                tplRoomMenuItem({
+                    room,
+                    alt_text: __('Pin this groupchat to the top of the list'),
+                    text: __('Pin'),
+                    icon_class: 'fa-bookmark',
+                    btn_class: 'pin-room',
+                    handler: (ev) => el.pinRoom(ev),
+                }),
+            );
         } else {
-            buttons.push(tplRoomMenuItem({
-                room,
-                alt_text: __('Unpin this groupchat from the top of the list'),
-                text:  __('Unpin'),
-                icon_class: 'fa-bookmark-empty',
-                btn_class: 'unpin-room',
-                handler: (ev) => el.unpinRoom(ev)
-            }))
+            buttons.push(
+                tplRoomMenuItem({
+                    room,
+                    alt_text: __('Unpin this groupchat from the top of the list'),
+                    text: __('Unpin'),
+                    icon_class: 'fa-bookmark-empty',
+                    btn_class: 'unpin-room',
+                    handler: (ev) => el.unpinRoom(ev),
+                }),
+            );
         }
     }
 
-    return html`
-        <li class="list-item controlbox-padded available-chatroom d-flex flex-row ${ isCurrentlyOpen(room) ? 'open' : '' } ${ has_unread_msgs ? 'unread-msgs' : '' }"
-            data-room-jid="${room.get('jid')}">
+    return html` <li
+        class="list-item controlbox-padded available-chatroom d-flex flex-row ${isCurrentlyOpen(room) ? 'open' : ''} ${has_unread_msgs ? 'unread-msgs' : ''}"
+        data-room-jid="${room.get('jid')}"
+    >
+        <a
+            class="list-item-link open-room available-room w-100"
+            data-room-jid="${room.get('jid')}"
+            data-room-name="${room.getDisplayName()}"
+            title="${__('Click to open this groupchat')}"
+            @click=${(ev) => el.openRoom(ev)}
+        >
+            <converse-avatar
+                .model=${room}
+                class="avatar avatar-muc"
+                name="${room.getDisplayName()}"
+                nonce=${room.vcard?.get('vcard_updated')}
+                height="30"
+                width="30"
+            ></converse-avatar>
+            <span
+                >${
+                    room.get('num_unread')
+                        ? tplUnreadIndicator(room)
+                        : room.get('has_activity')
+                          ? tplActivityIndicator()
+                          : ''
+                }
+                ${room.getDisplayName()}</span
+            >
+        </a>
 
-            <a class="list-item-link open-room available-room w-100"
-                data-room-jid="${room.get('jid')}"
-                data-room-name="${room.getDisplayName()}"
-                title="${__('Click to open this groupchat')}"
-                @click=${ev => el.openRoom(ev)}>
-                <converse-avatar
-                    .model=${room}
-                    class="avatar avatar-muc"
-                    name="${room.getDisplayName()}"
-                    nonce=${room.vcard?.get('vcard_updated')}
-                    height="30" width="30"></converse-avatar>
-                <span>${ room.get('num_unread') ?
-                            tplUnreadIndicator(room) :
-                            (room.get('has_activity') ? tplActivityIndicator() : '') }
-                    ${room.getDisplayName()}</span>
-            </a>
-
-            <converse-dropdown class="btn-group dropstart list-item-action" .items=${buttons}></converse-dropdown>
-        </li>`;
+        <converse-dropdown class="btn-group dropstart list-item-action" .items=${buttons}></converse-dropdown>
+    </li>`;
 }
 
 /**
@@ -100,17 +112,20 @@ export function tplRoomItem (el, room) {
  * @param {function} config.handler
  * @param {string} config.icon_class
  * @param {string} config.btn_class
- * @returns 
+ * @returns
  */
-function tplRoomMenuItem (config) {
+function tplRoomMenuItem(config) {
     const { room, alt_text, text, handler, icon_class, btn_class } = config;
-    return html`<a class="dropdown-item ${btn_class}" role="button"
-            @click="${handler}"
-            tabindex="0"
-            data-room-jid="${room.get('jid')}"
-            data-room-name="${room.getDisplayName()}"
-            title="${alt_text}">
-                <converse-icon class="fa ${icon_class}" size="1em"></converse-icon>
-                ${text}
-        </a>`;
+    return html`<a
+        class="dropdown-item ${btn_class}"
+        role="button"
+        @click="${handler}"
+        tabindex="0"
+        data-room-jid="${room.get('jid')}"
+        data-room-name="${room.getDisplayName()}"
+        title="${alt_text}"
+    >
+        <converse-icon class="fa ${icon_class}" size="1em"></converse-icon>
+        ${text}
+    </a>`;
 }

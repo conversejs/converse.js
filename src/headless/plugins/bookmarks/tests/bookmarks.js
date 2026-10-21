@@ -1,7 +1,22 @@
+import { vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
+
+async function acknowledgeBookmarkPublish(_converse, operation, selector) {
+    const connection = _converse.api.connection.get();
+    const sent_stanza = await u.waitUntil(() =>
+        connection.IQ_stanzas.filter((stanza) => sizzle(selector, stanza).length).pop(),
+    );
+    const result = stx`<iq xmlns="jabber:client"
+        to="${connection.jid}"
+        type="result"
+        id="${sent_stanza.getAttribute('id')}"/>`;
+    connection._dataRecv(mock.createRequest(_converse, result));
+    const bookmark = await operation;
+    return { bookmark, sent_stanza };
+}
 
 describe('A bookmark', function () {
     it(
@@ -65,7 +80,7 @@ describe('A bookmark', function () {
             id="${sent_stanza.getAttribute('id')}"/>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
-            expect(muc.bookmark).toBeTruthy();
+            expect(_converse.state.bookmarks.get(muc.get('jid'))).toBeTruthy();
         }),
     );
 
@@ -248,10 +263,12 @@ describe('A bookmark', function () {
 
                 const { bookmarks } = _converse.state;
                 await u.waitUntil(() => bookmarks.length);
-                await u.waitUntil(() => muc.bookmark);
-                spyOn(bookmarks, 'sendBookmarkStanza').and.callThrough();
-
+                await u.waitUntil(() => bookmarks.get(muc_jid));
                 const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+                await u.waitUntil(() =>
+                    sent_IQs.some((s) => sizzle(`iq publish[node="${Strophe.NS.BOOKMARKS2}"]`, s).length),
+                );
+                spyOn(bookmarks, 'sendBookmarkStanza').and.callThrough();
                 while (sent_IQs.length) {
                     sent_IQs.pop();
                 }
@@ -304,6 +321,101 @@ describe('A bookmark', function () {
     });
 
     it(
+        'waits for a new bookmark to be persisted and published before resolving',
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const attrs = {
+                jid: 'theplay@conference.shakespeare.lit',
+                autojoin: false,
+                name: 'The Play',
+            };
+            const { bookmarks } = _converse.state;
+            const bookmark = new bookmarks.model(attrs);
+            const persisted = Promise.withResolvers();
+            const published = Promise.withResolvers();
+            const create = vi.spyOn(bookmarks, 'create').mockReturnValue(persisted.promise);
+            const publish = vi.spyOn(bookmarks, 'sendBookmarkStanza').mockReturnValue(published.promise);
+
+            const operation = bookmarks.setBookmark(attrs);
+            let resolved = false;
+            operation.then(() => (resolved = true));
+
+            await Promise.resolve();
+            expect(create).toHaveBeenCalledWith(attrs, { promise: true });
+            expect(publish).not.toHaveBeenCalled();
+            expect(resolved).toBe(false);
+
+            persisted.resolve(bookmark);
+            await u.waitUntil(() => publish.mock.calls.length);
+            expect(publish).toHaveBeenCalledWith(bookmark);
+            expect(resolved).toBe(false);
+
+            published.resolve();
+            expect(await operation).toBe(bookmark);
+            expect(resolved).toBe(true);
+        }),
+    );
+
+    it(
+        'waits for an updated bookmark to be persisted and published before resolving',
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const attrs = {
+                jid: 'theplay@conference.shakespeare.lit',
+                autojoin: false,
+                name: 'The Play',
+            };
+            const { bookmarks } = _converse.state;
+            const bookmark = bookmarks.add(attrs);
+            const persisted = Promise.withResolvers();
+            const published = Promise.withResolvers();
+            const save = vi.spyOn(bookmark, 'save').mockReturnValue(persisted.promise);
+            const publish = vi.spyOn(bookmarks, 'sendBookmarkStanza').mockReturnValue(published.promise);
+            const updated_attrs = { jid: attrs.jid, name: 'Hamlet' };
+
+            const operation = bookmarks.setBookmark(updated_attrs);
+            await Promise.resolve();
+
+            expect(save).toHaveBeenCalledWith(updated_attrs, { promise: true });
+            expect(publish).not.toHaveBeenCalled();
+
+            persisted.resolve();
+            await u.waitUntil(() => publish.mock.calls.length);
+            expect(publish).toHaveBeenCalledWith(bookmark);
+
+            published.resolve();
+            expect(await operation).toBe(bookmark);
+        }),
+    );
+
+    it(
+        'rejects when publishing a persisted bookmark fails',
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const attrs = {
+                jid: 'theplay@conference.shakespeare.lit',
+                autojoin: false,
+                name: 'The Play',
+            };
+            const { bookmarks } = _converse.state;
+            const bookmark = bookmarks.add(attrs);
+            vi.spyOn(bookmark, 'save').mockResolvedValue();
+            const error = new Error('Bookmark publish failed');
+            vi.spyOn(bookmarks, 'sendBookmarkStanza').mockRejectedValue(error);
+            const on_error = vi.spyOn(bookmarks, 'onBookmarkError').mockImplementation(() => {});
+
+            await expect(bookmarks.setBookmark({ jid: attrs.jid, name: 'Hamlet' })).rejects.toBe(error);
+            expect(on_error).toHaveBeenCalledWith(error);
+        }),
+    );
+
+    it(
         'can be created and sends out a stanza',
         mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
@@ -313,16 +425,17 @@ describe('A bookmark', function () {
             const muc1_jid = 'theplay@conference.shakespeare.lit';
             const { api } = _converse;
 
-            await api.bookmarks.set({
+            let operation = api.bookmarks.set({
                 jid: muc1_jid,
                 autojoin: true,
                 name: 'Hamlet',
                 nick: '',
             });
 
-            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-            let sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
+            let { sent_stanza } = await acknowledgeBookmarkPublish(
+                _converse,
+                operation,
+                `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Hamlet"]`,
             );
 
             expect(sent_stanza).toEqualStanza(stx`
@@ -356,18 +469,18 @@ describe('A bookmark', function () {
             </iq>`);
 
             const muc2_jid = 'balcony@conference.shakespeare.lit';
-            await api.bookmarks.set({
+            operation = api.bookmarks.set({
                 jid: muc2_jid,
                 autojoin: true,
                 name: 'Balcony',
                 nick: 'romeo',
             });
 
-            sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter(
-                    (s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Balcony"]`, s).length,
-                ).pop(),
-            );
+            ({ sent_stanza } = await acknowledgeBookmarkPublish(
+                _converse,
+                operation,
+                `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Balcony"]`,
+            ));
 
             expect(sent_stanza).toEqualStanza(stx`
             <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
@@ -402,7 +515,7 @@ describe('A bookmark', function () {
             </iq>`);
 
             const muc3_jid = 'garden@conference.shakespeare.lit';
-            await api.bookmarks.set({
+            operation = api.bookmarks.set({
                 jid: muc3_jid,
                 autojoin: false,
                 name: 'Garden',
@@ -414,11 +527,11 @@ describe('A bookmark', function () {
                 ],
             });
 
-            sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter(
-                    (s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Garden"]`, s).length,
-                ).pop(),
-            );
+            ({ sent_stanza } = await acknowledgeBookmarkPublish(
+                _converse,
+                operation,
+                `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Garden"]`,
+            ));
 
             expect(sent_stanza).toEqualStanza(stx`
             <iq xmlns="jabber:client" type="set" from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}">
@@ -515,7 +628,7 @@ describe('A bookmark', function () {
             const { api } = _converse;
 
             // First create a bookmark
-            await api.bookmarks.set({
+            const operation = api.bookmarks.set({
                 jid: muc_jid,
                 autojoin: true,
                 name: 'The Play',
@@ -523,17 +636,7 @@ describe('A bookmark', function () {
             });
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-            let sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
-            );
-
-            // Server acknowledges successful storage
-            const result_stanza = stx`
-                <iq xmlns="jabber:client"
-                    to="${_converse.api.connection.get().jid}"
-                    type="result"
-                    id="${sent_stanza.getAttribute('id')}"/>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, result_stanza));
+            await acknowledgeBookmarkPublish(_converse, operation, `publish[node="${Strophe.NS.BOOKMARKS2}"]`);
 
             // Clear previous stanzas
             while (IQ_stanzas.length) IQ_stanzas.pop();
@@ -544,7 +647,7 @@ describe('A bookmark', function () {
             _converse.state.bookmarks.remove(bookmark);
 
             // Check that a retract stanza is sent as per XEP-0402
-            sent_stanza = await u.waitUntil(() =>
+            const sent_stanza = await u.waitUntil(() =>
                 IQ_stanzas.filter((s) => sizzle(`retract[node="${Strophe.NS.BOOKMARKS2}"]`, s).length).pop(),
             );
 
@@ -567,7 +670,7 @@ describe('A bookmark', function () {
 
             const bare_jid = _converse.session.get('bare_jid');
             const muc_jid = 'theplay@conference.shakespeare.lit';
-            const { api, state } = _converse;
+            const { state } = _converse;
 
             // First create a bookmark
             state.bookmarks.create({
@@ -581,27 +684,19 @@ describe('A bookmark', function () {
             await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await u.waitUntil(() => state.chatboxes.length === 1);
 
-            const IQ_stanzas = api.connection.get().IQ_stanzas;
-
             // Now pin the bookmark
             const bookmark = state.bookmarks.findWhere({ jid: muc_jid });
             expect(bookmark).toBeTruthy();
-            await state.bookmarks.pinBookmark(bookmark);
-
-            const sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter(
-                    (s) =>
-                        sizzle(
-                            `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"] extensions pinned`,
-                            s,
-                        ).length,
-                ).pop(),
+            const operation = state.bookmarks.pinBookmark(bookmark);
+            const { sent_stanza } = await acknowledgeBookmarkPublish(
+                _converse,
+                operation,
+                `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"] extensions pinned`,
             );
 
             expect(bookmark.get('pinned')).toBe(true);
 
-            const chatbox = state.chatboxes.get(muc_jid);
-            expect(chatbox.bookmark.get('pinned')).toBe(true);
+            expect(state.bookmarks.get(muc_jid).get('pinned')).toBe(true);
 
             expect(sent_stanza).toEqualStanza(stx`
                 <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
@@ -648,7 +743,7 @@ describe('A bookmark', function () {
 
             const bare_jid = _converse.session.get('bare_jid');
             const muc_jid = 'theplay@conference.shakespeare.lit';
-            const { api, state } = _converse;
+            const { state } = _converse;
 
             // First create a pinned bookmark
             const bookmark = state.bookmarks.create({
@@ -662,22 +757,19 @@ describe('A bookmark', function () {
             await mock.waitForMUCDiscoInfo(_converse, muc_jid);
             await u.waitUntil(() => state.chatboxes.length === 1);
 
-            const IQ_stanzas = api.connection.get().IQ_stanzas;
-
             expect(bookmark.get('pinned')).toBe(true);
-            expect(state.chatboxes.get(muc_jid).bookmark.get('pinned')).toBe(true);
+            expect(state.bookmarks.get(muc_jid).get('pinned')).toBe(true);
 
             // Now unpin the bookmark
-            await state.bookmarks.unpinBookmark(bookmark);
-
-            const sent_stanza = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => {
-                    return sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"]`, s).length;
-                }).pop(),
+            const operation = state.bookmarks.unpinBookmark(bookmark);
+            const { sent_stanza } = await acknowledgeBookmarkPublish(
+                _converse,
+                operation,
+                `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"]`,
             );
 
             expect(bookmark.get('pinned')).toBe(false);
-            expect(state.chatboxes.get(muc_jid).bookmark.get('pinned')).toBe(false);
+            expect(state.bookmarks.get(muc_jid).get('pinned')).toBe(false);
 
             expect(sent_stanza).toEqualStanza(stx`
                 <iq from="${bare_jid}" to="${bare_jid}" id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">
@@ -710,6 +802,92 @@ describe('A bookmark', function () {
                         </publish-options>
                     </pubsub>
                 </iq>`);
+        }),
+    );
+
+    it(
+        'normalizes extensions when publishing: drops malformed, dedups <pinned/>, preserves unknown',
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const { state } = _converse;
+
+            // Already pinned, plus a malformed extension and an unrelated (unknown) one.
+            const bookmark = state.bookmarks.create({
+                jid: muc_jid,
+                autojoin: true,
+                name: 'The Play',
+                nick: 'romeo',
+                extensions: [
+                    '<not valid xml',
+                    '<note xmlns="urn:example:note"/>',
+                    `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`,
+                ],
+            });
+
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid);
+            await u.waitUntil(() => state.chatboxes.length === 1);
+            expect(bookmark.get('pinned')).toBe(true);
+
+            const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
+
+            // Re-pinning must still publish (self-healing if the server diverged), and the
+            // published <extensions> must drop the malformed entry, keep exactly one
+            // <pinned/> (no duplicate) and preserve the unknown extension. (We don't await
+            // the publish, since the mock server never answers the IQ.)
+            state.bookmarks.pinBookmark(bookmark).catch(() => {});
+
+            const sent_stanza = await u.waitUntil(() =>
+                IQ_stanzas.filter(
+                    (s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"]`, s).length,
+                ).pop(),
+            );
+
+            const children = Array.from(sizzle('extensions', sent_stanza)[0].children);
+            expect(children.length).toBe(2); // malformed dropped
+            expect(children.filter((c) => c.namespaceURI === Strophe.NS.BOOKMARKS_PINNING).length).toBe(1); // single <pinned/>
+            expect(children.filter((c) => c.namespaceURI === 'urn:example:note').length).toBe(1); // unknown preserved
+        }),
+    );
+
+    it(
+        'derives pinned-ness by element identity, not substring matching',
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const { state } = _converse;
+            const ns = Strophe.NS.BOOKMARKS_PINNING;
+
+            // A lookalike the old substring check would have mis-flagged as pinned.
+            const lookalike = state.bookmarks.create({
+                jid: 'a@conference.example',
+                name: 'A',
+                autojoin: false,
+                extensions: [`<pinnedfoo xmlns="${ns}"/>`],
+            });
+            expect(lookalike.get('pinned')).toBe(false);
+
+            // A real <pinned/> with reordered/extra attributes, single quotes and
+            // an explicit close tag must still count as pinned.
+            const pinned = state.bookmarks.create({
+                jid: 'b@conference.example',
+                name: 'B',
+                autojoin: false,
+                extensions: [`<pinned foo='bar' xmlns="${ns}"></pinned>`],
+            });
+            expect(pinned.get('pinned')).toBe(true);
+
+            // A <pinned/> nested inside another extension must not count.
+            const nested = state.bookmarks.create({
+                jid: 'c@conference.example',
+                name: 'C',
+                autojoin: false,
+                extensions: [`<wrap xmlns="urn:example:wrap"><pinned xmlns="${ns}"/></wrap>`],
+            });
+            expect(nested.get('pinned')).toBe(false);
         }),
     );
 });

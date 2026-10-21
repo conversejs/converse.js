@@ -1520,11 +1520,11 @@ msgstr "En moderator"
 #: dist/converse-no-dependencies.js:110113
 #: dist/converse-no-dependencies.js:110115
 #, javascript-format
-msgid "%1$s has removed a message"
+msgid "%1$s removed a message"
 msgstr "%1$s har tagit bort ett meddelande"
 
 #: dist/converse-no-dependencies.js:110115
-msgid "You have removed a message"
+msgid "You removed a message"
 msgstr "Du har tagit bort ett meddelanden"
 
 #: dist/converse-no-dependencies.js:113724

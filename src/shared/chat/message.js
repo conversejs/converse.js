@@ -228,11 +228,11 @@ export default class Message extends ObservableElement {
                     occupants.findOccupant({ 'nick': Strophe.getResourceFromJid(retracted_by_mod) });
             }
             const modname = this.model.mod ? this.model.mod.getDisplayName() : __('A moderator');
-            return __('%1$s has removed a message', modname);
+            return __('%1$s removed a message', modname);
         } else {
             return this.model.get('sender') === 'me'
-                ? __('You have removed a message')
-                : __('%1$s has removed a message', this.model.getDisplayName());
+                ? __('You removed a message')
+                : __('%1$s removed a message', this.model.getDisplayName());
         }
     }
 

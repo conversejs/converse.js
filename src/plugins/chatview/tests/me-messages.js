@@ -30,6 +30,11 @@ describe('A Message', function () {
             expect(view.querySelectorAll('.chat-msg--action').length).toBe(1);
             await u.waitUntil(() => view.querySelector('.chat-msg__text').textContent.trim() === 'is tired');
             expect(view.querySelector('.chat-msg__author').textContent.includes('**Mercutio')).toBeTruthy();
+            // The timestamp trails the text, so a relative time like "now"
+            // isn't read as the first word of the sentence.
+            const msg_el = view.querySelector('.chat-msg--action .chat-msg__message');
+            expect(msg_el.firstElementChild.matches('.chat-msg__author')).toBe(true);
+            expect(msg_el.lastElementChild.matches('converse-time.chat-msg__time')).toBe(true);
 
             message = '/me is as well';
             await mock.sendMessage(_converse, view, message);

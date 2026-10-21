@@ -521,7 +521,7 @@ describe('A Groupchat Message', function () {
             // Verify the message shows as retracted
             await u.waitUntil(() => view.querySelector('.chat-msg--retracted'));
             expect(view.querySelector('.chat-msg--retracted .retraction').textContent.trim()).toBe(
-                'arzu has removed a message',
+                'arzu removed a message',
             );
         }),
     );

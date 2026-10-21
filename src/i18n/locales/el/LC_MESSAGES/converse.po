@@ -1550,12 +1550,12 @@ msgstr "Συντονιστής"
 #: dist/converse-no-dependencies.js:110113
 #: dist/converse-no-dependencies.js:110115
 #, fuzzy, javascript-format
-msgid "%1$s has removed a message"
+msgid "%1$s removed a message"
 msgstr "Ο/Η %1$s έχει αφαιρέσει αυτό το μήνυμα"
 
 #: dist/converse-no-dependencies.js:110115
 #, fuzzy
-msgid "You have removed a message"
+msgid "You removed a message"
 msgstr "Έχετε μη αναγνωσμένα μηνύματα"
 
 #: dist/converse-no-dependencies.js:113724

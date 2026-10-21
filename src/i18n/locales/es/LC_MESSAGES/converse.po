@@ -1547,11 +1547,11 @@ msgstr "Un moderador"
 #: dist/converse-no-dependencies.js:110113
 #: dist/converse-no-dependencies.js:110115
 #, javascript-format
-msgid "%1$s has removed a message"
+msgid "%1$s removed a message"
 msgstr "%1$s ha retirado un mensaje"
 
 #: dist/converse-no-dependencies.js:110115
-msgid "You have removed a message"
+msgid "You removed a message"
 msgstr "Ha retirado un mensaje"
 
 #: dist/converse-no-dependencies.js:113724

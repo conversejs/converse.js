@@ -1544,12 +1544,12 @@ msgstr "Moderatzailea"
 #: dist/converse-no-dependencies.js:110113
 #: dist/converse-no-dependencies.js:110115
 #, fuzzy, javascript-format
-msgid "%1$s has removed a message"
+msgid "%1$s removed a message"
 msgstr "%1$s-(e)k mezu hau ezabatu du"
 
 #: dist/converse-no-dependencies.js:110115
 #, fuzzy
-msgid "You have removed a message"
+msgid "You removed a message"
 msgstr "Irakurri gabeko mezuak dituzu"
 
 #: dist/converse-no-dependencies.js:113724

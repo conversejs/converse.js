@@ -1,4 +1,5 @@
 import { html, nothing } from 'lit';
+import { __ } from 'i18n';
 import { api, constants } from '@converse/headless';
 import { getChatStyle } from 'shared/chat/utils.js';
 
@@ -28,7 +29,9 @@ export default (el) => {
                               : ''}
                           <div
                               class="chat-content ${el.model.get('show_send_button') ? 'chat-content-sendbutton' : ''}"
+                              role="log"
                               aria-live="polite"
+                              aria-label="${__('Message history')}"
                           >
                               <converse-chat-content .model="${el.model}"></converse-chat-content>
                               ${show_help_messages

@@ -15,6 +15,14 @@
             color: var(--link-color) !important;
         }
 
+        button.show-msg-author-modal {
+            background: none;
+            border: 0;
+            cursor: pointer;
+            font: inherit;
+            padding: 0;
+        }
+
         blockquote {
             border-inline-start: 0.3em solid var(--info-color);
             color: var(--info-color);

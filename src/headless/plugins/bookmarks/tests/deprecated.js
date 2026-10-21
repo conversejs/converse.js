@@ -78,7 +78,7 @@ describe('A chat room', function () {
             id="${sent_stanza.getAttribute('id')}"/>`;
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
-            expect(muc.bookmark).toBeTruthy();
+            expect(_converse.state.bookmarks.get(muc.get('jid'))).toBeTruthy();
         }),
     );
 });
@@ -106,10 +106,10 @@ describe('A bookmark', function () {
 
             const { bookmarks } = _converse.state;
             await u.waitUntil(() => bookmarks.length);
-            await u.waitUntil(() => muc.bookmark);
-            spyOn(bookmarks, 'sendBookmarkStanza').and.callThrough();
-
+            await u.waitUntil(() => bookmarks.get(muc_jid));
             const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+            await u.waitUntil(() => sent_IQs.some((s) => sizzle('iq publish[node="storage:bookmarks"]', s).length));
+            spyOn(bookmarks, 'sendBookmarkStanza').and.callThrough();
             while (sent_IQs.length) {
                 sent_IQs.pop();
             }

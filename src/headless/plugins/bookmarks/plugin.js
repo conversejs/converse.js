@@ -65,14 +65,16 @@ converse.plugins.add('converse-bookmarks', {
                             if (!bookmark) log.warn('parseMUCPresence: no bookmark returned');
 
                             const { nick, muc_jid: jid } = attrs;
-                            api.bookmarks.set({
-                                jid,
-                                nick,
-                                autojoin: bookmark?.get('autojoin') ?? true,
-                                password: bookmark?.get('password') ?? '',
-                                name: bookmark?.get('name') ?? '',
-                                extensions: bookmark?.get('extensions') ?? [],
-                            });
+                            api.bookmarks
+                                .set({
+                                    jid,
+                                    nick,
+                                    autojoin: bookmark?.get('autojoin') ?? true,
+                                    password: bookmark?.get('password') ?? '',
+                                    name: bookmark?.get('name') ?? '',
+                                    extensions: bookmark?.get('extensions') ?? [],
+                                })
+                                .catch(() => undefined);
                         },
                     );
                 }
@@ -85,13 +87,15 @@ converse.plugins.add('converse-bookmarks', {
             /** @param {import('../muc/muc').default} muc */
             async ({ attributes }) => {
                 const { jid, nick, password, name } = /** @type {import("../muc/types").MUCAttributes} */ (attributes);
-                await api.bookmarks.set({
-                    jid,
-                    autojoin: true,
-                    nick,
-                    ...(password ? { password } : {}),
-                    ...(name ? { name } : {}),
-                });
+                await api.bookmarks
+                    .set({
+                        jid,
+                        autojoin: true,
+                        nick,
+                        ...(password ? { password } : {}),
+                        ...(name ? { name } : {}),
+                    })
+                    .catch(() => undefined);
             },
         );
 
@@ -100,21 +104,23 @@ converse.plugins.add('converse-bookmarks', {
             /** @param {import('../muc/muc').default} muc */
             async ({ attributes }) => {
                 const { jid } = /** @type {import("../muc/types").MUCAttributes} */ (attributes);
-                await api.bookmarks.set(
-                    {
-                        jid,
-                        autojoin: false,
-                    },
-                    false,
-                    // Don't trigger a Skeletor `change` event.
-                    // This MUC is being left explicitly by the user,
-                    // so we don't want to trigger the `onAutoJoinChanged`
-                    // listener in ./collection.js to again call `close()`
-                    // on the MUC.
-                    {
-                        silent: true,
-                    },
-                );
+                await api.bookmarks
+                    .set(
+                        {
+                            jid,
+                            autojoin: false,
+                        },
+                        false,
+                        // Don't trigger a Skeletor `change` event.
+                        // This MUC is being left explicitly by the user,
+                        // so we don't want to trigger the `onAutoJoinChanged`
+                        // listener in ./collection.js to again call `close()`
+                        // on the MUC.
+                        {
+                            silent: true,
+                        },
+                    )
+                    .catch(() => undefined);
             },
         );
 
@@ -127,6 +133,7 @@ converse.plugins.add('converse-bookmarks', {
         api.listen.on('clearSession', () => {
             const { state } = _converse;
             if (state.bookmarks) {
+                state.bookmarks.stopListening();
                 state.bookmarks.clearStore({ silent: true });
                 const { fetched_flag_key } = getStorageKeys();
                 _converse.state.session.set(fetched_flag_key, undefined);

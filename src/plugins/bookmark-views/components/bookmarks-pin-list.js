@@ -10,7 +10,7 @@ export class PinnedBookmarksView extends RoomsList {
     initialize() {
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.bookmarks-pin-list-model-${bare_jid}`;
-        this.model = new Model({ toggle_state: constants.OPENED });
+        this.model = new Model({ id, toggle_state: constants.OPENED });
         _converse.state.bookmarks_pin_list = this.model;
 
         initStorage(this.model, id);
@@ -24,7 +24,9 @@ export class PinnedBookmarksView extends RoomsList {
     /** @returns {import('@converse/headless').MUC[]} */
     getRoomsToShow() {
         const { chatboxes } = _converse.state;
-        const rooms = chatboxes.filter((m) => m.bookmark?.get('pinned'));
+        const rooms = chatboxes.filter(
+            (m) => m.get('type') === constants.CHATROOMS_TYPE && !m.get('closed') && this.isRoomPinned(m),
+        );
         rooms.sort((a, b) => (a.getDisplayName().toLowerCase() <= b.getDisplayName().toLowerCase() ? -1 : 1));
         return rooms;
     }

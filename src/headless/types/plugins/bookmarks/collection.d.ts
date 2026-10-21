@@ -10,6 +10,8 @@ declare class Bookmarks extends Collection<Bookmark> {
     model: typeof Bookmark;
     initialize(): Promise<void>;
     fetched_flag: string;
+    /** @returns {boolean} Whether the server supports native bookmarks and their extensions. */
+    supportsPinning(): boolean;
     /**
      * @param {Bookmark} bookmark
      */
@@ -25,8 +27,9 @@ declare class Bookmarks extends Collection<Bookmark> {
      * @param {import('./types').BookmarkAttrs} attrs
      * @param {boolean} [create=true]
      * @param {import('@converse/skeletor').FetchOrCreateOptions} [options]
+     * @returns {Promise<Bookmark|undefined>}
      */
-    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean, options?: import("@converse/skeletor").FetchOrCreateOptions): Promise<void>;
+    setBookmark(attrs: import("./types").BookmarkAttrs, create?: boolean, options?: import("@converse/skeletor").FetchOrCreateOptions): Promise<Bookmark | undefined>;
     /**
      * @param {Bookmark} bookmark
      * @returns {Promise<void|Element>}
@@ -44,17 +47,13 @@ declare class Bookmarks extends Collection<Bookmark> {
      */
     sendBookmarkStanza(bookmark?: Bookmark): Promise<void | Element>;
     /**
-     * @param {Element} iq
+     * @param {Element|Error} error
      */
-    onBookmarkError(iq: Element): void;
+    onBookmarkError(error: Element | Error): void;
     /**
      * @param {Promise} deferred
      */
     fetchBookmarksFromServer(deferred: Promise<any>): Promise<void>;
-    /**
-     * @param {Bookmark} bookmark
-     */
-    markRoomAsBookmarked(bookmark: Bookmark): void;
     /**
      * @param {Bookmark} bookmark
      */
@@ -79,15 +78,41 @@ declare class Bookmarks extends Collection<Bookmark> {
     onBookmarksReceivedError(deferred: any, iq: Element): Promise<void>;
     getUnopenedBookmarks(): Promise<Bookmark[]>;
     /**
-     *
+     * Pin a bookmark to the top of the lists (XEP-0469) by ensuring exactly one
+     * `<pinned/>` element is present in its extensions. We always (re)publish,
+     * even when the bookmark already looks pinned locally: the operation is
+     * idempotent (any existing `<pinned/>` is stripped before re-adding a single
+     * one, so it can't accumulate duplicates) and self-healing if our local
+     * state and the server's have diverged. The `pinned` attribute is derived
+     * from the extensions by {@link Bookmark}.
      * @param {Bookmark} bookmark
+     * @returns {Promise<Bookmark|undefined>}
      */
-    pinBookmark(bookmark: Bookmark): void;
+    pinBookmark(bookmark: Bookmark): Promise<Bookmark | undefined>;
     /**
-     *
-     * @param {Bookmark} bookmark
+     * Pin a room to the top of the lists (XEP-0469). Pinning is an extension on
+     * a bookmark, so if the room isn't bookmarked yet we bookmark it first
+     * (with autojoin enabled, so the pin survives a reload) and include the
+     * `<pinned/>` extension in the same publish.
+     * @param {string} jid
+     * @returns {Promise<Bookmark|undefined>}
      */
-    unpinBookmark(bookmark: Bookmark): void;
+    pinRoom(jid: string): Promise<Bookmark | undefined>;
+    /**
+     * Unpin a room by its JID (XEP-0469). A no-op if the room isn't bookmarked
+     * (you can only unpin something that was pinned, which requires a bookmark).
+     * @param {string} jid
+     * @returns {Promise<Bookmark|undefined>}
+     */
+    unpinRoom(jid: string): Promise<Bookmark | undefined>;
+    /**
+     * Unpin a bookmark (XEP-0469) by removing its `<pinned/>` extension.
+     * Idempotent and self-healing for the same reasons as {@link pinBookmark}.
+     * @param {Bookmark} bookmark
+     * @returns {Promise<Bookmark|undefined>}
+     */
+    unpinBookmark(bookmark: Bookmark): Promise<Bookmark | undefined>;
+    #private;
 }
 import Bookmark from './model.js';
 import { Collection } from '@converse/skeletor';

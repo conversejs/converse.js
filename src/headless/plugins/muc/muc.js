@@ -44,7 +44,6 @@ import { sendMarker } from '../../shared/actions.js';
 import ChatBoxBase from '../../shared/chatbox.js';
 import ColorAwareModel from '../../shared/color.js';
 import ModelWithMessages from '../../shared/model-with-messages.js';
-import ModelWithBookmark from '../../shared/model-with-bookmark.js';
 import ModelWithVCard from '../../shared/model-with-vcard.js';
 import { shouldCreateGroupchatMessage, isInfoVisible } from './utils.js';
 import MUCSession from './session.js';
@@ -56,7 +55,7 @@ const DISCO_INFO_TIMEOUT_ON_JOIN = 30000;
 /**
  * Represents a groupchat conversation.
  */
-class MUC extends ModelWithBookmark(ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase)))) {
+class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))) {
     /**
      * @typedef {import('../../shared/message.js').default} BaseMessage
      * @typedef {import('./message.js').default} MUCMessage

@@ -14,14 +14,32 @@ import log from '@converse/log';
 import { initStorage } from '../../utils/storage.js';
 import { parseStanzaForBookmarks } from './parsers.js';
 import '../../plugins/muc/index.js';
-import { getStorageKeys } from './utils.js';
+import { getStorageKeys, isPinnedExtension } from './utils.js';
 
 const { Strophe, stx } = converse.env;
+
+/**
+ * The `<pinned/>` extension element (XEP-0469), serialized as a string.
+ * Wrapped in a function so the namespace (registered in the plugin) is only
+ * read at call time, not at module load.
+ * @returns {string}
+ */
+const getPinnedExtension = () => `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`;
+
+/**
+ * Returns a copy of an extensions list with any XEP-0469 `<pinned/>` element(s)
+ * removed. Other (unknown) extensions are kept, as XEP-0402 requires.
+ * @param {string[]} [extensions]
+ * @returns {string[]}
+ */
+const withoutPinnedExtension = (extensions) => (extensions ?? []).filter((e) => !isPinnedExtension(e));
 
 /**
  * @extends {Collection<Bookmark>}
  */
 class Bookmarks extends Collection {
+    #supports_pinning = false;
+
     get idAttribute() {
         return 'jid';
     }
@@ -32,15 +50,11 @@ class Bookmarks extends Collection {
     }
 
     async initialize() {
-        this.on('add', (bm) =>
-            this.openBookmarkedRoom(bm)
-                .then((bm) => this.markRoomAsBookmarked(bm))
-                .catch((e) => log.fatal(e)),
-        );
+        this.on('add', (bm) => this.openBookmarkedRoom(bm).catch((e) => log.fatal(e)));
         this.on('change:autojoin', this.onAutoJoinChanged, this);
         this.on(
             'remove',
-            /** @param { Bookmark } bookmark }*/ (bookmark) => {
+            /** @param {Bookmark} bookmark */ (bookmark) => {
                 this.sendRemoveBookmarkStanza(bookmark);
                 this.leaveRoom(bookmark);
             },
@@ -50,6 +64,8 @@ class Bookmarks extends Collection {
         this.fetched_flag = fetched_flag_key;
         initStorage(this, storage_key);
 
+        const bare_jid = _converse.session.get('bare_jid');
+        this.#supports_pinning = await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid);
         await this.fetchBookmarks();
 
         /**
@@ -60,6 +76,17 @@ class Bookmarks extends Collection {
          * @example _converse.api.listen.on('bookmarksInitialized', (bookmarks) => { ... });
          */
         api.trigger('bookmarksInitialized', this);
+    }
+
+    /** @returns {boolean} Whether the server supports native bookmarks and their extensions. */
+    supportsPinning() {
+        return this.#supports_pinning;
+    }
+
+    #assertPinningSupported() {
+        if (!this.supportsPinning()) {
+            throw new Error('Pinning requires native bookmarks');
+        }
     }
 
     static async checkBookmarksSupport() {
@@ -82,7 +109,6 @@ class Bookmarks extends Collection {
             const groupchat = await api.rooms.create(bookmark.get('jid'), {
                 nick: bookmark.get('nick'),
                 password: bookmark.get('password'),
-                pinned: bookmark.get('pinned'),
             });
             groupchat.maybeShow();
         }
@@ -106,29 +132,40 @@ class Bookmarks extends Collection {
      * @param {import('./types').BookmarkAttrs} attrs
      * @param {boolean} [create=true]
      * @param {import('@converse/skeletor').FetchOrCreateOptions} [options]
+     * @returns {Promise<Bookmark|undefined>}
      */
     async setBookmark(attrs, create = true, options = {}) {
-        if (!attrs.jid) return log.warn('No JID provided for setBookmark');
-
-        let send_stanza = false;
-
-        let bookmark = this.get(attrs.jid);
-        if (bookmark) {
-            // Check if any attrs changed
-            const has_changed = Object.keys(attrs).reduce((result, k) => {
-                return result || (attrs[k] ?? '') !== (bookmark.attributes[k] ?? '');
-            }, false);
-            if (has_changed) {
-                bookmark.save(attrs, options);
-                send_stanza = true;
-            }
-        } else if (create) {
-            bookmark = await this.create(attrs, options);
-            send_stanza = true;
+        if (!attrs.jid) {
+            log.warn('No JID provided for setBookmark');
+            return;
         }
 
-        if (bookmark && send_stanza) {
-            this.sendBookmarkStanza(bookmark).catch((iq) => this.onBookmarkError(iq));
+        const persistence_options = { ...options, promise: true };
+        let send_stanza = false;
+        let bookmark = this.get(attrs.jid);
+
+        try {
+            if (bookmark) {
+                // Check if any attrs changed
+                const has_changed = Object.keys(attrs).reduce((result, k) => {
+                    return result || (attrs[k] ?? '') !== (bookmark.attributes[k] ?? '');
+                }, false);
+                if (has_changed) {
+                    await bookmark.save(attrs, persistence_options);
+                    send_stanza = true;
+                }
+            } else if (create) {
+                bookmark = await this.create(attrs, persistence_options);
+                send_stanza = true;
+            }
+
+            if (bookmark && send_stanza) {
+                await this.sendBookmarkStanza(bookmark);
+            }
+            return bookmark;
+        } catch (error) {
+            this.onBookmarkError(error);
+            throw error;
         }
     }
 
@@ -158,18 +195,27 @@ class Bookmarks extends Collection {
         if (node === Strophe.NS.BOOKMARKS2) {
             if (!bookmark) throw new Error('getPublishedItems: missing bookmark');
 
-            const extensions = bookmark.get('extensions') ?? [];
+            // Parse each extension defensively
+            const extensions = (bookmark.get('extensions') ?? [])
+                .map(
+                    /** @param {string} e */ (e) => {
+                        try {
+                            return Stanza.fromString(e);
+                        } catch (err) {
+                            log.error(`Ignoring invalid bookmark extension: ${e}`);
+                            log.error(err);
+                            return null;
+                        }
+                    },
+                )
+                .filter(Boolean);
             return stx`<item id="${bookmark.get('jid')}">
                         <conference xmlns="${Strophe.NS.BOOKMARKS2}"
                                 name="${bookmark.get('name') || nothing}"
                                 autojoin="${bookmark.get('autojoin')}">
                             ${bookmark.get('nick') ? stx`<nick>${bookmark.get('nick')}</nick>` : ''}
                             ${bookmark.get('password') ? stx`<password>${bookmark.get('password')}</password>` : ''}
-                        ${
-                            extensions.length
-                                ? stx`<extensions>${extensions.map((e) => Stanza.fromString(e))}</extensions>`
-                                : ''
-                        }
+                        ${extensions.length ? stx`<extensions>${extensions}</extensions>` : ''}
                         </conference>
                     </item>`;
         } else {
@@ -207,11 +253,11 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * @param {Element} iq
+     * @param {Element|Error} error
      */
-    onBookmarkError(iq) {
+    onBookmarkError(error) {
         log.error('Error while trying to update bookmarks');
-        log.error(iq);
+        log.error(error);
     }
 
     /**
@@ -232,15 +278,6 @@ class Bookmarks extends Collection {
         api.sendIQ(stanza)
             .then(/** @param {Element} iq */ (iq) => this.onBookmarksReceived(deferred, iq))
             .catch(/** @param {Element} iq */ (iq) => this.onBookmarksReceivedError(deferred, iq));
-    }
-
-    /**
-     * @param {Bookmark} bookmark
-     */
-    markRoomAsBookmarked(bookmark) {
-        const { chatboxes } = _converse.state;
-        const groupchat = chatboxes.get(bookmark.get('jid'));
-        groupchat?.setBookmark(bookmark);
     }
 
     /**
@@ -326,45 +363,68 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * 
+     * Pin a bookmark to the top of the lists (XEP-0469) by ensuring exactly one
+     * `<pinned/>` element is present in its extensions. We always (re)publish,
+     * even when the bookmark already looks pinned locally: the operation is
+     * idempotent (any existing `<pinned/>` is stripped before re-adding a single
+     * one, so it can't accumulate duplicates) and self-healing if our local
+     * state and the server's have diverged. The `pinned` attribute is derived
+     * from the extensions by {@link Bookmark}.
      * @param {Bookmark} bookmark
+     * @returns {Promise<Bookmark|undefined>}
      */
-    pinBookmark(bookmark) {
-        const extensions = [...bookmark.get('extensions'), `<pinned xmlns="${Strophe.NS.BOOKMARKS_PINNING}"/>`];
-
-        bookmark.set('pinned', true);
-        
-        try {
-            api.bookmarks.set({
-                jid: bookmark.get('jid'),
-                extensions,
-            });
-        } catch (error) {
-            bookmark.set('pinned', false);
-            log.error('Error while trying to pin bookmark');
-            log.error(error);
-        }
+    async pinBookmark(bookmark) {
+        this.#assertPinningSupported();
+        const extensions = [...withoutPinnedExtension(bookmark.get('extensions')), getPinnedExtension()];
+        return await api.bookmarks.set({ jid: bookmark.get('jid'), extensions });
     }
 
     /**
-     * 
-     * @param {Bookmark} bookmark
+     * Pin a room to the top of the lists (XEP-0469). Pinning is an extension on
+     * a bookmark, so if the room isn't bookmarked yet we bookmark it first
+     * (with autojoin enabled, so the pin survives a reload) and include the
+     * `<pinned/>` extension in the same publish.
+     * @param {string} jid
+     * @returns {Promise<Bookmark|undefined>}
      */
-    unpinBookmark(bookmark) {
-        const extensions = bookmark.get('extensions').filter(/** @param {String} e */ e => !(e.includes('<pinned')));
+    async pinRoom(jid) {
+        this.#assertPinningSupported();
+        const bookmark = this.get(jid);
+        if (bookmark) return await this.pinBookmark(bookmark);
 
-        bookmark.set('pinned', false);
-        
-        try {
-            api.bookmarks.set({
-                jid: bookmark.get('jid'),
-                extensions,
-            });
-        } catch (error) {
-            bookmark.set('pinned', true);
-            log.error('Error while trying to unpin bookmark');
-            log.error(error);
-        }
+        const room = _converse.state.chatboxes.get(jid);
+        return await api.bookmarks.set({
+            jid,
+            name: room?.get('name'),
+            nick: room?.get('nick'),
+            password: room?.get('password'),
+            autojoin: true,
+            extensions: [getPinnedExtension()],
+        });
+    }
+
+    /**
+     * Unpin a room by its JID (XEP-0469). A no-op if the room isn't bookmarked
+     * (you can only unpin something that was pinned, which requires a bookmark).
+     * @param {string} jid
+     * @returns {Promise<Bookmark|undefined>}
+     */
+    async unpinRoom(jid) {
+        this.#assertPinningSupported();
+        const bookmark = this.get(jid);
+        if (bookmark) return await this.unpinBookmark(bookmark);
+    }
+
+    /**
+     * Unpin a bookmark (XEP-0469) by removing its `<pinned/>` extension.
+     * Idempotent and self-healing for the same reasons as {@link pinBookmark}.
+     * @param {Bookmark} bookmark
+     * @returns {Promise<Bookmark|undefined>}
+     */
+    async unpinBookmark(bookmark) {
+        this.#assertPinningSupported();
+        const extensions = withoutPinnedExtension(bookmark.get('extensions'));
+        return await api.bookmarks.set({ jid: bookmark.get('jid'), extensions });
     }
 }
 

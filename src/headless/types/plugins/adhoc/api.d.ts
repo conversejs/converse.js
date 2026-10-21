@@ -23,7 +23,7 @@ declare namespace _default {
         function runCommand(jid: string, sessionid: string, node: string, action: import("./types").AdHocCommandAction, inputs: Array<{
             [k: string]: string;
         }>): Promise<{
-            note: any;
+            note: import("./types").AdHocCommandResultNote;
             type?: import("../../shared/types.js").XFormResponseType;
             title?: string;
             instructions?: string;

@@ -14,6 +14,7 @@ const ACTION_MAP = {
     complete: __('Complete'),
 };
 
+/** @type {Record<import('@converse/headless/types/plugins/adhoc/types').AdHocCommandNoteType, string>} */
 const NOTE_ALERT_MAP = {
     'info': 'primary',
     'warn': 'secondary',
@@ -72,7 +73,16 @@ export default (el, command) => {
                     ${command.type === 'result' ? tplReportedTable(command) : ''}
                     ${command.fields?.map(f => xFormField2TemplateResult(f), { domain: command.jid }) ?? ''}
                 </fieldset>
-                ${command.actions?.length
+                ${command.status === 'completed'
+                    ? html` <fieldset>
+                          <input
+                              type="button"
+                              class="btn btn-secondary button-cancel"
+                              value="${__('Close')}"
+                              @click=${(ev) => el.close(ev, command)}
+                          />
+                      </fieldset>`
+                    : command.actions?.length
                     ? html` <fieldset>
                           ${command.actions?.map(
                               (action) =>

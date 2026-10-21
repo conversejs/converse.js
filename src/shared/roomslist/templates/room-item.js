@@ -1,6 +1,5 @@
 /**
  * @typedef {import('plugins/roomslist/view').RoomsList} RoomsList
- * @typedef {import('plugins/bookmark-views/components/bookmarks-pin-list').PinnedBookmarksView} PinnedBookmarksView
  * @typedef {import('@converse/headless').MUC} MUC
  */
 import { html } from 'lit';
@@ -25,7 +24,7 @@ function tplActivityIndicator() {
 }
 
 /**
- * @param {RoomsList|PinnedBookmarksView} el
+ * @param {RoomsList} el
  * @param {MUC} room
  */
 export function tplRoomItem(el, room) {
@@ -49,8 +48,8 @@ export function tplRoomItem(el, room) {
                 tplRoomMenuItem({
                     room,
                     alt_text: __('Pin this groupchat to the top of the list'),
-                    text: __('Pin'),
-                    icon_class: 'fa-bookmark',
+                    text: __('Pin to top'),
+                    icon_class: 'fa-thumbtack',
                     btn_class: 'pin-room',
                     handler: (ev) => el.pinRoom(ev),
                 }),
@@ -60,8 +59,8 @@ export function tplRoomItem(el, room) {
                 tplRoomMenuItem({
                     room,
                     alt_text: __('Unpin this groupchat from the top of the list'),
-                    text: __('Unpin'),
-                    icon_class: 'fa-bookmark-empty',
+                    text: __('Unpin from top'),
+                    icon_class: 'fa-thumbtack',
                     btn_class: 'unpin-room',
                     handler: (ev) => el.unpinRoom(ev),
                 }),
@@ -125,7 +124,7 @@ function tplRoomMenuItem(config) {
         data-room-name="${room.getDisplayName()}"
         title="${alt_text}"
     >
-        <converse-icon class="fa ${icon_class}" size="1em"></converse-icon>
+        <converse-icon aria-hidden="true" class="fa ${icon_class}" size="1em"></converse-icon>
         ${text}
     </a>`;
 }

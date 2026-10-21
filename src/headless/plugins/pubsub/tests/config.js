@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
@@ -523,6 +524,32 @@ describe('The pubsub API', function () {
                 );
 
                 await promise;
+            }),
+        );
+
+        it(
+            'rejects with null when the publish times out',
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+                const { api } = _converse;
+
+                // A timed out IQ rejects with `null`
+                const sendIQ = api.sendIQ.bind(api);
+                vi.spyOn(api, 'sendIQ').mockImplementation((stanza, ...args) => {
+                    const el = stanza instanceof Element ? stanza : stanza.tree();
+                    return el.querySelector('pubsub publish') ? Promise.reject(null) : sendIQ(stanza, ...args);
+                });
+
+                const promise = api.pubsub.publish(pubsub_jid, node, stx`<item></item>`, {
+                    access_model: 'whitelist',
+                });
+                await mock.waitUntilDiscoConfirmed(
+                    _converse,
+                    pubsub_jid,
+                    [{ 'category': 'pubsub', 'type': 'pep' }],
+                    ['http://jabber.org/protocol/pubsub#publish-options'],
+                );
+                await expect(promise).rejects.toBeNull();
             }),
         );
     });

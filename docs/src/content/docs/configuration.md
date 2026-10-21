@@ -1862,6 +1862,7 @@ See also [emoji_image_path](#emoji_image_path).
     fileupload: true,
     location: true,
     spoiler: false,
+    voice_message: true,
 }
 ```
 
@@ -1884,6 +1885,10 @@ Allows you to show or hide buttons on the chatboxes' toolbars.
 
 - _spoiler_:
   Shows a button for showing[XEP-0382](https://xmpp.org/extensions/xep-0382.html) spoiler messages.
+
+- _voice_message_:
+  Shows a microphone button for recording and sending a [voice message](/docs/voice-messages/).
+  The button comes with the `converse-voice-messages` plugin.
 
 ### websocket_url
 

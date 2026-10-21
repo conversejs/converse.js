@@ -3,7 +3,8 @@
  * @typedef {import('shared/chat/emoji-dropdown.js').default} EmojiDropdown
  * @typedef {import('./message-form.js').default} MessageForm
  */
-import { _converse, api } from '@converse/headless';
+import { api } from '@converse/headless';
+import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import tplBottomPanel from './templates/bottom-panel.js';
 import { clearMessages } from './utils.js';
@@ -35,6 +36,7 @@ export default class ChatBottomPanel extends CustomElement {
         await this.model.initialized;
         this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate());
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
+        this.listenTo(this.model, 'startVoiceRecording', () => this.showVoiceRecorder());
 
         this.addEventListener('emojipickerblur', () =>
             /** @type {HTMLElement} */ (this.querySelector('.chat-textarea')).focus()
@@ -43,6 +45,60 @@ export default class ChatBottomPanel extends CustomElement {
 
     render() {
         return this.model ? tplBottomPanel(this) : '';
+    }
+
+    showVoiceRecorder() {
+        this.model.set('show_voice_recorder', true);
+        this.requestUpdate();
+
+        // Wait for it to render, then focus it
+        setTimeout(() => {
+            const recorder = /** @type {HTMLElement} */ (this.querySelector('converse-audio-recorder'));
+            if (recorder) {
+                recorder.focus();
+            }
+        }, 100);
+    }
+
+    hideVoiceRecorder() {
+        this.model.set('show_voice_recorder', false);
+        this.requestUpdate();
+    }
+
+    async handleRecordingCompleted(event) {
+        const { audioBlob, duration } = event.detail;
+
+        try {
+            // Create the audio file
+            if (!api.voice_messages || !api.voice_messages.createAudioFile) {
+                throw new Error('Voice messages API not available');
+            }
+
+            const file = api.voice_messages.createAudioFile(audioBlob);
+
+            // Announce to screen readers
+            if (api.accessibility && api.accessibility.announce) {
+                api.accessibility.announce(__('Sending a %1$s second voice message', Math.round(duration)), 'polite');
+            }
+
+            // Send using the model's method
+            await this.model.sendFiles([file]);
+
+            // Hide the recorder
+            this.hideVoiceRecorder();
+
+            // Confirm send
+            if (api.accessibility && api.accessibility.announce) {
+                api.accessibility.announce(__('Voice message sent'), 'assertive');
+            }
+        } catch (error) {
+            console.error('Error sending voice message:', error);
+
+            // Announce the error
+            if (api.accessibility && api.accessibility.announce) {
+                api.accessibility.announce(__('Error sending voice message: %1$s', error.message), 'assertive');
+            }
+        }
     }
 
     viewUnreadMessages(ev) {

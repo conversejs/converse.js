@@ -21,6 +21,7 @@ export default (el) => {
         fileupload: show_fileupload_button,
         location: show_location_button,
         spoiler: show_spoiler_button,
+        voice_message: show_voice_message_button,
     } = toolbar_buttons;
     const show_send_button = api.settings.get('show_send_button');
     const show_toolbar = api.settings.get('show_toolbar');
@@ -39,6 +40,7 @@ export default (el) => {
                           ?show_location_button="${show_location_button}"
                           ?show_send_button="${show_send_button}"
                           ?show_spoiler_button="${show_spoiler_button}"
+                          ?show_voice_message_button="${show_voice_message_button}"
                           ?show_toolbar="${show_toolbar}"
                           message_limit="${message_limit}"
                       ></converse-chat-toolbar>`

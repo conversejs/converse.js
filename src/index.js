@@ -53,6 +53,7 @@ import './plugins/time-views/index.js'; // Views for XEP-0202 Entity Time
 import './plugins/dragresize/index.js'; // Allows chat boxes to be resized by dragging them
 import './plugins/fullscreen/index.js';
 import './plugins/reactions-views/index.js'; // XEP-0444 Reactions
+import './plugins/voice-messages/index.js'; // Voice message recording
 /* END: Plugins */
 
 _converse.exports.CustomElement = CustomElement;

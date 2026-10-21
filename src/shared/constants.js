@@ -32,6 +32,7 @@ export const VIEW_PLUGINS = [
     'converse-singleton',
     'converse-time-views',
     'converse-reaction-views',
+    'converse-voice-messages',
 ];
 
 /**

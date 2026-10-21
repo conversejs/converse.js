@@ -47,7 +47,10 @@ class ConverseIcon extends CustomElement {
     }
 
     render () {
-        return html`<svg .style="${this.getStyles()}"> <use href="${this.getSource()}"> </use> </svg>`;
+        // The SVG is decorative; an accessible name, if any, goes on the host element.
+        return html`<svg aria-hidden="true" .style="${this.getStyles()}">
+            <use href="${this.getSource()}"></use>
+        </svg>`;
     }
 }
 

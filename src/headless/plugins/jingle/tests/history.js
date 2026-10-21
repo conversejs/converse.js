@@ -73,6 +73,20 @@ describe('The call history', function () {
     );
 
     it(
+        'logs a missed call from someone who calls while we are on another call',
+        mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
+            const jid = await getContactJid(_converse, 0);
+            const busy_with = await getContactJid(_converse, 1);
+            _converse.api.calls.dial(busy_with);
+
+            receive(_converse, `${jid}/phone`, propose('busy1'));
+
+            expect(await historyIn(_converse, jid)).toBe('Missed call');
+            expect(_converse.state.calls.get('busy1')).toBeUndefined();
+        }),
+    );
+
+    it(
         'logs a declined call as declined, not missed',
         mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
             const jid = await getContactJid(_converse);

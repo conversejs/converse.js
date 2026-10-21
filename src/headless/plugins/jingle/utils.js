@@ -171,7 +171,9 @@ export function handleJingleMessage(stanza) {
                 if (glare) {
                     if (!resolveGlare(live, sid, from)) break;
                 } else {
-                    if (may_answer) api.send(createRejectStanza(from, sid)); // busy with someone/something else
+                    // Busy with someone/something else, so the call never rings here.
+                    if (may_answer) api.send(createRejectStanza(from, sid));
+                    writeMissedCall(bare_from, stamp);
                     break;
                 }
             }

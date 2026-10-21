@@ -63,11 +63,31 @@ function tplRoomDomainGroupList(el, rooms) {
 }
 
 /**
+ * The pinned rooms, rendered before all other rooms. The `Pinned` label is
+ * only needed to explain the ordering when unpinned rooms follow.
+ * @param {RoomsList} el
+ * @param {MUC[]} pinned
+ * @param {boolean} show_label
+ */
+function tplPinnedRooms(el, pinned, show_label) {
+    if (!show_label) return pinned.map((room) => tplRoomItem(el, room));
+
+    const heading_id = `${el.model.get('id')}-pinned-heading`;
+    return html`<li class="rooms-list-pinned">
+        <span class="rooms-list-subheading controlbox-padded" id="${heading_id}">${__('Pinned')}</span>
+        <ul class="items-list rooms-list-pinned__rooms" aria-labelledby="${heading_id}">
+            ${pinned.map((room) => tplRoomItem(el, room))}
+        </ul>
+    </li>`;
+}
+
+/**
  * @param {RoomsList} el
  */
 export default (el) => {
     const group_by_domain = api.settings.get('muc_grouped_by_domain');
-    const rooms = el.getRoomsToShow();
+    const { pinned, unpinned } = el.getRoomPartitions();
+    const rooms = [...pinned, ...unpinned];
     const i18n_desc_rooms = __('Click to toggle the list of open groupchats');
     const i18n_heading_chatrooms = __('Groupchats');
     const i18n_title_list_rooms = __('Query server');
@@ -131,9 +151,10 @@ export default (el) => {
 
         <div class="list-container list-container--openrooms ${rooms.length ? '' : 'hidden'}">
             <ul class="items-list rooms-list open-rooms-list ${is_closed ? 'collapsed' : ''}">
+                ${tplPinnedRooms(el, pinned, pinned.length > 0 && unpinned.length > 0)}
                 ${group_by_domain
-                    ? tplRoomDomainGroupList(el, rooms)
-                    : rooms.map(/** @param {MUC} room */ (room) => tplRoomItem(el, room))}
+                    ? tplRoomDomainGroupList(el, unpinned)
+                    : unpinned.map(/** @param {MUC} room */ (room) => tplRoomItem(el, room))}
             </ul>
         </div>`;
 };

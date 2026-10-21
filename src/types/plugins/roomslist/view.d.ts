@@ -9,8 +9,15 @@ export class RoomsList extends CustomElement {
     renderIfChatRoom(model: import("@converse/headless").Model): void;
     /** @param {import('@converse/headless').Model} model */
     renderIfRelevantChange(model: import("@converse/headless").Model): void;
-    /** @returns {import('@converse/headless').MUC[]} */
-    getRoomsToShow(): import("@converse/headless").MUC[];
+    /**
+     * Partitions the opened groupchats into pinned and unpinned rooms, each
+     * sorted by display name. Every room is in exactly one partition.
+     * @returns {{ pinned: import('@converse/headless').MUC[], unpinned: import('@converse/headless').MUC[] }}
+     */
+    getRoomPartitions(): {
+        pinned: import("@converse/headless").MUC[];
+        unpinned: import("@converse/headless").MUC[];
+    };
     /** @returns {import('@converse/headless').Bookmarks|undefined} */
     getBookmarks(): import("@converse/headless").Bookmarks | undefined;
     canPinRooms(): boolean;

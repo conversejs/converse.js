@@ -187,7 +187,7 @@ export async function waitUntilBookmarksReturned(
     ],
     node = 'urn:xmpp:bookmarks:1',
 ) {
-    const { u, sizzle, stx, Strophe } = _converse.env;
+    const { u, sizzle, stx, Stanza, Strophe } = _converse.env;
     await waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [{ 'category': 'pubsub', 'type': 'pep' }], features);
     const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
     const sent_stanza = await u.waitUntil(() =>
@@ -232,6 +232,9 @@ export async function waitUntilBookmarksReturned(
                                     autojoin="${b.autojoin ?? false}">
                             ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}
                             ${b.password ? stx`<password>${b.password}</password>` : ''}
+                            ${b.extensions?.length
+                                ? stx`<extensions>${b.extensions.map((e) => Stanza.fromString(e))}</extensions>`
+                                : ''}
                         </conference>
                     </item>`,
                 )};

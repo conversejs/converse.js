@@ -116,8 +116,11 @@ converse.plugins.add('converse-bookmarks', {
                         // so we don't want to trigger the `onAutoJoinChanged`
                         // listener in ./collection.js to again call `close()`
                         // on the MUC.
+                        // Keep `autojoin: false` locally even if the server
+                        // refuses it, so that the room isn't rejoined on reload.
                         {
                             silent: true,
+                            keep_on_error: true,
                         },
                     )
                     .catch(() => undefined);

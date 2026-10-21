@@ -4,18 +4,36 @@ import converse from '../../../dist/converse-headless.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
 
-async function acknowledgeBookmarkPublish(_converse, operation, selector) {
+/**
+ * Answers the newest publish matching `selector`, with a result or an error,
+ * and waits for the operation that sent it.
+ * @param {Promise} operation - The operation that publishes the bookmark
+ * @param {string} selector
+ * @param {boolean} [succeed=true]
+ */
+async function completeBookmarkPublish(_converse, operation, selector, succeed = true) {
     const connection = _converse.api.connection.get();
     const sent_stanza = await u.waitUntil(() =>
         connection.IQ_stanzas.filter((stanza) => sizzle(selector, stanza).length).pop(),
     );
-    const result = stx`<iq xmlns="jabber:client"
-        to="${connection.jid}"
-        type="result"
-        id="${sent_stanza.getAttribute('id')}"/>`;
-    connection._dataRecv(mock.createRequest(_converse, result));
+    const id = sent_stanza.getAttribute('id');
+    const response = succeed
+        ? stx`<iq xmlns="jabber:client" to="${connection.jid}" type="result" id="${id}"/>`
+        : stx`<iq xmlns="jabber:client" to="${connection.jid}" type="error" id="${id}">
+              <error type="cancel"><not-allowed xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+          </iq>`;
+    connection._dataRecv(mock.createRequest(_converse, response));
     const bookmark = await operation;
     return { bookmark, sent_stanza };
+}
+
+/**
+ * @param {Promise} operation - The operation that publishes the bookmark
+ * @param {string} muc_jid
+ */
+function refuseBookmarkPublish(_converse, operation, muc_jid) {
+    const selector = `publish[node="${Strophe.NS.BOOKMARKS2}"] item[id="${muc_jid}"]`;
+    return completeBookmarkPublish(_converse, operation, selector, false);
 }
 
 describe('A bookmark', function () {
@@ -432,7 +450,7 @@ describe('A bookmark', function () {
                 nick: '',
             });
 
-            let { sent_stanza } = await acknowledgeBookmarkPublish(
+            let { sent_stanza } = await completeBookmarkPublish(
                 _converse,
                 operation,
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Hamlet"]`,
@@ -476,7 +494,7 @@ describe('A bookmark', function () {
                 nick: 'romeo',
             });
 
-            ({ sent_stanza } = await acknowledgeBookmarkPublish(
+            ({ sent_stanza } = await completeBookmarkPublish(
                 _converse,
                 operation,
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Balcony"]`,
@@ -527,7 +545,7 @@ describe('A bookmark', function () {
                 ],
             });
 
-            ({ sent_stanza } = await acknowledgeBookmarkPublish(
+            ({ sent_stanza } = await completeBookmarkPublish(
                 _converse,
                 operation,
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="Garden"]`,
@@ -636,7 +654,7 @@ describe('A bookmark', function () {
             });
 
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
-            await acknowledgeBookmarkPublish(_converse, operation, `publish[node="${Strophe.NS.BOOKMARKS2}"]`);
+            await completeBookmarkPublish(_converse, operation, `publish[node="${Strophe.NS.BOOKMARKS2}"]`);
 
             // Clear previous stanzas
             while (IQ_stanzas.length) IQ_stanzas.pop();
@@ -688,7 +706,7 @@ describe('A bookmark', function () {
             const bookmark = state.bookmarks.findWhere({ jid: muc_jid });
             expect(bookmark).toBeTruthy();
             const operation = state.bookmarks.pinBookmark(bookmark);
-            const { sent_stanza } = await acknowledgeBookmarkPublish(
+            const { sent_stanza } = await completeBookmarkPublish(
                 _converse,
                 operation,
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"] extensions pinned`,
@@ -762,7 +780,7 @@ describe('A bookmark', function () {
 
             // Now unpin the bookmark
             const operation = state.bookmarks.unpinBookmark(bookmark);
-            const { sent_stanza } = await acknowledgeBookmarkPublish(
+            const { sent_stanza } = await completeBookmarkPublish(
                 _converse,
                 operation,
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] conference[name="The Play"]`,
@@ -822,7 +840,7 @@ describe('A bookmark', function () {
                 extensions: ['<note xmlns="urn:example:note"/>'],
             });
 
-            let { sent_stanza } = await acknowledgeBookmarkPublish(
+            let { sent_stanza } = await completeBookmarkPublish(
                 _converse,
                 state.bookmarks.pinRoom(muc_jid),
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] item[id="${muc_jid}"] extensions pinned`,
@@ -839,7 +857,7 @@ describe('A bookmark', function () {
             expect(bookmark.get('pinned')).toBe(true);
             expect(bookmark.get('autojoin')).toBe(false);
 
-            ({ sent_stanza } = await acknowledgeBookmarkPublish(
+            ({ sent_stanza } = await completeBookmarkPublish(
                 _converse,
                 state.bookmarks.unpinRoom(muc_jid),
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] item[id="${muc_jid}"] extensions:not(:has(pinned))`,
@@ -872,7 +890,7 @@ describe('A bookmark', function () {
                 extensions: ['<note xmlns="urn:example:note"/>'],
             });
 
-            const { sent_stanza } = await acknowledgeBookmarkPublish(
+            const { sent_stanza } = await completeBookmarkPublish(
                 _converse,
                 state.bookmarks.unpinRoom(muc_jid),
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] item[id="${muc_jid}"]`,
@@ -893,7 +911,7 @@ describe('A bookmark', function () {
             const { bookmarks } = _converse.state;
             await u.waitUntil(() => bookmarks.get(muc_jid));
 
-            await acknowledgeBookmarkPublish(
+            await completeBookmarkPublish(
                 _converse,
                 bookmarks.pinRoom(muc_jid),
                 `publish[node="${Strophe.NS.BOOKMARKS2}"] item[id="${muc_jid}"] extensions pinned`,
@@ -920,35 +938,120 @@ describe('A bookmark', function () {
     );
 
     it(
-        'rejects pinning when the server refuses the publish',
+        'is restored to its previous settings when the server refuses a pin',
         mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);
 
             const muc_jid = 'theplay@conference.shakespeare.lit';
             const { state } = _converse;
-            state.bookmarks.create({ jid: muc_jid, autojoin: false, name: 'The Play' });
+            const bookmark = state.bookmarks.create({
+                jid: muc_jid,
+                autojoin: false,
+                name: 'The Play',
+                extensions: ['<note xmlns="urn:example:note"/>'],
+            });
             vi.spyOn(state.bookmarks, 'onBookmarkError').mockImplementation(() => {});
 
-            const connection = _converse.api.connection.get();
             const operation = state.bookmarks.pinRoom(muc_jid);
-            const sent_stanza = await u.waitUntil(() =>
-                connection.IQ_stanzas.find(
-                    (s) => sizzle(`publish[node="${Strophe.NS.BOOKMARKS2}"] item[id="${muc_jid}"]`, s).length,
-                ),
-            );
-            connection._dataRecv(
-                mock.createRequest(
-                    _converse,
-                    stx`<iq xmlns="jabber:client" to="${connection.jid}" type="error" id="${sent_stanza.getAttribute('id')}">
-                        <error type="cancel">
-                            <not-allowed xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                        </error>
-                    </iq>`,
-                ),
-            );
-            await expect(operation).rejects.toBeTruthy();
+            await expect(refuseBookmarkPublish(_converse, operation, muc_jid)).rejects.toBeTruthy();
             expect(state.bookmarks.onBookmarkError).toHaveBeenCalled();
+
+            expect(state.bookmarks.get(muc_jid)).toBe(bookmark);
+            expect(bookmark.get('pinned')).toBe(false);
+            expect(bookmark.get('extensions')).toEqual(['<note xmlns="urn:example:note"/>']);
+        }),
+    );
+
+    it(
+        'is removed again, without being retracted, when the server refuses it',
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const { state } = _converse;
+            vi.spyOn(state.bookmarks, 'onBookmarkError').mockImplementation(() => {});
+            const retract = vi.spyOn(state.bookmarks, 'sendRemoveBookmarkStanza');
+            const leave = vi.spyOn(state.bookmarks, 'leaveRoom');
+
+            const operation = state.bookmarks.pinRoom(muc_jid);
+            await expect(refuseBookmarkPublish(_converse, operation, muc_jid)).rejects.toBeTruthy();
+
+            expect(state.bookmarks.get(muc_jid)).toBeUndefined();
+            expect(retract).not.toHaveBeenCalled();
+            expect(leave).not.toHaveBeenCalled();
+        }),
+    );
+
+    it(
+        'keeps a change whose publish timed out, since the server might have it',
+        mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const { state } = _converse;
+            const bookmark = state.bookmarks.create({ jid: muc_jid, autojoin: false, name: 'The Play' });
+            vi.spyOn(state.bookmarks, 'onBookmarkError').mockImplementation(() => {});
+            // A timed out IQ rejects with `null`
+            vi.spyOn(state.bookmarks, 'sendBookmarkStanza').mockRejectedValue(null);
+
+            await expect(state.bookmarks.pinRoom(muc_jid)).rejects.toBeNull();
+            expect(bookmark.get('pinned')).toBe(true);
+        }),
+    );
+
+    it(
+        'keeps its MUC open when a refused autojoin change is rolled back',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const muc = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+            const { bookmarks } = _converse.state;
+            await completeBookmarkPublish(_converse, Promise.resolve(), `publish item[id="${muc_jid}"]`);
+            const bookmark = bookmarks.get(muc_jid);
+            await bookmark.save({ autojoin: false }, { silent: true, promise: true });
+            vi.spyOn(bookmarks, 'onBookmarkError').mockImplementation(() => {});
+
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+            while (sent_IQs.length) sent_IQs.pop();
+
+            const close = vi.spyOn(muc, 'close');
+            const operation = bookmarks.setBookmark({ jid: muc_jid, autojoin: true });
+            await expect(refuseBookmarkPublish(_converse, operation, muc_jid)).rejects.toBeTruthy();
+            // Let a pending `leaveRoom` look up the MUC before checking it wasn't closed
+            await _converse.api.rooms.get(muc_jid);
+
+            expect(bookmark.get('autojoin')).toBe(false);
+            expect(close).not.toHaveBeenCalled();
+        }),
+    );
+
+    it(
+        'keeps autojoin off when the server refuses it after its MUC is left',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 0);
+            await mock.waitUntilBookmarksReturned(_converse);
+
+            const muc_jid = 'theplay@conference.shakespeare.lit';
+            const muc = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+            const { bookmarks } = _converse.state;
+            await completeBookmarkPublish(_converse, Promise.resolve(), `publish item[id="${muc_jid}"]`);
+            const bookmark = bookmarks.get(muc_jid);
+            expect(bookmark.get('autojoin')).toBe(true);
+            const error_spy = vi.spyOn(bookmarks, 'onBookmarkError').mockImplementation(() => {});
+
+            const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+            while (sent_IQs.length) sent_IQs.pop();
+
+            await muc.close();
+            await refuseBookmarkPublish(_converse, Promise.resolve(), muc_jid);
+            await u.waitUntil(() => error_spy.mock.calls.length);
+
+            expect(bookmark.get('autojoin')).toBe(false);
         }),
     );
 

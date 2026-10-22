@@ -922,6 +922,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             moderation_incomplete: undefined,
             moderation_reason: reason,
             editable: false,
+            retracted: new Date().toISOString(),
         });
         // The room archives each version separately, so each needs its own retraction.
         // The corrections are only retracted once the original has been, so that a
@@ -936,6 +937,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 moderated_by: undefined,
                 moderated_id: undefined,
                 moderation_reason: undefined,
+                retracted: undefined,
             });
             return result;
         }
@@ -2251,8 +2253,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             'moderated_by_id',
             'moderated_id',
             'moderation_reason',
+            'retracted',
         ];
         if (attrs.moderated === 'retracted') {
+            // The moderation stanza's time is when the message was removed
+            attrs = { ...attrs, retracted: attrs.time };
             const message = this.getMessageByStanzaID(attrs.moderated_id);
             if (!message) {
                 attrs['dangling_moderation'] = true;

@@ -36,8 +36,7 @@ export default (el) => {
     const is_action = is_me_message || is_retracted;
     // An action row states an event, so its timestamp is when that event
     // happened: for a retraction, when the message was removed, not sent.
-    // Moderations carry no such time, so they fall back to the sent time.
-    const action_time = (is_retracted && el.model.get('retracted')) || edited || time;
+    const action_time = is_retracted ? el.model.get('retracted') || time : edited || time;
     const should_show_header = !is_action && !is_followup;
     const should_show_avatar = el.shouldShowAvatar() && should_show_header;
 

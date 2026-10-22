@@ -139,31 +139,44 @@ async function shouldNotifyOfMEPMessage(attrs) {
 }
 
 /**
- * @async
- * @method shouldNotifyOfMessage
+ * Is this message worth drawing the user's attention to? This doesn't
+ * consider whether the user is already looking at the chat it was received in.
  * @param {import('./types').MessageNotificationData} data
+ * @returns {Promise<boolean>}
  */
-function shouldNotifyOfMessage(data) {
-    const { attrs, chatbox } = data;
+export async function isNotableMessage(data) {
+    const { attrs } = data;
     if (!attrs || ('is_forwarded' in attrs && attrs.is_forwarded)) {
         return false;
     }
-    if (attrs['type'] === 'groupchat') {
-        return shouldNotifyOfGroupMessage(/** @type {MUCMessageAttributes} */ (attrs));
-    } else if (attrs['type'] === 'mep') {
-        return shouldNotifyOfMEPMessage(attrs);
+    if (attrs.type === 'groupchat') {
+        return await shouldNotifyOfGroupMessage(/** @type {MUCMessageAttributes} */ (attrs));
+    } else if (attrs.type === 'mep') {
+        return await shouldNotifyOfMEPMessage(attrs);
     } else if (attrs.is_headline) {
-        // We want to show notifications for headline messages.
-        return isMessageToHiddenChat(chatbox);
+        return true;
     }
+    const is_me = Strophe.getBareJidFromJid(attrs.from) === _converse.session.get('bare_jid');
+    return !isEmptyMessage(attrs) && !is_me;
+}
 
-    const bare_jid = _converse.session.get('bare_jid');
-    const is_me = Strophe.getBareJidFromJid(attrs.from) === bare_jid;
-    return (
-        !isEmptyMessage(attrs) &&
-        !is_me &&
-        (api.settings.get('show_desktop_notifications') === 'all' || isMessageToHiddenChat(chatbox))
-    );
+/**
+ * @param {import('./types').MessageNotificationData} data
+ * @returns {Promise<boolean>}
+ */
+async function shouldNotifyOfMessage(data) {
+    if (!(await isNotableMessage(data))) {
+        return false;
+    }
+    const { attrs, chatbox } = data;
+    if (attrs.type === 'groupchat' || attrs.type === 'mep') {
+        // Notable room messages are notified about even while the room is visible
+        return true;
+    }
+    if (!attrs.is_headline && api.settings.get('show_desktop_notifications') === 'all') {
+        return true;
+    }
+    return isMessageToHiddenChat(chatbox);
 }
 
 export function showFeedbackNotification(data) {

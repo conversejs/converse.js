@@ -498,4 +498,54 @@ describe('Notifications', function () {
             }),
         );
     });
+
+    describe('api.notifications.isNotable', function () {
+        it(
+            "doesn't consider whether the chat is visible",
+            mock.initConverse(converse, [], {}, async (_converse) => {
+                const { api } = _converse;
+                await mock.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                const chatbox = (await mock.openChatBoxFor(_converse, contact_jid)).model;
+                expect(chatbox.isHidden()).toBe(false);
+
+                const attrs = { type: 'chat', from: `${contact_jid}/phone`, body: 'Hello' };
+                expect(await api.notifications.isNotable({ attrs, chatbox })).toBe(true);
+
+                const own = { ...attrs, from: `${_converse.bare_jid}/other` };
+                expect(await api.notifications.isNotable({ attrs: own, chatbox })).toBe(false);
+
+                const empty = { ...attrs, body: undefined };
+                expect(await api.notifications.isNotable({ attrs: empty, chatbox })).toBe(false);
+            }),
+        );
+
+        it(
+            'is true for a room message only if it mentions the user',
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+                const { api } = _converse;
+                const muc_jid = 'lounge@montague.lit';
+                const chatbox = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+
+                const attrs = {
+                    type: 'groupchat',
+                    from: `${muc_jid}/juliet`,
+                    from_muc: muc_jid,
+                    body: 'Hello everyone',
+                    references: [],
+                };
+                expect(await api.notifications.isNotable({ attrs, chatbox })).toBe(false);
+
+                const mention = {
+                    ...attrs,
+                    body: 'Hello romeo',
+                    references: [{ begin: 6, end: 11, type: 'mention', uri: `xmpp:${muc_jid}/romeo` }],
+                };
+                expect(await api.notifications.isNotable({ attrs: mention, chatbox })).toBe(true);
+
+                const forwarded = { ...mention, is_forwarded: true };
+                expect(await api.notifications.isNotable({ attrs: forwarded, chatbox })).toBe(false);
+            }),
+        );
+    });
 });

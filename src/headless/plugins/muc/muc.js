@@ -2416,7 +2416,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             return false;
         }
         attrs.activities?.forEach((activity_attrs) => {
-            const data = Object.assign(attrs, activity_attrs);
+            const data = { ...attrs, ...activity_attrs };
             this.createMessage(data);
             // Trigger so that notifications are shown
             api.trigger('message', { 'attrs': data, 'chatbox': this });

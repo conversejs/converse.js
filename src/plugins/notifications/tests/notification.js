@@ -145,6 +145,117 @@ describe('Notifications', function () {
                 );
 
                 it(
+                    'is shown for a XEP-0316 MEP notification which mentions the user',
+                    mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+                        const muc_jid = 'lounge@montague.lit';
+                        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+
+                        const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                        spyOn(window, 'Notification').and.returnValue(stub);
+                        spyOn(_converse.api, 'trigger').and.callThrough();
+
+                        const text = 'An anonymous user has saluted romeo';
+                        const reason = 'Thank you for helping me yesterday';
+                        const stanza = stx`
+                            <message from="${muc_jid}"
+                                    to="${_converse.jid}"
+                                    type="headline"
+                                    id="${u.getUniqueId()}"
+                                    xmlns="jabber:client">
+                                <event xmlns="http://jabber.org/protocol/pubsub#event">
+                                    <items node="urn:ietf:params:xml:ns:conference-info">
+                                        <item id="ehs51f40">
+                                            <conference-info xmlns="urn:ietf:params:xml:ns:conference-info">
+                                                <activity xmlns="http://jabber.org/protocol/activity">
+                                                    <other/>
+                                                    <text id="activity-text" xml:lang="en">${text}</text>
+                                                    <reference xmlns="urn:xmpp:reference:0"
+                                                               anchor="activity-text"
+                                                               begin="30" end="35"
+                                                               type="mention"
+                                                               uri="xmpp:${_converse.bare_jid}"/>
+                                                    <reason id="activity-reason">${reason}</reason>
+                                                </activity>
+                                            </conference-info>
+                                        </item>
+                                    </items>
+                                </event>
+                            </message>`;
+                        _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
+                        await u.waitUntil(() => window.Notification.calls.count() === 1);
+                        expect(window.Notification).toHaveBeenCalledWith(
+                            text,
+                            jasmine.objectContaining({ body: reason }),
+                        );
+                        const notification_events = _converse.api.trigger.calls
+                            .allArgs()
+                            .filter(([name]) => name === 'messageNotification');
+                        expect(notification_events).toHaveSize(1);
+                    }),
+                );
+
+                it(
+                    'shows each activity from a multi-activity XEP-0316 MEP notification',
+                    mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+                        const muc_jid = 'lounge@montague.lit';
+                        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+
+                        const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                        spyOn(window, 'Notification').and.returnValue(stub);
+
+                        const stanza = stx`
+                            <message from="${muc_jid}"
+                                    to="${_converse.jid}"
+                                    type="headline"
+                                    id="${u.getUniqueId()}"
+                                    xmlns="jabber:client">
+                                <event xmlns="http://jabber.org/protocol/pubsub#event">
+                                    <items node="urn:ietf:params:xml:ns:conference-info">
+                                        <item id="ehs51f40">
+                                            <conference-info xmlns="urn:ietf:params:xml:ns:conference-info">
+                                                <activity xmlns="http://jabber.org/protocol/activity">
+                                                    <other/>
+                                                    <text id="activity-text-1"
+                                                          xml:lang="en">First activity for romeo</text>
+                                                    <reference xmlns="urn:xmpp:reference:0"
+                                                               anchor="activity-text-1"
+                                                               begin="19" end="24"
+                                                               type="mention"
+                                                               uri="xmpp:${_converse.bare_jid}"/>
+                                                    <reason id="activity-reason-1">First reason</reason>
+                                                </activity>
+                                                <activity xmlns="http://jabber.org/protocol/activity">
+                                                    <other/>
+                                                    <text id="activity-text-2"
+                                                          xml:lang="en">Second activity for romeo</text>
+                                                    <reference xmlns="urn:xmpp:reference:0"
+                                                               anchor="activity-text-2"
+                                                               begin="20" end="25"
+                                                               type="mention"
+                                                               uri="xmpp:${_converse.bare_jid}"/>
+                                                    <reason id="activity-reason-2">Second reason</reason>
+                                                </activity>
+                                            </conference-info>
+                                        </item>
+                                    </items>
+                                </event>
+                            </message>`;
+                        _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
+                        await u.waitUntil(() => window.Notification.calls.count() === 2);
+                        expect(window.Notification.calls.argsFor(0)).toEqual([
+                            'First activity for romeo',
+                            jasmine.objectContaining({ body: 'First reason' }),
+                        ]);
+                        expect(window.Notification.calls.argsFor(1)).toEqual([
+                            'Second activity for romeo',
+                            jasmine.objectContaining({ body: 'Second reason' }),
+                        ]);
+                    }),
+                );
+
+                it(
                     'is not shown for full JID headline messages if allow_non_roster_messaging is false',
                     mock.initConverse(converse, [], { 'allow_non_roster_messaging': false }, (_converse) => {
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);

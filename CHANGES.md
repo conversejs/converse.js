@@ -17,6 +17,7 @@
   chat, while the presence handler keeps it on the contact, so it never rendered.
 - fix(notifications): Notify of a 1:1 message in a hidden chat while the tab is visible. The
   check looked up the chat by the message's attributes instead of its JID, so it never found it.
+- fix(notifications): Show desktop notifications for XEP-0316 MEP room notifications again.
 - fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`
   attribute. Chromium 153 no longer keeps the redundant namespace declaration on `<from/>` and
   `<to/>`, which stopped MUC messages from decrypting and silently skipped the `<from/>` check.

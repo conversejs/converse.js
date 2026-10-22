@@ -21,11 +21,11 @@ converse.env.Favico = Favico;
 let favicon;
 
 /**
- * @param {string} from - The JID of the sender
+ * @param {import('@converse/headless').ChatBox} [chatbox] - The chat the message was received in
  * @returns {boolean}
  */
-export function isMessageToHiddenChat(from) {
-    return isTestEnv() || (_converse.state.chatboxes.get(from)?.isHidden() ?? false) || document.hidden;
+export function isMessageToHiddenChat(chatbox) {
+    return isTestEnv() || (chatbox?.isHidden() ?? false) || document.hidden;
 }
 
 export function areDesktopNotificationsEnabled() {
@@ -142,7 +142,7 @@ async function shouldNotifyOfInfoMessage(attrs) {
  * @param {MessageData|MUCMessageData} data
  */
 function shouldNotifyOfMessage(data) {
-    const { attrs } = data;
+    const { attrs, chatbox } = data;
     if (!attrs || attrs.is_forwarded) {
         return false;
     }
@@ -152,7 +152,7 @@ function shouldNotifyOfMessage(data) {
         return shouldNotifyOfInfoMessage(attrs);
     } else if (attrs.is_headline) {
         // We want to show notifications for headline messages.
-        return isMessageToHiddenChat(attrs);
+        return isMessageToHiddenChat(chatbox);
     }
 
     const bare_jid = _converse.session.get('bare_jid');
@@ -160,7 +160,7 @@ function shouldNotifyOfMessage(data) {
     return (
         !isEmptyMessage(attrs) &&
         !is_me &&
-        (api.settings.get('show_desktop_notifications') === 'all' || isMessageToHiddenChat(attrs))
+        (api.settings.get('show_desktop_notifications') === 'all' || isMessageToHiddenChat(chatbox))
     );
 }
 

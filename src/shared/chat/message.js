@@ -225,13 +225,20 @@ export default class Message extends ObservableElement {
     }
 
     getRetractionText() {
-        if (['groupchat', 'mep'].includes(this.model.get('type')) && this.model.get('moderated_by')) {
-            const retracted_by_mod = this.model.get('moderated_by');
+        const { moderated, moderated_by, moderated_by_id } = this.model.attributes;
+        // The moderator's JID is optional, so a moderation may only identify
+        // the moderator by occupant-id, or not at all.
+        const is_moderated = moderated === 'retracted' || moderated_by || moderated_by_id;
+        if (['groupchat', 'mep'].includes(this.model.get('type')) && is_moderated) {
             if (!this.model.mod) {
                 const { occupants } = this.model_with_messages;
                 this.model.mod =
-                    occupants.findOccupant({ 'jid': retracted_by_mod }) ||
-                    occupants.findOccupant({ 'nick': Strophe.getResourceFromJid(retracted_by_mod) });
+                    (moderated_by_id && occupants.findOccupant({ 'occupant_id': moderated_by_id })) ||
+                    (moderated_by && occupants.findOccupant({ 'jid': moderated_by })) ||
+                    (moderated_by && occupants.findOccupant({ 'nick': Strophe.getResourceFromJid(moderated_by) }));
+            }
+            if (this.model.mod && this.model.mod === this.model_with_messages.getOwnOccupant()) {
+                return __('You removed a message');
             }
             const modname = this.model.mod ? this.model.mod.getDisplayName() : __('A moderator');
             return __('%1$s removed a message', modname);

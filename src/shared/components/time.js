@@ -29,6 +29,18 @@ export default class Time extends CustomElement {
 
     connectedCallback() {
         super.connectedCallback();
+        this.#setRefreshInterval();
+    }
+
+    /** @param {Map<string, any>} changed */
+    updated(changed) {
+        super.updated(changed);
+        // The element may be reused for a different time, e.g. when a message is retracted
+        if (changed.has('timestamp') && this.isConnected) this.#setRefreshInterval();
+    }
+
+    #setRefreshInterval() {
+        if (this.#intervalId) clearInterval(this.#intervalId);
         const seconds = dayjs().diff(this.timestamp, 'second');
         const interval = seconds < 86400 ? 60_000 : 60 * 1000 * 60 * 24;
         this.#intervalId = setInterval(() => this.requestUpdate(), interval);

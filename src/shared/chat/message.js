@@ -86,12 +86,18 @@ export default class Message extends ObservableElement {
         }
     }
 
-    renderRetraction() {
-        return tplRetraction(this);
+    /**
+     * @param {import('lit').TemplateResult|string} [tpl_time] - A timestamp to show right after the text
+     */
+    renderRetraction(tpl_time = '') {
+        return tplRetraction(this, tpl_time);
     }
 
-    renderMessageText() {
-        return tplMessageText(this);
+    /**
+     * @param {import('lit').TemplateResult|string} [tpl_time] - A timestamp to show right after the text
+     */
+    renderMessageText(tpl_time = '') {
+        return tplMessageText(this, tpl_time);
     }
 
     renderMEPMessage() {

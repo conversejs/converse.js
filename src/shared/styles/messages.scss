@@ -314,6 +314,9 @@
                 // instead of flex items that each shrink into a column.
                 .chat-msg__message {
                     display: block;
+                    // The message body is inline here, so its own
+                    // `overflow-y: hidden` no longer contains zalgo text.
+                    overflow-y: clip;
                 }
                 .chat-msg__body--wrapper {
                     display: inline;
@@ -331,28 +334,36 @@
                         margin-inline-start: 0.5em;
                     }
                 }
+                // Part of the sentence, so a long nickname wraps with it
+                // instead of being cut off or overflowing the row.
+                // The timestamp after it brings its own spacing
+                .chat-msg__edit-modal {
+                    padding-inline-end: 0;
+                }
                 .chat-msg__author {
                     font-size: var(--message-font-size);
+                    white-space: normal;
+                    overflow-wrap: anywhere;
                 }
                 // The timestamp trails the text as a dimmed suffix
                 // ("romeo waves · 5m"), so that a relative time is not
                 // read as the first word of the sentence.
                 .chat-msg__time {
                     color: var(--secondary-color);
-                    margin-inline-start: 0.5em;
+                    // Added to the space that comes before it
+                    margin-inline-start: 0.25em;
                     white-space: nowrap;
 
                     &::before {
-                        content: '·';
+                        content: '·' / ''; // Decorative, so not read out
                         margin-inline-end: 0.5em;
                     }
                 }
 
-                // Inline, so that the timestamp follows the text on its
-                // line, while a moderation reason still goes below it.
-                .retraction {
-                    display: inline-flex;
-                    flex-direction: column;
+                // The timestamp follows the text on its line, and a
+                // moderation reason goes below both.
+                .chat-msg--retracted__reason {
+                    display: block;
                 }
             }
 

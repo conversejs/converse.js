@@ -51,7 +51,7 @@ describe('A sent chat message', function () {
 
             // The timestamp trails the text and shows when the message was
             // removed, not when it was sent.
-            const time_el = view.querySelector('.chat-msg--retracted .chat-msg__message').lastElementChild;
+            const time_el = view.querySelector('.chat-msg--retracted .retraction > span + converse-time');
             expect(time_el.matches('converse-time.chat-msg__time')).toBe(true);
             expect(time_el.getAttribute('timestamp')).toBe(message.get('retracted'));
         }),
@@ -366,7 +366,7 @@ describe('A message retraction', function () {
             const message = view.model.messages.at(0);
             expect(message.get('retracted')).toBe('2019-09-20T23:08:25.000Z');
 
-            const time_el = view.querySelector('.chat-msg--retracted .chat-msg__message').lastElementChild;
+            const time_el = view.querySelector('.chat-msg--retracted .retraction > span + converse-time');
             expect(time_el.getAttribute('timestamp')).toBe('2019-09-20T23:08:25.000Z');
         }),
     );

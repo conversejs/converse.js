@@ -28,8 +28,9 @@ function tplCheckmark() {
 
 /**
  * @param {import('../message').default} el
+ * @param {import('lit').TemplateResult|string} [tpl_time] - Kept with the text, before any media or error below it
  */
-export default (el) => {
+export default (el, tpl_time = '') => {
     const i18n_show = __('Show more');
     const is_groupchat_message = el.model.get('type') === 'groupchat';
     const i18n_show_less = __('Show less');
@@ -72,6 +73,7 @@ export default (el) => {
             ></converse-chat-message-body>
             ${el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message ? tplCheckmark() : ''}
             ${el.model.get('edited') ? tplEditedIcon(el) : ''}
+            ${tpl_time}
         </span>
         ${
             show_oob

@@ -16,8 +16,14 @@ export default class Message extends ObservableElement {
     model_with_messages: any;
     initialize(): Promise<void>;
     render(): import("lit-html").TemplateResult<1> | "";
-    renderRetraction(): import("lit-html").TemplateResult<1>;
-    renderMessageText(): import("lit-html").TemplateResult<1>;
+    /**
+     * @param {import('lit').TemplateResult|string} [tpl_time] - A timestamp to show right after the text
+     */
+    renderRetraction(tpl_time?: import("lit").TemplateResult | string): import("lit-html").TemplateResult<1>;
+    /**
+     * @param {import('lit').TemplateResult|string} [tpl_time] - A timestamp to show right after the text
+     */
+    renderMessageText(tpl_time?: import("lit").TemplateResult | string): import("lit-html").TemplateResult<1>;
     renderMEPMessage(): import("lit-html").TemplateResult<1>;
     renderInfoMessage(): import("lit-html").TemplateResult<1>;
     renderFileProgress(): import("lit-html").TemplateResult<1> | "";

@@ -25,20 +25,20 @@ export default class Dropdown extends DropdownBase {
         super();
         this.icon_classes = 'fa fa-bars';
         /** @type {any[]} */ this.items = [];
-        this.id = u.getUniqueId();
+        this.button_id = u.getUniqueId();
     }
 
     render() {
         return html`
             <button class="btn btn--transparent btn--standalone dropdown-toggle dropdown-toggle--no-caret"
-                    id="${this.id}"
+                    id="${this.button_id}"
                     type="button"
                     aria-haspopup="true"
                     aria-expanded="false"
                     aria-label=${__('Menu')}>
                 <converse-icon aria-hidden="true" size="1em" class="${this.icon_classes}">
             </button>
-            <ul class="dropdown-menu" aria-labelledby="${this.id}">
+            <ul class="dropdown-menu" aria-labelledby="${this.button_id}">
                 ${/** @type {any[]} */ (this.items).map((b) => html`<li>${until(b, '')}</li>`)}
             </ul>
         `;

@@ -3,6 +3,7 @@ export default class DropdownBase extends CustomElement {
     button: HTMLButtonElement;
     /** @param {MouseEvent} ev */
     _onButtonClick: (ev: MouseEvent) => void;
+    _raf_id: number;
     /**
      * Override in subclass to register event listeners.
      * Called automatically from connectedCallback().

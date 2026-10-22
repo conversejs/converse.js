@@ -39,6 +39,10 @@ export default class DropdownBase extends CustomElement {
         if (this._onDocumentKeyDown) {
             document.removeEventListener('keydown', this._onDocumentKeyDown);
         }
+        if (this._raf_id) {
+            cancelAnimationFrame(this._raf_id);
+            this._raf_id = null;
+        }
         this._popper?.destroy();
         super.disconnectedCallback();
     }
@@ -81,7 +85,26 @@ export default class DropdownBase extends CustomElement {
             this._popper = createPopper(this.button, menu, {
                 strategy: 'fixed',
                 placement: 'left-start',
+                modifiers: [
+                    { name: 'offset', options: { offset: [0, 4] } },
+                    {
+                        name: 'flip',
+                        options: {
+                            boundary: 'viewport',
+                            padding: 8,
+                            fallbackPlacements: ['right-start', 'left-end', 'right-end', 'bottom-end', 'bottom-start'],
+                        },
+                    },
+                    {
+                        name: 'preventOverflow',
+                        options: {
+                            boundary: 'viewport',
+                            padding: 8,
+                        },
+                    },
+                ],
             });
+            this._raf_id = requestAnimationFrame(() => this._popper?.forceUpdate());
         } else {
             this._popper = createPopper(this.button, menu, {
                 placement: 'bottom-start',
@@ -118,6 +141,10 @@ export default class DropdownBase extends CustomElement {
         this.button?.classList.remove('show');
         menu.classList.remove('show');
 
+        if (this._raf_id) {
+            cancelAnimationFrame(this._raf_id);
+            this._raf_id = null;
+        }
         this._popper?.destroy();
         this._popper = null;
 

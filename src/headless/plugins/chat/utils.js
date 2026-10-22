@@ -163,19 +163,11 @@ export async function handleMessageStanza(stanza) {
     const has_body = !!(body || plaintext);
     const chatbox = await api.chats.get(contact_jid, {}, has_body);
     await chatbox?.queueMessage(attrs);
-    /**
-     * @typedef {Object} MessageData
-     * An object containing the original message stanza, as well as the
-     * parsed attributes.
-     * @property {Element} stanza
-     * @property {MessageAttributes} stanza
-     * @property {ChatBox} chatbox
-     */
-    const data = { stanza, attrs, chatbox };
+    const data = /** @type {import('../../shared/types').MessageEventData} */ ({ stanza, attrs, chatbox });
     /**
      * Triggered when a message stanza is been received and processed.
      * @event _converse#message
-     * @type {MessageData} data
+     * @type {import('../../shared/types').MessageEventData} data
      */
     api.trigger('message', data);
 }

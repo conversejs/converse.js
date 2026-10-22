@@ -1,6 +1,6 @@
 import { ModelAttributes } from '@converse/skeletor';
 import { CHAT_STATES } from '../../shared/constants';
-import { MessageAttributes } from '../../shared/types';
+import { MessageAttributes, Reference } from '../../shared/types';
 import MUC from './muc';
 
 export type MUCStatusCode =
@@ -47,8 +47,8 @@ export type DefaultMUCAttributes = {
 
 // An object containing the parsed {@link MUCMessageAttributes} and current {@link MUC}.
 export type MUCMessageEventData = {
-    stanza: Element;
-    attrs: MUCMessageAttributes;
+    stanza?: Element; // Absent for XEP-0316 MEP notifications
+    attrs: MUCMessageAttributes | MEPMessageAttributes;
     chatbox: MUC;
 };
 
@@ -68,9 +68,23 @@ type ExtraMUCAttributes = {
     moderation_reason: string; // The reason provided why this message moderates another
     occupant_id: string; // The XEP-0421 occupant ID
     codes: MUCStatusCode[];
+    is_forwarded: boolean; // Whether the message contains a XEP-0297 forwarded message
 };
 
 export type MUCMessageAttributes = MessageAttributes & ExtraMUCAttributes;
+
+// A XEP-0316 MEP notification, parsed from an <activity> element
+export type MEPActivityAttributes = {
+    from: string; // The JID of the MUC which sent the notification
+    msgid: string; // The id of the message stanza
+    message: string; // The text of the activity
+    reason?: string; // The reason given for the activity
+    references: Reference[]; // XEP-0372 references, e.g. mentions, in the text
+    type: 'mep';
+};
+
+// The attributes of a MUC message, merged with those of one of its XEP-0316 MEP activities
+export type MEPMessageAttributes = Omit<MUCMessageAttributes, 'type'> & MEPActivityAttributes;
 
 export type MUCAffiliation = 'owner' | 'admin' | 'member' | 'outcast' | 'none';
 export type MUCRole = 'moderator' | 'participant' | 'visitor' | 'none';

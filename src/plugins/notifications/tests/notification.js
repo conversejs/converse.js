@@ -14,6 +14,7 @@ describe('Notifications', function () {
                     'is shown when a new private message is received',
                     mock.initConverse(converse, [], {}, async (_converse) => {
                         await mock.waitForRoster(_converse, 'current');
+                        spyOn(_converse.exports.ChatBox.prototype, 'isHidden').and.returnValue(true);
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
 
@@ -31,6 +32,34 @@ describe('Notifications', function () {
                         await _converse.handleMessageStanza(msg); // This will emit 'message'
                         await u.waitUntil(() => _converse.chatboxviews.get(sender_jid));
                         expect(window.Notification).toHaveBeenCalled();
+                    }),
+                );
+
+                it(
+                    'is shown for a hidden private chat but not a visible one while the tab is visible',
+                    mock.initConverse(converse, [], {}, async (_converse) => {
+                        await mock.waitForRoster(_converse, 'current');
+                        const sender_jid = `${mock.cur_names[0].replace(/ /g, '.').toLowerCase()}@montague.lit`;
+                        const chatbox = await _converse.api.chats.create(sender_jid);
+                        const is_hidden = spyOn(chatbox, 'isHidden').and.returnValue(false);
+                        const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                        spyOn(window, 'Notification').and.returnValue(stub);
+                        const data = {
+                            chatbox,
+                            attrs: {
+                                body: 'This message should only notify while the chat is hidden',
+                                from: sender_jid,
+                                type: 'chat',
+                            },
+                        };
+
+                        expect(document.hidden).toBe(false);
+                        await _converse.api.trigger('message', data, { synchronous: true });
+                        expect(window.Notification).not.toHaveBeenCalled();
+
+                        is_hidden.and.returnValue(true);
+                        await _converse.api.trigger('message', data, { synchronous: true });
+                        expect(window.Notification).toHaveBeenCalledOnce();
                     }),
                 );
 
@@ -90,6 +119,7 @@ describe('Notifications', function () {
                 it(
                     'is shown for headline messages',
                     mock.initConverse(converse, [], {}, async (_converse) => {
+                        spyOn(_converse.exports.HeadlinesFeed.prototype, 'isHidden').and.returnValue(true);
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
 

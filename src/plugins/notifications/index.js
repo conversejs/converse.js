@@ -14,6 +14,7 @@ import {
     requestPermission,
     updateUnreadFavicon
 } from './utils.js';
+import notifications_api from './api.js';
 
 converse.plugins.add('converse-notification', {
     dependencies: ['converse-chatboxes'],
@@ -32,6 +33,8 @@ converse.plugins.add('converse-notification', {
             show_tab_notifications: true,
             sounds_path: api.settings.get('assets_path') + '/sounds/'
         });
+
+        Object.assign(api, notifications_api);
 
         /************************ Event Handlers ************************/
         api.listen.on('clearSession', clearFavicon); // Needed for tests

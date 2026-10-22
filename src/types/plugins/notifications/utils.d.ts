@@ -14,6 +14,13 @@ export function updateUnreadFavicon(): void;
  * @param {MUCMessageAttributes} attrs
  */
 export function shouldNotifyOfGroupMessage(attrs: MUCMessageAttributes): Promise<any>;
+/**
+ * Is this message worth drawing the user's attention to? This doesn't
+ * consider whether the user is already looking at the chat it was received in.
+ * @param {import('./types').MessageNotificationData} data
+ * @returns {Promise<boolean>}
+ */
+export function isNotableMessage(data: import("./types").MessageNotificationData): Promise<boolean>;
 export function showFeedbackNotification(data: any): void;
 export function playSoundNotification(): Promise<void>;
 /**

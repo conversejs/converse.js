@@ -34,7 +34,8 @@ describe('A Message', function () {
             // isn't read as the first word of the sentence.
             const msg_el = view.querySelector('.chat-msg--action .chat-msg__message');
             expect(msg_el.firstElementChild.matches('.chat-msg__author')).toBe(true);
-            expect(msg_el.lastElementChild.matches('converse-time.chat-msg__time')).toBe(true);
+            const wrapper = msg_el.querySelector('.chat-msg__body--wrapper');
+            expect(wrapper.lastElementChild.matches('converse-time.chat-msg__time')).toBe(true);
 
             message = '/me is as well';
             await mock.sendMessage(_converse, view, message);

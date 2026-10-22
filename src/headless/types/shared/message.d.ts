@@ -67,6 +67,12 @@ declare class BaseMessage extends Model<import("./types").BaseMessageAttributes>
      */
     getCorrectionStanzaIDs(attrs: import("./types").MessageAttributes): Record<string, string[]>;
     /**
+     * Returns when the last thing that happened to this message happened:
+     * when it was retracted, else when it was last edited, else when it was sent.
+     * @returns {string}
+     */
+    getDisplayTime(): string;
+    /**
      * Returns a boolean indicating whether this message is considered a followup
      * message from the previous one. Followup messages are shown grouped together
      * under one author heading.

@@ -17,7 +17,6 @@ const { dayjs } = converse.env;
 export default (el) => {
     const i18n_new_messages = __('New messages');
 
-    const edited = el.model.get('edited');
     const is_first_unread = el.model_with_messages.get('first_unread_id') === el.model.get('id');
     const is_followup = el.model.isFollowup();
     const is_me_message = el.model.isMeCommand();
@@ -25,7 +24,8 @@ export default (el) => {
     const msgid = el.model.get('msgid');
     const sender = el.model.get('sender');
     const time = el.model.get('time');
-    const pretty_time = dayjs(edited || time).format('llll');
+    const display_time = el.model.getDisplayTime();
+    const pretty_time = dayjs(display_time).format('llll');
 
     const contact = el.model.occupant || el.model.contact;
     const author_style = getAuthorStyle(contact);
@@ -34,9 +34,9 @@ export default (el) => {
     const username = el.model.getDisplayName();
 
     const is_action = is_me_message || is_retracted;
-    // An action row states an event, so its timestamp is when that event
-    // happened: for a retraction, when the message was removed, not sent.
-    const action_time = is_retracted ? el.model.get('retracted') || time : edited || time;
+    const tpl_action_time = is_action
+        ? html`<converse-time timestamp="${display_time}" class="chat-msg__time"></converse-time>`
+        : '';
     const should_show_header = !is_action && !is_followup;
     const should_show_avatar = el.shouldShowAvatar() && should_show_header;
 
@@ -104,7 +104,7 @@ export default (el) => {
                           </span>
                           ${hats.map((h) => html`<span class="badge badge-secondary">${h.title}</span>`)}
 
-                          <converse-time timestamp="${edited || time}" class="chat-msg__time"></converse-time>
+                          <converse-time timestamp="${display_time}" class="chat-msg__time"></converse-time>
                           ${el.model.get('is_encrypted')
                               ? html`<converse-icon
                                   class="fa fa-lock"
@@ -130,12 +130,11 @@ export default (el) => {
                 >
                     <div class="chat-msg__message">
                         ${is_me_message
-                            ? html`<span class="chat-msg__author" style="${author_style}">**${username}</span>&nbsp;`
+                            ? html`<span class="chat-msg__author" style="${author_style}">**${username}</span>`
                             : ''}
-                        ${is_retracted ? el.renderRetraction() : el.renderMessageText()}
-                        ${is_action
-                            ? html`<converse-time timestamp="${action_time}" class="chat-msg__time"></converse-time>`
-                            : ''}
+                        ${is_retracted
+                            ? el.renderRetraction(tpl_action_time)
+                            : el.renderMessageText(tpl_action_time)}
                     </div>
                     <converse-message-actions
                         .model=${el.model}

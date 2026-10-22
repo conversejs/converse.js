@@ -170,6 +170,17 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     }
 
     /**
+     * Returns when the last thing that happened to this message happened:
+     * when it was retracted, else when it was last edited, else when it was sent.
+     * @returns {string}
+     */
+    getDisplayTime() {
+        if (this.isRetracted()) return this.get('retracted') || this.get('time');
+
+        return this.get('edited') || this.get('time');
+    }
+
+    /**
      * Returns a boolean indicating whether this message is considered a followup
      * message from the previous one. Followup messages are shown grouped together
      * under one author heading.

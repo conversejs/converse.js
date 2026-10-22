@@ -198,6 +198,133 @@ describe('Message Retractions', function () {
         );
     });
 
+    describe('A moderated groupchat message', function () {
+        it(
+            'is timestamped with when it was moderated, not when it was sent or edited',
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+                const muc_jid = 'lounge@montague.lit';
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
+                const view = _converse.chatboxviews.get(muc_jid);
+
+                await model.handleMessageStanza(stx`
+                    <message to="${_converse.jid}" from="${muc_jid}/mallory" type="groupchat" id="msg-1"
+                            xmlns="jabber:client">
+                        <body>Buy cheap watches</body>
+                        <delay xmlns="urn:xmpp:delay" stamp="2024-01-01T10:00:00Z"/>
+                        <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
+                    </message>`);
+                await u.waitUntil(() => model.messages.length === 1);
+
+                await model.handleMessageStanza(stx`
+                    <message to="${_converse.jid}" from="${muc_jid}/mallory" type="groupchat" id="msg-2"
+                            xmlns="jabber:client">
+                        <body>Buy cheap watches!!!</body>
+                        <replace id="msg-1" xmlns="urn:xmpp:message-correct:0"/>
+                        <delay xmlns="urn:xmpp:delay" stamp="2024-01-01T10:05:00Z"/>
+                        <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-2" by="${muc_jid}"/>
+                    </message>`);
+                const message = model.messages.at(0);
+                await u.waitUntil(() => message.get('edited'));
+
+                expect(message.getStanzaIDs(muc_jid)).toEqual(['stanza-id-1', 'stanza-id-2']);
+                await model.handleMessageStanza(stx`
+                    <message type="groupchat" id="retraction-id-1" from="${muc_jid}" to="${muc_jid}/romeo"
+                            xmlns="jabber:client">
+                        <retract id="stanza-id-2" xmlns="urn:xmpp:message-retract:1">
+                            <moderated by="${muc_jid}/madison" xmlns="urn:xmpp:message-moderate:1"/>
+                            <reason>Spam</reason>
+                        </retract>
+                        <delay xmlns="urn:xmpp:delay" stamp="2024-01-01T14:30:00Z"/>
+                    </message>`);
+
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
+                expect(message.get('retracted')).toBe('2024-01-01T14:30:00.000Z');
+                const time_el = view.querySelector('.chat-msg--retracted .chat-msg__message').lastElementChild;
+                expect(time_el.matches('converse-time.chat-msg__time')).toBe(true);
+                expect(time_el.getAttribute('timestamp')).toBe('2024-01-01T14:30:00.000Z');
+            }),
+        );
+
+        it(
+            'keeps its moderation time when the moderation was received before it',
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+                const muc_jid = 'lounge@montague.lit';
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
+
+                await model.handleMessageStanza(stx`
+                    <message type="groupchat" id="retraction-id-1" from="${muc_jid}" xmlns="jabber:client">
+                        <retract id="stanza-id-1" xmlns="urn:xmpp:message-retract:1">
+                            <moderated by="${muc_jid}/madison" xmlns="urn:xmpp:message-moderate:1"/>
+                        </retract>
+                        <delay xmlns="urn:xmpp:delay" stamp="2024-01-01T14:30:00Z"/>
+                    </message>`);
+                await u.waitUntil(() => model.messages.length === 1);
+                expect(model.messages.at(0).get('dangling_moderation')).toBe(true);
+
+                await model.handleMessageStanza(stx`
+                    <message to="${_converse.jid}" from="${muc_jid}/mallory" type="groupchat" id="msg-1"
+                            xmlns="jabber:client">
+                        <body>Buy cheap watches</body>
+                        <delay xmlns="urn:xmpp:delay" stamp="2024-01-01T10:00:00Z"/>
+                        <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
+                    </message>`);
+
+                const message = model.messages.at(0);
+                await u.waitUntil(() => message.get('dangling_moderation') === false);
+                expect(model.messages.length).toBe(1);
+                expect(message.get('time')).toBe('2024-01-01T10:00:00.000Z');
+                expect(message.get('retracted')).toBe('2024-01-01T14:30:00.000Z');
+            }),
+        );
+
+        it(
+            'is timestamped when we moderate it, and loses that time if the server refuses',
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+                const muc_jid = 'lounge@montague.lit';
+                const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+                const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
+                const view = _converse.chatboxviews.get(muc_jid);
+
+                await model.handleMessageStanza(stx`
+                    <message to="${_converse.jid}" from="${muc_jid}/mallory" type="groupchat" id="msg-1"
+                            xmlns="jabber:client">
+                        <body>Buy cheap watches</body>
+                        <delay xmlns="urn:xmpp:delay" stamp="2024-01-01T10:00:00Z"/>
+                        <stanza-id xmlns="urn:xmpp:sid:0" id="stanza-id-1" by="${muc_jid}"/>
+                    </message>`);
+                await u.waitUntil(() => model.messages.length === 1);
+                const message = model.messages.at(0);
+
+                const before = new Date().toISOString();
+                const promise = model.retractOtherMessage(message, 'Spam');
+                const retracted = message.get('retracted');
+                expect(retracted >= before).toBe(true);
+
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 1);
+                const time_el = view.querySelector('.chat-msg--retracted .chat-msg__message').lastElementChild;
+                expect(time_el.getAttribute('timestamp')).toBe(retracted);
+
+                const sent_IQs = _converse.api.connection.get().IQ_stanzas;
+                const iq = await u.waitUntil(() => sent_IQs.filter((s) => s.querySelector('iq moderate')).pop());
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<iq from="${muc_jid}" id="${iq.getAttribute('id')}" to="${_converse.jid}" type="error" xmlns="jabber:client">
+                            <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+                        </iq>`,
+                    ),
+                );
+                await promise;
+
+                expect(message.get('retracted')).toBeUndefined();
+                expect(message.isRetracted()).toBe(false);
+                await u.waitUntil(() => view.querySelectorAll('.chat-msg--retracted').length === 0);
+            }),
+        );
+    });
+
     describe('A Received Groupchat Message', function () {
         it(
             'can be followed up by a retraction by the author',

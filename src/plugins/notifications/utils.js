@@ -79,7 +79,7 @@ function isReferenced(references, muc_jid, nick) {
  */
 export async function shouldNotifyOfGroupMessage(attrs) {
     if (!attrs?.body && !attrs?.message) {
-        // attrs.message is used by 'info' messages
+        // attrs.message is used by XEP-0316 MEP messages
         return false;
     }
     const jid = attrs.from;
@@ -118,7 +118,11 @@ export async function shouldNotifyOfGroupMessage(attrs) {
     return false;
 }
 
-async function shouldNotifyOfInfoMessage(attrs) {
+/**
+ * Is this a XEP-0316 MEP notification for which we should notify the user?
+ * @param {MUCMessageAttributes} attrs
+ */
+async function shouldNotifyOfMEPMessage(attrs) {
     if (!attrs.from_muc) {
         return false;
     }
@@ -148,8 +152,8 @@ function shouldNotifyOfMessage(data) {
     }
     if (attrs['type'] === 'groupchat') {
         return shouldNotifyOfGroupMessage(attrs);
-    } else if (attrs['type'] === 'info') {
-        return shouldNotifyOfInfoMessage(attrs);
+    } else if (attrs['type'] === 'mep') {
+        return shouldNotifyOfMEPMessage(attrs);
     } else if (attrs.is_headline) {
         // We want to show notifications for headline messages.
         return isMessageToHiddenChat(chatbox);
@@ -223,7 +227,7 @@ function showMessageNotification(data) {
     let title, roster_item;
     const full_from_jid = attrs.from;
     const from_jid = Strophe.getBareJidFromJid(full_from_jid);
-    if (attrs.type == 'info') {
+    if (attrs.type === 'mep') {
         title = attrs.message;
     } else if (attrs.type === 'headline') {
         if (!from_jid.includes('@') || api.settings.get('allow_non_roster_messaging')) {
@@ -254,7 +258,7 @@ function showMessageNotification(data) {
     }
 
     let body;
-    if (attrs.type == 'info') {
+    if (attrs.type === 'mep') {
         body = attrs.reason;
     } else {
         body = attrs.is_encrypted ? attrs.plaintext : attrs.body;

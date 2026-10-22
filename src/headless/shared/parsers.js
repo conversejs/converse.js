@@ -192,7 +192,7 @@ export function getDeprecatedRetractionAttributes(stanza, original_stanza) {
 export function getRetractionAttributes(stanza, original_stanza) {
     const retraction = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();
     if (retraction) {
-        const delay = sizzle(`> delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
+        const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
         const time = delay ? dayjs(delay.getAttribute('stamp')).toISOString() : new Date().toISOString();
         return {
             editable: false,

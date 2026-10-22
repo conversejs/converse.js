@@ -35,7 +35,7 @@ import { Strophe, Stanza, $build } from 'strophe.js';
 import { TimeoutError, ItemNotFoundError, StanzaError } from '../../shared/errors.js';
 import { computeAffiliationsDelta, setAffiliations, getAffiliationList } from './affiliations/utils.js';
 import { initStorage, createStore } from '../../utils/storage.js';
-import { isArchived, parseErrorStanza } from '../../shared/parsers.js';
+import { getStanzaIDsByJID, isArchived, parseErrorStanza } from '../../shared/parsers.js';
 import { getUniqueId } from '../../utils/index.js';
 import { safeSave } from '../../utils/init.js';
 import { isUniView } from '../../utils/session.js';
@@ -901,8 +901,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
     /**
      * Retract someone else's message in this groupchat.
+     * If the message was corrected (XEP-0308), all its versions are retracted.
      * @param {MUCMessage} message - The message which we're retracting.
      * @param {string} [reason] - The reason for retracting the message.
+     * @returns {Promise<Element|null>} The response to the retraction of the
+     *  original version, or `null` if it timed out.
      * @example
      *  const room = await api.rooms.get(jid);
      *  const message = room.messages.findWhere({'body': 'Get rich quick!'});
@@ -916,10 +919,15 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             moderated: 'retracted',
             moderated_by: bare_jid,
             moderated_id: message.get('msgid'),
+            moderation_incomplete: undefined,
             moderation_reason: reason,
             editable: false,
         });
-        const result = await this.sendRetractionIQ(message, reason);
+        // The room archives each version separately, so each needs its own retraction.
+        // The corrections are only retracted once the original has been, so that a
+        // refused moderation doesn't leave the message partially removed.
+        const [original_id, ...correction_ids] = message.getStanzaIDs(this.get('jid'));
+        const result = await this.sendRetractionIQ(message, reason, original_id);
         if (result === null || u.isErrorStanza(result)) {
             // Undo the save if something went wrong
             message.save({
@@ -929,6 +937,14 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 moderated_id: undefined,
                 moderation_reason: undefined,
             });
+            return result;
+        }
+
+        const correction_results = await Promise.all(
+            correction_ids.map((id) => this.sendRetractionIQ(message, reason, id)),
+        );
+        if (correction_results.some((r) => r === null || u.isErrorStanza(r))) {
+            message.save({ moderation_incomplete: true });
         }
         return result;
     }
@@ -937,11 +953,13 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * Sends an IQ stanza to the XMPP server to retract a message in this groupchat.
      * @param {MUCMessage} message - The message which we're retracting.
      * @param {string} [reason] - The reason for retracting the message.
+     * @param {string} [stanza_id] - The XEP-0359 stanza-id of the version of the
+     *  message to retract. Defaults to that of the original version.
      */
-    sendRetractionIQ(message, reason) {
+    sendRetractionIQ(message, reason, stanza_id = message.get(`stanza_id ${this.get('jid')}`)) {
         const iq = stx`
             <iq to="${this.get('jid')}" type="set" xmlns="jabber:client">
-                <moderate id="${message.get(`stanza_id ${this.get('jid')}`)}" xmlns="${Strophe.NS.MODERATE}">
+                <moderate id="${stanza_id}" xmlns="${Strophe.NS.MODERATE}">
                     <retract xmlns="${Strophe.NS.RETRACT}"/>
                     ${reason ? stx`<reason>${reason}</reason>` : ''}
                 </moderate>
@@ -2090,13 +2108,18 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         };
 
         if (this.isMUCReflectedMessage(message, attrs)) {
-            const stanza_id_keys = Object.keys(attrs).filter((k) => k.startsWith('stanza_id'));
+            const stanza_id_keys = Object.keys(getStanzaIDsByJID(attrs)).map((by_jid) => `stanza_id ${by_jid}`);
             return {
                 ...new_attrs,
                 ...pick(attrs, [...stanza_id_keys, 'occupant_id']),
                 ...(message.get('received') ? {} : { received: new Date().toISOString() }),
-                ...(attrs.body !== undefined ? { body: attrs.body } : {}),
+                // Once corrected, the message's original body is out of date
+                ...(attrs.body !== undefined && !message.get('edited') ? { body: attrs.body } : {}),
             };
+        } else if (this.isOwnMessage(attrs) && attrs.replace_id === message.get('msgid')) {
+            // The room reflected our correction of this message. The message keeps
+            // its original stanza-id and gains that of the correction.
+            return { ...new_attrs, correction_stanza_ids: message.getCorrectionStanzaIDs(attrs) };
         }
         return new_attrs;
     }
@@ -2170,6 +2193,18 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
+     * Finds the message to which the room assigned the given XEP-0359
+     * stanza-id, either for its original version or for one of its
+     * XEP-0308 corrections.
+     * @param {string} stanza_id
+     * @returns {MUCMessage|undefined}
+     */
+    getMessageByStanzaID(stanza_id) {
+        const muc_jid = this.get('jid');
+        return this.messages.models.find((m) => m.getStanzaIDs(muc_jid).includes(stanza_id));
+    }
+
+    /**
      * Looks whether we already have a moderation message for this
      * incoming message. If so, it's considered "dangling" because
      * it probably hasn't been applied to anything yet, given that
@@ -2218,22 +2253,39 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             'moderation_reason',
         ];
         if (attrs.moderated === 'retracted') {
-            const query = {};
-            const key = `stanza_id ${this.get('jid')}`;
-            query[key] = attrs.moderated_id;
-            const message = this.messages.findWhere(query);
+            const message = this.getMessageByStanzaID(attrs.moderated_id);
             if (!message) {
                 attrs['dangling_moderation'] = true;
                 await this.createMessage(attrs);
                 return true;
             }
-            message.save(pick(attrs, MODERATION_ATTRIBUTES));
+            // A moderator's client may moderate each version of a corrected message
+            // separately. Only the first of those, or the one naming the original, counts.
+            const is_original = attrs.moderated_id === message.get(`stanza_id ${this.get('jid')}`);
+            if (is_original || message.get('moderated') !== 'retracted') {
+                message.save(pick(attrs, MODERATION_ATTRIBUTES));
+            }
             return true;
         } else {
             // Check if we have dangling moderation message
             const message = this.findDanglingModeration(attrs);
             if (message) {
                 const moderation_attrs = pick(message.attributes, MODERATION_ATTRIBUTES);
+                // If the moderation was of a correction of a message we already have,
+                // or of the original of a correction we received first, it applies to
+                // that message instead of to a placeholder.
+                const corrected = attrs.replace_id
+                    ? this.getCorrectedMessage(attrs)
+                    : this.handleOriginalOfCorrection(attrs);
+                if (corrected && corrected !== message) {
+                    if (attrs.replace_id) await this.handleCorrection(attrs);
+                    // A moderation naming the original takes precedence (see above)
+                    if (!attrs.replace_id || corrected.get('moderated') !== 'retracted') {
+                        corrected.save(moderation_attrs);
+                    }
+                    message.destroy();
+                    return true;
+                }
                 const new_attrs = Object.assign({ dangling_moderation: false }, attrs, moderation_attrs);
                 delete new_attrs['id']; // Delete id, otherwise a new cache entry gets created
                 message.save(new_attrs);

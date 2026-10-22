@@ -20,7 +20,9 @@ declare const ChatBoxBase_base: {
         onMessage(_attrs_or_error: import("./types.js").MessageAttributes | Error): Promise<void>;
         getUpdatedMessageAttributes(message: import("./message.js").default, attrs: import("./types.js").MessageAttributes): Promise<object>;
         updateMessage(message: import("./message.js").default, attrs: import("./types.js").MessageAttributes): Promise<void>;
+        getCorrectedMessage(attrs: import("./types.js").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): import("./message.js").default | undefined;
         handleCorrection(attrs: import("./types.js").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): Promise<import("./message.js").default | void>;
+        handleOriginalOfCorrection(attrs: import("./types.js").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): import("./message.js").default | undefined;
         queueMessage(attrs: import("./types.js").MessageAttributes): any;
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("./types.js").MessageAttributes): Promise<import("./types.js").MessageAttributes>;
@@ -47,6 +49,7 @@ declare const ChatBoxBase_base: {
         getMessageReferencedByError(attrs: object): any;
         findDanglingRetraction(attrs: object): import("./message.js").default | null;
         getDuplicateMessage(attrs: object): Promise<import("./message.js").default | undefined>;
+        isCorrectionOf(attrs: object, message: import("./message.js").default): boolean;
         getOriginIdQueryAttrs(attrs: object): {
             origin_id: any;
             from: any;

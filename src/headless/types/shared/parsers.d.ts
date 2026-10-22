@@ -16,6 +16,13 @@ export function parseErrorStanza(stanza: Element | Error | null): Promise<Error 
  */
 export function getStanzaIDs(stanza: Element, original_stanza: Element): any;
 /**
+ * Returns the XEP-0359 stanza-ids in the passed in message attributes, as set
+ * by {@link getStanzaIDs}, keyed by the JID of the entity which assigned them.
+ * @param {object} attrs - Message attributes
+ * @returns {Record<string, string>}
+ */
+export function getStanzaIDsByJID(attrs: object): Record<string, string>;
+/**
  * @param {Element} stanza
  * @returns {import('./types').EncryptionAttrs}
  */

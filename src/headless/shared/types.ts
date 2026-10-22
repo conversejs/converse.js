@@ -100,14 +100,7 @@ type XFormJIDTypes = 'jid-single' | 'jid-multi';
 type XFormTextTypes = 'text-multi' | 'text-private' | 'text-single';
 type XFormDateTypes = 'date' | 'datetime';
 type XFormFieldTypes =
-    | XFormListTypes
-    | XFormJIDTypes
-    | XFormTextTypes
-    | XFormDateTypes
-    | 'fixed'
-    | 'boolean'
-    | 'url'
-    | 'hidden';
+    XFormListTypes | XFormJIDTypes | XFormTextTypes | XFormDateTypes | 'fixed' | 'boolean' | 'url' | 'hidden';
 
 export type XFormField = {
     var: string;
@@ -256,6 +249,7 @@ export type MessageAttributes = EncryptionAttrs &
         sender: 'me' | 'them'; // Whether the message was sent by the current user or someone else
         spoiler_hint: string; //  The XEP-0382 spoiler hint
         stanza_id: string; // The XEP-0359 Stanza ID. Note: the key is actually `stanza_id ${by_jid}` and there can be multiple.
+        correction_stanza_ids?: Record<string, string[]>; // The XEP-0359 Stanza IDs of the message's XEP-0308 corrections, keyed by the assigning JID
         subject: string; // The <subject> element value
         thread: string; // The <thread> element value
         time: string; // The time (in ISO8601 format), either given by the XEP-0203 <delay> element, or of receipt.

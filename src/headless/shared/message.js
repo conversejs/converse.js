@@ -8,6 +8,7 @@ import ColorAwareModel from '../shared/color.js';
 import ModelWithContact from '../shared/model-with-contact.js';
 import ModelWithVCard from '../shared/model-with-vcard.js';
 import { getUniqueId } from '../utils/index.js';
+import { getStanzaIDsByJID } from './parsers.js';
 import converse from './api/public.js';
 import { NO_SLOT, putFile, requestSlot } from './http-upload.js';
 
@@ -127,6 +128,45 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
      */
     isRetracted() {
         return !!(this.get('retracted') || this.get('moderated') === 'retracted');
+    }
+
+    /**
+     * Returns the XEP-0359 stanza-ids which `by_jid` assigned to all versions of
+     * this message: first the original's, then those of its XEP-0308 corrections.
+     * @param {string} by_jid - The JID of the entity which assigned the stanza-ids
+     * @returns {string[]}
+     */
+    getStanzaIDs(by_jid) {
+        const original = this.get(`stanza_id ${by_jid}`);
+        const corrections = this.get('correction_stanza_ids')?.[by_jid] ?? [];
+        return original ? [original, ...corrections] : corrections;
+    }
+
+    /**
+     * Whether the passed in message attributes have the stanza-id of a version
+     * of this message, i.e. whether they represent this message or one of its
+     * XEP-0308 corrections which we already have.
+     * @param {import('./types').MessageAttributes} attrs
+     * @returns {boolean}
+     */
+    hasStanzaIDOf(attrs) {
+        return Object.entries(getStanzaIDsByJID(attrs)).some(([by_jid, id]) => this.getStanzaIDs(by_jid).includes(id));
+    }
+
+    /**
+     * Given the attributes of a XEP-0308 correction of this message, returns the
+     * stanza-ids of this message's corrections, including those of the given one.
+     * @param {import('./types').MessageAttributes} attrs - The correction's attributes
+     * @returns {Record<string, string[]>} The correction stanza-ids keyed by the assigning JID
+     */
+    getCorrectionStanzaIDs(attrs) {
+        const correction_stanza_ids = { ...this.get('correction_stanza_ids') };
+        for (const [by_jid, id] of Object.entries(getStanzaIDsByJID(attrs))) {
+            if (this.getStanzaIDs(by_jid).includes(id)) continue;
+
+            correction_stanza_ids[by_jid] = [...(correction_stanza_ids[by_jid] ?? []), id];
+        }
+        return correction_stanza_ids;
     }
 
     /**

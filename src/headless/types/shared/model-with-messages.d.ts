@@ -54,14 +54,35 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          */
         updateMessage(message: import("./message").default, attrs: import("./types").MessageAttributes): Promise<void>;
         /**
+         * Finds the message which is corrected by the XEP-0308 correction
+         * represented by the passed in attributes.
+         * If the original hasn't been received yet, that is the message saved from
+         * an earlier correction of it.
+         * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received
+         *  correction, as returned by {@link parseMessage}
+         * @returns {BaseMessage|undefined}
+         */
+        getCorrectedMessage(attrs: import("./types").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): import("./message").default | undefined;
+        /**
          * Determines whether the given attributes of an incoming message
          * represent a XEP-0308 correction and, if so, handles it appropriately.
+         * Also handles the original version of a message of which a correction
+         * was received first (e.g. when paging back through the archive).
          * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
          * @returns {Promise<BaseMessage|void>} Returns the corrected
          *  message or `undefined` if not applicable.
          */
         handleCorrection(attrs: import("./types").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): Promise<import("./message").default | void>;
+        /**
+         * If a correction of the message represented by the passed in attributes
+         * was received before it, the correction was saved as a message of its own.
+         * Turns that message into the corrected version of this one.
+         * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received
+         *  message which isn't a correction, as returned by {@link parseMessage}
+         * @returns {BaseMessage|undefined} The corrected message, or `undefined` if not applicable.
+         */
+        handleOriginalOfCorrection(attrs: import("./types").MessageAttributes | import("../plugins/muc/types.js").MUCMessageAttributes): import("./message").default | undefined;
         /**
          * Queue an incoming `chat` message stanza for processing.
          * @param {MessageAttributes} attrs - A promise which resolves to the message attributes
@@ -186,6 +207,14 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @returns {Promise<BaseMessage|undefined>}
          */
         getDuplicateMessage(attrs: object): Promise<import("./message").default | undefined>;
+        /**
+         * Whether the passed in attributes are those of a XEP-0308 correction
+         * which was already applied to the given message, based on its stanza-ids.
+         * @param {object} attrs - Attributes representing a received message
+         * @param {BaseMessage} message
+         * @returns {boolean}
+         */
+        isCorrectionOf(attrs: object, message: import("./message").default): boolean;
         /**
          * @param {object} attrs - Attributes representing a received
          */

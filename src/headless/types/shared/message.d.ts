@@ -45,6 +45,28 @@ declare class BaseMessage extends Model<import("./types").BaseMessageAttributes>
      */
     isRetracted(): boolean;
     /**
+     * Returns the XEP-0359 stanza-ids which `by_jid` assigned to all versions of
+     * this message: first the original's, then those of its XEP-0308 corrections.
+     * @param {string} by_jid - The JID of the entity which assigned the stanza-ids
+     * @returns {string[]}
+     */
+    getStanzaIDs(by_jid: string): string[];
+    /**
+     * Whether the passed in message attributes have the stanza-id of a version
+     * of this message, i.e. whether they represent this message or one of its
+     * XEP-0308 corrections which we already have.
+     * @param {import('./types').MessageAttributes} attrs
+     * @returns {boolean}
+     */
+    hasStanzaIDOf(attrs: import("./types").MessageAttributes): boolean;
+    /**
+     * Given the attributes of a XEP-0308 correction of this message, returns the
+     * stanza-ids of this message's corrections, including those of the given one.
+     * @param {import('./types').MessageAttributes} attrs - The correction's attributes
+     * @returns {Record<string, string[]>} The correction stanza-ids keyed by the assigning JID
+     */
+    getCorrectionStanzaIDs(attrs: import("./types").MessageAttributes): Record<string, string[]>;
+    /**
      * Returns a boolean indicating whether this message is considered a followup
      * message from the previous one. Followup messages are shown grouped together
      * under one author heading.

@@ -65,6 +65,7 @@ type ExtraMUCAttributes = {
     moderated: string; // The type of XEP-0425 moderation (if any) that was applied
     moderated_by: string; // The JID of the user that moderated this message
     moderated_id: string; // The  XEP-0359 Stanza ID of the message that this one moderates
+    moderation_incomplete: boolean; // Set when some versions of a corrected message we moderated could not be retracted
     moderation_reason: string; // The reason provided why this message moderates another
     occupant_id: string; // The XEP-0421 occupant ID
     codes: MUCStatusCode[];

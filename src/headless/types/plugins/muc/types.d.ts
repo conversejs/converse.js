@@ -38,6 +38,7 @@ type ExtraMUCAttributes = {
     moderated: string;
     moderated_by: string;
     moderated_id: string;
+    moderation_incomplete: boolean;
     moderation_reason: string;
     occupant_id: string;
     codes: MUCStatusCode[];

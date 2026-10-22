@@ -26,7 +26,7 @@ export default (el) => {
     return html`
         <form class="items-filter-form input-button-group ${ (!el.shouldBeVisible()) ? 'hidden' : 'fade-in' }"
               @submit=${ev => el.submitFilter(ev)}>
-            <div class="${is_overlay_mode ? '' : 'flex-nowrap'}">
+            <div class="${is_overlay_mode ? '' : 'd-flex flex-nowrap align-items-center'}">
                 <div class="filter-by d-flex flex-nowrap">
                     <converse-icon
                             size="1em"

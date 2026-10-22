@@ -53,7 +53,7 @@ export default class ListFilter extends CustomElement {
      * @param {Event} ev
      */
     changeChatStateFilter(ev) {
-        ev && ev.preventDefault();
+        ev?.preventDefault();
         const state = /** @type {HTMLInputElement} */ (this.querySelector('.state-type')).value;
         this.model.save({ state });
     }
@@ -62,7 +62,7 @@ export default class ListFilter extends CustomElement {
      * @param {Event} ev
      */
     changeTypeFilter(ev) {
-        ev && ev.preventDefault();
+        ev?.preventDefault();
         const target = /** @type {HTMLInputElement} */ (ev.target);
         const type = /** @type {HTMLElement} */ (target.closest('converse-icon'))?.dataset.type || 'items';
         if (type === 'state') {
@@ -95,14 +95,15 @@ export default class ListFilter extends CustomElement {
      * @returns {boolean}
      */
     shouldBeVisible() {
-        return this.items?.length >= 5 || this.isActive();
+        const count = this.items?.length ?? this.items?.models?.length ?? 0;
+        return count >= 5 || this.isActive();
     }
 
     /**
      * @param {Event} ev
      */
     clearFilter(ev) {
-        ev && ev.preventDefault();
+        ev?.preventDefault();
         this.model.save({ 'text': '' });
     }
 }

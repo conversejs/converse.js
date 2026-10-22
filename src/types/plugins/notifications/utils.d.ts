@@ -1,8 +1,8 @@
 /**
- * @param {string} from - The JID of the sender
+ * @param {import('@converse/headless').ChatBox} [chatbox] - The chat the message was received in
  * @returns {boolean}
  */
-export function isMessageToHiddenChat(from: string): boolean;
+export function isMessageToHiddenChat(chatbox?: import("@converse/headless").ChatBox): boolean;
 export function areDesktopNotificationsEnabled(): any;
 /**
  * @typedef {Navigator & {clearAppBadge: Function, setAppBadge: Function} } navigator

@@ -188,6 +188,7 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     sender: 'me' | 'them';
     spoiler_hint: string;
     stanza_id: string;
+    correction_stanza_ids?: Record<string, string[]>;
     subject: string;
     thread: string;
     time: string;

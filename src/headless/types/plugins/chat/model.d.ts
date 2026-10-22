@@ -104,7 +104,9 @@ declare const ChatBox_base: {
         onMessage(_attrs_or_error: import("../../shared/types").MessageAttributes | Error): Promise<void>;
         getUpdatedMessageAttributes(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<object>;
         updateMessage(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<void>;
+        getCorrectedMessage(attrs: import("../../shared/types").MessageAttributes | import("../muc/types.js").MUCMessageAttributes): import("../../index.js").BaseMessage | undefined;
         handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("../muc/types.js").MUCMessageAttributes): Promise<import("../../index.js").BaseMessage | void>;
+        handleOriginalOfCorrection(attrs: import("../../shared/types").MessageAttributes | import("../muc/types.js").MUCMessageAttributes): import("../../index.js").BaseMessage | undefined;
         queueMessage(attrs: import("../../shared/types").MessageAttributes): any;
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("../../shared/types").MessageAttributes): Promise<import("../../shared/types").MessageAttributes>;
@@ -131,6 +133,7 @@ declare const ChatBox_base: {
         getMessageReferencedByError(attrs: object): any;
         findDanglingRetraction(attrs: object): import("../../index.js").BaseMessage | null;
         getDuplicateMessage(attrs: object): Promise<import("../../index.js").BaseMessage | undefined>;
+        isCorrectionOf(attrs: object, message: import("../../index.js").BaseMessage): boolean;
         getOriginIdQueryAttrs(attrs: object): {
             origin_id: any;
             from: any;

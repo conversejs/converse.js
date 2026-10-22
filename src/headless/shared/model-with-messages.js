@@ -14,6 +14,7 @@ import _converse from './_converse.js';
 import * as errors from './errors.js';
 import { sendMarker, sendReceiptStanza, sendRetractionMessage } from './actions.js';
 import { parseMessage } from '../plugins/chat/parsers.js';
+import { getStanzaIDsByJID } from './parsers.js';
 
 const { Strophe, stx, u } = converse.env;
 
@@ -21,6 +22,20 @@ const { Strophe, stx, u } = converse.env;
 // compatibility fallback. Matches the preview length shown by the reply-context
 // UI (shared/chat/reply-context.js), so we never quote more than we'd display.
 const REPLY_FALLBACK_QUOTE_LENGTH = 80;
+
+/**
+ * Whether a stored message and the attributes of an incoming one are from the same sender,
+ * for the purposes of XEP-0308 corrections.
+ * @param {import('./message').default} message
+ * @param {object} attrs - Attributes representing a received message
+ * @returns {boolean}
+ */
+function isFromSameSender(message, attrs) {
+    if (attrs.type === 'groupchat' && attrs.occupant_id) {
+        return message.get('occupant_id') == attrs.occupant_id;
+    }
+    return message.get('from') === attrs.from && message.get('occupant_id') == null;
+}
 
 /**
  * Adds a messages collection to a model and various methods related to sending
@@ -189,7 +204,8 @@ export default function ModelWithMessages(BaseModel) {
             } else {
                 new_attrs = {
                     is_archived: attrs.is_archived,
-                    ...(attrs.is_archived && attrs.time && { time: attrs.time }),
+                    // A correction's time is when it was edited, not when the message was sent
+                    ...(attrs.is_archived && attrs.time && !attrs.replace_id && { time: attrs.time }),
                 };
             }
 
@@ -211,41 +227,64 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
+         * Finds the message which is corrected by the XEP-0308 correction
+         * represented by the passed in attributes.
+         * If the original hasn't been received yet, that is the message saved from
+         * an earlier correction of it.
+         * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received
+         *  correction, as returned by {@link parseMessage}
+         * @returns {BaseMessage|undefined}
+         */
+        getCorrectedMessage(attrs) {
+            if (!attrs.replace_id || !attrs.from) {
+                return;
+            }
+            return this.messages.models.find(
+                (m) =>
+                    (m.get('msgid') === attrs.replace_id || m.get('replace_id') === attrs.replace_id) &&
+                    isFromSameSender(m, attrs),
+            );
+        }
+
+        /**
          * Determines whether the given attributes of an incoming message
          * represent a XEP-0308 correction and, if so, handles it appropriately.
+         * Also handles the original version of a message of which a correction
+         * was received first (e.g. when paging back through the archive).
          * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
          * @returns {Promise<BaseMessage|void>} Returns the corrected
          *  message or `undefined` if not applicable.
          */
         async handleCorrection(attrs) {
-            if (!attrs.replace_id || !attrs.from) {
+            if (!attrs.from) {
                 return;
+            } else if (!attrs.replace_id) {
+                return this.handleOriginalOfCorrection(attrs);
             }
 
-            let query;
-            if (attrs.type === 'groupchat') {
-                const { occupant_id, replace_id } = /** @type {MUCMessageAttributes} */ (attrs);
-                query = occupant_id
-                    ? ({ attributes: m }) => m.msgid === replace_id && m.occupant_id == occupant_id
-                    : ({ attributes: m }) =>
-                          m.msgid === attrs.replace_id && m.from === attrs.from && m.occupant_id == null;
-            } else {
-                query = ({ attributes: m }) =>
-                    m.msgid === attrs.replace_id && m.from === attrs.from && m.occupant_id == null;
-            }
-
-            const message = this.messages.models.find(query);
+            const message = this.getCorrectedMessage(attrs);
             if (!message) {
                 attrs['older_versions'] = {};
                 return await this.createMessage(attrs);
             }
 
+            if (message.hasStanzaIDOf(attrs)) {
+                // We've already applied this correction
+                return message;
+            }
+            const correction_stanza_ids = message.getCorrectionStanzaIDs(attrs);
+            // A correction's stanza-ids are properties of the correction stanza
+            // (XEP-0308 Business Rules), so they mustn't overwrite those of the message.
+            // The passed in attrs may be used elsewhere (e.g. by MAM), so they're copied.
+            attrs = { ...attrs };
+            Object.keys(getStanzaIDsByJID(attrs)).forEach((by_jid) => delete attrs[`stanza_id ${by_jid}`]);
+
             const older_versions = message.get('older_versions') || {};
             if (attrs.time < message.get('time') && message.get('edited')) {
                 // This is an older message which has been corrected afterwards
                 older_versions[attrs.time] = attrs['message'];
-                message.save({ older_versions });
+                message.save({ older_versions, correction_stanza_ids });
             } else {
                 // This is a correction of an earlier message we already received
                 if (Object.keys(older_versions).length) {
@@ -253,12 +292,48 @@ export default function ModelWithMessages(BaseModel) {
                 } else {
                     older_versions[message.get('time')] = message.getMessageText();
                 }
-                attrs = Object.assign(attrs, { older_versions });
+                attrs = Object.assign(attrs, { older_versions, correction_stanza_ids });
                 delete attrs['msgid']; // We want to keep the msgid of the original message
                 delete attrs['id']; // Delete id, otherwise a new cache entry gets created
                 attrs['time'] = message.get('time');
                 message.save(attrs);
             }
+            return message;
+        }
+
+        /**
+         * If a correction of the message represented by the passed in attributes
+         * was received before it, the correction was saved as a message of its own.
+         * Turns that message into the corrected version of this one.
+         * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received
+         *  message which isn't a correction, as returned by {@link parseMessage}
+         * @returns {BaseMessage|undefined} The corrected message, or `undefined` if not applicable.
+         */
+        handleOriginalOfCorrection(attrs) {
+            const message = this.messages.models.find(
+                (m) => m.get('replace_id') === attrs.msgid && m.get('time') > attrs.time && isFromSameSender(m, attrs),
+            );
+            if (!message) return;
+
+            // Until now, the message had the stanza-ids of the correction it was saved from
+            const stanza_ids = {};
+            const correction_stanza_ids = { ...message.get('correction_stanza_ids') };
+            for (const [by_jid, id] of Object.entries(getStanzaIDsByJID(attrs))) {
+                const key = `stanza_id ${by_jid}`;
+                const placeholder_id = message.get(key);
+                if (placeholder_id) {
+                    correction_stanza_ids[by_jid] = [placeholder_id, ...(correction_stanza_ids[by_jid] ?? [])];
+                }
+                stanza_ids[key] = id;
+            }
+
+            message.save({
+                ...stanza_ids,
+                correction_stanza_ids,
+                msgid: attrs.msgid,
+                older_versions: { ...message.get('older_versions'), [attrs.time]: attrs['message'] },
+                time: attrs.time,
+            });
             return message;
         }
 
@@ -784,8 +859,22 @@ export default function ModelWithMessages(BaseModel) {
 
             return this.messages.models.find(
                 /** @param {BaseMessage} m */
-                (m) => queries.find((q) => Object.keys(q).every((k) => m.get(k) === q[k])),
+                (m) =>
+                    queries.find((q) => Object.keys(q).every((k) => m.get(k) === q[k])) ||
+                    this.isCorrectionOf(attrs, m),
             );
+        }
+
+        /**
+         * Whether the passed in attributes are those of a XEP-0308 correction
+         * which was already applied to the given message, based on its stanza-ids.
+         * @param {object} attrs - Attributes representing a received message
+         * @param {BaseMessage} message
+         * @returns {boolean}
+         */
+        isCorrectionOf(attrs, message) {
+            // The collection also holds models which aren't messages, e.g. MAM placeholders
+            return !!attrs.replace_id && !!message.hasStanzaIDOf?.(attrs);
         }
 
         /**

@@ -104,7 +104,9 @@ declare const MUC_base: {
         onMessage(_attrs_or_error: import("../../shared/types").MessageAttributes | Error): Promise<void>;
         getUpdatedMessageAttributes(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<object>;
         updateMessage(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<void>;
+        getCorrectedMessage(attrs: import("../../shared/types").MessageAttributes | import("./types").MUCMessageAttributes): import("../../index.js").BaseMessage | undefined;
         handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../../index.js").BaseMessage | void>;
+        handleOriginalOfCorrection(attrs: import("../../shared/types").MessageAttributes | import("./types").MUCMessageAttributes): import("../../index.js").BaseMessage | undefined;
         queueMessage(attrs: import("../../shared/types").MessageAttributes): any;
         msg_chain: any;
         getOutgoingMessageAttributes(_attrs?: import("../../shared/types").MessageAttributes): Promise<import("../../shared/types").MessageAttributes>;
@@ -131,6 +133,7 @@ declare const MUC_base: {
         getMessageReferencedByError(attrs: object): any;
         findDanglingRetraction(attrs: object): import("../../index.js").BaseMessage | null;
         getDuplicateMessage(attrs: object): Promise<import("../../index.js").BaseMessage | undefined>;
+        isCorrectionOf(attrs: object, message: import("../../index.js").BaseMessage): boolean;
         getOriginIdQueryAttrs(attrs: object): {
             origin_id: any;
             from: any;
@@ -491,20 +494,25 @@ declare class MUC extends MUC_base {
     retractOwnMessage(message: import("../../index.js").BaseMessage): Promise<void>;
     /**
      * Retract someone else's message in this groupchat.
+     * If the message was corrected (XEP-0308), all its versions are retracted.
      * @param {MUCMessage} message - The message which we're retracting.
      * @param {string} [reason] - The reason for retracting the message.
+     * @returns {Promise<Element|null>} The response to the retraction of the
+     *  original version, or `null` if it timed out.
      * @example
      *  const room = await api.rooms.get(jid);
      *  const message = room.messages.findWhere({'body': 'Get rich quick!'});
      *  room.retractOtherMessage(message, 'spam');
      */
-    retractOtherMessage(message: import("./message.js").default, reason?: string): Promise<any>;
+    retractOtherMessage(message: import("./message.js").default, reason?: string): Promise<Element | null>;
     /**
      * Sends an IQ stanza to the XMPP server to retract a message in this groupchat.
      * @param {MUCMessage} message - The message which we're retracting.
      * @param {string} [reason] - The reason for retracting the message.
+     * @param {string} [stanza_id] - The XEP-0359 stanza-id of the version of the
+     *  message to retract. Defaults to that of the original version.
      */
-    sendRetractionIQ(message: import("./message.js").default, reason?: string): any;
+    sendRetractionIQ(message: import("./message.js").default, reason?: string, stanza_id?: string): any;
     /**
      * Sends an IQ stanza to the XMPP server to destroy this groupchat. Not
      * to be confused with the {@link MUC#destroy}
@@ -837,6 +845,14 @@ declare class MUC extends MUC_base {
      * @returns {Promise<boolean>}
      */
     shouldShowErrorMessage(attrs: object): Promise<boolean>;
+    /**
+     * Finds the message to which the room assigned the given XEP-0359
+     * stanza-id, either for its original version or for one of its
+     * XEP-0308 corrections.
+     * @param {string} stanza_id
+     * @returns {MUCMessage|undefined}
+     */
+    getMessageByStanzaID(stanza_id: string): import("./message.js").default | undefined;
     /**
      * Looks whether we already have a moderation message for this
      * incoming message. If so, it's considered "dangling" because

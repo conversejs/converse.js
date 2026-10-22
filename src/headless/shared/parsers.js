@@ -125,6 +125,20 @@ export function getStanzaIDs(stanza, original_stanza) {
 }
 
 /**
+ * Returns the XEP-0359 stanza-ids in the passed in message attributes, as set
+ * by {@link getStanzaIDs}, keyed by the JID of the entity which assigned them.
+ * @param {object} attrs - Message attributes
+ * @returns {Record<string, string>}
+ */
+export function getStanzaIDsByJID(attrs) {
+    return Object.fromEntries(
+        Object.keys(attrs)
+            .filter((k) => k.startsWith('stanza_id '))
+            .map((k) => [k.replace(/^stanza_id /, ''), attrs[k]]),
+    );
+}
+
+/**
  * @param {Element} stanza
  * @returns {import('./types').EncryptionAttrs}
  */

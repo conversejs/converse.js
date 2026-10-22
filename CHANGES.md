@@ -15,6 +15,10 @@
   colour as the header itself.
 - fix(chatview): Show the contact's status message in the chat header again. It was read off the
   chat, while the presence handler keeps it on the contact, so it never rendered.
+- fix(muc): Moderating an edited groupchat message now removes every version of it from the room
+  archive, not just the latest correction. Moderations sent by other clients for any version of
+  an edited message (including its original) are now recognised. Corrections fetched again from
+  the archive, or received before the message they correct, are no longer shown twice.
 - fix(notifications): Notify of a 1:1 message in a hidden chat while the tab is visible. The
   check looked up the chat by the message's attributes instead of its JID, so it never found it.
 - fix(notifications): Show desktop notifications for XEP-0316 MEP room notifications again.

@@ -39,6 +39,7 @@ export async function onHeadlineMessage(stanza) {
 
         const attrs = await parseMessage(stanza);
         await chatbox.createMessage(attrs);
-        api.trigger('message', { chatbox, stanza, attrs });
+        const data = /** @type {import('../../shared/types').MessageEventData} */ ({ chatbox, stanza, attrs });
+        api.trigger('message', data);
     }
 }

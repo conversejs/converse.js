@@ -1,7 +1,5 @@
 /**
  * @typedef {import('@converse/headless/types/plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
- * @typedef {module:headless-plugins-muc-muc.MUCMessageData} MUCMessageData
- * @typedef {module:headless-plugins-chat-utils.MessageData} MessageData
  * @typedef {import('@converse/headless').RosterContact} RosterContact
  * @typedef {import('@converse/headless').PubSubMessage} PubSubMessage
  * @typedef {{ feedJid: string, node: string, itemId: string }} PostRef
@@ -21,7 +19,7 @@ converse.env.Favico = Favico;
 let favicon;
 
 /**
- * @param {import('@converse/headless').ChatBox} [chatbox] - The chat the message was received in
+ * @param {import('@converse/headless/types/shared/chatbox').default} [chatbox] - The chat the message was received in
  * @returns {boolean}
  */
 export function isMessageToHiddenChat(chatbox) {
@@ -120,7 +118,7 @@ export async function shouldNotifyOfGroupMessage(attrs) {
 
 /**
  * Is this a XEP-0316 MEP notification for which we should notify the user?
- * @param {MUCMessageAttributes} attrs
+ * @param {import('@converse/headless/types/plugins/muc/types').MEPMessageAttributes} attrs
  */
 async function shouldNotifyOfMEPMessage(attrs) {
     if (!attrs.from_muc) {
@@ -143,15 +141,15 @@ async function shouldNotifyOfMEPMessage(attrs) {
 /**
  * @async
  * @method shouldNotifyOfMessage
- * @param {MessageData|MUCMessageData} data
+ * @param {import('./types').MessageNotificationData} data
  */
 function shouldNotifyOfMessage(data) {
     const { attrs, chatbox } = data;
-    if (!attrs || attrs.is_forwarded) {
+    if (!attrs || ('is_forwarded' in attrs && attrs.is_forwarded)) {
         return false;
     }
     if (attrs['type'] === 'groupchat') {
-        return shouldNotifyOfGroupMessage(attrs);
+        return shouldNotifyOfGroupMessage(/** @type {MUCMessageAttributes} */ (attrs));
     } else if (attrs['type'] === 'mep') {
         return shouldNotifyOfMEPMessage(attrs);
     } else if ('activities' in attrs && attrs.activities?.length) {
@@ -216,7 +214,7 @@ function showChatStateNotification(contact) {
 
 /**
  * Shows an HTML5 Notification with the passed in message
- * @param {MessageData|MUCMessageData} data
+ * @param {import('./types').MessageNotificationData} data
  */
 function showMessageNotification(data) {
     const { attrs } = data;
@@ -309,6 +307,7 @@ export function playSoundNotification() {
 /**
  * Event handler for the on('message') event. Will call methods
  * to play sounds and show HTML5 notifications.
+ * @param {import('./types').MessageNotificationData} data
  */
 export async function handleMessageNotification(data) {
     if (!(await shouldNotifyOfMessage(data))) {
@@ -318,7 +317,7 @@ export async function handleMessageNotification(data) {
      * Triggered when a notification (sound or HTML5 notification) for a new
      * message has will be made.
      * @event _converse#messageNotification
-     * @type {MessageData|MUCMessageData}
+     * @type {import('./types').MessageNotificationData}
      * @example _converse.api.listen.on('messageNotification', data => { ... });
      */
     api.trigger('messageNotification', data);

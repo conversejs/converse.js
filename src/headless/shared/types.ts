@@ -312,6 +312,13 @@ export type StorageKeys = {
 // Common chatbox types
 export type ChatBoxOrMUC = import('../plugins/chat/model.js').default | import('../plugins/muc/muc.js').default;
 
+// The data of the `message` event for a one-on-one chat or a headlines feed
+export type MessageEventData = {
+    stanza: Element;
+    attrs: MessageAttributes;
+    chatbox?: import('../plugins/chat/model.js').default | import('../plugins/headlines/feed.js').default; // Absent for a bodyless message to an unopened chat
+};
+
 export type BaseMessageAttributes = ModelAttributes &
     Omit<MessageAttributes, 'type'> & {
         type: MessageStanzaTypes | 'info';

@@ -1,8 +1,8 @@
 /**
- * @param {import('@converse/headless').ChatBox} [chatbox] - The chat the message was received in
+ * @param {import('@converse/headless/types/shared/chatbox').default} [chatbox] - The chat the message was received in
  * @returns {boolean}
  */
-export function isMessageToHiddenChat(chatbox?: import("@converse/headless").ChatBox): boolean;
+export function isMessageToHiddenChat(chatbox?: import("@converse/headless/types/shared/chatbox").default): boolean;
 export function areDesktopNotificationsEnabled(): any;
 /**
  * @typedef {Navigator & {clearAppBadge: Function, setAppBadge: Function} } navigator
@@ -19,8 +19,9 @@ export function playSoundNotification(): Promise<void>;
 /**
  * Event handler for the on('message') event. Will call methods
  * to play sounds and show HTML5 notifications.
+ * @param {import('./types').MessageNotificationData} data
  */
-export function handleMessageNotification(data: any): Promise<boolean>;
+export function handleMessageNotification(data: import("./types").MessageNotificationData): Promise<boolean>;
 export function handleFeedback(data: any): void;
 /**
  * Event handler for on('microblogNotification'). Raises a desktop notification
@@ -45,8 +46,6 @@ export type navigator = Navigator & {
     setAppBadge: Function;
 };
 export type MUCMessageAttributes = import("@converse/headless/types/plugins/muc/types").MUCMessageAttributes;
-export type MUCMessageData = any;
-export type MessageData = any;
 export type RosterContact = import("@converse/headless").RosterContact;
 export type PubSubMessage = import("@converse/headless").PubSubMessage;
 export type PostRef = {

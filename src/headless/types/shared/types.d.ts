@@ -228,6 +228,11 @@ export type StorageKeys = {
     fetched_flag_key: string;
 };
 export type ChatBoxOrMUC = import('../plugins/chat/model.js').default | import('../plugins/muc/muc.js').default;
+export type MessageEventData = {
+    stanza: Element;
+    attrs: MessageAttributes;
+    chatbox?: import('../plugins/chat/model.js').default | import('../plugins/headlines/feed.js').default;
+};
 export type BaseMessageAttributes = ModelAttributes & Omit<MessageAttributes, 'type'> & {
     type: MessageStanzaTypes | 'info';
 };

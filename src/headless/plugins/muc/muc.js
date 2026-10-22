@@ -2419,7 +2419,8 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             const data = Object.assign(attrs, activity_attrs);
             this.createMessage(data);
             // Trigger so that notifications are shown
-            api.trigger('message', { 'attrs': data, 'chatbox': this });
+            const event_data = /** @type {import('./types').MUCMessageEventData} */ ({ attrs: data, chatbox: this });
+            api.trigger('message', event_data);
         });
         return !!attrs.activities.length;
     }

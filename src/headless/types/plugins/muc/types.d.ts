@@ -1,6 +1,6 @@
 import { ModelAttributes } from '@converse/skeletor';
 import { CHAT_STATES } from '../../shared/constants';
-import { MessageAttributes } from '../../shared/types';
+import { MessageAttributes, Reference } from '../../shared/types';
 import MUC from './muc';
 export type MUCStatusCode = '100' | '101' | '102' | '103' | '104' | '110' | '170' | '171' | '172' | '173' | '174' | '201' | '210' | '301' | '303' | '307' | '321' | '322' | '332' | '333';
 export type MUCConfigAttributes = ModelAttributes & {
@@ -22,8 +22,8 @@ export type DefaultMUCAttributes = {
     type: 'chatroom';
 };
 export type MUCMessageEventData = {
-    stanza: Element;
-    attrs: MUCMessageAttributes;
+    stanza?: Element;
+    attrs: MUCMessageAttributes | MEPMessageAttributes;
     chatbox: MUC;
 };
 export type MUCAttributes = DefaultMUCAttributes & {
@@ -41,8 +41,18 @@ type ExtraMUCAttributes = {
     moderation_reason: string;
     occupant_id: string;
     codes: MUCStatusCode[];
+    is_forwarded: boolean;
 };
 export type MUCMessageAttributes = MessageAttributes & ExtraMUCAttributes;
+export type MEPActivityAttributes = {
+    from: string;
+    msgid: string;
+    message: string;
+    reason?: string;
+    references: Reference[];
+    type: 'mep';
+};
+export type MEPMessageAttributes = Omit<MUCMessageAttributes, 'type'> & MEPActivityAttributes;
 export type MUCAffiliation = 'owner' | 'admin' | 'member' | 'outcast' | 'none';
 export type MUCRole = 'moderator' | 'participant' | 'visitor' | 'none';
 export type NonOutcastAffiliation = 'admin' | 'owner' | 'member';

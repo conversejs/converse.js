@@ -141,4 +141,5 @@ export type OccupantData = {
     jid?: string;
     nick?: string;
     occupant_id?: string; // The XEP-0421 unique occupant id
+    affiliation?: MUCAffiliation | null; // Undefined when the source (e.g. a message) doesn't state one
 };

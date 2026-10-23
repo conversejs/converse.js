@@ -102,6 +102,7 @@ export type OccupantData = {
     jid?: string;
     nick?: string;
     occupant_id?: string;
+    affiliation?: MUCAffiliation | null;
 };
 export {};
 //# sourceMappingURL=types.d.ts.map

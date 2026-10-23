@@ -145,6 +145,48 @@ class MUCOccupants extends Collection {
     }
 
     /**
+     * Find the occupant that was created before its occupant-id was known
+     * (e.g. from the member list or a message without one) and that
+     * represents the same person as the provided {@link OccupantData} object.
+     *
+     * Such an occupant must not have a different occupant-id, nor a
+     * different JID. Without a JID to compare, only an affiliated occupant is
+     * matched by nick, since the server reserves their nick. If the data
+     * states an affiliation (e.g. from a presence), it must be affiliated too.
+     *
+     * Use it to avoid creating a duplicate occupant when {@link findOccupant} finds none.
+     *
+     * @param {import('./types').OccupantData} data
+     * @returns {MUCOccupant}
+     */
+    findOccupantWithoutId (data) {
+        if (!data.occupant_id) return;
+
+        const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
+        const matches = (/** @type {MUCOccupant} */ o) => {
+            const o_jid = o.get('jid');
+            if (!o_jid) return true;
+
+            if (jid) return o_jid === jid;
+
+            const affiliated = ['admin', 'owner', 'member'];
+            return (
+                affiliated.includes(o.get('affiliation')) &&
+                (data.affiliation === undefined || affiliated.includes(data.affiliation))
+            );
+        };
+        // A match by JID is preferred over one by nick
+        let by_nick;
+        for (const o of this.models) {
+            if (o.get('occupant_id')) continue;
+
+            if (jid && o.get('jid') === jid && matches(o)) return o;
+            if (!by_nick && data.nick && o.get('nick') === data.nick && matches(o)) by_nick = o;
+        }
+        return by_nick;
+    }
+
+    /**
      * Get the {@link MUCOccupant} instance which
      * represents the current user.
      * @method _converse.MUCOccupants#getOwnOccupant

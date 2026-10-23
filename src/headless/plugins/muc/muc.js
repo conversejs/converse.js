@@ -1904,7 +1904,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             return true;
         }
 
-        const occupant = this.occupants.findOccupant(attrs);
+        const occupant = this.occupants.findOccupant(attrs) || this.occupants.findOccupantWithoutId(attrs);
         // Destroy an unavailable occupant if this isn't a nick change operation and if they're not affiliated
         if (
             attrs.type === 'unavailable' &&

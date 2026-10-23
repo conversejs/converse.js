@@ -32,6 +32,22 @@ declare class MUCOccupants extends Collection<MUCOccupant> {
      */
     findOccupant(data: import("./types").OccupantData): MUCOccupant;
     /**
+     * Find the occupant that was created before its occupant-id was known
+     * (e.g. from the member list or a message without one) and that
+     * represents the same person as the provided {@link OccupantData} object.
+     *
+     * Such an occupant must not have a different occupant-id, nor a
+     * different JID. Without a JID to compare, only an affiliated occupant is
+     * matched by nick, since the server reserves their nick. If the data
+     * states an affiliation (e.g. from a presence), it must be affiliated too.
+     *
+     * Use it to avoid creating a duplicate occupant when {@link findOccupant} finds none.
+     *
+     * @param {import('./types').OccupantData} data
+     * @returns {MUCOccupant}
+     */
+    findOccupantWithoutId(data: import("./types").OccupantData): MUCOccupant;
+    /**
      * Get the {@link MUCOccupant} instance which
      * represents the current user.
      * @method _converse.MUCOccupants#getOwnOccupant

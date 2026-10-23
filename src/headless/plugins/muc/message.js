@@ -97,7 +97,10 @@ class MUCMessage extends BaseMessage {
 
             const nick = Strophe.getResourceFromJid(this.get('from'));
             const occupant_id = this.get('occupant_id');
-            this.occupant = nick || occupant_id ? this.occupants.findOccupant({ nick, occupant_id }) : null;
+            if (nick || occupant_id) {
+                const data = { nick, occupant_id, jid: this.get('from_real_jid') };
+                this.occupant = this.occupants.findOccupant(data) || this.occupants.findOccupantWithoutId(data);
+            }
 
             if (!this.occupant) {
                 const jid = this.get('from_real_jid');

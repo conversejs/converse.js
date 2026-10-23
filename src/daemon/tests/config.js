@@ -55,6 +55,15 @@ describe('The account configuration', () => {
         });
     });
 
+    it('names the socket after a hash of the JID when the JID would make its path too long', async () => {
+        const jid = `${'r'.repeat(60)}@montague.lit`;
+        await writeConfig({ jid });
+        const { socket, pidfile } = loadConfig(env).paths;
+        expect(path.basename(socket)).toMatch(/^[0-9a-f]{16}\.sock$/);
+        expect(path.basename(pidfile)).toBe(path.basename(socket).replace('.sock', '.pid'));
+        expect(Buffer.byteLength(socket)).toBeLessThanOrEqual(103);
+    });
+
     it('wants a bare JID', async () => {
         await writeConfig({ jid: 'romeo@montague.lit/orchard' });
         expect(() => loadConfig(env)).toThrow('"jid" in');

@@ -5,8 +5,9 @@
 import fs from 'node:fs/promises';
 import net from 'node:net';
 import readline from 'node:readline';
-import { converse, log } from '@converse/headless';
+import { _converse, api, converse, log } from '@converse/headless';
 import { getPassword } from './config.js';
+import { messageMethods } from './messages.js';
 import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
 
 /**
@@ -41,13 +42,13 @@ async function serve(config) {
     const password = await getPassword(config);
     const started = new Date();
 
-    const _converse = await converse.initialize({
+    await converse.initialize({
         websocket_url: config.websocket_url,
         ...config.settings,
     });
-    const { api } = _converse;
 
     const methods = {
+        ...messageMethods(_converse),
         /** @returns {import('./types').Status} */
         'daemon.status': () => ({
             connected: api.connection.connected(),
@@ -78,7 +79,17 @@ async function serve(config) {
     // we hold says no other daemon is running.
     await fs.rm(paths.socket, { force: true });
     await new Promise((resolve, reject) => {
-        server.once('error', reject);
+        server.once('error', (e) =>
+            reject(
+                e.code === 'EINVAL'
+                    ? new Error(
+                          `Can't listen on ${paths.socket}: the path is too long for a unix socket. ` +
+                              'Point XDG_RUNTIME_DIR at a shorter directory.',
+                          { cause: e },
+                      )
+                    : e,
+            ),
+        );
         server.listen(paths.socket, () => resolve(undefined));
     });
     await fs.chmod(paths.socket, 0o600);
@@ -94,7 +105,7 @@ async function serve(config) {
             clients.forEach((socket) => socket.end());
             try {
                 if (api.connection.connected()) {
-                    await withTimeout(leave(api), SHUTDOWN_TIMEOUT);
+                    await withTimeout(leave(), SHUTDOWN_TIMEOUT);
                 }
             } catch (e) {
                 // Still clean up below: a daemon left with its pidfile behind blocks the next one.
@@ -118,9 +129,8 @@ async function serve(config) {
 
 /**
  * Leaves every joined MUC, then logs out, which sends unavailable presence.
- * @param {typeof import('@converse/headless').api} api
  */
-async function leave(api) {
+async function leave() {
     const rooms = /** @type {any[]} */ (await api.rooms.get());
     await Promise.all(rooms.filter((room) => room.isEntered()).map((room) => room.leave()));
     await api.user.logout();

@@ -4,6 +4,7 @@
  * @module @converse/daemon/messages
  */
 import { converse } from '@converse/headless';
+import { getPage, hasArchivedMessages } from './history.js';
 import { ERRORS, RPCError } from './protocol.js';
 
 const { Strophe, u } = converse.env;
@@ -20,7 +21,8 @@ export function messageMethods(_converse) {
 
     return {
         /**
-         * The recent messages of a conversation, from the local store.
+         * The recent messages of a conversation: from the local store, and
+         * from the server's archive where that falls short.
          * @param {Object} params
          * @param {string} params.conversation - A JID
          * @param {number} [params.limit]
@@ -38,30 +40,38 @@ export function messageMethods(_converse) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"since" must be an ISO 8601 time.');
             }
 
-            const chat = await api.chats.get(jid);
+            let chat = await api.chats.get(jid);
             const contact = await api.contacts.get(jid);
-            if (!chat && !contact) {
-                throw new RPCError(
-                    ERRORS.NOT_FOUND,
-                    `There's no conversation with ${jid} and they aren't a contact. ` +
-                        'Check the JID, or send them a message to start a conversation.',
-                );
+            if (!chat) {
+                // Opening a conversation just to look would leave it behind,
+                // so for a stranger check the archive has something first.
+                if (!contact && !api.connection.connected()) {
+                    // Without the server there's no archive to look in, so "no messages" would be false.
+                    throw new RPCError(
+                        ERRORS.NOT_CONNECTED,
+                        `There's no conversation with ${jid} stored locally, and the daemon isn't connected ` +
+                            'to the server to look in its archive. Check "converse-cli daemon status", then try again.',
+                    );
+                }
+                if (!contact && !(await hasArchivedMessages(jid))) {
+                    throw new RPCError(
+                        ERRORS.NOT_FOUND,
+                        `There's no conversation with ${jid}, they aren't a contact, and the server's archive ` +
+                            'has no messages with them. Check the JID, or send them a message to start a conversation.',
+                    );
+                }
+                chat = await api.chats.get(jid, {}, true);
+                await chat.initialized;
             }
 
-            let messages = [];
-            if (chat) {
-                await chat.messages.fetched;
-                messages = chat.messages.filter((m) => m.get('body'));
-            }
-            if (before !== undefined) {
-                messages = messages.slice(0, messages.indexOf(findMessage(messages, before, ownJID())));
-            }
-            if (since_ms !== undefined) {
-                messages = messages.filter((m) => Date.parse(m.get('time')) >= since_ms);
-            }
+            const messages = await getPage(chat, {
+                limit,
+                since: since_ms,
+                before: before === undefined ? undefined : (models) => findMessage(models, before, ownJID()),
+            });
             return {
                 conversation: toConversationDTO(jid, contact),
-                messages: messages.slice(-limit).map((m) => toMessageDTO(m, jid, ownJID())),
+                messages: messages.map((m) => toMessageDTO(m, jid, ownJID())),
             };
         },
 

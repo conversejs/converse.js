@@ -41,8 +41,10 @@ export function handleMAMResult(model: ChatBox | MUC, result: any, query: any, o
  * @param {('forwards'|'backwards'|false)} [should_page=false] - Determines whether
  *  this function should recursively page through the entire result set if a limited
  *  number of results were returned.
+ * @returns {Promise<import('./types').MAMQueryResult|undefined>} The archive's
+ *  answer, which has an `error` if the query failed. Undefined if no query was made.
  */
-export function fetchArchivedMessages(model: ChatBox | MUC, options?: import("./types").FetchArchivedMessagesOptions, should_page?: ("forwards" | "backwards" | false)): Promise<void>;
+export function fetchArchivedMessages(model: ChatBox | MUC, options?: import("./types").FetchArchivedMessagesOptions, should_page?: ("forwards" | "backwards" | false)): Promise<import("./types").MAMQueryResult | undefined>;
 /**
  * Creates a placeholder to fetch messages at the top of the chat history.
  * @param {ChatBox|MUC} model
@@ -53,7 +55,7 @@ export function createScrollupPlaceholder(model: ChatBox | MUC): void;
  * the last archived message in our local cache.
  * @param {ChatBox|MUC} model
  */
-export function fetchNewestMessages(model: ChatBox | MUC): Promise<void>;
+export function fetchNewestMessages(model: ChatBox | MUC): Promise<import("./types").MAMQueryResult>;
 export type MUC = import("../muc/muc").default;
 export type ChatBox = import("../chat/model").default;
 export type Model = import("@converse/skeletor").Model;

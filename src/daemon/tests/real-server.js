@@ -4,10 +4,13 @@
  * daemon, started the way a client starts one, and driven through its socket.
  */
 import fs from 'node:fs/promises';
+import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { connect, stopDaemon } from '../client.js';
 import { registerAccount, WEBSOCKET_URL } from '../../../tests/prosody/server.js';
+
+export { registerAccount };
 
 /**
  * Polls until `fn` returns something truthy, treating a throw as "not yet".
@@ -36,13 +39,13 @@ export async function eventually(fn, { timeout = 10000, what = 'the condition' }
 }
 
 /**
- * Starts a daemon for an account, waits until it's connected, and returns a
- * client connected to it.
+ * Starts a daemon for an account and waits until it's connected.
  * @param {{ jid: string, password: string }} account
  * @param {Object} [options]
  * @param {string} [options.resource]
+ * @param {string} [options.websocket_url] - To reach Prosody another way, e.g. through a {@link startProxy}
  */
-export async function startDaemon(account, { resource = 'claude' } = {}) {
+export async function startDaemon(account, { resource = 'claude', websocket_url = WEBSOCKET_URL } = {}) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-prosody-test-'));
     const env = {
         ...process.env,
@@ -56,32 +59,46 @@ export async function startDaemon(account, { resource = 'claude' } = {}) {
         JSON.stringify({
             jid: account.jid,
             password: account.password,
-            websocket_url: WEBSOCKET_URL,
+            websocket_url,
             resource,
             settings: { discover_connection_methods: false, loglevel: 'info' },
         }),
     );
-
-    const client = await connect({ env });
     const log = path.join(env.XDG_STATE_HOME, 'converse', `${account.jid}.log`);
-    try {
-        await eventually(async () => (await client.request('daemon.status')).connected, {
-            timeout: 15000,
-            what: `${account.jid} to connect`,
-        });
-    } catch (e) {
-        const output = await fs.readFile(log, 'utf8').catch(() => '');
-        throw new Error(`${e.message}. Daemon log:\n${output}`, { cause: e });
-    }
+
+    const connectAndWait = async () => {
+        const client = await connect({ env });
+        try {
+            await eventually(async () => (await client.request('daemon.status')).connected, {
+                timeout: 15000,
+                what: `${account.jid} to connect`,
+            });
+        } catch (e) {
+            const output = await fs.readFile(log, 'utf8').catch(() => '');
+            throw new Error(`${e.message}. Daemon log:\n${output}`, { cause: e });
+        }
+        return client;
+    };
+    let client = await connectAndWait();
 
     return {
         jid: account.jid,
-        full_jid: `${account.jid}/${resource}`,
         /**
          * @param {string} method
          * @param {Object} [params]
          */
         request: (method, params) => client.request(method, params),
+        /**
+         * Stops the daemon, runs `meanwhile`, and starts it again on the same
+         * account files, as a user's daemon would be.
+         * @param {() => Promise<void>} [meanwhile]
+         */
+        async restart(meanwhile) {
+            client.close();
+            await stopDaemon({ env });
+            await meanwhile?.();
+            client = await connectAndWait();
+        },
         async stop() {
             client.close();
             await stopDaemon({ env });
@@ -91,11 +108,41 @@ export async function startDaemon(account, { resource = 'claude' } = {}) {
 }
 
 /**
- * Registers a fresh account and starts a daemon for it.
- * @param {string} name - Used in the JID, so logs say who's who.
+ * A TCP proxy in front of Prosody's websocket, so that a spec can cut a
+ * daemon's connection the way a network would: abruptly, with no closing
+ * handshake from either side.
  */
-export async function startDaemonForNewAccount(name) {
-    return startDaemon(await registerAccount(name));
-}
+export async function startProxy() {
+    const target = new URL(WEBSOCKET_URL);
+    /** @type {Set<net.Socket>} */
+    const sockets = new Set();
+    const server = net.createServer((client) => {
+        const upstream = net.connect(Number(target.port), target.hostname);
+        for (const [a, b] of [
+            [client, upstream],
+            [upstream, client],
+        ]) {
+            sockets.add(a);
+            a.pipe(b);
+            a.on('error', () => b.destroy());
+            a.on('close', () => {
+                sockets.delete(a);
+                b.destroy();
+            });
+        }
+    });
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(undefined)));
+    const { port } = /** @type {net.AddressInfo} */ (server.address());
 
-export { registerAccount };
+    return {
+        websocket_url: `ws://127.0.0.1:${port}${target.pathname}`,
+        /** Cuts every connection through the proxy, which keeps accepting new ones. */
+        drop() {
+            sockets.forEach((s) => s.resetAndDestroy());
+        },
+        close() {
+            sockets.forEach((s) => s.destroy());
+            return new Promise((resolve) => server.close(() => resolve(undefined)));
+        },
+    };
+}

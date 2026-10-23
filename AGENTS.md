@@ -107,6 +107,8 @@ npm run dev && npm test
 npm test                                    # Run main UI tests (headless Chromium)
 npm run test:all                            # Run both headless and main tests
 npm run test:headless                       # Run headless (core XMPP) tests only
+npm run test:daemon                         # Run the daemon and CLI tests (Node, mock connection)
+npm run test:prosody                        # Run the real-server tests (needs Docker; starts Prosody itself)
 cd src/headless && npm test                 # Alternative way to run headless tests
 
 # Run only specific files (fastest turnaround) — pass a path/substring to vitest

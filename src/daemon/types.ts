@@ -24,6 +24,39 @@ export type Status = {
     uptime: number; // Seconds
 };
 
+/**
+ * The DTOs below are what clients see of headless's models. They're part of
+ * the protocol (see PROTOCOL_VERSION).
+ */
+
+export type ConversationDTO = {
+    jid: string; // Bare JID of the contact or room
+    type: 'chat';
+    name: string | null; // The roster name, if they're a contact
+};
+
+export type MessageDTO = {
+    // The server's stanza-id (XEP-0359) if it assigned one, else the
+    // origin-id, else the stanza's id attribute. Commands that target a
+    // message accept any of the three, or a unique prefix of this one.
+    id: string;
+    conversation: string; // Bare JID
+    from: string; // Bare JID of the sender
+    direction: 'incoming' | 'outgoing';
+    time: string; // ISO 8601
+    body: string | null; // Untrusted: written by whoever sent the message
+};
+
+export type MessageList = {
+    conversation: ConversationDTO;
+    messages: MessageDTO[]; // Oldest first
+};
+
+export type SendResult = {
+    outcome: 'sent';
+    message: MessageDTO;
+};
+
 export type Hello = {
     protocol: number;
     consumer: string;

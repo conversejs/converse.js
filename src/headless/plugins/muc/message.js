@@ -99,7 +99,16 @@ class MUCMessage extends BaseMessage {
             const occupant_id = this.get('occupant_id');
             if (nick || occupant_id) {
                 const data = { nick, occupant_id, jid: this.get('from_real_jid') };
-                this.occupant = this.occupants.findOccupant(data) || this.occupants.findOccupantWithoutId(data);
+                this.occupant = this.occupants.findOccupant(data);
+                if (!this.occupant) {
+                    this.occupant = this.occupants.findOccupantWithoutId(data);
+                    // Take the occupant to be this sender, so that messages with
+                    // other occupant ids don't match it too. Not for a member
+                    // though, whose nick match can't be verified by a message.
+                    if (this.occupant && occupant_id && !this.occupant.isMember()) {
+                        this.occupant.save({ occupant_id });
+                    }
+                }
             }
 
             if (!this.occupant) {

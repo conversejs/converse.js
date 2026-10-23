@@ -411,6 +411,58 @@ describe('A MUC occupant', function () {
             expect(model.occupants.length).toBe(2);
             // Matched only by nick, so it could be someone else's message
             expect(message.get('from_real_jid')).toBeUndefined();
+            expect(juliet.get('occupant_id')).toBeUndefined();
+        }),
+    );
+
+    it(
+        'is told apart from another sender with the same nick by their occupant ids',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitUntilBookmarksReturned(_converse);
+            const muc_jid = 'lounge@montague.lit';
+            const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
+
+            const sendMessage = (body, occupant_id) => {
+                const msg = stx`
+                <message from="${muc_jid}/bob" id="${u.getUniqueId()}" to="${_converse.jid}" type="groupchat" xmlns="jabber:client">
+                    <body>${body}</body>
+                    ${occupant_id ? stx`<occupant-id xmlns="urn:xmpp:occupant-id:0" id="${occupant_id}" />` : ''}
+                </message>`;
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, msg));
+                return u.waitUntil(() => model.messages.findWhere({ body }));
+            };
+
+            // E.g. from the archive, before the server supported occupant ids
+            const old_message = await sendMessage('Old');
+            await u.waitUntil(() => model.occupants.length === 2);
+            const bob = old_message.getOccupant();
+            expect(bob.get('occupant_id')).toBeUndefined();
+
+            const message_a = await sendMessage('From A', 'bob-a');
+            expect(message_a.getOccupant()).toBe(bob);
+            expect(bob.get('occupant_id')).toBe('bob-a');
+            expect(model.occupants.get('bob-a')).toBe(bob);
+            expect(model.occupants.length).toBe(2);
+
+            const message_b = await sendMessage('From B', 'bob-b');
+            expect(message_b.getOccupant()).not.toBe(bob);
+            expect(message_b.getOccupant().get('occupant_id')).toBe('bob-b');
+            expect(model.occupants.length).toBe(3);
+
+            const presence = stx`
+            <presence from="${muc_jid}/bob" id="${u.getUniqueId()}" to="${_converse.jid}" xmlns="jabber:client">
+                <x xmlns="http://jabber.org/protocol/muc#user">
+                    <item affiliation="none" role="participant"/>
+                </x>
+                <occupant-id xmlns="urn:xmpp:occupant-id:0" id="bob-b" />
+            </presence>`;
+            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+            await u.waitUntil(() => model.occupants.get('bob-b')?.get('presence') === 'online');
+            expect(model.occupants.get('bob-b')).toBe(message_b.getOccupant());
+            expect(model.occupants.length).toBe(3);
+            expect(bob.get('presence')).toBe('offline');
+            expect(old_message.getOccupant()).toBe(bob);
         }),
     );
 

@@ -12,19 +12,25 @@ import { connect } from '../client.js';
 import { loadConfig } from '../config.js';
 import { start } from '../daemon.js';
 import { createAccount, JID } from './account.js';
+import { serve } from './fake-server.js';
 
 const { Strophe, stx, u } = converse.env;
 
 export { JID };
 
 /**
- * Starts a daemon in this process for a fresh account, and answers its roster
- * request with the given contacts.
+ * Starts a daemon in this process for a fresh account, answers its roster
+ * request with the given contacts, and plays the server for disco and MAM
+ * (see fake-server.js).
  * @param {Object} [options]
  * @param {{ jid: string, name?: string, subscription?: string }[]} [options.roster]
+ * @param {string[]} [options.server_features]
+ * @param {Parameters<typeof serve>[0]['archive']} [options.archive]
+ * @param {Record<string, unknown>} [options.settings] - More headless settings
+ * @param {Parameters<typeof serve>[0]['mam_mode']} [options.mam_mode]
  */
-export async function startDaemon({ roster = [] } = {}) {
-    const { env, remove } = await createAccount();
+export async function startDaemon({ roster = [], server_features, archive, settings, mam_mode } = {}) {
+    const { env, remove } = await createAccount(settings);
     const config = loadConfig(env);
     const daemon = await start(config);
     const connection = api.connection.get();
@@ -52,9 +58,14 @@ export async function startDaemon({ roster = [] } = {}) {
             </query>
         </iq>`);
     await api.waitUntil('rosterContactsFetched');
+    const server = serve({ connection, receive, jid: JID, server_features, archive, mam_mode });
 
     return {
         api,
+        /** The MAM queries the daemon sent, in order. */
+        mam_queries: server.mam_queries,
+        /** Changes how MAM queries are answered from now on. */
+        setMAMMode: server.setMAMMode,
         config,
         connection,
         env,

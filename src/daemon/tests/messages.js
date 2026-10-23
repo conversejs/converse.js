@@ -206,8 +206,8 @@ describe('Messages in a 1:1 chat', () => {
             await expect(request).rejects.toMatchObject({
                 code: ERRORS.NOT_FOUND,
                 message:
-                    "There's no conversation with tybalt@capulet.lit and they aren't a contact. " +
-                    'Check the JID, or send them a message to start a conversation.',
+                    "There's no conversation with tybalt@capulet.lit, they aren't a contact, and the server's " +
+                    'archive has no messages with them. Check the JID, or send them a message to start a conversation.',
             });
         });
 

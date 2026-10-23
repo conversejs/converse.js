@@ -70,7 +70,7 @@ export default defineConfig({
                 test: {
                     name: 'main',
                     include: ['src/**/tests/**/*.js', 'src/**/tests/*.js'],
-                    exclude: ['src/headless/**', '**/*.node.js', ...commonExclude],
+                    exclude: ['src/headless/**', 'src/daemon/**', 'src/cli/**', '**/*.node.js', ...commonExclude],
                     browser: makeBrowser(),
                 },
             },
@@ -108,6 +108,20 @@ export default defineConfig({
                     // hidden dependency on the DOM.
                     include: ['shims/tests/**/*.js', 'utils/tests/**/*.js', 'plugins/**/tests/*.node.js'],
                     exclude: [...commonExclude],
+                },
+            },
+            {
+                // The daemon and its clients are Node programs. Their specs
+                // import `@converse/headless` by package name, which the `node`
+                // export condition resolves to the source tree, so they need no
+                // headless rebuild. Not extending the root config, for the same
+                // reasons as `headless-node` above.
+                root: abs('src'),
+                test: {
+                    name: 'daemon',
+                    environment: 'node',
+                    include: ['daemon/tests/**/*.js', 'cli/tests/**/*.js'],
+                    exclude: ['**/tests/harness.js', ...commonExclude],
                 },
             },
         ],

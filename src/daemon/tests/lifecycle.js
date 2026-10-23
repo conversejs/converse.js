@@ -151,6 +151,7 @@ describe('The daemon', () => {
         expect(status).toEqual({
             connected: true,
             jid: JID,
+            resumed: false,
             pid: process.pid,
             started: expect.any(String),
             uptime: expect.any(Number),
@@ -159,22 +160,8 @@ describe('The daemon', () => {
     });
 
     it('enables message carbons once the server says it supports them', async () => {
-        daemon = await startDaemon();
-        const { connection, receive } = daemon;
-        const disco_iq = await u.waitUntil(() =>
-            connection.IQ_stanzas.find(
-                (iq) =>
-                    iq.getAttribute('to') === 'montague.lit' &&
-                    iq.querySelector(`query[xmlns="${Strophe.NS.DISCO_INFO}"]`),
-            ),
-        );
-        receive(stx`
-            <iq xmlns="jabber:client" type="result" from="montague.lit" to="${JID}" id="${disco_iq.getAttribute('id')}">
-                <query xmlns="${Strophe.NS.DISCO_INFO}">
-                    <identity category="server" type="im"/>
-                    <feature var="${Strophe.NS.CARBONS}"/>
-                </query>
-            </iq>`);
+        daemon = await startDaemon({ server_features: [Strophe.NS.CARBONS] });
+        const { connection } = daemon;
         await u.waitUntil(() =>
             connection.IQ_stanzas.find((iq) => iq.querySelector(`enable[xmlns="${Strophe.NS.CARBONS}"]`)),
         );

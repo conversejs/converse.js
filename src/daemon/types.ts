@@ -19,6 +19,7 @@ export type Config = {
 export type Status = {
     connected: boolean;
     jid: string | null; // The full JID once bound
+    resumed: boolean; // Whether the current session was resumed (XEP-0198) after a dropped connection
     pid: number;
     started: string; // ISO 8601
     uptime: number; // Seconds

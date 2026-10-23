@@ -126,6 +126,7 @@ export default defineConfig({
                         '**/tests/account.js',
                         '**/tests/run.js',
                         '**/tests/real-server.js',
+                        '**/tests/fake-server.js',
                         '**/*.prosody.js',
                         ...commonExclude,
                     ],

@@ -19,9 +19,10 @@ process.once('exit', () => fsSync.rmSync(STORAGE_DIR, { recursive: true, force: 
  * Creates a throwaway home for one account: XDG config, runtime and state
  * directories under a temporary directory, with a config file that puts the
  * daemon on the MockConnection.
+ * @param {Record<string, unknown>} [settings] - More headless settings for the daemon
  * @returns {Promise<{ env: NodeJS.ProcessEnv, remove: () => Promise<void> }>}
  */
-export async function createAccount() {
+export async function createAccount(settings = {}) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-daemon-test-'));
     const env = {
         ...process.env,
@@ -46,6 +47,7 @@ export async function createAccount() {
                 enable_smacks: false,
                 loglevel: 'error',
                 storage_path: STORAGE_DIR,
+                ...settings,
             },
         }),
     );

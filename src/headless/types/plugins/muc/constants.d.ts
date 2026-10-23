@@ -2,6 +2,7 @@ export const ACTION_INFO_CODES: string[];
 export const NEW_NICK_CODES: string[];
 export const ADMIN_COMMANDS: string[];
 export const AFFILIATIONS: string[];
+export const MEMBER_AFFILIATIONS: string[];
 export const DISCONNECT_CODES: string[];
 export const MODERATOR_COMMANDS: string[];
 export const OWNER_COMMANDS: string[];

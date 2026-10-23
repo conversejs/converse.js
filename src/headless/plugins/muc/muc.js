@@ -20,6 +20,7 @@ import {
     ACTION_INFO_CODES,
     NEW_NICK_CODES,
     DISCONNECT_CODES,
+    MEMBER_AFFILIATIONS,
 } from './constants.js';
 import {
     ACTIVE,
@@ -1910,7 +1911,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             attrs.type === 'unavailable' &&
             occupant &&
             !attrs.codes.includes(converse.MUC_NICK_CHANGED_CODE) &&
-            !['admin', 'owner', 'member'].includes(attrs['affiliation'])
+            !MEMBER_AFFILIATIONS.includes(attrs.affiliation)
         ) {
             // Before destroying we set the new attrs, so that we can show the disconnection message
             occupant.set({

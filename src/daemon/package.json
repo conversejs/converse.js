@@ -1,0 +1,39 @@
+{
+  "name": "@converse/daemon",
+  "version": "0.0.1",
+  "description": "A long-lived process that hosts one @converse/headless XMPP session and shares it with local clients",
+  "author": "JC Brand <jc@opkode.com>",
+  "homepage": "https://conversejs.org",
+  "license": "MPL-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "*.js"
+  ],
+  "scripts": {
+    "test": "cd ../.. && vitest run --project daemon"
+  },
+  "keywords": [
+    "converse.js",
+    "XMPP",
+    "Jabber",
+    "chat",
+    "daemon"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conversejs/converse.js.git",
+    "directory": "src/daemon"
+  },
+  "bugs": {
+    "url": "https://github.com/conversejs/converse.js/issues"
+  },
+  "dependencies": {
+    "@converse/headless": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

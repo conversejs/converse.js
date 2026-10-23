@@ -302,4 +302,10 @@ export default defineConfig([{
     rules: {
         "no-unused-vars": "off",
     },
+}, {
+    // Node programs, not browser code.
+    files: ["src/daemon/**/*.js", "src/cli/**/*.js"],
+    languageOptions: {
+        globals: globals.node,
+    },
 }]);

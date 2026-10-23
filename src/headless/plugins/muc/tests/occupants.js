@@ -334,6 +334,39 @@ describe('A MUC occupant', function () {
     );
 
     it(
+        "isn't merged with an unaffiliated occupant that has the same nick while its JID is unknown",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitUntilBookmarksReturned(_converse);
+            const muc_jid = 'lounge@montague.lit';
+            const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
+            // E.g. from a member list that doesn't include JIDs
+            const juliet = model.occupants.create({ nick: 'juliet', affiliation: 'member' });
+
+            const sendPresence = (affiliation, occupant_id) => {
+                const presence = stx`
+                <presence from="${muc_jid}/juliet" id="${u.getUniqueId()}" to="${_converse.jid}" xmlns="jabber:client">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="${affiliation}" role="participant"/>
+                    </x>
+                    <occupant-id xmlns="urn:xmpp:occupant-id:0" id="${occupant_id}" />
+                </presence>`;
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+                return u.waitUntil(() => model.occupants.get(occupant_id));
+            };
+
+            const mallory = await sendPresence('none', 'mallory-oid');
+            expect(mallory).not.toBe(juliet);
+            expect(model.occupants.length).toBe(3);
+            expect(juliet.get('occupant_id')).toBeUndefined();
+            expect(juliet.get('affiliation')).toBe('member');
+
+            expect(await sendPresence('member', 'juliet-oid')).toBe(juliet);
+            expect(model.occupants.length).toBe(3);
+        }),
+    );
+
+    it(
         'keeps our own occupant id when a self-presence repeats it or leaves it out',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
@@ -386,6 +419,7 @@ describe('A MUC occupant', function () {
             const data = { occupant_id: 'juliet-oid', nick: 'juliet', jid: 'juliet@capulet.lit' };
             expect(model.occupants.findOccupant(data)).toBeUndefined();
             expect(model.occupants.findOccupantWithoutId(data)).toBe(juliet);
+            expect(model.occupants.findOccupantWithoutId({ occupant_id: 'juliet-oid', nick: '' })).toBeUndefined();
         }),
     );
 

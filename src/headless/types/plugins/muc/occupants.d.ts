@@ -37,16 +37,17 @@ declare class MUCOccupants extends Collection<MUCOccupant> {
      * represents the same person as the provided {@link OccupantData} object.
      *
      * Such an occupant must not have a different occupant-id, nor a
-     * different JID. Without a JID to compare, only an affiliated occupant is
-     * matched by nick, since the server reserves their nick. If the data
-     * states an affiliation (e.g. from a presence), it must be affiliated too.
+     * different JID. A member is otherwise matched by nick, since the server
+     * reserves it, but not with an unaffiliated presence. An occupant with
+     * neither a JID nor an affiliation, created from a message without an
+     * occupant-id, is whoever next uses its nick.
      *
      * Use it to avoid creating a duplicate occupant when {@link findOccupant} finds none.
      *
      * @param {import('./types').OccupantData} data
-     * @returns {MUCOccupant}
+     * @returns {MUCOccupant|undefined}
      */
-    findOccupantWithoutId(data: import("./types").OccupantData): MUCOccupant;
+    findOccupantWithoutId(data: import("./types").OccupantData): MUCOccupant | undefined;
     /**
      * Get the {@link MUCOccupant} instance which
      * represents the current user.

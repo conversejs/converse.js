@@ -10,6 +10,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { Collection, Model } from '@converse/skeletor';
 import { Strophe } from 'strophe.js';
+import { MEMBER_AFFILIATIONS } from './constants.js';
 import { getAffiliationList } from './affiliations/utils.js';
 import { occupantsComparator } from './utils.js';
 import { getUniqueId } from '../../utils/index.js';
@@ -43,7 +44,7 @@ class MUCOccupants extends Collection {
 
     static getAutoFetchedAffiliationLists () {
         const affs = api.settings.get('muc_fetch_members');
-        return Array.isArray(affs) ? affs : affs ? ['member', 'admin', 'owner'] : [];
+        return Array.isArray(affs) ? affs : affs ? MEMBER_AFFILIATIONS : [];
     }
 
     /**
@@ -59,7 +60,7 @@ class MUCOccupants extends Collection {
     }
 
     async fetchMembers () {
-        if (!['member', 'admin', 'owner'].includes(this.getOwnOccupant()?.get('affiliation'))) {
+        if (!MEMBER_AFFILIATIONS.includes(this.getOwnOccupant()?.get('affiliation'))) {
             // https://xmpp.org/extensions/xep-0045.html#affil-priv
             return;
         }
@@ -150,14 +151,15 @@ class MUCOccupants extends Collection {
      * represents the same person as the provided {@link OccupantData} object.
      *
      * Such an occupant must not have a different occupant-id, nor a
-     * different JID. Without a JID to compare, only an affiliated occupant is
-     * matched by nick, since the server reserves their nick. If the data
-     * states an affiliation (e.g. from a presence), it must be affiliated too.
+     * different JID. A member is otherwise matched by nick, since the server
+     * reserves it, but not with an unaffiliated presence. An occupant with
+     * neither a JID nor an affiliation, created from a message without an
+     * occupant-id, is whoever next uses its nick.
      *
      * Use it to avoid creating a duplicate occupant when {@link findOccupant} finds none.
      *
      * @param {import('./types').OccupantData} data
-     * @returns {MUCOccupant}
+     * @returns {MUCOccupant|undefined}
      */
     findOccupantWithoutId (data) {
         if (!data.occupant_id) return;
@@ -165,15 +167,13 @@ class MUCOccupants extends Collection {
         const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
         const matches = (/** @type {MUCOccupant} */ o) => {
             const o_jid = o.get('jid');
-            if (!o_jid) return true;
+            if (jid && o_jid) return o_jid === jid;
 
-            if (jid) return o_jid === jid;
-
-            const affiliated = ['admin', 'owner', 'member'];
-            return (
-                affiliated.includes(o.get('affiliation')) &&
-                (data.affiliation === undefined || affiliated.includes(data.affiliation))
-            );
+            if (o.isMember()) {
+                // A message doesn't state the sender's affiliation
+                return data.affiliation === undefined || MEMBER_AFFILIATIONS.includes(data.affiliation);
+            }
+            return !o_jid;
         };
         // A match by JID is preferred over one by nick
         let by_nick;

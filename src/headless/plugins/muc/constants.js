@@ -2,6 +2,7 @@ export const ACTION_INFO_CODES = ['301', '333', '307', '321', '322'];
 export const NEW_NICK_CODES = ['210', '303'];
 export const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
 export const AFFILIATIONS = ['owner', 'admin', 'member', 'outcast', 'none'];
+export const MEMBER_AFFILIATIONS = ['member', 'admin', 'owner'];
 export const DISCONNECT_CODES = ['301', '333', '307', '321', '322', '332'];
 export const MODERATOR_COMMANDS = ['kick', 'mute', 'voice', 'modtools'];
 export const OWNER_COMMANDS = ['owner'];

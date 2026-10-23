@@ -6,7 +6,7 @@ import converse from '../../shared/api/public.js';
 import ColorAwareModel from '../../shared/color.js';
 import ModelWithMessages from '../../shared/model-with-messages.js';
 import ModelWithVCard from '../../shared/model-with-vcard.js';
-import { AFFILIATIONS, ROLES } from './constants.js';
+import { AFFILIATIONS, MEMBER_AFFILIATIONS, ROLES } from './constants.js';
 import MUCMessages from './messages.js';
 import u from '../../utils/index.js';
 import { shouldCreateGroupchatMessage } from './utils.js';
@@ -172,7 +172,7 @@ class MUCOccupant extends ModelWithVCard(ModelWithMessages(ColorAwareModel(Model
     }
 
     isMember() {
-        return ['admin', 'owner', 'member'].includes(this.get('affiliation'));
+        return MEMBER_AFFILIATIONS.includes(this.get('affiliation'));
     }
 
     isModerator() {

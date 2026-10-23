@@ -86,6 +86,20 @@ describe('The MUC occupants filter', function () {
             expect(state_select.value).toBe('dnd');
             expect(state_select.options[state_select.selectedIndex].textContent).toBe('Busy');
             await u.waitUntil(() => [...view.querySelectorAll('li')].filter(u.isVisible).length === 0);
+
+            state_select.value = 'offline';
+            u.triggerEvent(state_select, 'change');
+            await u.waitUntil(() => [...view.querySelectorAll('li')].filter(u.isVisible).length === 2);
+            const offline_nicks = [...view.querySelectorAll('li')]
+                .filter(u.isVisible)
+                .map((li) => li.querySelector('.occupant-nick').textContent.trim());
+            expect(offline_nicks.sort()).toEqual(['juliet', 'tybalt']);
+
+            state_select.value = 'online';
+            u.triggerEvent(state_select, 'change');
+            await u.waitUntil(
+                () => [...view.querySelectorAll('li')].filter(u.isVisible).length === 1 + mock.chatroom_names.length,
+            );
         }),
     );
 });

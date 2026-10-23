@@ -10,6 +10,11 @@
  * logic belongs in headless; this package holds only what is Node-only or
  * exists because several clients share one session.
  *
+ * Clients import `@converse/daemon/client` instead, which doesn't load
+ * headless.
+ *
  * @module @converse/daemon
  */
-export {};
+export { start } from './daemon.js';
+export { getConfigPath, loadConfig } from './config.js';
+export { PROTOCOL_VERSION } from './protocol.js';

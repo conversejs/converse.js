@@ -4,30 +4,30 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { converse } from '@converse/headless';
-import { JID, login } from './harness.js';
+import { JID, startDaemon } from './harness.js';
 
 const { stx } = converse.env;
 
-describe('Headless under Node, on the mock connection', () => {
-    let session;
+describe("The daemon's headless session, on the mock connection", () => {
+    let daemon;
 
     beforeAll(async () => {
-        session = await login({ roster: [{ jid: 'juliet@montague.lit', name: 'Juliet Capulet' }] });
+        daemon = await startDaemon({ roster: [{ jid: 'juliet@montague.lit', name: 'Juliet Capulet' }] });
     });
 
-    afterAll(() => session?.logout());
+    afterAll(() => daemon?.stop());
 
-    it('logs in as the configured JID', async () => {
-        expect(session.api.connection.connected()).toBe(true);
-        expect(session.api.connection.get().jid).toBe(JID);
-        await expect(session.api.contacts.get('juliet@montague.lit')).resolves.toBeTruthy();
+    it('logs in as the configured account', async () => {
+        expect(daemon.api.connection.connected()).toBe(true);
+        expect(daemon.api.connection.get().jid).toBe(JID);
+        await expect(daemon.api.contacts.get('juliet@montague.lit')).resolves.toBeTruthy();
     });
 
     it('handles an injected message stanza', async () => {
         const { promise, resolve } = Promise.withResolvers();
-        session.api.listen.once('message', resolve);
+        daemon.api.listen.once('message', resolve);
 
-        session.receive(stx`
+        daemon.receive(stx`
             <message xmlns="jabber:client" from="juliet@montague.lit/balcony" to="${JID}" type="chat" id="m1">
                 <body>Wherefore art thou?</body>
             </message>`);

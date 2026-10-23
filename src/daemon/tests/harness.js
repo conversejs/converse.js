@@ -1,47 +1,32 @@
 /**
- * Boots `@converse/headless` under Node on its MockConnection, the same mock
- * the browser suites use, so that daemon specs can drive a logged-in session
- * without a server: stanzas sent out are captured on the connection, and
- * incoming traffic is simulated with `receive`.
+ * Runs the daemon on headless's MockConnection, the same mock the browser
+ * suites use, so that specs can drive it through its socket without a server:
+ * stanzas the daemon sends are captured on the connection, and incoming
+ * traffic is simulated with `receive`.
  *
- * Headless is a singleton per module instance, so a spec file can boot it once.
- * Vitest gives each spec file its own module graph.
+ * Headless is a singleton per module instance, and an in-process daemon is one
+ * per spec file at a time. Vitest gives each spec file its own module graph.
  */
-import fs from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-import { converse } from '@converse/headless';
+import { api, converse } from '@converse/headless';
+import { connect } from '../client.js';
+import { loadConfig } from '../config.js';
+import { start } from '../daemon.js';
+import { createAccount, JID } from './account.js';
 
 const { Strophe, stx, u } = converse.env;
 
-export const JID = 'romeo@montague.lit/orchard';
+export { JID };
 
 /**
- * Initializes headless, logs in as {@link JID} and answers the roster
- * request with the given contacts. Resolves once the roster has been fetched,
- * which is when chats can be opened.
+ * Starts a daemon in this process for a fresh account, and answers its roster
+ * request with the given contacts.
  * @param {Object} [options]
  * @param {{ jid: string, name?: string, subscription?: string }[]} [options.roster]
- * @param {Object} [options.settings] - Overrides for `converse.initialize`.
  */
-export async function login({ roster = [], settings = {} } = {}) {
-    const storage_path = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-daemon-test-'));
-
-    const _converse = await converse.initialize({
-        // This BOSH URL is what makes headless pick its MockConnection (see
-        // `isTestEnv`). BOSH itself is disabled under Node, so the transport
-        // the mock stands in for is the websocket.
-        bosh_service_url: 'montague.lit/http-bind',
-        websocket_url: 'ws://montague.lit/xmpp-websocket',
-        discover_connection_methods: false,
-        enable_smacks: false,
-        loglevel: 'error',
-        storage_path,
-        ...settings,
-    });
-    const { api } = _converse;
-    await api.user.login(JID, 'secret');
-
+export async function startDaemon({ roster = [] } = {}) {
+    const { env, remove } = await createAccount();
+    const config = loadConfig(env);
+    const daemon = await start(config);
     const connection = api.connection.get();
 
     /**
@@ -70,11 +55,21 @@ export async function login({ roster = [], settings = {} } = {}) {
 
     return {
         api,
+        config,
         connection,
+        env,
         receive,
-        async logout() {
-            await api.user.logout();
-            await fs.rm(storage_path, { recursive: true, force: true });
+        /**
+         * Connects a client to this daemon, without auto-spawning.
+         * @param {Object} [options]
+         * @param {string} [options.consumer]
+         */
+        connect: (options) => connect({ ...options, spawn: false, env }),
+        /** The running daemon. A spec that restarts it puts the new one here. */
+        daemon,
+        async stop() {
+            await this.daemon.stop();
+            await remove();
         },
     };
 }

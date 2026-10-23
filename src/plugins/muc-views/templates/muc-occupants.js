@@ -24,7 +24,7 @@ function isOccupantFiltered (el, occ) {
         const presence = occ.get('presence');
         if (q === 'online') {
             return ["offline", "unavailable"].includes(presence);
-        } else if (q === 'ofline') {
+        } else if (q === 'offline') {
             return presence === 'online';
         }
         return !occ.get('show')?.includes(q);

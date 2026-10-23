@@ -70,7 +70,7 @@ export default defineConfig({
                 test: {
                     name: 'main',
                     include: ['src/**/tests/**/*.js', 'src/**/tests/*.js'],
-                    exclude: ['src/headless/**', 'src/daemon/**', 'src/cli/**', '**/*.node.js', ...commonExclude],
+                    exclude: ['src/headless/**', 'src/daemon/**', 'src/cli/**', '**/*.node.js', '**/*.prosody.js', ...commonExclude],
                     browser: makeBrowser(),
                 },
             },
@@ -84,7 +84,7 @@ export default defineConfig({
                     // The shims are Node-only; they're covered by the
                     // `headless-node` project below, as are the `.node.js`
                     // specs, which import those shims directly.
-                    exclude: ['shims/**', '**/*.node.js', ...commonExclude],
+                    exclude: ['shims/**', '**/*.node.js', '**/*.prosody.js', ...commonExclude],
                     browser: makeBrowser(),
                 },
             },
@@ -121,7 +121,30 @@ export default defineConfig({
                     name: 'daemon',
                     environment: 'node',
                     include: ['daemon/tests/**/*.js', 'cli/tests/**/*.js'],
-                    exclude: ['**/tests/harness.js', '**/tests/account.js', '**/tests/run.js', ...commonExclude],
+                    exclude: [
+                        '**/tests/harness.js',
+                        '**/tests/account.js',
+                        '**/tests/run.js',
+                        '**/tests/real-server.js',
+                        '**/*.prosody.js',
+                        ...commonExclude,
+                    ],
+                },
+            },
+            {
+                // Specs suffixed `.prosody.js` run against a real Prosody in
+                // Docker (tests/prosody), which the global setup starts if it
+                // isn't running. Kept out of `test:all`, which mustn't need
+                // Docker: run them with `npm run test:prosody`.
+                root: abs('src'),
+                test: {
+                    name: 'prosody',
+                    environment: 'node',
+                    include: ['**/tests/*.prosody.js'],
+                    exclude: [...commonExclude],
+                    globalSetup: [abs('tests/prosody/global-setup.js')],
+                    testTimeout: 60000,
+                    hookTimeout: 60000,
                 },
             },
         ],

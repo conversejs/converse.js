@@ -1,0 +1,39 @@
+{
+  "name": "@converse/cli",
+  "version": "0.0.1",
+  "description": "A command line client for the Converse daemon, designed to be driven by an LLM agent through a shell",
+  "author": "JC Brand <jc@opkode.com>",
+  "homepage": "https://conversejs.org",
+  "license": "MPL-2.0",
+  "type": "module",
+  "bin": {
+    "converse-cli": "./bin/converse-cli.js"
+  },
+  "files": [
+    "bin/"
+  ],
+  "scripts": {
+    "test": "cd ../.. && vitest run --project daemon"
+  },
+  "keywords": [
+    "converse.js",
+    "XMPP",
+    "Jabber",
+    "chat",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conversejs/converse.js.git",
+    "directory": "src/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/conversejs/converse.js/issues"
+  },
+  "dependencies": {
+    "@converse/daemon": "^0.0.1"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

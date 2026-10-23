@@ -5,7 +5,9 @@
   "type": "module",
   "workspaces": [
     "src/headless",
-    "src/log"
+    "src/log",
+    "src/daemon",
+    "src/cli"
   ],
   "exports": {
     ".": {
@@ -67,6 +69,7 @@
     "test:browser": "vitest --project main --browser.headless=false",
     "test:headless": "vitest run --project headless",
     "test:node": "vitest run --project headless-node",
+    "test:daemon": "vitest run --project daemon",
     "test:headless:browser": "vitest --project headless --browser.headless=false",
     "types": "tsc -p ./src/log/tsconfig.json && tsc -p ./src/headless/tsconfig.json && tsc",
     "types:check": "tsc --noEmit",

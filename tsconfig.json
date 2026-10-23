@@ -1,6 +1,6 @@
 {
   "include": ["src/**/*.js", "src/**/*.ts"],
-  "exclude": ["**/dist/**/*", "src/**/tests/**/*", "src/headless/", "src/log/", "src/types/**/*", "src/website.js"],
+  "exclude": ["**/dist/**/*", "src/**/tests/**/*", "src/headless/", "src/log/", "src/daemon/", "src/cli/", "src/types/**/*", "src/website.js"],
   "compilerOptions": {
     "target": "es2020",
     "module": "esnext",

@@ -1,28 +1,10 @@
-import { execFile } from 'node:child_process';
 import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { promisify } from 'node:util';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { loadConfig } from '@converse/daemon/client';
 import { createAccount, JID } from '../../daemon/tests/account.js';
 import { EXIT } from '../exit-codes.js';
 import pkg from '../package.json' with { type: 'json' };
-
-const BIN = fileURLToPath(new URL('../bin/converse-cli.js', import.meta.url));
-
-/**
- * Runs the CLI as its own process, as an agent's shell would.
- * @param {NodeJS.ProcessEnv} env
- * @param {string[]} args
- */
-async function run(env, ...args) {
-    try {
-        const { stdout, stderr } = await promisify(execFile)(process.execPath, [BIN, ...args], { env });
-        return { code: 0, stdout, stderr };
-    } catch (e) {
-        return { code: e.code, stdout: e.stdout, stderr: e.stderr };
-    }
-}
+import { run } from './run.js';
 
 describe('converse-cli', () => {
     let account;

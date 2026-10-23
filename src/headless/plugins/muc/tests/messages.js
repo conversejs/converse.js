@@ -1,7 +1,7 @@
 import mock from '../../../tests/mock.js';
 import converse from '../../../dist/converse-headless.js';
 
-const { Strophe, u, stx } = converse.env;
+const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('A MUC message', function () {
     it(
@@ -199,6 +199,163 @@ describe('A MUC message', function () {
             expect(msg.get(`stanza_id ${muc_jid}`)).toBe('original-stanza-id');
             // The reaction should be applied
             expect(msg.get('reactions')).toBeTruthy();
+        }),
+    );
+
+    it(
+        'only gets the real JID of its sender from the presence of the occupant who currently has its nick',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitUntilBookmarksReturned(_converse);
+            const muc_jid = 'lounge@montague.lit';
+            const features = [...mock.default_muc_features.filter((f) => f !== 'muc_anonymous'), 'muc_nonanonymous'];
+            const members = [{ jid: 'juliet@capulet.lit', nick: 'juliet', affiliation: 'member' }];
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features, members);
+            await u.waitUntil(() => model.occupants.length === 2);
+            const juliet = model.occupants.findWhere({ nick: 'juliet' });
+            expect(juliet.get('jid')).toBe('juliet@capulet.lit');
+            expect(juliet.get('presence')).toBe('offline');
+
+            const conn = _converse.api.connection.get();
+            const sendLiveMessage = (body) => {
+                conn._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<message from="${muc_jid}/juliet" type="groupchat" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
+                            <body>${body}</body>
+                        </message>`
+                    )
+                );
+                return u.waitUntil(() => model.messages.findWhere({ body }));
+            };
+
+            // The nick of an offline member might be used by someone else
+            let message = await sendLiveMessage('Who am I?');
+            expect(message.get('from_real_jid')).toBeUndefined();
+
+            conn._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<presence from="${muc_jid}/juliet" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="member" role="participant" jid="juliet@capulet.lit/balcony"/>
+                        </x>
+                    </presence>`
+                )
+            );
+            await u.waitUntil(() => juliet.get('presence') === 'online');
+            message = await sendLiveMessage('It is I');
+            expect(message.get('from_real_jid')).toBe('juliet@capulet.lit');
+
+            // The nick of an archived message might since have been taken by someone else
+            const iq = await u.waitUntil(() =>
+                conn.IQ_stanzas.filter((iq) => sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length).pop()
+            );
+            const query_id = iq.querySelector('query').getAttribute('queryid');
+            const archived = stx`
+            <message to="${_converse.bare_jid}" from="${muc_jid}" xmlns="jabber:client">
+                <result xmlns="urn:xmpp:mam:2" queryid="${query_id}" id="${u.getUniqueId()}">
+                    <forwarded xmlns="urn:xmpp:forward:0">
+                        <delay xmlns="urn:xmpp:delay" stamp="2020-01-01T00:00:00Z"/>
+                        <message from="${muc_jid}/juliet" type="groupchat" id="${u.getUniqueId()}" xmlns="jabber:client">
+                            <body>Years ago</body>
+                        </message>
+                    </forwarded>
+                </result>
+            </message>`;
+            conn._dataRecv(mock.createRequest(_converse, archived));
+            conn._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<iq type="result" id="${iq.getAttribute('id')}" xmlns="jabber:client"><fin xmlns="urn:xmpp:mam:2"/></iq>`
+                )
+            );
+            message = await u.waitUntil(() => model.messages.findWhere({ body: 'Years ago' }));
+            expect(message.get('from_real_jid')).toBeUndefined();
+
+            // Likewise for a message from the room's history, replayed on joining
+            conn._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<message from="${muc_jid}/juliet" type="groupchat" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
+                        <body>Before you joined</body>
+                        <delay xmlns="urn:xmpp:delay" from="${muc_jid}" stamp="2020-01-02T00:00:00Z"/>
+                    </message>`
+                )
+            );
+            message = await u.waitUntil(() => model.messages.findWhere({ body: 'Before you joined' }));
+            expect(message.get('from_real_jid')).toBeUndefined();
+        }),
+    );
+
+    it(
+        "doesn't get the real JID of its sender from their nick in a semi-anonymous room",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitUntilBookmarksReturned(_converse);
+            const muc_jid = 'lounge@montague.lit';
+            const members = [{ jid: 'juliet@capulet.lit', nick: 'juliet', affiliation: 'member' }];
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members, true, {}, 'member', 'participant');
+            await u.waitUntil(() => model.occupants.length === 2);
+            const juliet = model.occupants.findWhere({ nick: 'juliet' });
+
+            const conn = _converse.api.connection.get();
+            conn._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<presence from="${muc_jid}/juliet" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="member" role="participant"/>
+                        </x>
+                    </presence>`
+                )
+            );
+            await u.waitUntil(() => juliet.get('presence') === 'online');
+            // The JID from the member list is kept, but the presence didn't confirm it
+            expect(juliet.get('jid')).toBe('juliet@capulet.lit');
+
+            conn._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<message from="${muc_jid}/juliet" type="groupchat" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
+                        <body>Hello</body>
+                    </message>`
+                )
+            );
+            const message = await u.waitUntil(() => model.messages.at(0));
+            expect(message.getOccupant()).toBe(juliet);
+            expect(message.get('from_real_jid')).toBeUndefined();
+        }),
+    );
+
+    it(
+        'gets the real JID of its sender from their nick in a semi-anonymous room in which the user is a moderator',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitUntilBookmarksReturned(_converse);
+            const muc_jid = 'lounge@montague.lit';
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], [], true, {}, 'admin', 'moderator');
+
+            const conn = _converse.api.connection.get();
+            conn._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<presence from="${muc_jid}/juliet" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="none" role="participant" jid="juliet@capulet.lit/balcony"/>
+                        </x>
+                    </presence>`
+                )
+            );
+            await u.waitUntil(() => model.occupants.findWhere({ nick: 'juliet' })?.get('presence') === 'online');
+
+            conn._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<message from="${muc_jid}/juliet" type="groupchat" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
+                        <body>Hello</body>
+                    </message>`
+                )
+            );
+            const message = await u.waitUntil(() => model.messages.at(0));
+            expect(message.get('from_real_jid')).toBe('juliet@capulet.lit');
         }),
     );
 });

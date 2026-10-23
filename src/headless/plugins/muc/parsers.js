@@ -190,6 +190,35 @@ function getOccupantID(stanza, chatbox) {
 }
 
 /**
+ * Returns the sender's real JID, if the server stated it: in the MUC archive
+ * or history, via the occupant with the message's occupant-id or, for a live
+ * message, via the presence of the occupant who currently has its nick, if
+ * presences carry real JIDs (in a non-anonymous room, or for moderators).
+ * @param {Element} stanza
+ * @param {MUCMessageAttributes} attrs
+ * @param {MUC} chatbox
+ * @returns {string|undefined}
+ */
+function getRealJID(stanza, attrs, chatbox) {
+    // The nick of an old message, from the archive or from the room's
+    // history, might since have been taken by someone else.
+    const is_old = attrs.is_archived || attrs.is_delayed;
+    if (is_old) {
+        const jid = getJIDFromMUCUserData(stanza);
+        if (jid) return jid;
+    }
+    if (attrs.occupant_id) {
+        return chatbox.occupants.get(attrs.occupant_id)?.get('jid');
+    }
+    if (is_old) return;
+
+    const sees_real_jids = chatbox.features.get('nonanonymous') || chatbox.getOwnOccupant()?.isModerator();
+    if (sees_real_jids) {
+        return chatbox.occupants.findWhere({ nick: attrs.nick, presence: 'online' })?.get('jid');
+    }
+}
+
+/**
  * Determines whether the sender of this MUC message is the current user or
  * someone else.
  * @param {MUCMessageAttributes} attrs
@@ -296,8 +325,7 @@ export async function parseMUCMessage(original_stanza, chatbox) {
         )
     );
 
-    attrs.from_real_jid =
-        (attrs.is_archived && getJIDFromMUCUserData(stanza)) || chatbox.occupants.findOccupant(attrs)?.get('jid');
+    attrs.from_real_jid = getRealJID(stanza, attrs, chatbox);
 
     attrs = Object.assign(
         {

@@ -118,8 +118,17 @@ class MUCMessage extends BaseMessage {
             }
         }
 
-        if (this.get('from_real_jid') !== this.occupant.get('jid')) {
-            this.save('from_real_jid', this.occupant.get('jid'));
+        // Only a match by occupant-id reliably identifies the sender. A nick
+        // might since have been taken by someone else.
+        const occupant_id = this.get('occupant_id');
+        const occupant_jid = this.occupant.get('jid');
+        if (
+            occupant_id &&
+            occupant_jid &&
+            this.occupant.get('occupant_id') === occupant_id &&
+            this.get('from_real_jid') !== occupant_jid
+        ) {
+            this.save('from_real_jid', occupant_jid);
         }
 
         this.trigger('occupant:add');

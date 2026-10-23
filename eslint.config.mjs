@@ -282,4 +282,10 @@ export default defineConfig([{
         "yield-star-spacing": "error",
         yoda: "off",
     },
+}, {
+    // Node programs, not browser code.
+    files: ["src/daemon/**/*.js", "src/cli/**/*.js"],
+    languageOptions: {
+        globals: globals.node,
+    },
 }]);

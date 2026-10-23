@@ -21,6 +21,9 @@
   the archive, or received before the message they correct, are no longer shown twice.
 - fix(muc): Participants were listed twice when they became known before their XEP-0421
   occupant id, for example a member from the member list who joins later.
+- fix(muc): A message's sender was given the real JID of whoever had the same nick,
+  even when the nick had since been taken by someone else. This also applied to the room
+  history replayed on joining.
 - fix(muc-views): The "Offline" state filter in the participants list didn't match anyone.
 - fix(notifications): Notify of a 1:1 message in a hidden chat while the tab is visible. The
   check looked up the chat by the message's attributes instead of its JID, so it never found it.

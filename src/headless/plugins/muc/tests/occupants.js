@@ -409,6 +409,8 @@ describe('A MUC occupant', function () {
             const message = await u.waitUntil(() => model.messages.at(0));
             expect(message.getOccupant()).toBe(juliet);
             expect(model.occupants.length).toBe(2);
+            // Matched only by nick, so it could be someone else's message
+            expect(message.get('from_real_jid')).toBeUndefined();
         }),
     );
 

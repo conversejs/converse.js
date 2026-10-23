@@ -9,7 +9,10 @@
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
-    "./protocol": "./protocol.js"
+    "./protocol": "./protocol.js",
+    "./types": {
+      "types": "./types.ts"
+    }
   },
   "bin": {
     "converse-daemon": "./bin/converse-daemon.js"

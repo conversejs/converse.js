@@ -4,6 +4,7 @@
  * @module @converse/daemon/config
  */
 import { execFile } from 'node:child_process';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -11,6 +12,11 @@ import { promisify } from 'node:util';
 
 const DEFAULT_RESOURCE = 'claude';
 const DEFAULT_CONSUMER = 'claude';
+
+/**
+ * The longest unix socket path every platform accepts (macOS allows 104 bytes).
+ */
+const MAX_SOCKET_PATH = 103;
 
 /**
  * @param {NodeJS.ProcessEnv} env
@@ -73,11 +79,15 @@ function getPaths(jid, env) {
         ? path.join(env.XDG_RUNTIME_DIR, 'converse')
         : path.join(os.tmpdir(), `converse-${process.getuid()}`);
     const state_home = env.XDG_STATE_HOME || path.join(os.homedir(), '.local', 'state');
+    // A unix socket's path can't be longer than about 104 bytes (108 on Linux,
+    // less the terminator), so a long JID gets a hash of it instead.
+    const fits = Buffer.byteLength(path.join(runtime_dir, `${jid}.sock`)) <= MAX_SOCKET_PATH;
+    const name = fits ? jid : crypto.createHash('sha256').update(jid).digest('hex').slice(0, 16);
     return {
         config: getConfigPath(env),
         runtime_dir,
-        socket: path.join(runtime_dir, `${jid}.sock`),
-        pidfile: path.join(runtime_dir, `${jid}.pid`),
+        socket: path.join(runtime_dir, `${name}.sock`),
+        pidfile: path.join(runtime_dir, `${name}.pid`),
         log: path.join(state_home, 'converse', `${jid}.log`),
     };
 }

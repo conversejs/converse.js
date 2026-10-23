@@ -9,7 +9,9 @@
  */
 
 /**
- * Bumped whenever a change would break an existing client.
+ * Bumped whenever a change would break an existing client. That includes the
+ * shape of the DTOs in `types.ts`: a field may be added within a version, but
+ * never renamed, removed or given a new meaning.
  */
 export const PROTOCOL_VERSION = 1;
 
@@ -25,6 +27,9 @@ export const ERRORS = {
     INTERNAL_ERROR: -32603,
     PROTOCOL_MISMATCH: -32000,
     HELLO_REQUIRED: -32001,
+    NOT_CONNECTED: -32002, // The daemon has no XMPP session right now
+    NOT_FOUND: -32003, // No such contact, conversation or message
+    AMBIGUOUS: -32004, // More than one match; `data.candidates` lists them
 };
 
 /**

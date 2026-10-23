@@ -120,7 +120,7 @@ export default defineConfig({
                     name: 'daemon',
                     environment: 'node',
                     include: ['daemon/tests/**/*.js', 'cli/tests/**/*.js'],
-                    exclude: ['**/tests/harness.js', ...commonExclude],
+                    exclude: ['**/tests/harness.js', '**/tests/account.js', ...commonExclude],
                 },
             },
         ],

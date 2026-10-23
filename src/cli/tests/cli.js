@@ -1,18 +1,23 @@
 import { execFile } from 'node:child_process';
+import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { loadConfig } from '@converse/daemon/client';
+import { createAccount, JID } from '../../daemon/tests/account.js';
+import { EXIT } from '../exit-codes.js';
 import pkg from '../package.json' with { type: 'json' };
 
 const BIN = fileURLToPath(new URL('../bin/converse-cli.js', import.meta.url));
 
 /**
  * Runs the CLI as its own process, as an agent's shell would.
+ * @param {NodeJS.ProcessEnv} env
  * @param {string[]} args
  */
-async function run(...args) {
+async function run(env, ...args) {
     try {
-        const { stdout, stderr } = await promisify(execFile)(process.execPath, [BIN, ...args]);
+        const { stdout, stderr } = await promisify(execFile)(process.execPath, [BIN, ...args], { env });
         return { code: 0, stdout, stderr };
     } catch (e) {
         return { code: e.code, stdout: e.stdout, stderr: e.stderr };
@@ -20,19 +25,108 @@ async function run(...args) {
 }
 
 describe('converse-cli', () => {
+    let account;
+
+    beforeAll(async () => {
+        account = await createAccount();
+    });
+
+    afterAll(async () => {
+        // Don't leave a daemon behind if a spec failed halfway.
+        const { pidfile } = loadConfig(account.env).paths;
+        if (fs.existsSync(pidfile)) process.kill(parseInt(fs.readFileSync(pidfile, 'utf8'), 10), 'SIGTERM');
+        await account.remove();
+    });
+
     it('prints its version', async () => {
-        expect(await run('--version')).toEqual({ code: 0, stdout: `${pkg.version}\n`, stderr: '' });
+        expect(await run(account.env, '--version')).toEqual({ code: EXIT.OK, stdout: `${pkg.version}\n`, stderr: '' });
     });
 
     it('prints usage when given no command', async () => {
-        const { code, stdout } = await run();
-        expect(code).toBe(0);
+        const { code, stdout } = await run(account.env);
+        expect(code).toBe(EXIT.OK);
         expect(stdout).toMatch(/^Usage: converse-cli <command>/);
+        expect(stdout).toContain(`${account.env.XDG_CONFIG_HOME}/converse/daemon.json`);
     });
 
     it('fails on an unknown command, saying what to do next', async () => {
-        const { code, stderr } = await run('frobnicate');
-        expect(code).not.toBe(0);
-        expect(stderr).toContain('converse-cli --help');
+        const { code, stderr } = await run(account.env, 'frobnicate');
+        expect(code).toBe(EXIT.ERROR);
+        expect(stderr).toBe(
+            'converse-cli: unknown command "frobnicate". Run "converse-cli --help" to list commands.\n',
+        );
     });
+
+    it('treats only its own commands as commands, not names inherited from JavaScript objects', async () => {
+        const { code, stderr } = await run(account.env, 'constructor');
+        expect(code).toBe(EXIT.ERROR);
+        expect(stderr).toBe(
+            'converse-cli: unknown command "constructor". Run "converse-cli --help" to list commands.\n',
+        );
+    });
+
+    it('never accepts credentials as arguments', async () => {
+        const { code, stderr } = await run(account.env, 'daemon', 'start', '--password', 'secret');
+        expect(code).toBe(EXIT.ERROR);
+        expect(stderr).toMatch(/^converse-cli: Unknown option '--password'/);
+    });
+
+    it('says how to configure an account when there is none', async () => {
+        const env = { ...account.env, XDG_CONFIG_HOME: `${account.env.XDG_CONFIG_HOME}/nowhere` };
+        const { code, stderr } = await run(env, 'daemon', 'start');
+        expect(code).toBe(EXIT.ERROR);
+        expect(stderr).toContain(`No account configured. Create ${env.XDG_CONFIG_HOME}/converse/daemon.json`);
+    });
+
+    it('starts the daemon on demand, reports its status and stops it', async () => {
+        const { env } = account;
+
+        let result = await run(env, 'daemon', 'status');
+        expect(result.code).toBe(EXIT.DAEMON_UNAVAILABLE);
+        expect(result.stderr).toBe(
+            "converse-cli: The daemon for romeo@montague.lit isn't running. " +
+                'Start it with "converse-cli daemon start".\n',
+        );
+
+        result = await run(env, 'daemon', 'start');
+        expect(result.code).toBe(EXIT.OK);
+        expect(result.stdout).toMatch(new RegExp(`^connected as ${JID}, pid \\d+, up \\d+s\\n$`));
+
+        result = await run(env, 'daemon', 'status', '--json');
+        expect(result.code).toBe(EXIT.OK);
+        const status = JSON.parse(result.stdout);
+        expect(status).toMatchObject({ connected: true, jid: JID });
+        // The daemon outlives the CLI process that started it.
+        expect(status.pid).not.toBe(process.pid);
+        expect(() => process.kill(status.pid, 0)).not.toThrow();
+
+        result = await run(env, 'daemon', 'stop');
+        expect(result).toEqual({ code: EXIT.OK, stdout: 'Stopped.\n', stderr: '' });
+        expect(fs.existsSync(loadConfig(env).paths.socket)).toBe(false);
+
+        result = await run(env, 'daemon', 'stop');
+        expect(result).toEqual({ code: EXIT.OK, stdout: "The daemon wasn't running.\n", stderr: '' });
+    }, 20000);
+
+    it('lets SIGTERM stop the daemon cleanly', async () => {
+        const { env } = account;
+        expect((await run(env, 'daemon', 'start')).code).toBe(EXIT.OK);
+        const { pidfile, socket } = loadConfig(env).paths;
+        const pid = parseInt(fs.readFileSync(pidfile, 'utf8'), 10);
+
+        process.kill(pid, 'SIGTERM');
+        await vi.waitUntil(() => !fs.existsSync(pidfile), { timeout: 10000 });
+        expect(fs.existsSync(socket)).toBe(false);
+        await vi.waitUntil(
+            () => {
+                try {
+                    process.kill(pid, 0);
+                    return false;
+                } catch {
+                    return true;
+                }
+            },
+            { timeout: 10000 },
+        );
+    }, 20000);
 });

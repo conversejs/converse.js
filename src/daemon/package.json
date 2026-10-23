@@ -7,10 +7,17 @@
   "license": "MPL-2.0",
   "type": "module",
   "exports": {
-    ".": "./index.js"
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./protocol": "./protocol.js"
+  },
+  "bin": {
+    "converse-daemon": "./bin/converse-daemon.js"
   },
   "files": [
-    "*.js"
+    "*.js",
+    "*.ts",
+    "bin/"
   ],
   "scripts": {
     "test": "cd ../.. && vitest run --project daemon"

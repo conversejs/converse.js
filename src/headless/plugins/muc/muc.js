@@ -1936,7 +1936,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 modified = true;
                 this.set('nick', attrs.nick);
             }
-            if (this.features.get(Strophe.NS.OCCUPANTID) && this.get('occupant-id') !== attrs.occupant_id) {
+            if (
+                this.features.get(Strophe.NS.OCCUPANTID) &&
+                attrs.occupant_id &&
+                this.get('occupant_id') !== attrs.occupant_id
+            ) {
                 modified = true;
                 this.set('occupant_id', attrs.occupant_id);
             }

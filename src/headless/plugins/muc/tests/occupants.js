@@ -334,6 +334,45 @@ describe('A MUC occupant', function () {
     );
 
     it(
+        'keeps our own occupant id when a self-presence repeats it or leaves it out',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitUntilBookmarksReturned(_converse);
+            const muc_jid = 'lounge@montague.lit';
+            const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
+            const occupant_id = model.get('occupant_id');
+            expect(occupant_id).toBeTruthy();
+            const own_occupant = model.getOwnOccupant();
+            // The self-presence handler saves without arguments, unlike
+            // the bookmark auto-open that may still be running.
+            const save = vi.spyOn(model, 'save');
+            const presenceSaves = () => save.mock.calls.filter((args) => !args.length).length;
+
+            const sendSelfPresence = (show, id) => {
+                const presence = stx`
+                <presence from="${muc_jid}/romeo" id="${u.getUniqueId()}" to="${_converse.jid}" xmlns="jabber:client">
+                    <show>${show}</show>
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="owner" role="moderator" jid="${_converse.bare_jid}"/>
+                        <status code="110"/>
+                    </x>
+                    ${id ? stx`<occupant-id xmlns="urn:xmpp:occupant-id:0" id="${id}" />` : ''}
+                </presence>`;
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, presence));
+            };
+
+            sendSelfPresence('away', occupant_id);
+            await u.waitUntil(() => own_occupant.get('show') === 'away');
+            expect(presenceSaves()).toBe(0);
+
+            sendSelfPresence('dnd');
+            await u.waitUntil(() => own_occupant.get('show') === 'dnd');
+            expect(model.get('occupant_id')).toBe(occupant_id);
+            expect(presenceSaves()).toBe(0);
+        }),
+    );
+
+    it(
         "isn't found by an occupant id it doesn't have",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);

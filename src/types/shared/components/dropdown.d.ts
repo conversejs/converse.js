@@ -9,6 +9,7 @@ export default class Dropdown extends DropdownBase {
     };
     icon_classes: string;
     /** @type {any[]} */ items: any[];
+    button_id: string;
     render(): import("lit-html").TemplateResult<1>;
     _onKeyDown: (ev: KeyboardEvent) => void;
     _onDropdownHide: () => void;

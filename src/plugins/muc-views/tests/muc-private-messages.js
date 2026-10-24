@@ -282,4 +282,68 @@ describe('MUC Private Messages', () => {
             );
         });
     });
+
+    describe('When replying to a MUC private message', () => {
+        it(
+            'shows the reply preview above the occupant chat composer',
+            mock.initConverse(converse, ['chatBoxesFetched'], { view_mode: 'fullscreen' }, async (_converse) => {
+                const nick = 'romeo';
+                const muc_jid = 'coven@chat.shakespeare.lit';
+                await mock.openAndEnterMUC(_converse, muc_jid, nick);
+                const view = _converse.chatboxviews.get(muc_jid);
+
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`
+                        <presence
+                            from="${muc_jid}/firstwitch"
+                            id="${u.getUniqueId()}"
+                            to="${_converse.jid}"
+                            xmlns="jabber:client">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="owner" role="moderator"/>
+                        </x>
+                        </presence>`,
+                    ),
+                );
+                if (view.model.get('hidden_occupants')) {
+                    // Happens in headless chrome due to smaller viewport size
+                    view.model.save('hidden_occupants', false);
+                }
+                await u.waitUntil(() => view.querySelectorAll('.occupant-list converse-avatar').length === 2);
+
+                // Open the occupant view in the sidebar
+                view.querySelector('.occupant-list converse-avatar[name="firstwitch"]').click();
+                const occupant_view = await u.waitUntil(() => view.querySelector('converse-muc-occupant'));
+                await u.waitUntil(() => occupant_view.querySelector('.chat-textarea'));
+
+                // Receive a private message from firstwitch to reply to
+                const msg_id = u.getUniqueId();
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`
+                        <message from="${muc_jid}/firstwitch"
+                                id="${msg_id}"
+                                to="${_converse.jid}"
+                                type="chat"
+                                xmlns="jabber:client">
+                            <body>I'll give thee a wind.</body>
+                            <origin-id xmlns="urn:xmpp:sid:0" id="${msg_id}"/>
+                            <x xmlns="http://jabber.org/protocol/muc#user" />
+                        </message>
+                    `,
+                    ),
+                );
+                await u.waitUntil(() => occupant_view.querySelector('.chat-msg__action-reply'));
+
+                occupant_view.querySelector('.chat-msg__action-reply').click();
+
+                const preview = await u.waitUntil(() => occupant_view.querySelector('.composer-panel--context'));
+                expect(preview.querySelector('.reply-preview__text').textContent).toContain("I'll give thee a wind.");
+                expect(occupant_view.querySelectorAll('.composer-panel--context').length).toBe(1);
+            }),
+        );
+    });
 });

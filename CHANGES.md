@@ -2,6 +2,8 @@
 
 ## 15.0.0 (Unreleased)
 
+- feat(chatview): The panels above the message form, such as the reply preview and the off-hours warning, now share one look, with a close button in the top-right corner that Escape also triggers. Plugins can add a panel through the new `getComposerPanels` hook.
+- fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
 - #194: Full support for XEP-0115: Entity capabilities.
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
 - #1509: You can now chat with a bare-host JID.

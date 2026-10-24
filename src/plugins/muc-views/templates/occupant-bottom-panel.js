@@ -1,5 +1,6 @@
 import '../message-form.js';
 import '../nickname-form.js';
+import 'shared/chat/composer-panels.js';
 import 'shared/chat/toolbar.js';
 import { __ } from 'i18n';
 import { converse } from '@converse/headless';
@@ -21,7 +22,8 @@ export default (el) => {
             ? html`<div class="new-msgs-indicator" @click=${(/** @type {Event} */ ev) => el.viewUnreadMessages(ev)}>▼ ${unread_msgs} ▼</div>`
             : ''}
         ${el.canPostMessages()
-            ? html`<converse-muc-message-form .model=${el.model}></converse-muc-message-form>`
+            ? html`<converse-composer-panels .model=${el.model}></converse-composer-panels>
+                  <converse-muc-message-form .model=${el.model}></converse-muc-message-form>`
             : html`<div class="bottom-panel bottom-panel--muted">
                   <p class="bottom-panel--muted__msg">${i18n_not_allowed}</p>
                   ${el.model.get('jid')

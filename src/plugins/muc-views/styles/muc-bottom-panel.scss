@@ -36,6 +36,11 @@
         }
 
         converse-muc-bottom-panel {
+            // The composer panels answer in the room's colour, as the toolbar does.
+            converse-composer-panels {
+                --composer-panel-accent: var(--muc-color);
+            }
+
             .chat-message-form {
                 border-top: 0.25em solid var(--muc-color) !important;
                 border-inline-end: 0 !important;

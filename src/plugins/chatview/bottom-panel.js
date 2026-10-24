@@ -36,9 +36,12 @@ export default class ChatBottomPanel extends CustomElement {
         this.listenTo(this.model, 'change:num_unread', () => this.requestUpdate());
         this.listenTo(this.model, 'emoji-picker-autocomplete', this.autocompleteInPicker);
 
-        this.addEventListener('emojipickerblur', () =>
-            /** @type {HTMLElement} */ (this.querySelector('.chat-textarea')).focus()
-        );
+        this.addEventListener('emojipickerblur', () => this.#focusMessageField());
+        this.addEventListener('composerpanelclose', () => this.#focusMessageField());
+    }
+
+    #focusMessageField() {
+        /** @type {HTMLElement} */ (this.querySelector('.chat-textarea'))?.focus();
     }
 
     render() {

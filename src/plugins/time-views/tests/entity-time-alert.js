@@ -116,7 +116,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     await respondWithTZO(_converse, full_jid, '+06:00', alert_el);
                     await startComposing(view);
 
-                    await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
+                    await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
                     const alert_msg = alert_el.querySelector('.entity-time-alert__message');
 
                     // How 23:00 is written depends on the locale, which is
@@ -145,10 +145,10 @@ describe('XEP-0202 Entity Time Views', function () {
                     // opening a chat to read it is not the moment to say so.
                     await respondWithTZO(_converse, full_jid, '+06:00', alert_el);
                     await u.waitUntil(() => _converse.api.time.contact.get(alert_el.model.contact));
-                    expect(alert_el.querySelector('.entity-time-alert')).toBeNull();
+                    expect(alert_el.querySelector('.composer-panel--warning')).toBeNull();
 
                     await startComposing(view);
-                    await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
+                    await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
                 },
             ),
         );
@@ -167,7 +167,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     const { full_jid, view, alert_el } = await openChatWithOnlineContact(_converse);
                     await respondWithTZO(_converse, full_jid, '+06:00', alert_el);
                     await startComposing(view);
-                    await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
+                    await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
 
                     // Sending is the user answering the warning, and it puts the
                     // chat back into the 'active' state. Silently, to keep a
@@ -175,7 +175,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     // why the sent message has to be what tells us.
                     await mock.sendMessage(_converse, view, 'Are you still up?');
 
-                    await u.waitUntil(() => !alert_el.querySelector('.entity-time-alert'));
+                    await u.waitUntil(() => !alert_el.querySelector('.composer-panel--warning'));
                 },
             ),
         );
@@ -195,7 +195,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     await respondWithTZO(_converse, full_jid, '+06:00', alert_el);
                     await startComposing(view);
 
-                    const bar = await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
+                    const bar = await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
 
                     // A var() naming a custom property no theme defines is
                     // invalid at computed-value time, which leaves the bar
@@ -258,19 +258,72 @@ describe('XEP-0202 Entity Time Views', function () {
                     await respondWithTZO(_converse, full_jid, '+06:00', alert_el);
                     await startComposing(view);
 
-                    const bar = await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
+                    const bar = await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
 
                     // The bar itself is one truncating line, so the detail that
                     // answers "says who?" lives on the tooltip.
-                    const title = bar.getAttribute('title');
+                    const title = bar.querySelector('.entity-time-alert__message').getAttribute('title');
                     expect(title).toContain('UTC+06:00');
                     expect(title).toContain('UTC+00:00');
 
                     // The dismiss control is the only thing on the bar to aim
                     // at, and WCAG 2.2 asks for 24px of it.
-                    const dismiss = bar.querySelector('.entity-time-alert__dismiss').getBoundingClientRect();
+                    const dismiss = bar.querySelector('.composer-panel__close').getBoundingClientRect();
                     expect(dismiss.width).toBeGreaterThanOrEqual(24);
                     expect(dismiss.height).toBeGreaterThanOrEqual(24);
+                },
+            ),
+        );
+
+        it(
+            'puts its dismiss button in the top-right corner, labelled for screen readers',
+            mock.initConverse(
+                converse,
+                ['chatBoxesFetched'],
+                {
+                    show_entity_time: true,
+                    entity_time_warning_start: 22,
+                    entity_time_warning_end: 7,
+                },
+                async function (_converse) {
+                    const { full_jid, view, alert_el } = await openChatWithOnlineContact(_converse);
+                    await respondWithTZO(_converse, full_jid, '+06:00', alert_el);
+                    await startComposing(view);
+
+                    const bar = await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
+                    const close = bar.querySelector('.composer-panel__close');
+                    expect(close.getAttribute('aria-label')).toBe('Dismiss');
+
+                    const panel = bar.getBoundingClientRect();
+                    const button = close.getBoundingClientRect();
+                    expect(panel.right - button.right).toBeLessThan(12);
+                    expect(button.top - panel.top).toBeLessThan(12);
+                },
+            ),
+        );
+
+        it(
+            'is dismissed by Escape from inside it, and returns focus to the message field',
+            mock.initConverse(
+                converse,
+                ['chatBoxesFetched'],
+                {
+                    show_entity_time: true,
+                    entity_time_warning_start: 22,
+                    entity_time_warning_end: 7,
+                },
+                async function (_converse) {
+                    const { full_jid, view, alert_el } = await openChatWithOnlineContact(_converse);
+                    await respondWithTZO(_converse, full_jid, '+06:00', alert_el);
+                    await startComposing(view);
+
+                    const close = await u.waitUntil(() => alert_el.querySelector('.composer-panel__close'));
+                    close.focus();
+                    close.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+                    await u.waitUntil(() => alert_el.dismissed === true);
+                    await u.waitUntil(() => document.activeElement === view.querySelector('.chat-textarea'));
+                    expect(alert_el.querySelector('.composer-panel--warning')).toBeNull();
                 },
             ),
         );
@@ -320,7 +373,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     await respondWithTZO(_converse, full_jid, '-04:00', alert_el);
                     await startComposing(view);
 
-                    expect(alert_el.querySelector('.entity-time-alert')).toBeNull();
+                    expect(alert_el.querySelector('.composer-panel--warning')).toBeNull();
                 },
             ),
         );
@@ -343,7 +396,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     await respondWithTZO(_converse, full_jid, '+06:00', alert_el);
                     await startComposing(view);
 
-                    expect(alert_el.querySelector('.entity-time-alert')).toBeNull();
+                    expect(alert_el.querySelector('.composer-panel--warning')).toBeNull();
                 },
             ),
         );
@@ -366,7 +419,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     await respondWithTZO(_converse, full_jid, '+00:30', alert_el);
                     await startComposing(view);
 
-                    await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
+                    await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
                     expect(alert_el.querySelector('.entity-time-alert__message').textContent).toContain(
                         u.time.formatRemoteTime(NOW, '+00:30'),
                     );
@@ -391,7 +444,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     await respondWithTZO(_converse, full_jid, '+00:00', alert_el);
                     await startComposing(view);
 
-                    expect(alert_el.querySelector('.entity-time-alert')).toBeNull();
+                    expect(alert_el.querySelector('.composer-panel--warning')).toBeNull();
                 },
             ),
         );
@@ -411,10 +464,10 @@ describe('XEP-0202 Entity Time Views', function () {
                     await respondWithTZO(_converse, full_jid, '+06:00', alert_el);
                     await startComposing(view);
 
-                    await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
-                    alert_el.querySelector('.entity-time-alert__dismiss').click();
+                    await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
+                    alert_el.querySelector('.composer-panel__close').click();
 
-                    await u.waitUntil(() => !alert_el.querySelector('.entity-time-alert'));
+                    await u.waitUntil(() => !alert_el.querySelector('.composer-panel--warning'));
 
                     expect(alert_el.dismissed).toBe(true);
 
@@ -426,7 +479,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     await u.waitUntil(() => alert_el.dismissed === true);
 
                     expect(alert_el.dismissed).toBe(true);
-                    expect(alert_el.querySelector('.entity-time-alert')).toBeNull();
+                    expect(alert_el.querySelector('.composer-panel--warning')).toBeNull();
                 },
             ),
         );
@@ -447,10 +500,10 @@ describe('XEP-0202 Entity Time Views', function () {
                     // 22:45 for a contact in Nepal, inside the window.
                     await respondWithTZO(_converse, full_jid, '+05:45', alert_el);
                     await startComposing(view);
-                    await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
+                    await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
 
-                    alert_el.querySelector('.entity-time-alert__dismiss').click();
-                    await u.waitUntil(() => !alert_el.querySelector('.entity-time-alert'));
+                    alert_el.querySelector('.composer-panel__close').click();
+                    await u.waitUntil(() => !alert_el.querySelector('.composer-panel--warning'));
 
                     expect(alert_el.dismissed).toBe(true);
 
@@ -473,7 +526,7 @@ describe('XEP-0202 Entity Time Views', function () {
                     _converse.api.settings.set('entity_time_warning_end', 0);
                     await startComposing(view);
 
-                    await u.waitUntil(() => alert_el.querySelector('.entity-time-alert'));
+                    await u.waitUntil(() => alert_el.querySelector('.composer-panel--warning'));
                 },
             ),
         );
@@ -515,7 +568,7 @@ describe('XEP-0202 Entity Time Views', function () {
                 await vi.advanceTimersByTimeAsync(500);
 
                 expect(findTimeIQ(_converse.api.connection.get().IQ_stanzas)).toBeUndefined();
-                expect(alert_el.querySelector('.entity-time-alert')).toBeNull();
+                expect(alert_el.querySelector('.composer-panel--warning')).toBeNull();
             }),
         );
 
@@ -543,7 +596,7 @@ describe('XEP-0202 Entity Time Views', function () {
                 // The error leaves us without an offset, so there's nothing to warn about.
                 await u.waitUntil(() => api.time.contact.get(alert_el.model.contact) === null);
                 expect(api.time.contact.get(alert_el.model.contact)).toBeNull();
-                expect(alert_el.querySelector('.entity-time-alert')).toBeNull();
+                expect(alert_el.querySelector('.composer-panel--warning')).toBeNull();
             }),
         );
     });

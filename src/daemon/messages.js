@@ -113,7 +113,7 @@ export function messageMethods(_converse) {
  * @param {string} name - The parameter's name, for the error message.
  * @returns {string} The bare JID
  */
-function parseJID(value, name) {
+export function parseJID(value, name) {
     const jid = typeof value === 'string' ? Strophe.getBareJidFromJid(value.trim()).toLowerCase() : '';
     if (!u.isValidJID(jid)) {
         throw new RPCError(ERRORS.INVALID_PARAMS, `"${name}" must be a JID such as "juliet@capulet.lit".`);
@@ -165,7 +165,7 @@ function toConversationDTO(jid, contact) {
  * @param {string} own_jid
  * @returns {import('./types').MessageDTO}
  */
-function toMessageDTO(message, conversation, own_jid) {
+export function toMessageDTO(message, conversation, own_jid) {
     const outgoing = message.get('sender') === 'me';
     return {
         id: getIDs(message, own_jid)[0],

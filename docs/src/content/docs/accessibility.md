@@ -12,11 +12,12 @@ The following shortcuts work anywhere on the page:
 
 | Shortcut      | Description                                  |
 | ------------- | -------------------------------------------- |
-| `Alt+Shift+H` | Show the keyboard shortcuts                  |
-| `Alt+Shift+C` | Focus the message composer of the open chat  |
-| `Alt+Shift+N` | Open the next chat with unread messages      |
+| `Ctrl+/`      | Show the keyboard shortcuts                  |
+| `Alt+Shift+↓` | Open the next chat with unread messages      |
+| `Alt+Shift+↑` | Open the previous chat with unread messages  |
 
-On macOS, `Alt` is the `Option` key.
+These follow the conventions of other chat clients. On macOS, use `Cmd+/`
+instead of `Ctrl+/`, and `Alt` is the `Option` key.
 
 Dialogs close with `Escape`.
 

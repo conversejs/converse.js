@@ -4,10 +4,32 @@ import converse from '../../../../dist/converse.js';
 const { stx, u } = converse.env;
 
 /**
- * @param {string} code
+ * @param {KeyboardEventInit} init
  */
-function pressShortcut(code) {
-    document.dispatchEvent(new KeyboardEvent('keydown', { code, altKey: true, shiftKey: true, bubbles: true }));
+function pressKeys(init) {
+    document.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, ...init }));
+}
+
+const showHelp = () => pressKeys({ key: '/', ctrlKey: true });
+const nextUnread = () => pressKeys({ key: 'ArrowDown', altKey: true, shiftKey: true });
+const previousUnread = () => pressKeys({ key: 'ArrowUp', altKey: true, shiftKey: true });
+
+/**
+ * Opens a chat with mercutio and two hidden chats with unread messages, in
+ * that order.
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ */
+async function openChatsWithUnreadMessages(_converse) {
+    await mock.waitForRoster(_converse, 'current');
+    await mock.openChatBoxFor(_converse, 'mercutio@montague.lit');
+    const chatboxes = [];
+    for (const name of mock.cur_names.slice(1, 3)) {
+        const jid = name.replace(/ /g, '.').toLowerCase() + '@montague.lit';
+        const chatbox = await _converse.api.chats.get(jid, {}, true);
+        chatbox.save({ hidden: true, num_unread: 1 });
+        chatboxes.push(chatbox);
+    }
+    return chatboxes;
 }
 
 /**
@@ -139,72 +161,41 @@ describe('The accessibility plugin', function () {
 
     describe('keyboard shortcuts', function () {
         it(
-            'show the shortcuts help with Alt+Shift+H',
+            'show the shortcuts help with Ctrl+/',
             mock.initConverse(converse, [], {}, async (_converse) => {
-                pressShortcut('KeyH');
+                showHelp();
                 const modal = await u.waitUntil(() => _converse.api.modal.get('converse-keyboard-shortcuts-modal'));
                 await u.waitUntil(() => u.isVisible(modal));
                 expect(modal.querySelector('.modal-title').textContent.trim()).toBe('Keyboard shortcuts');
                 const labels = Array.from(modal.querySelectorAll('kbd')).map((el) => el.textContent);
-                expect(labels).toEqual(['Alt+Shift+H', 'Alt+Shift+C', 'Alt+Shift+N']);
+                expect(labels).toEqual(['Ctrl+/', 'Alt+Shift+↓', 'Alt+Shift+↑']);
             }),
         );
 
         it(
-            'focus the composer of the open chat with Alt+Shift+C',
-            mock.initConverse(converse, [], { auto_focus: false }, async (_converse) => {
-                await mock.waitForRoster(_converse, 'current');
-                const view = await mock.openChatBoxFor(_converse, 'mercutio@montague.lit');
-                const textarea = await u.waitUntil(() => view.querySelector('.chat-textarea'));
-                textarea.blur();
-                expect(document.activeElement).not.toBe(textarea);
-
-                pressShortcut('KeyC');
-                expect(document.activeElement).toBe(textarea);
-            }),
-        );
-
-        it(
-            'focus the composer of the chat that has focus with Alt+Shift+C',
-            mock.initConverse(converse, [], { auto_focus: false }, async (_converse) => {
-                await mock.waitForRoster(_converse, 'current');
-                const first = await mock.openChatBoxFor(_converse, 'mercutio@montague.lit');
-                const jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-                const second = await mock.openChatBoxFor(_converse, jid);
-                const first_textarea = await u.waitUntil(() => first.querySelector('.chat-textarea'));
-                const second_textarea = await u.waitUntil(() => second.querySelector('.chat-textarea'));
-
-                // Without focus in a chat, the most recently opened one is used
-                document.activeElement?.blur();
-                pressShortcut('KeyC');
-                expect(document.activeElement).toBe(second_textarea);
-
-                const content = first.querySelector('.chat-content');
-                content.setAttribute('tabindex', '-1');
-                content.focus();
-                pressShortcut('KeyC');
-                expect(document.activeElement).toBe(first_textarea);
-            }),
-        );
-
-        it(
-            'open the next chat with unread messages with Alt+Shift+N',
+            'open the next chat with unread messages with Alt+Shift+Down',
             mock.initConverse(converse, [], {}, async (_converse) => {
-                await mock.waitForRoster(_converse, 'current');
-                await mock.openChatBoxFor(_converse, 'mercutio@montague.lit');
-                const jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-                const chatbox = await _converse.api.chats.get(jid, {}, true);
-                chatbox.save({ hidden: true, num_unread: 1 });
+                const [first, second] = await openChatsWithUnreadMessages(_converse);
+                nextUnread();
+                await u.waitUntil(() => !first.get('hidden'));
+                expect(second.get('hidden')).toBe(true);
+            }),
+        );
 
-                pressShortcut('KeyN');
-                await u.waitUntil(() => !chatbox.get('hidden'));
+        it(
+            'open the previous chat with unread messages with Alt+Shift+Up',
+            mock.initConverse(converse, [], {}, async (_converse) => {
+                const [first, second] = await openChatsWithUnreadMessages(_converse);
+                previousUnread();
+                await u.waitUntil(() => !second.get('hidden'));
+                expect(first.get('hidden')).toBe(true);
             }),
         );
 
         it(
             'are ignored when disabled',
             mock.initConverse(converse, [], { enable_keyboard_shortcuts: false }, async (_converse) => {
-                pressShortcut('KeyH');
+                showHelp();
                 await new Promise((resolve) => setTimeout(resolve, 100));
                 expect(_converse.api.modal.get('converse-keyboard-shortcuts-modal')).toBeUndefined();
             }),

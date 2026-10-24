@@ -30,5 +30,16 @@ export type StorageType = 'persistent' | 'session';
 export type StorageModel = IEventEmitter & {
     storage: PersistentStorage;
 };
+/**
+ * The subset of the browser extension storage area API used by the extension
+ * localForage drivers. Methods return a promise (`browser.storage`) or take a
+ * callback (`chrome.storage`).
+ */
+export type ExtensionStorageArea = {
+    get: (keys: string | string[] | null, callback?: (items: Record<string, any>) => void) => any;
+    set: (items: Record<string, any>, callback?: () => void) => any;
+    remove: (keys: string | string[], callback?: () => void) => any;
+    clear: (callback?: () => void) => any;
+};
 export {};
 //# sourceMappingURL=types.d.ts.map

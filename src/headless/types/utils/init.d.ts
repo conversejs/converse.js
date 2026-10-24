@@ -18,8 +18,9 @@ export function initSessionStorage(_converse: ConversePrivateGlobal): Promise<vo
  * @param {ConversePrivateGlobal} _converse
  * @param {string} store_name - The name of the store.
  * @param {string} [key="persistent"] - The key for `_converse.storage`.
+ * @returns {Promise<void>} Resolves once the extension storage driver is in use.
  */
-export function initPersistentStorage(_converse: ConversePrivateGlobal, store_name: string, key?: string): void;
+export function initPersistentStorage(_converse: ConversePrivateGlobal, store_name: string, key?: string): Promise<void>;
 /**
  * Stores the passed in JID for the current user, potentially creating a
  * resource if the JID is bare.

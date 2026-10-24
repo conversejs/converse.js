@@ -83,10 +83,13 @@ export function onBeforeMessageCreated(chatbox: ChatBoxOrMUC, attrs: MessageAttr
  * were waiting for it. If so, merge their reactions onto the new
  * message and destroy the placeholders.
  *
+ * It's a hook, so it returns the message for the next listener in the chain.
+ *
  * @param {ChatBoxOrMUC} chatbox
  * @param {BaseMessage} message - The newly created message model
+ * @returns {BaseMessage}
  */
-export function onAfterMessageCreated(chatbox: ChatBoxOrMUC, message: BaseMessage): void;
+export function onAfterMessageCreated(chatbox: ChatBoxOrMUC, message: BaseMessage): BaseMessage;
 /**
  * Returns the key under which the current user's reactions are stored
  * on a given message's `reactions` map.

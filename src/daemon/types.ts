@@ -1,10 +1,27 @@
 export type Paths = {
     config: string; // The account configuration file
-    runtime_dir: string; // Owner-only directory holding the socket and pidfile
-    socket: string;
+    runtime_dir: string; // Owner-only directory holding the sockets and pidfile
+    socket: string; // Full access
+    restricted_socket: string; // Restricted access
     pidfile: string;
     log: string; // Where an auto-spawned daemon writes its output
     cursors: string; // Each consumer's read cursors
+    audit: string; // Every send and refusal, one JSON line each
+};
+
+/**
+ * What a connection may do. Full is the user's own access; restricted is what
+ * agents get. The level is fixed by the socket a connection arrives on.
+ */
+export type Access = 'full' | 'restricted';
+
+export type Policy = {
+    allow: string[]; // Bare JIDs that restricted sends may go to
+    rate_limit: {
+        per_conversation: number; // Restricted sends to one JID per window
+        overall: number; // Restricted sends to anyone per window
+        window: number; // Seconds
+    };
 };
 
 export type Config = {
@@ -13,6 +30,8 @@ export type Config = {
     websocket_url?: string;
     resource: string;
     consumer: string; // The name a client identifies itself by unless told otherwise
+    access: Access; // The level the CLI connects at
+    policy: Policy;
     settings: Record<string, unknown>; // Passed through to converse.initialize
     paths: Paths;
 };
@@ -54,15 +73,32 @@ export type MessageList = {
     messages: MessageDTO[]; // Oldest first
 };
 
-export type SendResult = {
-    outcome: 'sent';
-    message: MessageDTO;
+/**
+ * A refused send says which rule refused it, and what to do about it.
+ */
+export type SendResult =
+    | { outcome: 'sent'; message: MessageDTO }
+    | {
+          outcome: 'refused';
+          rule: 'allowlist' | 'rate_conversation' | 'rate_overall';
+          message: string;
+      };
+
+/**
+ * An entry in the audit log. The body of a message isn't recorded.
+ */
+export type AuditEntry = {
+    consumer: string | null;
+    to: string; // Bare JID
+    outcome: 'sent' | 'refused';
+    id?: string; // The DTO id, for a send
+    rule?: string; // For a refusal
 };
 
 export type Hello = {
     protocol: number;
     consumer: string;
-    access: 'full';
+    access: Access;
     jid: string | null;
 };
 
@@ -70,6 +106,7 @@ export type Hello = {
  * What a method handler gets to reach the connection it was called on.
  */
 export type Client = {
+    access: Access; // Set by the socket the connection arrived on
     consumer: string | null; // Set by `hello`
     notify(_params: Record<string, unknown>): void; // Sends an `event` notification
 };

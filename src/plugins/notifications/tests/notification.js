@@ -69,6 +69,7 @@ describe('Notifications', function () {
                         await mock.waitForRoster(_converse, 'current');
                         await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                         const view = _converse.chatboxviews.get('lounge@montague.lit');
+                        spyOn(view.model, 'isHidden').and.returnValue(true);
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
 
@@ -117,6 +118,41 @@ describe('Notifications', function () {
                 );
 
                 it(
+                    'is shown for a mention in a hidden groupchat but not a visible one while the tab is visible',
+                    mock.initConverse(converse, [], {}, async (_converse) => {
+                        const muc_jid = 'lounge@montague.lit';
+                        const chatbox = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                        const is_hidden = spyOn(chatbox, 'isHidden').and.returnValue(false);
+                        const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
+                        spyOn(window, 'Notification').and.returnValue(stub);
+                        const data = {
+                            chatbox,
+                            attrs: {
+                                type: 'groupchat',
+                                from: `${muc_jid}/juliet`,
+                                from_muc: muc_jid,
+                                body: 'Hello romeo',
+                                references: [{ begin: 6, end: 11, type: 'mention', uri: `xmpp:${muc_jid}/romeo` }],
+                            },
+                        };
+
+                        expect(document.hidden).toBe(false);
+                        await _converse.api.trigger('message', data, { synchronous: true });
+                        expect(window.Notification).not.toHaveBeenCalled();
+
+                        is_hidden.and.returnValue(true);
+                        await _converse.api.trigger('message', data, { synchronous: true });
+                        expect(window.Notification).toHaveBeenCalledOnce();
+
+                        // show_desktop_notifications "all" notifies regardless of visibility
+                        is_hidden.and.returnValue(false);
+                        _converse.api.settings.set('show_desktop_notifications', 'all');
+                        await _converse.api.trigger('message', data, { synchronous: true });
+                        expect(window.Notification).toHaveBeenCalledTimes(2);
+                    }),
+                );
+
+                it(
                     'is shown for headline messages',
                     mock.initConverse(converse, [], {}, async (_converse) => {
                         spyOn(_converse.exports.HeadlinesFeed.prototype, 'isHidden').and.returnValue(true);
@@ -148,7 +184,8 @@ describe('Notifications', function () {
                     'is shown for a XEP-0316 MEP notification which mentions the user',
                     mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
                         const muc_jid = 'lounge@montague.lit';
-                        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                        const muc = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                        spyOn(muc, 'isHidden').and.returnValue(true);
 
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
@@ -199,7 +236,8 @@ describe('Notifications', function () {
                     'shows each activity from a multi-activity XEP-0316 MEP notification',
                     mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
                         const muc_jid = 'lounge@montague.lit';
-                        await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                        const muc = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                        spyOn(muc, 'isHidden').and.returnValue(true);
 
                         const stub = jasmine.createSpyObj('MyNotification', ['onclick', 'close']);
                         spyOn(window, 'Notification').and.returnValue(stub);
@@ -319,6 +357,7 @@ describe('Notifications', function () {
                     spyOn(window, 'Audio').and.returnValue(stub);
 
                     const view = _converse.chatboxviews.get('lounge@montague.lit');
+                    spyOn(view.model, 'isHidden').and.returnValue(true);
                     if (!view.querySelectorAll('.chat-area').length) {
                         view.renderChatArea();
                     }

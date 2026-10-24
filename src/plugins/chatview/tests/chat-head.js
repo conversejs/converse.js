@@ -113,6 +113,56 @@ describe('The chat heading', function () {
     );
 
     it(
+        'marks a contact that identifies as a bot, once its identity is known',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            await mock.openControlBox(_converse);
+
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+
+            // Nothing is known about the contact's client yet, so no marker.
+            const bot_jid = `${contact_jid}/bot`;
+            receivePresenceWithStatus(_converse, bot_jid, 'Relaying messages');
+            await u.waitUntil(() => _converse.state.presences.get(contact_jid)?.resources.get('bot'));
+            expect(view.querySelector('.chatbox-title__bot')).toBeNull();
+
+            // The header looks the resource up, and the marker appears once its
+            // disco#info reply says it's a bot. Nothing reloads.
+            await mock.waitUntilDiscoConfirmed(_converse, bot_jid, [{ category: 'client', type: 'bot' }]);
+            const marker = await u.waitUntil(() => view.querySelector('.chatbox-title__bot'));
+            expect(marker.getAttribute('aria-label')).toBe('Bot');
+            expect(marker.getAttribute('title')).toBe('Bot');
+            expect(marker.getAttribute('role')).toBe('img');
+
+            // The marker sits beside the name, not in the status line.
+            const name = view.querySelector('.chatbox-title__text .user');
+            expect(name.nextElementSibling).toBe(marker);
+        }),
+    );
+
+    it(
+        'does not mark a contact whose client is not a bot',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            await mock.openControlBox(_converse);
+
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+
+            const web_jid = `${contact_jid}/web`;
+            receivePresenceWithStatus(_converse, web_jid, 'Browsing');
+            await u.waitUntil(() => _converse.state.presences.get(contact_jid)?.resources.get('web'));
+            await mock.waitUntilDiscoConfirmed(_converse, web_jid, [{ category: 'client', type: 'web' }]);
+            await u.waitUntil(() => _converse.api.disco.entities.get(web_jid));
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            expect(view.querySelector('.chatbox-title__bot')).toBeNull();
+        }),
+    );
+
+    it(
         'renders that status message legibly against the header',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 1);

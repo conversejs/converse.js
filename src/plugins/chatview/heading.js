@@ -23,6 +23,7 @@ export default class ChatHeading extends CustomElement {
     initialize() {
         const { chatboxes } = _converse.state;
         this.model = chatboxes.get(this.jid);
+        this.watched_resources = new Set();
         this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
         this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
         if (this.model.contact) {
@@ -34,6 +35,11 @@ export default class ChatHeading extends CustomElement {
             // chat's. `status_message` is where our own profile keeps it.
             this.listenTo(this.model.contact, 'change:status', () => this.requestUpdate());
             this.listenTo(this.model.contact, 'change:status_message', () => this.requestUpdate());
+            const presence = _converse.state.presences?.get(this.model.get('jid'));
+            if (presence) {
+                this.listenTo(presence.resources, 'add change', () => this.watchResourceIdentities());
+            }
+            this.watchResourceIdentities();
             this.requestUpdate();
         });
         this.requestUpdate();
@@ -41,6 +47,25 @@ export default class ChatHeading extends CustomElement {
 
     render() {
         return tplChatboxHead(this);
+    }
+
+    /**
+     * Looks up the identities of the contact's online resources, so that a
+     * `client/bot` identity becomes known. The header re-renders as each
+     * resource's identities arrive. An entity whose caps are already cached is
+     * answered from the cache, without a disco#info query.
+     */
+    watchResourceIdentities() {
+        const bare_jid = this.model.get('jid');
+        const presence = _converse.state.presences?.get(bare_jid);
+        presence?.resources.models.forEach(async (resource) => {
+            const full_jid = `${bare_jid}/${resource.get('name')}`;
+            if (this.watched_resources.has(full_jid)) return;
+            this.watched_resources.add(full_jid);
+            const entity = await api.disco.entities.get(full_jid, true);
+            if (entity) this.listenTo(entity.identities, 'add reset', () => this.requestUpdate());
+            this.requestUpdate();
+        });
     }
 
     /**

@@ -25,6 +25,8 @@ export default (el) => {
 
     const i18n_profile = __("The User's Profile Image");
     const display_name = el.model.getDisplayName();
+    const is_bot = type !== HEADLINES_TYPE && _converse.api.contacts.isBot(jid);
+    const i18n_bot = __('Bot');
     const avatar = html`<span title="${i18n_profile}">
         <converse-avatar
             .model=${el.model.contact || el.model}
@@ -55,6 +57,15 @@ export default (el) => {
                                   >${display_name}</a
                               >`
                             : display_name}
+                        ${is_bot
+                            ? html`<span
+                                  class="chatbox-title__bot"
+                                  role="img"
+                                  aria-label="${i18n_bot}"
+                                  title="${i18n_bot}"
+                                  ><converse-icon class="fa fa-user-cog" size="1em"></converse-icon
+                              ></span>`
+                            : ""}
                     </div>
                     ${status ? html`<p class="chat-head__desc">${status}</p>` : ""}
                 </div>

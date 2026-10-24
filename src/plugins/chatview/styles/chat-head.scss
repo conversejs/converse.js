@@ -88,6 +88,17 @@
                 white-space: nowrap;
             }
 
+            // A quiet marker beside the name. It labels the contact, nothing more.
+            .chatbox-title__bot {
+                color: var(--chat-header-subdued-color);
+                margin-inline-start: 0.35em;
+                vertical-align: middle;
+
+                svg {
+                    fill: currentColor;
+                }
+            }
+
             .chatbox-title__buttons {
                 display: flex;
                 flex-direction: row-reverse;

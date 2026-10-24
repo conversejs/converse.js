@@ -11,6 +11,10 @@ export type Options = {
     limit?: string;
     before?: string;
     since?: string;
+    from?: string;
+    conversation?: string;
+    mention?: boolean;
+    timeout?: string; // Seconds
 };
 
 export type Context = IO & {

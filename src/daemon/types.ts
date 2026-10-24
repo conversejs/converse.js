@@ -64,3 +64,32 @@ export type Hello = {
     access: 'full';
     jid: string | null;
 };
+
+/**
+ * What a method handler gets to reach the connection it was called on.
+ */
+export type Client = {
+    notify(_params: Record<string, unknown>): void; // Sends an `event` notification
+};
+
+export type EventFilter = {
+    conversation?: string; // Bare JID
+    from?: string; // Bare JID
+    direction?: 'incoming' | 'outgoing';
+    mention?: boolean; // The body names our account
+};
+
+export type Subscription = {
+    client: Client;
+    filter: EventFilter;
+    once: boolean; // Ends after the first event it sends
+};
+
+/**
+ * The `event` notifications a client receives once it has subscribed.
+ */
+export type Event = {
+    subscription: number;
+    type: 'message';
+    message: MessageDTO;
+};

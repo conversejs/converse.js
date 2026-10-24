@@ -7,6 +7,7 @@ import net from 'node:net';
 import readline from 'node:readline';
 import { _converse, api, converse, log } from '@converse/headless';
 import { getPassword } from './config.js';
+import { createEvents } from './events.js';
 import { messageMethods } from './messages.js';
 import { claimPidfile } from './pidfile.js';
 import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
@@ -48,8 +49,10 @@ async function serve(config) {
         ...config.settings,
     });
 
+    const events = createEvents(_converse);
     const methods = {
         ...messageMethods(_converse),
+        ...events.methods,
         /** @returns {import('./types').Status} */
         'daemon.status': () => ({
             connected: api.connection.connected(),
@@ -74,7 +77,7 @@ async function serve(config) {
         clients.add(socket);
         socket.on('close', () => clients.delete(socket));
         socket.on('error', (e) => log.debug(`Client socket error: ${e.message}`));
-        serveClient(socket, { config, methods, getJID });
+        serveClient(socket, { config, methods, getJID, events });
     });
 
     // A socket file left behind by a daemon that died isn't in use: the pidfile
@@ -144,14 +147,18 @@ async function leave() {
  * @param {net.Socket} socket
  * @param {Object} context
  * @param {import('./types').Config} context.config
- * @param {Record<string, (params: any) => unknown>} context.methods
+ * @param {Record<string, (params: any, client: import('./types').Client) => unknown>} context.methods
  * @param {() => string|null} context.getJID
+ * @param {ReturnType<typeof createEvents>} context.events
  */
-function serveClient(socket, { config, methods, getJID }) {
+function serveClient(socket, { config, methods, getJID, events }) {
     /** @type {import('./types').Hello|null} */
     let hello = null;
 
     const send = (message) => socket.writable && socket.write(JSON.stringify({ jsonrpc: '2.0', ...message }) + '\n');
+    /** @type {import('./types').Client} */
+    const client = { notify: (params) => send({ method: 'event', params }) };
+    socket.once('close', () => events.forget(client));
 
     const call = (method, params) => {
         if (method === 'hello') {
@@ -179,7 +186,7 @@ function serveClient(socket, { config, methods, getJID }) {
         if (!Object.hasOwn(methods, method)) {
             throw new RPCError(ERRORS.METHOD_NOT_FOUND, `Unknown method "${method}".`);
         }
-        return methods[method](params ?? {});
+        return methods[method](params ?? {}, client);
     };
 
     readline.createInterface({ input: socket, crlfDelay: Infinity }).on('line', async (line) => {

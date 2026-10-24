@@ -89,6 +89,7 @@ function getPaths(jid, env) {
         socket: path.join(runtime_dir, `${name}.sock`),
         pidfile: path.join(runtime_dir, `${name}.pid`),
         log: path.join(state_home, 'converse', `${jid}.log`),
+        cursors: path.join(state_home, 'converse', `${name}.cursors.json`),
     };
 }
 

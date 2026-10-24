@@ -84,6 +84,9 @@ export async function shouldNotifyOfGroupMessage(attrs) {
     const muc_jid = attrs.from_muc;
     const notify_all = api.settings.get('notify_all_room_messages');
     const room = _converse.state.chatboxes.get(muc_jid);
+    if (!room) {
+        return false;
+    }
     const resource = Strophe.getResourceFromJid(jid);
     const sender = (resource && Strophe.unescapeNode(resource)) || '';
     let is_mentioned = false;
@@ -146,7 +149,7 @@ async function shouldNotifyOfMEPMessage(attrs) {
  */
 export async function isNotableMessage(data) {
     const { attrs } = data;
-    if (!attrs || ('is_forwarded' in attrs && attrs.is_forwarded)) {
+    if (!attrs || attrs.is_error || ('is_forwarded' in attrs && attrs.is_forwarded)) {
         return false;
     }
     if (attrs.type === 'groupchat') {
@@ -157,7 +160,7 @@ export async function isNotableMessage(data) {
         // MEP activities are emitted separately with type "mep" and their own notification policy.
         return false;
     } else if (attrs.is_headline) {
-        return true;
+        return !isEmptyMessage(attrs);
     }
     const is_me = Strophe.getBareJidFromJid(attrs.from) === _converse.session.get('bare_jid');
     return !isEmptyMessage(attrs) && !is_me;

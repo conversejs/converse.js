@@ -278,6 +278,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
                         ? __('Sorry, could not determine file upload URL.')
                         : __('Sorry, could not determine upload URL.'),
                 type: 'error',
+                upload: FAILURE,
             });
         }
         this.upload_metadata = { headers: slot.headers };
@@ -323,7 +324,17 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
          * saved on the message once a file has been uploaded.
          * @event _converse#afterFileUploaded
          */
-        attrs = await api.hook('afterFileUploaded', this, attrs);
+        try {
+            attrs = await api.hook('afterFileUploaded', this, attrs);
+        } catch (e) {
+            log.error(e);
+            return this.save({
+                is_ephemeral: true,
+                message: __('Sorry, could not successfully upload your file.'),
+                type: 'error',
+                upload: FAILURE,
+            });
+        }
         this.save(attrs);
     }
 }

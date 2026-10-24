@@ -503,7 +503,14 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {File[]} files'
+         * Upload files via XEP-0363 and send them out as messages.
+         * Resolves once a message has been created for each file, or to `[]` if
+         * the server has no upload service. Each message's `upload` attribute is
+         * set to `SUCCESS` or `FAILURE` once its upload has finished. A file
+         * which is too large gets an ephemeral error message instead, whose
+         * `upload` is already `FAILURE` and whose `message` explains why.
+         * @param {File[]|FileList} files
+         * @returns {Promise<BaseMessage[]>}
          */
         async sendFiles(files) {
             const { __, session } = _converse;
@@ -515,7 +522,7 @@ export default function ModelWithMessages(BaseModel) {
                     type: 'error',
                     is_ephemeral: true,
                 });
-                return;
+                return [];
             }
             const data = item.dataforms
                 .where({ 'FORM_TYPE': { 'value': Strophe.NS.HTTPUPLOAD, 'type': 'hidden' } })
@@ -529,9 +536,9 @@ export default function ModelWithMessages(BaseModel) {
                     type: 'error',
                     is_ephemeral: true,
                 });
-                return;
+                return [];
             }
-            Array.from(files).forEach(async (file) => {
+            const messages = Array.from(files).map(async (file) => {
                 /**
                  * *Hook* which allows plugins to transform files before they'll be
                  * uploaded. The main use-case is to encrypt the files.
@@ -554,6 +561,7 @@ export default function ModelWithMessages(BaseModel) {
                         message,
                         type: 'error',
                         is_ephemeral: true,
+                        upload: constants.FAILURE,
                     });
                 } else {
                     const initial_attrs = await this.getOutgoingMessageAttributes();
@@ -567,8 +575,10 @@ export default function ModelWithMessages(BaseModel) {
                     message.file = file;
                     this.messages.trigger('add', message);
                     message.getRequestSlotURL();
+                    return message;
                 }
             });
+            return Promise.all(messages);
         }
 
         /**

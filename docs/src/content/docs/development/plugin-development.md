@@ -366,7 +366,11 @@ values, so leave gaps to fit between them:
 | Panel             | Order | Shown in                  |
 | ----------------- | ----- | ------------------------- |
 | Off-hours warning | 100   | One-to-one chats only     |
+| Voice recorder    | 200   | One-to-one and groupchats |
 | Reply preview     | 300   | One-to-one and groupchats |
+
+The voice recorder is only there when the [voice messages](/docs/voice-messages/) plugin is
+loaded.
 
 Panels with the same `order` keep the order their handlers ran in. A panel without a
 numeric `order` goes below the built-in ones.

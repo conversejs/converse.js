@@ -184,6 +184,7 @@ export type ErrorMessageAttributes = ErrorOrInfoMessageAttributes & {
     chat_state?: boolean;
     retry_event_id?: string;
     type: 'error';
+    upload?: 'failure'; // Set when the error stands in for a file which couldn't be uploaded
 };
 
 export type InfoMessageAttributes = ErrorOrInfoMessageAttributes & {

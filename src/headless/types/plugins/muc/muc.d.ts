@@ -114,7 +114,7 @@ declare const MUC_base: {
         addReplyFallback(attrs: import("../../shared/types").MessageAttributes): import("../../shared/types").MessageAttributes;
         sendMessage(attrs?: any): Promise<import("../../index.js").BaseMessage>;
         retractOwnMessage(message: import("../../index.js").BaseMessage): void;
-        sendFiles(files: File[]): Promise<void>;
+        sendFiles(files: File[] | FileList): Promise<import("../../index.js").BaseMessage[]>;
         setEditable(attrs: any, send_time: string): void;
         setChatState(state: string, options?: object): any;
         chat_state_timeout: number;

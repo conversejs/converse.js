@@ -30,7 +30,7 @@ declare const ChatBoxBase_base: {
         addReplyFallback(attrs: import("./types.js").MessageAttributes): import("./types.js").MessageAttributes;
         sendMessage(attrs?: any): Promise<import("./message.js").default>;
         retractOwnMessage(message: import("./message.js").default): void;
-        sendFiles(files: File[]): Promise<void>;
+        sendFiles(files: File[] | FileList): Promise<import("./message.js").default[]>;
         setEditable(attrs: any, send_time: string): void;
         setChatState(state: string, options?: object): any;
         chat_state_timeout: number;

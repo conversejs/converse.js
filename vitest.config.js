@@ -14,6 +14,7 @@ const commonExclude = [
     '**/node_modules/**',
     '**/tests/mock.js', // shared test helpers
     '**/omemo-views/tests/utils.js', // omemo-views test helper (no describe/it)
+    '**/voice-messages/tests/utils.js', // voice-messages test helper (no describe/it)
     '**/microblog/tests/utils.js', // microblog test helper (no describe/it)
     '**/apps/social/tests/utils.js', // app-social test helper (no describe/it)
     '**/__screenshots__/**', // vitest browser-mode failure screenshots

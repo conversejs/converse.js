@@ -58,6 +58,7 @@ export async function startDaemon(account, { resource = 'claude', websocket_url 
         path.join(env.XDG_CONFIG_HOME, 'converse', 'daemon.json'),
         JSON.stringify({
             jid: account.jid,
+            owner: 'benvolio@montague.lit',
             password: account.password,
             websocket_url,
             resource,

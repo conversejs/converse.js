@@ -7,7 +7,7 @@ export type Paths = {
     log: string; // Where an auto-spawned daemon writes its output
     cursors: string; // Each consumer's read cursors
     audit: string; // Every send, draft and refusal, one JSON line each
-    drafts: string; // Sends queued for approval, and the id they were given
+    drafts: string; // Drafts awaiting the owner's decision, and the id each was given
 };
 
 /**
@@ -17,8 +17,7 @@ export type Paths = {
 export type Access = 'full' | 'restricted';
 
 export type Policy = {
-    allow: string[]; // Bare JIDs that restricted sends may go to
-    draft: boolean | string[]; // Restricted sends are queued for approval: all of them, or only those to these JIDs
+    allow: string[]; // Bare JIDs that restricted sends may be drafted for
     rate_limit: {
         per_conversation: number; // Restricted sends to one JID per window
         overall: number; // Restricted sends to anyone per window
@@ -27,7 +26,8 @@ export type Policy = {
 };
 
 export type Config = {
-    jid: string; // Bare JID of the account
+    jid: string; // Bare JID of the agent's account
+    owner: string; // Bare JID of the user, to whom drafts are delivered
     password?: string; // Unset means: look in the system keyring
     websocket_url?: string;
     resource: string;
@@ -76,8 +76,8 @@ export type MessageList = {
 };
 
 /**
- * A send that was queued for approval. Its body is what will go out, if it's
- * approved as it stands.
+ * A send the agent asked for that went to the owner as text, not to its
+ * recipient. The owner sends it themselves, from their own client, or doesn't.
  */
 export type Draft = {
     id: string; // Short, and unique for the account, e.g. "d17"
@@ -89,7 +89,7 @@ export type Draft = {
 
 /**
  * What a send came to. A refused send says which rule refused it, and what to
- * do about it. A queued one is sent only once a full client approves it.
+ * do about it. A draft is never sent by the daemon: its text went to the owner.
  */
 export type SendResult =
     | { outcome: 'sent'; message: MessageDTO }
@@ -108,7 +108,7 @@ export type AuditEntry = {
     to: string; // Bare JID
     outcome: 'sent' | 'refused' | 'draft' | 'rejected';
     id?: string; // The DTO id, for a send
-    draft?: string; // The draft's id, for a draft, and for a send approved from one
+    draft?: string; // The draft's id, for a draft or a rejection
     rule?: string; // For a refusal
 };
 
@@ -147,8 +147,7 @@ export type Subscription = {
  * event is sent to subscribers of type "draft", whatever the draft's action.
  */
 export type Event = { subscription: number } & (
-    | { type: 'message'; message: MessageDTO }
-    | { type: 'draft'; action: 'queued' | 'edited' | 'approved' | 'rejected'; draft: Draft }
+    { type: 'message'; message: MessageDTO } | { type: 'draft'; action: 'queued' | 'rejected'; draft: Draft }
 );
 
 /**

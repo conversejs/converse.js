@@ -164,6 +164,8 @@ export async function isNotableMessage(data) {
 }
 
 /**
+ * Is this message notable, and is the user not already looking at the chat
+ * it was received in?
  * @param {import('./types').MessageNotificationData} data
  * @returns {Promise<boolean>}
  */
@@ -172,10 +174,6 @@ async function shouldNotifyOfMessage(data) {
         return false;
     }
     const { attrs, chatbox } = data;
-    if (attrs.type === 'groupchat' || attrs.type === 'mep') {
-        // Notable room messages are notified about even while the room is visible
-        return true;
-    }
     if (!attrs.is_headline && api.settings.get('show_desktop_notifications') === 'all') {
         return true;
     }

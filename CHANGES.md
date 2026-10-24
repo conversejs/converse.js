@@ -28,6 +28,9 @@
 - fix(notifications): Notify of a 1:1 message in a hidden chat while the tab is visible. The
   check looked up the chat by the message's attributes instead of its JID, so it never found it.
 - fix(notifications): Show desktop notifications for XEP-0316 MEP room notifications again.
+- fix(notifications): Don't notify of a groupchat mention or a MEP notification while the room is
+  visible. Rooms now follow the same rule as 1:1 chats: notify while the chat is hidden, or always
+  when `show_desktop_notifications` is `all`.
 - feat(notifications): New `api.notifications.isNotable` tells whether a received message is worth
   drawing the user's attention to, according to the notification settings.
 - fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`

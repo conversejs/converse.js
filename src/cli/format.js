@@ -39,6 +39,19 @@ export function formatMessage(message, { full = false, now = new Date() } = {}) 
 }
 
 /**
+ * One conversation, on one line: its JID, the roster name (quoted, as it's
+ * text someone else chose), how many messages are unread, and when it was last active.
+ * @param {import('@converse/daemon/types').ConversationSummary} conversation
+ * @param {Object} [options]
+ * @param {Date} [options.now]
+ */
+export function formatConversation(conversation, { now = new Date() } = {}) {
+    const name = conversation.name ? `  ${JSON.stringify(conversation.name)}` : '';
+    const last = conversation.last_activity ? formatAgo(new Date(conversation.last_activity), now) : 'never';
+    return `${conversation.jid}${name}  unread ${conversation.unread}  last active ${last}\n`;
+}
+
+/**
  * @param {Date} time
  */
 function formatTime(time) {

@@ -11,7 +11,7 @@ import { connect, DaemonUnavailableError, getConfigPath, stopDaemon } from '@con
 import { ERRORS, RPCError } from '@converse/daemon/protocol';
 import pkg from './package.json' with { type: 'json' };
 import { EXIT } from './exit-codes.js';
-import { formatDuration, formatMessage, MAX_BODY_LENGTH, parseSince } from './format.js';
+import { formatConversation, formatDuration, formatMessage, MAX_BODY_LENGTH, parseSince } from './format.js';
 
 /**
  * @param {NodeJS.ProcessEnv} env
@@ -23,6 +23,13 @@ long-lived session for your account. Any command starts the daemon if it
 isn't running.
 
 Commands:
+  conversations        List your conversations, most recent first, with how many
+                       messages are unread for this consumer (claude, by default)
+  inbox                Show the incoming messages this consumer hasn't seen yet,
+                       grouped by conversation, and mark them seen. Your own read
+                       state in other clients is unchanged. Messages you sent
+                       are not shown
+    --full             Don't truncate bodies longer than ${MAX_BODY_LENGTH} characters
   read <jid>           Show the recent messages of a conversation, oldest first
     --limit <n>        At most this many (default 20)
     --before <id>      Only messages older than this one; page back with the
@@ -230,6 +237,39 @@ const COMMANDS = {
             out(JSON.stringify(result) + '\n');
         } else {
             out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
+        }
+        return EXIT.OK;
+    },
+
+    async conversations(ctx) {
+        const { options, out, err } = ctx;
+        /** @type {import('@converse/daemon/types').ConversationSummary[]} */
+        const { conversations } = await request(ctx, 'conversations.list');
+        if (options.json) {
+            conversations.forEach((c) => out(JSON.stringify(c) + '\n'));
+        } else if (conversations.length) {
+            const now = new Date();
+            conversations.forEach((c) => out(formatConversation(c, { now })));
+        } else {
+            err('No conversations.\n');
+        }
+        return EXIT.OK;
+    },
+
+    async inbox(ctx) {
+        const { options, out, err } = ctx;
+        /** @type {import('@converse/daemon/types').Inbox} */
+        const { conversations } = await request(ctx, 'inbox.read');
+        if (options.json) {
+            conversations.forEach((group) => out(JSON.stringify(group) + '\n'));
+        } else if (conversations.length) {
+            const now = new Date();
+            for (const { conversation, messages } of conversations) {
+                out(`== ${conversation.jid} (${messages.length} new)\n`);
+                messages.forEach((m) => out(formatMessage(m, { full: options.full, now })));
+            }
+        } else {
+            err('No new messages.\n');
         }
         return EXIT.OK;
     },

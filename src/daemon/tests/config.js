@@ -8,9 +8,15 @@ describe('The account configuration', () => {
     let dir, env;
 
     /**
+     * Writes the config file. An owner is filled in unless the test gives one,
+     * since a config without one is refused.
      * @param {Object} config
      */
-    const writeConfig = (config) => fs.writeFile(path.join(dir, 'converse', 'daemon.json'), JSON.stringify(config));
+    const writeConfig = (config) =>
+        fs.writeFile(
+            path.join(dir, 'converse', 'daemon.json'),
+            JSON.stringify({ owner: 'benvolio@montague.lit', ...config }),
+        );
 
     /**
      * Puts a stand-in for the platform's keyring tool on PATH that prints
@@ -40,12 +46,13 @@ describe('The account configuration', () => {
         await writeConfig({ jid: ' Romeo@Montague.lit ', websocket_url: 'wss://montague.lit/ws' });
         expect(loadConfig(env)).toEqual({
             jid: 'romeo@montague.lit',
+            owner: 'benvolio@montague.lit',
             password: undefined,
             websocket_url: 'wss://montague.lit/ws',
             resource: 'claude',
             consumer: 'claude',
             access: 'restricted',
-            policy: { allow: [], draft: false, rate_limit: { per_conversation: 5, overall: 20, window: 60 } },
+            policy: { allow: [], rate_limit: { per_conversation: 5, overall: 20, window: 60 } },
             settings: {},
             paths: {
                 config: path.join(dir, 'converse', 'daemon.json'),
@@ -71,16 +78,17 @@ describe('The account configuration', () => {
         expect(access).toBe('full');
         expect(policy).toEqual({
             allow: ['juliet@capulet.lit'],
-            draft: false,
             rate_limit: { per_conversation: 5, overall: 3, window: 60 },
         });
     });
 
-    it('reads a draft setting that is either all sends or a list of JIDs to draft', async () => {
-        await writeConfig({ jid: 'romeo@montague.lit', policy: { draft: true } });
-        expect(loadConfig(env).policy.draft).toBe(true);
-        await writeConfig({ jid: 'romeo@montague.lit', policy: { draft: ['Juliet@Capulet.lit'] } });
-        expect(loadConfig(env).policy.draft).toEqual(['juliet@capulet.lit']);
+    it('refuses a config with no owner, or whose owner is the agent itself', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', owner: undefined });
+        expect(() => loadConfig(env)).toThrow('"owner" in');
+        await writeConfig({ jid: 'romeo@montague.lit', owner: 'romeo' });
+        expect(() => loadConfig(env)).toThrow('"owner" in');
+        await writeConfig({ jid: 'romeo@montague.lit', owner: 'Romeo@Montague.lit' });
+        expect(() => loadConfig(env)).toThrow('must be a different account from "jid"');
     });
 
     it('refuses an access level it does not know', async () => {
@@ -92,8 +100,6 @@ describe('The account configuration', () => {
     it('refuses a send policy it cannot use', async () => {
         await writeConfig({ jid: 'romeo@montague.lit', policy: { allow: ['juliet'] } });
         expect(() => loadConfig(env)).toThrow('"policy.allow" in');
-        await writeConfig({ jid: 'romeo@montague.lit', policy: { draft: 'yes' } });
-        expect(() => loadConfig(env)).toThrow('"policy.draft" in');
         await writeConfig({ jid: 'romeo@montague.lit', policy: { rate_limit: { overall: 0 } } });
         expect(() => loadConfig(env)).toThrow('"policy.rate_limit.overall" in');
     });

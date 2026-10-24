@@ -17,11 +17,12 @@ const BARE_JID = /^[^@/\s]+@[^@/\s]+$/;
 
 /**
  * Agents get restricted access and may send to nobody until the user lists
- * them, so a fresh install can't send anything.
+ * them, so a fresh install can't send anything. Every restricted send to
+ * someone else is a draft, delivered to the owner, so the allowlist is who a
+ * draft may be for.
  */
 const DEFAULT_POLICY = {
     allow: [],
-    draft: false, // true: every restricted send is queued for approval. A list: only sends to those JIDs are
     rate_limit: { per_conversation: 5, overall: 20, window: 60 }, // Sends per window, in seconds
 };
 
@@ -55,7 +56,7 @@ export function loadConfig(env = process.env) {
         if (e.code === 'ENOENT') {
             throw new Error(
                 `No account configured. Create ${config_path} containing at least ` +
-                    `{"jid": "you@example.org", "websocket_url": "wss://example.org/xmpp-websocket"}.`,
+                    `{"jid": "agent@example.org", "owner": "you@example.org", "websocket_url": "wss://example.org/xmpp-websocket"}.`,
                 { cause: e },
             );
         }
@@ -72,8 +73,18 @@ export function loadConfig(env = process.env) {
         throw new Error(`"access" in ${config_path} must be one of: ${ACCESS_LEVELS.join(', ')}.`);
     }
 
+    // Drafts are delivered here, so the agent's own account must never be the owner.
+    const owner = typeof raw.owner === 'string' ? raw.owner.trim().toLowerCase() : '';
+    if (!BARE_JID.test(owner)) {
+        throw new Error(`"owner" in ${config_path} must be your bare JID, such as "you@example.org".`);
+    }
+    if (owner === jid) {
+        throw new Error(`"owner" in ${config_path} must be a different account from "jid", the agent's own.`);
+    }
+
     return {
         jid,
+        owner,
         password: raw.password,
         websocket_url: raw.websocket_url,
         resource: raw.resource || DEFAULT_RESOURCE,
@@ -93,27 +104,16 @@ export function loadConfig(env = process.env) {
  */
 function parsePolicy(raw, config_path) {
     const allow = raw?.allow ?? DEFAULT_POLICY.allow;
-    const draft = raw?.draft ?? DEFAULT_POLICY.draft;
     const rate_limit = { ...DEFAULT_POLICY.rate_limit, ...(raw?.rate_limit ?? {}) };
-    const isJIDList = (value) =>
-        Array.isArray(value) && value.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()));
-    if (!isJIDList(allow)) {
+    if (!Array.isArray(allow) || !allow.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
         throw new Error(`"policy.allow" in ${config_path} must be a list of bare JIDs.`);
-    }
-    if (typeof draft !== 'boolean' && !isJIDList(draft)) {
-        throw new Error(`"policy.draft" in ${config_path} must be true, false, or a list of bare JIDs.`);
     }
     for (const key of Object.keys(DEFAULT_POLICY.rate_limit)) {
         if (!Number.isInteger(rate_limit[key]) || rate_limit[key] < 1) {
             throw new Error(`"policy.rate_limit.${key}" in ${config_path} must be a whole number of at least 1.`);
         }
     }
-    const normalise = (jids) => jids.map((jid) => jid.trim().toLowerCase());
-    return {
-        allow: normalise(allow),
-        draft: typeof draft === 'boolean' ? draft : normalise(draft),
-        rate_limit,
-    };
+    return { allow: allow.map((jid) => jid.trim().toLowerCase()), rate_limit };
 }
 
 /**

@@ -101,6 +101,9 @@ export class Client {
     #next_id = 1;
     /** @type {Map<number, {resolve: Function, reject: Function}>} */
     #pending = new Map();
+    /** @type {Set<(params: import('./types').Event) => void>} */
+    #listeners = new Set();
+    #closed = Promise.withResolvers();
 
     /**
      * @param {net.Socket} socket
@@ -112,8 +115,30 @@ export class Client {
             const error = new DaemonUnavailableError('The daemon closed the connection.');
             this.#pending.forEach(({ reject }) => reject(error));
             this.#pending.clear();
+            this.#closed.reject(error);
         });
         socket.on('error', () => {}); // Surfaced through 'close'
+        // Only a client waiting on it sees this, so nothing is left unhandled.
+        this.#closed.promise.catch(() => {});
+    }
+
+    /**
+     * Settles, rejecting with a {@link DaemonUnavailableError}, once the
+     * connection closes: for a client waiting on an event when the daemon
+     * goes away.
+     * @returns {Promise<never>}
+     */
+    get closed() {
+        return this.#closed.promise;
+    }
+
+    /**
+     * Calls `listener` with each event the daemon sends this connection, from
+     * the subscriptions it has made.
+     * @param {(event: import('./types').Event) => void} listener
+     */
+    onEvent(listener) {
+        this.#listeners.add(listener);
     }
 
     /**
@@ -142,6 +167,9 @@ export class Client {
             message = JSON.parse(line);
         } catch {
             return;
+        }
+        if (message.method === 'event') {
+            return this.#listeners.forEach((listener) => listener(message.params));
         }
         const pending = this.#pending.get(message.id);
         if (!pending) return;

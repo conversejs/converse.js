@@ -83,11 +83,19 @@ export async function startDaemon(account, { resource = 'claude', websocket_url 
 
     return {
         jid: account.jid,
+        /** The environment the daemon's config and sockets live in, for running the CLI against it. */
+        env,
         /**
          * @param {string} method
          * @param {Object} [params]
          */
         request: (method, params) => client.request(method, params),
+        /**
+         * Calls `listener` with each event the daemon sends, from the
+         * subscriptions made on the current connection. A restart ends it.
+         * @param {(event: import('../types').Event) => void} listener
+         */
+        onEvent: (listener) => client.onEvent(listener),
         /**
          * Stops the daemon, runs `meanwhile`, and starts it again on the same
          * account files, as a user's daemon would be.

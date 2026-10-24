@@ -63,7 +63,7 @@ export default (el) => {
                                   role="img"
                                   aria-label="${i18n_bot}"
                                   title="${i18n_bot}"
-                                  ><converse-icon class="fa fa-user-cog" size="1em"></converse-icon
+                                  ><converse-icon class="fa fa-robot" size="1em"></converse-icon
                               ></span>`
                             : ""}
                     </div>

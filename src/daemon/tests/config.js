@@ -51,6 +51,7 @@ describe('The account configuration', () => {
                 socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.sock'),
                 pidfile: path.join(dir, 'run', 'converse', 'romeo@montague.lit.pid'),
                 log: expect.stringMatching(/\/converse\/romeo@montague\.lit\.log$/),
+                cursors: expect.stringMatching(/\/converse\/romeo@montague\.lit\.cursors\.json$/),
             },
         });
     });

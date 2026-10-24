@@ -4,6 +4,7 @@ export type Paths = {
     socket: string;
     pidfile: string;
     log: string; // Where an auto-spawned daemon writes its output
+    cursors: string; // Each consumer's read cursors
 };
 
 export type Config = {
@@ -69,6 +70,7 @@ export type Hello = {
  * What a method handler gets to reach the connection it was called on.
  */
 export type Client = {
+    consumer: string | null; // Set by `hello`
     notify(_params: Record<string, unknown>): void; // Sends an `event` notification
 };
 
@@ -92,4 +94,44 @@ export type Event = {
     subscription: number;
     type: 'message';
     message: MessageDTO;
+};
+
+/**
+ * Where a consumer has read up to in one conversation: the last message it
+ * has been shown there. `time` is a fallback if that message is no longer
+ * stored.
+ */
+export type Cursor = {
+    id: string; // The message's DTO id
+    time: string; // ISO 8601
+};
+
+export type ConsumerCursors = {
+    created: string; // When the consumer was first seen, ISO 8601
+    conversations: Record<string, Cursor>; // Keyed by bare JID
+};
+
+export type CursorState = {
+    consumers: Record<string, ConsumerCursors>;
+};
+
+/**
+ * A conversation as `conversations.list` shows it, with what's unread for the
+ * consumer that asked.
+ */
+export type ConversationSummary = ConversationDTO & {
+    unread: number; // Incoming messages after the consumer's cursor
+    last_activity: string | null; // ISO 8601 time of the newest message, of either direction
+};
+
+/**
+ * The messages `inbox.read` returns for one conversation, oldest first.
+ */
+export type InboxGroup = {
+    conversation: ConversationDTO;
+    messages: MessageDTO[];
+};
+
+export type Inbox = {
+    conversations: InboxGroup[]; // Most recent activity first
 };

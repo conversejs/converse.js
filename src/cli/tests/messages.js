@@ -131,34 +131,40 @@ describe('converse-cli read and send', () => {
         expect(result.stderr).toContain('Run "converse-cli --help" for usage.');
     });
 
-    it('sends a message and prints the id it was sent as', async () => {
+    /** The text of the last message the daemon sent, which is what went to the owner. */
+    const lastToOwner = () =>
+        daemon.connection.sent_stanzas
+            .filter((s) => s.nodeName === 'message')
+            .at(-1)
+            .querySelector('body').textContent;
+
+    it('drafts a message, and delivers its text to the owner', async () => {
         const { code, stdout } = await run(daemon.env, 'send', JULIET, 'But', 'soft!');
-        expect(code).toBe(EXIT.OK);
-        const [, id] = stdout.match(/^Sent to juliet@capulet\.lit as (\S+)\n$/);
-        const stanza = daemon.connection.sent_stanzas.filter((s) => s.nodeName === 'message').at(-1);
-        expect(stanza.querySelector('body').textContent).toBe('But soft!');
-        expect(stanza.querySelector('origin-id').getAttribute('id')).toBe(id);
+        expect(code).toBe(EXIT.DRAFT);
+        expect(stdout).toMatch(/^Drafted as d\d+\. Its text went to the owner, and nothing was sent\.\n$/);
+        expect(lastToOwner()).toContain(`for ${JULIET}`);
+        expect(lastToOwner()).toContain(JSON.stringify('But soft!'));
     });
 
-    it('sends the text on stdin when given none', async () => {
+    it('drafts the text on stdin when given none', async () => {
         const { code } = await runWithInput(daemon.env, 'Two\nlines\n', 'send', JULIET);
-        expect(code).toBe(EXIT.OK);
-        const stanza = daemon.connection.sent_stanzas.filter((s) => s.nodeName === 'message').at(-1);
-        expect(stanza.querySelector('body').textContent).toBe('Two\nlines');
+        expect(code).toBe(EXIT.DRAFT);
+        expect(lastToOwner()).toContain(JSON.stringify('Two\nlines'));
     });
 
-    it('sends text that starts with a dash when it follows "--"', async () => {
+    it('drafts text that starts with a dash when it follows "--"', async () => {
         const { code } = await run(daemon.env, 'send', JULIET, '--', '-1 for yes');
-        expect(code).toBe(EXIT.OK);
-        const stanza = daemon.connection.sent_stanzas.filter((s) => s.nodeName === 'message').at(-1);
-        expect(stanza.querySelector('body').textContent).toBe('-1 for yes');
+        expect(code).toBe(EXIT.DRAFT);
+        expect(lastToOwner()).toContain(JSON.stringify('-1 for yes'));
     });
 
     it('exits with "refused by policy" and says which rule refused it, for a send off the allowlist', async () => {
         const result = await run(daemon.env, 'send', 'tybalt@capulet.lit', 'Draw!');
         expect(result.code).toBe(EXIT.REFUSED);
         expect(result.stdout).toBe('');
-        expect(result.stderr).toContain('converse-cli: Restricted sends only go to the JIDs listed in "policy.allow"');
+        expect(result.stderr).toContain(
+            'converse-cli: Restricted sends are only drafted for the JIDs listed in "policy.allow"',
+        );
         expect(result.stderr).toMatch(/ and tybalt@capulet\.lit isn't one of them\.\n$/);
     });
 

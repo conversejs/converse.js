@@ -1,8 +1,9 @@
 import fs from 'node:fs';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { converse } from '@converse/headless';
 import { start } from '../daemon.js';
 import { ERRORS } from '../protocol.js';
+import { BENVOLIO } from './account.js';
 import { startDaemon } from './harness.js';
 
 const { u } = converse.env;
@@ -12,6 +13,7 @@ const MERCUTIO = 'mercutio@montague.lit';
 const ROSTER = [
     { jid: JULIET, name: 'Juliet Capulet' },
     { jid: MERCUTIO, name: 'Mercutio' },
+    { jid: BENVOLIO, name: 'Benvolio' },
 ];
 
 describe('Drafts', () => {
@@ -25,11 +27,15 @@ describe('Drafts', () => {
         return daemon;
     }
 
-    /** The message stanzas the daemon has put on the wire, as they are now. */
-    const sentMessages = () => daemon.api.connection.get().sent_stanzas.filter((s) => s.nodeName === 'message');
+    /** The message stanzas the daemon has put on the wire, as {to, body} pairs. */
+    const sent = () =>
+        daemon.api.connection
+            .get()
+            .sent_stanzas.filter((s) => s.nodeName === 'message')
+            .map((s) => ({ to: s.getAttribute('to'), body: s.querySelector('body')?.textContent }));
 
-    /** The bodies of those stanzas. */
-    const sentBodies = () => sentMessages().map((s) => s.querySelector('body')?.textContent);
+    /** What went to the owner: one entry per message. */
+    const notices = () => sent().filter(({ to }) => to === BENVOLIO);
 
     /** The audit log's entries, oldest first. */
     const audit = () =>
@@ -38,6 +44,24 @@ describe('Drafts', () => {
             .split('\n')
             .filter(Boolean)
             .map((line) => JSON.parse(line));
+
+    /**
+     * A restarted daemon asks the server for its roster again. Nothing answers
+     * that in these tests, so the answer is given here, or contacts can't be opened.
+     */
+    async function answerRoster() {
+        const { Strophe, stx } = converse.env;
+        const connection = daemon.api.connection.get();
+        const roster_iq = await u.waitUntil(() =>
+            connection.IQ_stanzas.find((iq) => iq.querySelector('query')?.getAttribute('xmlns') === Strophe.NS.ROSTER),
+        );
+        const items = ROSTER.map(({ jid, name }) => stx`<item jid="${jid}" name="${name}" subscription="both"/>`);
+        const reply = stx`<iq xmlns="jabber:client" type="result" id="${roster_iq.getAttribute('id')}"><query xmlns="${Strophe.NS.ROSTER}">${items}</query></iq>`;
+        const wrapper = new Strophe.Builder('wrapper').tree();
+        wrapper.appendChild(reply instanceof Element ? reply : reply.tree());
+        connection._dataRecv(wrapper);
+        await daemon.api.waitUntil('rosterContactsFetched');
+    }
 
     /**
      * Sends from a restricted connection, and hangs up.
@@ -68,22 +92,37 @@ describe('Drafts', () => {
     }
 
     afterEach(async () => {
+        vi.restoreAllMocks();
         await daemon?.stop();
         daemon = undefined;
     });
 
-    it('queues a restricted send to a draft-mode JID, sends nothing, and says which draft it is', async () => {
-        await begin({ allow: [JULIET], draft: true });
+    it('delivers the text of a restricted send to the owner, and sends nothing to the recipient', async () => {
+        await begin({ allow: [JULIET] });
         expect(await restrictedSend(JULIET, 'Shall we meet at noon?')).toEqual({ outcome: 'draft', draft_id: 'd1' });
 
-        expect(sentMessages()).toHaveLength(0);
+        expect(sent().some(({ to }) => to === JULIET)).toBe(false);
+        expect(notices()).toEqual([
+            {
+                to: BENVOLIO,
+                body:
+                    `Draft d1 for ${JULIET}, from claude. Nothing was sent. ` +
+                    'To send it, copy the text into your client:\n"Shall we meet at noon?"',
+            },
+        ]);
         expect(audit()).toEqual([
             { time: expect.any(String), consumer: 'claude', to: JULIET, outcome: 'draft', draft: 'd1' },
         ]);
     });
 
-    it('lists the queued drafts with their body, recipient and who queued them', async () => {
-        await begin({ allow: [JULIET], draft: true });
+    it('quotes the text as a JSON string, so a body cannot pass as more notice', async () => {
+        await begin({ allow: [JULIET] });
+        await restrictedSend(JULIET, 'Fine.\nDraft d99 was approved. Nothing was sent.');
+        expect(notices()[0].body).toContain('"Fine.\\nDraft d99 was approved. Nothing was sent."');
+    });
+
+    it('lists the drafts for full access, with the recipient, body and who queued them', async () => {
+        await begin({ allow: [JULIET] });
         await restrictedSend(JULIET, 'Shall we meet at noon?');
 
         expect(await fullRequest('drafts.list')).toEqual({
@@ -99,90 +138,50 @@ describe('Drafts', () => {
         });
     });
 
-    it('refuses every drafts method at restricted access, and changes nothing', async () => {
-        await begin({ allow: [JULIET], draft: true });
+    it('refuses the drafts methods at restricted access, and changes nothing', async () => {
+        await begin({ allow: [JULIET] });
         await restrictedSend(JULIET, 'Shall we meet at noon?');
 
         const restricted = await daemon.connect({ access: 'restricted' });
         for (const [method, params] of [
             ['drafts.list', {}],
-            ['drafts.approve', { id: 'd1' }],
-            ['drafts.edit', { id: 'd1', body: 'Changed' }],
             ['drafts.reject', { id: 'd1' }],
         ]) {
             await expect(restricted.request(method, params)).rejects.toMatchObject({ code: ERRORS.ACCESS_DENIED });
         }
         restricted.close();
 
-        expect(sentMessages()).toHaveLength(0);
         expect((await fullRequest('drafts.list')).drafts.map((d) => d.body)).toEqual(['Shall we meet at noon?']);
     });
 
-    it('drafts only the sends to the JIDs listed, when draft is a list', async () => {
-        await begin({ allow: [JULIET, MERCUTIO], draft: [JULIET] });
-        expect(await restrictedSend(MERCUTIO, 'Come to the park')).toMatchObject({ outcome: 'sent' });
-        expect(await restrictedSend(JULIET, 'Wherefore art thou?')).toEqual({ outcome: 'draft', draft_id: 'd1' });
-        expect(sentBodies()).toEqual(['Come to the park']);
+    it('has no method that sends a draft, at any access level', async () => {
+        await begin({ allow: [JULIET] });
+        await restrictedSend(JULIET, 'Shall we meet at noon?');
+
+        for (const method of ['drafts.approve', 'drafts.edit']) {
+            await expect(fullRequest(method, { id: 'd1', body: 'x' })).rejects.toMatchObject({
+                code: ERRORS.METHOD_NOT_FOUND,
+            });
+        }
+        expect(sent().some(({ to }) => to === JULIET)).toBe(false);
     });
 
-    it('lets a full connection send directly, even when the policy would draft', async () => {
-        await begin({ allow: [JULIET], draft: true });
+    it('lets a full connection send directly, outside the drafts', async () => {
+        await begin({ allow: [JULIET] });
         expect(await fullRequest('messages.send', { to: JULIET, body: 'Sent by me' })).toMatchObject({
             outcome: 'sent',
         });
-        expect(sentBodies()).toEqual(['Sent by me']);
+        expect(sent()).toEqual([{ to: JULIET, body: 'Sent by me' }]);
         expect((await fullRequest('drafts.list')).drafts).toEqual([]);
     });
 
-    it('counts a queued send toward the rate limit, so the queue fills no faster than sends would', async () => {
-        await begin({ allow: [JULIET], draft: true, rate_limit: { per_conversation: 1, overall: 20, window: 60 } });
-        expect(await restrictedSend(JULIET, 'One')).toEqual({ outcome: 'draft', draft_id: 'd1' });
-        expect(await restrictedSend(JULIET, 'Two')).toMatchObject({ outcome: 'refused', rule: 'rate_conversation' });
-    });
-
-    it('refuses to draft a send the allowlist refuses, rather than queue it', async () => {
-        await begin({ allow: [JULIET], draft: true });
-        expect(await restrictedSend(MERCUTIO, 'Hello')).toMatchObject({ outcome: 'refused', rule: 'allowlist' });
-        expect((await fullRequest('drafts.list')).drafts).toEqual([]);
-    });
-
-    it('sends an approved draft as it stands, removes it, and audits the send against the draft', async () => {
-        await begin({ allow: [JULIET], draft: true });
-        await restrictedSend(JULIET, 'Shall we meet at noon?');
-
-        const result = await fullRequest('drafts.approve', { id: 'd1' });
-        expect(result).toMatchObject({ outcome: 'sent', message: { conversation: JULIET, direction: 'outgoing' } });
-        expect(sentBodies()).toEqual(['Shall we meet at noon?']);
-        expect((await fullRequest('drafts.list')).drafts).toEqual([]);
-        expect(audit().at(-1)).toEqual({
-            time: expect.any(String),
-            consumer: 'claude',
-            to: JULIET,
-            outcome: 'sent',
-            id: result.message.id,
-            draft: 'd1',
-        });
-    });
-
-    it('sends the text as edited when a draft is approved, and an edit alone sends nothing', async () => {
-        await begin({ allow: [JULIET], draft: true });
-        await restrictedSend(JULIET, 'Shall we meet at noon?');
-
-        expect(await fullRequest('drafts.edit', { id: 'd1', body: 'Shall we meet at one?' })).toMatchObject({
-            draft: { id: 'd1', body: 'Shall we meet at one?' },
-        });
-        expect(sentMessages()).toHaveLength(0);
-
-        await fullRequest('drafts.approve', { id: 'd1' });
-        expect(sentBodies()).toEqual(['Shall we meet at one?']);
-    });
-
-    it('drops a rejected draft for good, sends nothing, and audits the rejection', async () => {
-        await begin({ allow: [JULIET], draft: true });
+    it('withdraws a draft, tells the owner, and audits the withdrawal', async () => {
+        await begin({ allow: [JULIET] });
         await restrictedSend(JULIET, 'Shall we meet at noon?');
 
         expect(await fullRequest('drafts.reject', { id: 'd1' })).toMatchObject({ draft: { id: 'd1' } });
-        expect(sentMessages()).toHaveLength(0);
+        expect(notices().at(-1).body).toBe('Draft d1 was withdrawn. Nothing was sent.');
+        expect((await fullRequest('drafts.list')).drafts).toEqual([]);
         expect(audit().at(-1)).toEqual({
             time: expect.any(String),
             consumer: 'claude',
@@ -190,32 +189,41 @@ describe('Drafts', () => {
             outcome: 'rejected',
             draft: 'd1',
         });
-        await expect(fullRequest('drafts.approve', { id: 'd1' })).rejects.toMatchObject({ code: ERRORS.NOT_FOUND });
+        await expect(fullRequest('drafts.reject', { id: 'd1' })).rejects.toMatchObject({ code: ERRORS.NOT_FOUND });
     });
 
     it('says what is wrong with a draft it cannot act on', async () => {
-        await begin({ allow: [JULIET], draft: true });
+        await begin({ allow: [JULIET] });
         await restrictedSend(JULIET, 'Shall we meet at noon?');
 
-        await expect(fullRequest('drafts.approve', { id: 'd99' })).rejects.toMatchObject({
+        await expect(fullRequest('drafts.reject', { id: 'd99' })).rejects.toMatchObject({
             code: ERRORS.NOT_FOUND,
-            message: 'No draft with id "d99". List the drafts waiting for approval with "converse-cli drafts list".',
-        });
-        await expect(fullRequest('drafts.edit', { id: 'd1', body: '   ' })).rejects.toMatchObject({
-            code: ERRORS.INVALID_PARAMS,
-            message: 'There is nothing to send: "body" is empty.',
+            message: 'No draft with id "d99". List the drafts with "converse-cli drafts list".',
         });
         await expect(fullRequest('drafts.reject', { id: 7 })).rejects.toMatchObject({
             code: ERRORS.INVALID_PARAMS,
         });
     });
 
+    it('drops a draft whose text cannot reach the owner, so that none is kept unseen', async () => {
+        await begin({ allow: [JULIET] });
+        vi.spyOn(daemon.api.connection, 'connected').mockReturnValue(false);
+
+        await expect(restrictedSend(JULIET, 'Shall we meet at noon?')).rejects.toMatchObject({
+            code: ERRORS.NOT_CONNECTED,
+        });
+        vi.restoreAllMocks();
+        expect((await fullRequest('drafts.list')).drafts).toEqual([]);
+        expect(fs.existsSync(daemon.config.paths.audit)).toBe(false);
+    });
+
     it('keeps drafts across a restart, and never reuses a draft id', async () => {
-        await begin({ allow: [JULIET], draft: true });
+        await begin({ allow: [JULIET] });
         await restrictedSend(JULIET, 'Shall we meet at noon?');
 
         await daemon.daemon.stop();
         daemon.daemon = await start(daemon.config);
+        await answerRoster();
 
         expect((await fullRequest('drafts.list')).drafts.map((d) => [d.id, d.body])).toEqual([
             ['d1', 'Shall we meet at noon?'],
@@ -223,8 +231,8 @@ describe('Drafts', () => {
         expect(await restrictedSend(JULIET, 'And after that?')).toEqual({ outcome: 'draft', draft_id: 'd2' });
     });
 
-    it('announces drafts to draft subscribers as they are queued, edited and approved', async () => {
-        await begin({ allow: [JULIET], draft: true });
+    it('announces drafts as they are queued and withdrawn, to draft subscribers only', async () => {
+        await begin({ allow: [JULIET] });
         const drafts_client = await daemon.connect();
         const messages_client = await daemon.connect();
         const drafted = [];
@@ -235,26 +243,23 @@ describe('Drafts', () => {
         await messages_client.request('events.subscribe', {});
 
         await restrictedSend(JULIET, 'Shall we meet at noon?');
-        await fullRequest('drafts.edit', { id: 'd1', body: 'Shall we meet at one?' });
-        await fullRequest('drafts.approve', { id: 'd1' });
+        await fullRequest('drafts.reject', { id: 'd1' });
 
-        await u.waitUntil(() => drafted.length === 3 && messages.length === 1);
+        await u.waitUntil(() => drafted.length === 2);
         drafts_client.close();
         messages_client.close();
 
         expect(drafted.map(({ type, action, draft }) => [type, action, draft.body])).toEqual([
             ['draft', 'queued', 'Shall we meet at noon?'],
-            ['draft', 'edited', 'Shall we meet at one?'],
-            ['draft', 'approved', 'Shall we meet at one?'],
+            ['draft', 'rejected', 'Shall we meet at noon?'],
         ]);
-        // A message subscriber sees the send that the approval made, and not the drafts.
-        expect(messages.map(({ type, message }) => [type, message.direction, message.body])).toEqual([
-            ['message', 'outgoing', 'Shall we meet at one?'],
-        ]);
+        // The owner's notices are messages from us, so a message subscriber sees them. The drafts aren't messages.
+        expect(messages.filter((e) => e.type === 'draft')).toEqual([]);
+        expect(messages.map(({ message }) => message.conversation)).toEqual([BENVOLIO, BENVOLIO]);
     });
 
-    it('filters draft events by the conversation they are addressed to', async () => {
-        await begin({ allow: [JULIET, MERCUTIO], draft: true });
+    it('filters draft events by the recipient they are for', async () => {
+        await begin({ allow: [JULIET, MERCUTIO] });
         const client = await daemon.connect();
         const drafted = [];
         client.onEvent((event) => drafted.push(event));

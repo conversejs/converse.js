@@ -47,14 +47,12 @@ Commands:
   send <jid> <text>    Send a message. Without <text>, it's read from stdin
                        Text that starts with a dash needs "--" before it, so it
                        isn't read as an option: send <jid> -- -1 for yes
-                       At restricted access, the default, the JID must be listed
-                       in "policy.allow" in the config file. A send the config's
-                       "policy.draft" holds for approval is queued, not sent
-  drafts list          List the sends waiting for the user's approval (full access)
-  drafts approve <id>  Send a draft as it stands, and remove it from the queue
-  drafts edit <id> [text]  Change a draft's text; it stays queued. Without [text],
-                       it's read from stdin
-  drafts reject <id>   Remove a draft without sending it
+                       At restricted access, the default, a send to anyone but the
+                       owner is a draft: the text goes to the owner, who sends it
+                       from their own client. The JID must be listed in
+                       "policy.allow" in the config file
+  drafts list          List the drafts not yet withdrawn (full access)
+  drafts reject <id>   Withdraw a draft; the owner is told (full access)
   wait                Wait for the next incoming message that matches, print
                        it and exit. Only messages that arrive after wait starts
                        are considered: use read for earlier ones
@@ -88,7 +86,7 @@ Exit codes:
   ${EXIT.NOT_FOUND}  no such contact, conversation or message
   ${EXIT.AMBIGUOUS}  more than one match; the candidates are listed
   ${EXIT.REFUSED}  refused by send policy
-  ${EXIT.DRAFT}  queued as a draft for approval, not sent
+  ${EXIT.DRAFT}  drafted: the text went to the owner, and nothing was sent
   ${EXIT.DAEMON_UNAVAILABLE}  daemon not running, or it couldn't be started
 `;
 
@@ -223,7 +221,7 @@ function reportSend(result, { options, out, err }) {
     } else if (result.outcome === 'sent') {
         out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
     } else if (result.outcome === 'draft') {
-        out(`Queued as draft ${result.draft_id}. It isn't sent until the user approves it.\n`);
+        out(`Drafted as ${result.draft_id}. Its text went to the owner, and nothing was sent.\n`);
     } else {
         err(`converse-cli: ${result.message}\n`);
     }
@@ -300,28 +298,6 @@ const COMMANDS = {
         return EXIT.OK;
     },
 
-    async 'drafts approve'(ctx) {
-        const id = takeOne(ctx, 'draft id');
-        /** @type {import('@converse/daemon/types').SendResult} */
-        const result = await request(ctx, 'drafts.approve', { id }, { access: 'full' });
-        return reportSend(result, ctx);
-    },
-
-    async 'drafts edit'(ctx) {
-        const { args, options, out } = ctx;
-        if (args.length === 0) throw new UsageError('Expected a draft id to edit.');
-        const [id, ...words] = args;
-        const body = words.length ? words.join(' ') : await readStdin(ctx);
-        /** @type {{ draft: import('@converse/daemon/types').Draft }} */
-        const { draft } = await request(ctx, 'drafts.edit', { id, body }, { access: 'full' });
-        if (options.json) {
-            out(JSON.stringify(draft) + '\n');
-        } else {
-            out(`Edited draft ${draft.id}. It's still waiting for approval.\n`);
-        }
-        return EXIT.OK;
-    },
-
     async 'drafts reject'(ctx) {
         const { options, out } = ctx;
         const id = takeOne(ctx, 'draft id');
@@ -330,7 +306,7 @@ const COMMANDS = {
         if (options.json) {
             out(JSON.stringify(draft) + '\n');
         } else {
-            out(`Rejected draft ${draft.id}. Nothing was sent.\n`);
+            out(`Withdrew draft ${draft.id}. Nothing was sent.\n`);
         }
         return EXIT.OK;
     },

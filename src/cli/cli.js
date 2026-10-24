@@ -33,6 +33,13 @@ Commands:
   send <jid> <text>    Send a message. Without <text>, it's read from stdin
                        Text that starts with a dash needs "--" before it, so it
                        isn't read as an option: send <jid> -- -1 for yes
+  wait                 Wait for the next incoming message that matches, print
+                       it and exit. Only messages that arrive after wait starts
+                       are considered: use read for earlier ones
+    --from <jid>       Only messages from this JID
+    --conversation <jid>  Only messages in this conversation
+    --mention          Only messages that name you: your JID's name, as a whole word
+    --timeout <s>      Give up after this many seconds (default 60)
   daemon start         Start the daemon (if needed) and show its status
   daemon status        Show whether the daemon is connected, as which JID, and for how long
   daemon stop          Log out and stop the daemon
@@ -91,6 +98,10 @@ export async function main(argv, io) {
                 limit: { type: 'string' },
                 before: { type: 'string' },
                 since: { type: 'string' },
+                from: { type: 'string' },
+                conversation: { type: 'string' },
+                mention: { type: 'boolean' },
+                timeout: { type: 'string' },
                 help: { type: 'boolean', short: 'h' },
                 version: { type: 'boolean', short: 'v' },
             },
@@ -223,6 +234,37 @@ const COMMANDS = {
         return EXIT.OK;
     },
 
+    async wait(ctx) {
+        const { options, out, err, env } = ctx;
+        let seconds = 60;
+        if (options.timeout !== undefined) {
+            seconds = Number(options.timeout);
+            if (!(seconds > 0)) throw new UsageError(`--timeout "${options.timeout}" isn't a number of seconds.`);
+        }
+        const filter = { from: options.from, conversation: options.conversation, mention: !!options.mention };
+
+        const client = await connect({ env });
+        let message;
+        try {
+            message = await waitForMessage(client, { ...filter, direction: 'incoming' }, seconds);
+        } finally {
+            client.close();
+        }
+        if (!message) {
+            err(
+                `No matching message within ${seconds}s. Check the --from, --conversation and --mention ` +
+                    'filters, or wait longer with --timeout.\n',
+            );
+            return EXIT.TIMEOUT;
+        }
+        if (options.json) {
+            out(JSON.stringify(message) + '\n');
+        } else {
+            out(formatMessage(message, { full: options.full }));
+        }
+        return EXIT.OK;
+    },
+
     'daemon start': (ctx) => printStatus(ctx, true),
     'daemon status': (ctx) => printStatus(ctx, false),
     'daemon stop': async ({ options, out, env }) => {
@@ -235,6 +277,28 @@ const COMMANDS = {
         return EXIT.OK;
     },
 };
+
+/**
+ * Subscribes for the first incoming message that matches, and resolves with
+ * it, or with null once `seconds` have passed.
+ * @param {import('@converse/daemon/client').Client} client
+ * @param {Object} filter - The subscription's filter, as `events.subscribe` takes it
+ * @param {number} seconds
+ * @returns {Promise<import('@converse/daemon/types').MessageDTO|null>}
+ */
+async function waitForMessage(client, filter, seconds) {
+    const { promise, resolve, reject } = Promise.withResolvers();
+    const timer = setTimeout(() => resolve(null), seconds * 1000);
+    // The subscription is this connection's only one, so its events are ours.
+    client.onEvent(({ message }) => resolve(message));
+    client.closed.catch(reject);
+    try {
+        await client.request('events.subscribe', { ...filter, once: true });
+        return await promise;
+    } finally {
+        clearTimeout(timer);
+    }
+}
 
 /**
  * @param {import('./types').Context} ctx

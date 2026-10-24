@@ -6,17 +6,25 @@ import fs from 'node:fs/promises';
 import net from 'node:net';
 import readline from 'node:readline';
 import { _converse, api, converse, log } from '@converse/headless';
+import { createAudit } from './audit.js';
 import { getPassword } from './config.js';
 import { createCursors } from './cursors.js';
 import { createEvents } from './events.js';
 import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
+import { createPolicy } from './policy.js';
 import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
 
 /**
  * How long shutdown waits for the server to see us leave before giving up.
  */
 const SHUTDOWN_TIMEOUT = 5000;
+
+/**
+ * Methods that restricted connections may not call. Restricted access covers
+ * reads and policed sends. Stopping the daemon is the user's to do.
+ */
+const FULL_ACCESS_METHODS = ['daemon.stop'];
 
 /**
  * Starts the daemon for the configured account: claims its pidfile, logs in,
@@ -51,8 +59,10 @@ async function serve(config) {
     });
 
     const events = createEvents(_converse);
+    const policy = createPolicy(config);
+    const audit = createAudit(paths.audit);
     const methods = {
-        ...messageMethods(_converse),
+        ...messageMethods(_converse, { policy, audit }),
         ...inboxMethods(_converse, createCursors(paths.cursors)),
         ...events.methods,
         /** @returns {import('./types').Status} */
@@ -75,31 +85,18 @@ async function serve(config) {
 
     /** @type {Set<net.Socket>} */
     const clients = new Set();
-    const server = net.createServer((socket) => {
+    /** @param {import('./types').Access} access */
+    const onConnection = (access) => (socket) => {
         clients.add(socket);
         socket.on('close', () => clients.delete(socket));
         socket.on('error', (e) => log.debug(`Client socket error: ${e.message}`));
-        serveClient(socket, { config, methods, getJID, events });
-    });
-
-    // A socket file left behind by a daemon that died isn't in use: the pidfile
-    // we hold says no other daemon is running.
-    await fs.rm(paths.socket, { force: true });
-    await new Promise((resolve, reject) => {
-        server.once('error', (e) =>
-            reject(
-                e.code === 'EINVAL'
-                    ? new Error(
-                          `Can't listen on ${paths.socket}: the path is too long for a unix socket. ` +
-                              'Point XDG_RUNTIME_DIR at a shorter directory.',
-                          { cause: e },
-                      )
-                    : e,
-            ),
-        );
-        server.listen(paths.socket, () => resolve(undefined));
-    });
-    await fs.chmod(paths.socket, 0o600);
+        serveClient(socket, { access, config, methods, getJID, events });
+    };
+    // Each access level has its own socket, so the level belongs to the connection.
+    const servers = [
+        await listen(paths.socket, onConnection('full')),
+        await listen(paths.restricted_socket, onConnection('restricted')),
+    ];
 
     await api.user.login(`${config.jid}/${config.resource}`, password);
 
@@ -108,7 +105,7 @@ async function serve(config) {
 
     function stop() {
         stopping ??= (async () => {
-            server.close();
+            servers.forEach((server) => server.close());
             clients.forEach((socket) => socket.end());
             try {
                 if (api.connection.connected()) {
@@ -119,6 +116,7 @@ async function serve(config) {
                 log.error(`Couldn't leave cleanly: ${e.message}`);
             } finally {
                 await fs.rm(paths.socket, { force: true });
+                await fs.rm(paths.restricted_socket, { force: true });
                 await fs.rm(paths.pidfile, { force: true });
                 resolveStopped(undefined);
             }
@@ -132,6 +130,35 @@ async function serve(config) {
         /** Leaves MUCs, logs out and stops serving the socket. */
         stop,
     };
+}
+
+/**
+ * Listens on a unix socket, readable and writable by its owner only.
+ * @param {string} socket_path
+ * @param {(socket: net.Socket) => void} onConnection
+ * @returns {Promise<net.Server>}
+ */
+async function listen(socket_path, onConnection) {
+    const server = net.createServer(onConnection);
+    // A socket file left behind by a daemon that died isn't in use: the pidfile
+    // we hold says no other daemon is running.
+    await fs.rm(socket_path, { force: true });
+    await new Promise((resolve, reject) => {
+        server.once('error', (e) =>
+            reject(
+                e.code === 'EINVAL'
+                    ? new Error(
+                          `Can't listen on ${socket_path}: the path is too long for a unix socket. ` +
+                              'Point XDG_RUNTIME_DIR at a shorter directory.',
+                          { cause: e },
+                      )
+                    : e,
+            ),
+        );
+        server.listen(socket_path, () => resolve(undefined));
+    });
+    await fs.chmod(socket_path, 0o600);
+    return server;
 }
 
 /**
@@ -149,17 +176,18 @@ async function leave() {
  * @param {net.Socket} socket
  * @param {Object} context
  * @param {import('./types').Config} context.config
+ * @param {import('./types').Access} context.access - The level of the socket this client connected to
  * @param {Record<string, (params: any, client: import('./types').Client) => unknown>} context.methods
  * @param {() => string|null} context.getJID
  * @param {ReturnType<typeof createEvents>} context.events
  */
-function serveClient(socket, { config, methods, getJID, events }) {
+function serveClient(socket, { access, config, methods, getJID, events }) {
     /** @type {import('./types').Hello|null} */
     let hello = null;
 
     const send = (message) => socket.writable && socket.write(JSON.stringify({ jsonrpc: '2.0', ...message }) + '\n');
     /** @type {import('./types').Client} */
-    const client = { consumer: null, notify: (params) => send({ method: 'event', params }) };
+    const client = { access, consumer: null, notify: (params) => send({ method: 'event', params }) };
     socket.once('close', () => events.forget(client));
 
     const call = (method, params) => {
@@ -176,8 +204,7 @@ function serveClient(socket, { config, methods, getJID, events }) {
             hello = {
                 protocol: PROTOCOL_VERSION,
                 consumer: typeof params.consumer === 'string' && params.consumer ? params.consumer : config.consumer,
-                // Restricted access for agents comes with send policy.
-                access: 'full',
+                access,
                 jid: getJID(),
             };
             client.consumer = hello.consumer;
@@ -188,6 +215,12 @@ function serveClient(socket, { config, methods, getJID, events }) {
         }
         if (!Object.hasOwn(methods, method)) {
             throw new RPCError(ERRORS.METHOD_NOT_FOUND, `Unknown method "${method}".`);
+        }
+        if (FULL_ACCESS_METHODS.includes(method) && access !== 'full') {
+            throw new RPCError(
+                ERRORS.ACCESS_DENIED,
+                `"${method}" is only available at full access, and this connection is restricted.`,
+            );
         }
         return methods[method](params ?? {}, client);
     };

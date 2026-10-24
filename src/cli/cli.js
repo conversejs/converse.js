@@ -7,7 +7,7 @@
  * history and agent transcripts. The account comes from the config file.
  */
 import { parseArgs } from 'node:util';
-import { connect, DaemonUnavailableError, getConfigPath, stopDaemon } from '@converse/daemon/client';
+import { connect, DaemonUnavailableError, getConfigPath, loadConfig, stopDaemon } from '@converse/daemon/client';
 import { ERRORS, RPCError } from '@converse/daemon/protocol';
 import pkg from './package.json' with { type: 'json' };
 import { EXIT } from './exit-codes.js';
@@ -40,6 +40,8 @@ Commands:
   send <jid> <text>    Send a message. Without <text>, it's read from stdin
                        Text that starts with a dash needs "--" before it, so it
                        isn't read as an option: send <jid> -- -1 for yes
+                       At restricted access, the default, the JID must be listed
+                       in "policy.allow" in the config file
   wait                 Wait for the next incoming message that matches, print
                        it and exit. Only messages that arrive after wait starts
                        are considered: use read for earlier ones
@@ -166,6 +168,12 @@ function reportError(e, io) {
 }
 
 /**
+ * The access level the CLI connects at: restricted, unless the config says otherwise.
+ * @param {NodeJS.ProcessEnv} env
+ */
+const accessFor = (env) => loadConfig(env).access;
+
+/**
  * Connects (starting the daemon if need be), makes one request and hangs up.
  * @param {import('./types').Context} ctx
  * @param {string} method
@@ -174,7 +182,7 @@ function reportError(e, io) {
  * @param {boolean} [options.spawn]
  */
 async function request({ env }, method, params, { spawn = true } = {}) {
-    const client = await connect({ spawn, env });
+    const client = await connect({ spawn, env, access: accessFor(env) });
     try {
         return await client.request(method, params);
     } finally {
@@ -227,7 +235,7 @@ const COMMANDS = {
     },
 
     async send(ctx) {
-        const { args, options, out } = ctx;
+        const { args, options, out, err } = ctx;
         if (args.length === 0) throw new UsageError('Expected a JID to send to.');
         const [to, ...words] = args;
         const body = words.length ? words.join(' ') : await readStdin(ctx);
@@ -235,10 +243,12 @@ const COMMANDS = {
         const result = await request(ctx, 'messages.send', { to, body });
         if (options.json) {
             out(JSON.stringify(result) + '\n');
-        } else {
+        } else if (result.outcome === 'sent') {
             out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
+        } else {
+            err(`converse-cli: ${result.message}\n`);
         }
-        return EXIT.OK;
+        return result.outcome === 'refused' ? EXIT.REFUSED : EXIT.OK;
     },
 
     async conversations(ctx) {
@@ -283,7 +293,7 @@ const COMMANDS = {
         }
         const filter = { from: options.from, conversation: options.conversation, mention: !!options.mention };
 
-        const client = await connect({ env });
+        const client = await connect({ env, access: accessFor(env) });
         let message;
         try {
             message = await waitForMessage(client, { ...filter, direction: 'incoming' }, seconds);

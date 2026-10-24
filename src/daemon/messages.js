@@ -14,8 +14,11 @@ const MAX_LIMIT = 1000;
 
 /**
  * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {Object} deps
+ * @param {ReturnType<typeof import('./policy.js').createPolicy>} deps.policy
+ * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
  */
-export function messageMethods(_converse) {
+export function messageMethods(_converse, { policy, audit }) {
     const { api } = _converse;
     const ownJID = () => _converse.session.get('bare_jid');
 
@@ -76,15 +79,23 @@ export function messageMethods(_converse) {
         },
 
         /**
+         * Restricted connections are held to the send policy. A refusal is a
+         * result, not an error, and it's audited like a send.
          * @param {Object} params
          * @param {string} params.to - A JID
          * @param {string} params.body
+         * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>}
          */
-        async 'messages.send'({ to, body }) {
+        async 'messages.send'({ to, body }, client) {
             const jid = parseJID(to, 'to');
             if (typeof body !== 'string' || !body.trim()) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, 'There is nothing to send: "body" is empty.');
+            }
+            const verdict = client.access === 'restricted' ? policy.admit(jid) : { allowed: true };
+            if (!verdict.allowed) {
+                audit.record({ consumer: client.consumer, to: jid, outcome: 'refused', rule: verdict.rule });
+                return { outcome: 'refused', rule: verdict.rule, message: verdict.message };
             }
             if (!api.connection.connected()) {
                 throw new RPCError(
@@ -103,7 +114,9 @@ export function messageMethods(_converse) {
                     "The message couldn't be built, so nothing was sent. Try again.",
                 );
             }
-            return { outcome: 'sent', message: toMessageDTO(message, jid, ownJID()) };
+            const dto = toMessageDTO(message, jid, ownJID());
+            audit.record({ consumer: client.consumer, to: jid, outcome: 'sent', id: dto.id });
+            return { outcome: 'sent', message: dto };
         },
     };
 }

@@ -17,7 +17,7 @@ converse.plugins.add('converse-accessibility', {
         });
 
         document.addEventListener('keydown', onKeyDown);
-        api.listen.on('messageNotification', announceMessage);
+        api.listen.on('message', announceMessage);
         api.listen.on('cleanup', () => {
             document.removeEventListener('keydown', onKeyDown);
             removeLiveRegion();

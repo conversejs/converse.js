@@ -41,6 +41,10 @@ describe('The accessibility plugin', function () {
                 await receiveMessage(_converse, jid, 'Are you there?');
                 const name = view.model.getDisplayName();
                 await u.waitUntil(() => liveRegionText() === `${name}: Are you there?`);
+
+                const region = document.getElementById('converse-live-region');
+                expect(region.parentElement.matches('converse-root')).toBe(true);
+                expect(region.classList.contains('visually-hidden')).toBe(true);
             }),
         );
 
@@ -103,6 +107,34 @@ describe('The accessibility plugin', function () {
                 await u.waitUntil(() => liveRegionText() === `${nick} in ${model.getDisplayName()}: romeo: hello`);
             }),
         );
+
+        it(
+            'are not made for a groupchat message that does not mention you',
+            mock.initConverse(converse, [], {}, async (_converse) => {
+                await mock.waitForRoster(_converse, 'current');
+                const muc_jid = 'lounge@montague.lit';
+                const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+                model.save({ hidden: true });
+
+                const nick = mock.chatroom_names[0];
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`
+                    <message from="${muc_jid}/${nick}"
+                             id="${u.getUniqueId()}"
+                             to="romeo@montague.lit"
+                             type="groupchat"
+                             xmlns="jabber:client">
+                        <body>hello everyone</body>
+                    </message>`,
+                    ),
+                );
+                await u.waitUntil(() => model.messages.length === 1);
+                await new Promise((resolve) => setTimeout(resolve, 200));
+                expect(liveRegionText()).toBe('');
+            }),
+        );
     });
 
     describe('keyboard shortcuts', function () {
@@ -129,6 +161,29 @@ describe('The accessibility plugin', function () {
 
                 pressShortcut('KeyC');
                 expect(document.activeElement).toBe(textarea);
+            }),
+        );
+
+        it(
+            'focus the composer of the chat that has focus with Alt+Shift+C',
+            mock.initConverse(converse, [], { auto_focus: false }, async (_converse) => {
+                await mock.waitForRoster(_converse, 'current');
+                const first = await mock.openChatBoxFor(_converse, 'mercutio@montague.lit');
+                const jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                const second = await mock.openChatBoxFor(_converse, jid);
+                const first_textarea = await u.waitUntil(() => first.querySelector('.chat-textarea'));
+                const second_textarea = await u.waitUntil(() => second.querySelector('.chat-textarea'));
+
+                // Without focus in a chat, the most recently opened one is used
+                document.activeElement?.blur();
+                pressShortcut('KeyC');
+                expect(document.activeElement).toBe(second_textarea);
+
+                const content = first.querySelector('.chat-content');
+                content.setAttribute('tabindex', '-1');
+                content.focus();
+                pressShortcut('KeyC');
+                expect(document.activeElement).toBe(first_textarea);
             }),
         );
 

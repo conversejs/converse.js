@@ -4,9 +4,9 @@
  */
 import { _converse, api, constants } from '@converse/headless';
 import { __ } from 'i18n';
-import { announce, getVisibleChat, hasUnreadMessages } from './utils.js';
+import { announce, getActiveChat, getChats, hasUnreadMessages } from './utils.js';
 
-const { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } = constants;
+const { CHATROOMS_TYPE } = constants;
 
 /**
  * @returns {import('./types').KeyboardShortcut[]}
@@ -50,7 +50,7 @@ export function onKeyDown(ev) {
 }
 
 function focusComposer() {
-    const chatbox = getVisibleChat();
+    const chatbox = getActiveChat();
     const view = chatbox && _converse.state.chatboxviews?.get(chatbox.get('jid'));
     if (view) {
         view.focus();
@@ -60,14 +60,11 @@ function focusComposer() {
 }
 
 function openNextUnreadChat() {
-    const chats = _converse.state.chatboxes.filter((m) =>
-        [CHATROOMS_TYPE, PRIVATE_CHAT_TYPE].includes(m.get('type')),
-    );
-    // Start searching after the open chat, so that repeated presses cycle
-    const start = chats.indexOf(getVisibleChat()) + 1;
-    const next = [...chats.slice(start), ...chats.slice(0, start)].find(
-        (m) => hasUnreadMessages(m) && m !== getVisibleChat(),
-    );
+    const chats = getChats();
+    const active = getActiveChat();
+    // Start searching after the active chat, so that repeated presses cycle
+    const start = chats.indexOf(active) + 1;
+    const next = [...chats.slice(start), ...chats.slice(0, start)].find((m) => hasUnreadMessages(m) && m !== active);
     if (next) {
         const view = next.get('type') === CHATROOMS_TYPE ? 'room' : 'chat';
         api.trigger('openConversation', { view, jid: next.get('jid') });

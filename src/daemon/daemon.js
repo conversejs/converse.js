@@ -23,10 +23,16 @@ const SHUTDOWN_TIMEOUT = 5000;
 
 /**
  * Methods that restricted connections may not call. Restricted access covers
- * reads and policed sends. Stopping the daemon, and deciding what happens to
+ * reads and drafted sends. Stopping the daemon, and reviewing or dropping
  * drafts, are the user's to do.
  */
-const FULL_ACCESS_METHODS = ['daemon.stop', 'drafts.list', 'drafts.approve', 'drafts.edit', 'drafts.reject'];
+const FULL_ACCESS_METHODS = ['daemon.stop', 'drafts.list', 'drafts.reject'];
+
+/**
+ * How the daemon's connection identifies itself to contacts, as a bot. This
+ * is a label for other clients to show, not a permission: it's self-declared.
+ */
+const BOT_IDENTITY = { category: 'client', type: 'bot', name: 'Converse daemon' };
 
 /**
  * Starts the daemon for the configured account: claims its pidfile, logs in,
@@ -64,9 +70,14 @@ async function serve(config) {
     const policy = createPolicy(config);
     const audit = createAudit(paths.audit);
     const drafts = createDraftStore(paths.drafts);
+    // Headless sets up its client identity on connect, so the bot identity has to be set after that.
+    api.listen.on('addClientFeatures', () => {
+        api.disco.own.identities.clear();
+        api.disco.own.identities.add(BOT_IDENTITY.category, BOT_IDENTITY.type, BOT_IDENTITY.name);
+    });
     const methods = {
-        ...messageMethods(_converse, { policy, audit, drafts, events }),
-        ...draftMethods(_converse, { drafts, audit, events }),
+        ...messageMethods(_converse, { policy, audit, drafts, events, owner: config.owner }),
+        ...draftMethods(_converse, { drafts, audit, events, owner: config.owner }),
         ...inboxMethods(_converse, createCursors(paths.cursors)),
         ...events.methods,
         /** @returns {import('./types').Status} */

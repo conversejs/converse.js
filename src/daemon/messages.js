@@ -5,6 +5,7 @@
  */
 import { converse } from '@converse/headless';
 import { getPage, hasArchivedMessages } from './history.js';
+import { draftNotice } from './notices.js';
 import { ERRORS, RPCError } from './protocol.js';
 
 const { Strophe, u } = converse.env;
@@ -19,8 +20,9 @@ const MAX_LIMIT = 1000;
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
  * @param {ReturnType<typeof import('./drafts.js').createDraftStore>} deps.drafts
  * @param {ReturnType<typeof import('./events.js').createEvents>} deps.events
+ * @param {string} deps.owner - Bare JID of the user, to whom drafts are delivered
  */
-export function messageMethods(_converse, { policy, audit, drafts, events }) {
+export function messageMethods(_converse, { policy, audit, drafts, events, owner }) {
     const { api } = _converse;
     const ownJID = () => _converse.session.get('bare_jid');
 
@@ -96,18 +98,23 @@ export function messageMethods(_converse, { policy, audit, drafts, events }) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, 'There is nothing to send: "body" is empty.');
             }
             if (client.access === 'restricted') {
+                // An agent never sends to anyone directly. Its send becomes a draft, whose text goes to the owner.
                 const verdict = policy.admit(jid);
                 if (!verdict.allowed) {
                     audit.record({ consumer: client.consumer, to: jid, outcome: 'refused', rule: verdict.rule });
                     return { outcome: 'refused', rule: verdict.rule, message: verdict.message };
                 }
-                if (policy.drafted(jid)) {
-                    // Queued even without a connection: the draft waits for the user, not for the server.
-                    const draft = drafts.add({ to: jid, body, consumer: client.consumer });
-                    audit.record({ consumer: client.consumer, to: jid, outcome: 'draft', draft: draft.id });
-                    events.publishDraft('queued', draft);
-                    return { outcome: 'draft', draft_id: draft.id };
+                const draft = drafts.add({ to: jid, body, consumer: client.consumer });
+                try {
+                    await sendMessage(_converse, owner, draftNotice(draft));
+                } catch (e) {
+                    // Without the owner's copy, the draft would be one nobody can see, so it's dropped.
+                    drafts.remove(draft.id);
+                    throw e;
                 }
+                audit.record({ consumer: client.consumer, to: jid, outcome: 'draft', draft: draft.id });
+                events.publishDraft('queued', draft);
+                return { outcome: 'draft', draft_id: draft.id };
             }
             const dto = await sendMessage(_converse, jid, body);
             audit.record({ consumer: client.consumer, to: jid, outcome: 'sent', id: dto.id });
@@ -117,8 +124,8 @@ export function messageMethods(_converse, { policy, audit, drafts, events }) {
 }
 
 /**
- * Sends a message to a contact, once whoever asked has been cleared to: policy
- * has let it through, or a full client has approved a draft.
+ * Sends a message from the account. Restricted connections never reach this
+ * for a recipient other than the owner: their sends become drafts.
  * @param {import('@converse/headless').ConversePrivateGlobal} _converse
  * @param {string} jid - Bare JID
  * @param {string} body

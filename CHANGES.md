@@ -56,6 +56,7 @@
 - chore(types): Switch TypeScript `moduleResolution` to `bundler`; `@converse/headless` now exposes its
   type declarations via a `./types/*` export instead of consumer-side `paths` mappings.
 - feat(notifications) Prepend `assets_path` to logo path.
+- refactor(storage): The `BrowserExtLocal` and `BrowserExtSync` persistent stores now use Converse's own localForage drivers instead of the `localforage-webextensionstorage-driver` package, which is no longer a dependency. A write that the extension storage rejects, such as one that exceeds the `chrome.storage.sync` quota, now fires the model's `error` event instead of failing silently.
 
 ### Breaking changes:
 

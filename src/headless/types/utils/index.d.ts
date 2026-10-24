@@ -84,7 +84,7 @@ declare const _default: {
     initPlugins(_converse: ConversePrivateGlobal): void;
     initClientConfig(_converse: ConversePrivateGlobal): Promise<void>;
     initSessionStorage(_converse: ConversePrivateGlobal): Promise<void>;
-    initPersistentStorage(_converse: ConversePrivateGlobal, store_name: string, key?: string): void;
+    initPersistentStorage(_converse: ConversePrivateGlobal, store_name: string, key?: string): Promise<void>;
     setUserJID(jid: string): Promise<string>;
     initSession(_converse: ConversePrivateGlobal, jid: string): Promise<void>;
     registerGlobalEventHandlers(_converse: ConversePrivateGlobal): void;

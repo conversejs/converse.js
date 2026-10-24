@@ -9,6 +9,7 @@ import { _converse, api, converse, log } from '@converse/headless';
 import { createAudit } from './audit.js';
 import { getPassword } from './config.js';
 import { createCursors } from './cursors.js';
+import { createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
 import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
@@ -22,9 +23,10 @@ const SHUTDOWN_TIMEOUT = 5000;
 
 /**
  * Methods that restricted connections may not call. Restricted access covers
- * reads and policed sends. Stopping the daemon is the user's to do.
+ * reads and policed sends. Stopping the daemon, and deciding what happens to
+ * drafts, are the user's to do.
  */
-const FULL_ACCESS_METHODS = ['daemon.stop'];
+const FULL_ACCESS_METHODS = ['daemon.stop', 'drafts.list', 'drafts.approve', 'drafts.edit', 'drafts.reject'];
 
 /**
  * Starts the daemon for the configured account: claims its pidfile, logs in,
@@ -61,8 +63,10 @@ async function serve(config) {
     const events = createEvents(_converse);
     const policy = createPolicy(config);
     const audit = createAudit(paths.audit);
+    const drafts = createDraftStore(paths.drafts);
     const methods = {
-        ...messageMethods(_converse, { policy, audit }),
+        ...messageMethods(_converse, { policy, audit, drafts, events }),
+        ...draftMethods(_converse, { drafts, audit, events }),
         ...inboxMethods(_converse, createCursors(paths.cursors)),
         ...events.methods,
         /** @returns {import('./types').Status} */

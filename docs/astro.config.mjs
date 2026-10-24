@@ -53,6 +53,7 @@ export default defineConfig({
                 { label: 'Theming', slug: 'theming' },
                 { label: 'Security', slug: 'security' },
                 { label: 'Translations', slug: 'translations' },
+                { label: 'Voice Messages', slug: 'voice-messages' },
                 { label: 'Troubleshooting', slug: 'troubleshooting' },
                 { label: 'Writing Documentation', slug: 'documentation' },
             ],

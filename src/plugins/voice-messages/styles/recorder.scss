@@ -1,0 +1,96 @@
+converse-audio-recorder {
+    display: block;
+
+    .audio-recorder {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        border-top: 1px solid var(--subdued-color);
+        background-color: var(--background-color);
+        color: var(--foreground-color);
+
+        &:focus-visible {
+            outline: 2px solid var(--focus-color);
+            outline-offset: -2px;
+        }
+    }
+
+    .recorder-status,
+    .recorder-busy {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 0;
+    }
+
+    .recording-duration {
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+    }
+
+    .recording-remaining {
+        color: var(--warning-color);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .recording-indicator,
+    .paused-indicator {
+        flex: 0 0 auto;
+        width: 0.75rem;
+        height: 0.75rem;
+    }
+
+    .recording-indicator {
+        border-radius: 50%;
+        background-color: var(--danger-color);
+        animation: voice-recorder-pulse 1.5s ease-in-out infinite;
+    }
+
+    .paused-indicator {
+        border-radius: 2px;
+        background-color: var(--warning-color);
+    }
+
+    .recorder-controls {
+        display: flex;
+        gap: 0.5rem;
+        margin-inline-start: auto;
+
+        .btn {
+            min-width: 2.5rem;
+            min-height: 2.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    .recorder-error {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+
+        .error-message {
+            flex: 1 1 12rem;
+            margin: 0;
+            color: var(--danger-color);
+        }
+    }
+}
+
+@keyframes voice-recorder-pulse {
+    50% {
+        opacity: 0.4;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    converse-audio-recorder .recording-indicator {
+        animation: none;
+    }
+}

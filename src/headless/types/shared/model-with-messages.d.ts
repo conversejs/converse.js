@@ -124,9 +124,16 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          */
         retractOwnMessage(message: import("./message").default): void;
         /**
-         * @param {File[]} files'
+         * Upload files via XEP-0363 and send them out as messages.
+         * Resolves once a message has been created for each file, or to `[]` if
+         * the server has no upload service. Each message's `upload` attribute is
+         * set to `SUCCESS` or `FAILURE` once its upload has finished. A file
+         * which is too large gets an ephemeral error message instead, whose
+         * `upload` is already `FAILURE` and whose `message` explains why.
+         * @param {File[]|FileList} files
+         * @returns {Promise<BaseMessage[]>}
          */
-        sendFiles(files: File[]): Promise<void>;
+        sendFiles(files: File[] | FileList): Promise<import("./message").default[]>;
         /**
          * Responsible for setting the editable attribute of messages.
          * If api.settings.get('allow_message_corrections') is "last", then only the last

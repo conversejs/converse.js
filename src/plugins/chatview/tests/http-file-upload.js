@@ -107,6 +107,28 @@ describe('XEP-0363: HTTP File Upload', function () {
     });
 
     describe('When not supported', function () {
+        it(
+            'sends no messages',
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 3);
+                const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid);
+                await mock.waitUntilDiscoConfirmed(
+                    _converse,
+                    _converse.domain,
+                    [{ 'category': 'server', 'type': 'IM' }],
+                    ['http://jabber.org/protocol/disco#items'],
+                    [],
+                    'info',
+                );
+                await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items');
+
+                const view = _converse.chatboxviews.get(contact_jid);
+                const messages = await view.model.sendFiles([new File(['audio'], 'voice-message.weba')]);
+                expect(messages).toEqual([]);
+            }),
+        );
+
         describe('A file upload toolbar button', function () {
             it(
                 'does not appear in private chats',
@@ -441,7 +463,9 @@ describe('XEP-0363: HTTP File Upload', function () {
                             'lastModifiedDate': '',
                             'name': 'my-juliet.jpg',
                         };
-                        view.model.sendFiles([file]);
+                        const [message] = await view.model.sendFiles([file]);
+                        expect(message.get('upload')).toBe('failure');
+                        expect(message.get('type')).toBe('error');
                         await u.waitUntil(() => view.querySelectorAll('.message').length);
                         const messages = view.querySelectorAll('.message.chat-error');
                         expect(messages.length).toBe(1);

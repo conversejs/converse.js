@@ -122,6 +122,7 @@ export type ErrorMessageAttributes = ErrorOrInfoMessageAttributes & {
     chat_state?: boolean;
     retry_event_id?: string;
     type: 'error';
+    upload?: 'failure';
 };
 export type InfoMessageAttributes = ErrorOrInfoMessageAttributes & {
     type: 'info';

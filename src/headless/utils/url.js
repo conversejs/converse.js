@@ -84,7 +84,7 @@ export function isAudioURL(url, headers) {
     if (headers?.get("content-type")?.startsWith("audio")) {
         return true;
     }
-    return checkFileTypes([".ogg", ".mp3", ".m4a"], url);
+    return checkFileTypes([".ogg", ".mp3", ".m4a", ".weba"], url);
 }
 
 /**

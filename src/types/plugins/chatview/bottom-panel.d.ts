@@ -5,6 +5,8 @@ export default class ChatBottomPanel extends CustomElement {
         };
     };
     model: any;
+    /** @type {Array<import('lit').TemplateResult|string>} */
+    plugin_content: Array<import("lit").TemplateResult | string>;
     connectedCallback(): Promise<void>;
     initialize(): Promise<void>;
     render(): import("lit-html").TemplateResult<1> | "";

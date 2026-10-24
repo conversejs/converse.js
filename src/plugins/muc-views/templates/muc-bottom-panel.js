@@ -1,5 +1,6 @@
 import '../message-form.js';
 import '../nickname-form.js';
+import 'shared/chat/composer-panels.js';
 import 'shared/chat/toolbar.js';
 import { __ } from 'i18n';
 import { api, converse } from '@converse/headless';
@@ -23,10 +24,9 @@ export default (el) => {
                   </div>`
                 : ''}
 
-            <converse-reply-preview .model=${el.model}></converse-reply-preview>
-
             ${el.model.canPostMessages()
-                ? html`<converse-muc-message-form .model=${el.model}></converse-muc-message-form>`
+                ? html`<converse-composer-panels .model=${el.model}></converse-composer-panels>
+                      <converse-muc-message-form .model=${el.model}></converse-muc-message-form>`
                 : html`<span class="muc-bottom-panel muc-bottom-panel--muted">${i18n_not_allowed}</span>`}
         `;
     } else if (conn_status == converse.ROOMSTATUS.NICKNAME_REQUIRED) {

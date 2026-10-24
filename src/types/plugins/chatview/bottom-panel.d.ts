@@ -21,6 +21,7 @@ export default class ChatBottomPanel extends CustomElement {
         target: HTMLTextAreaElement;
         value: string;
     }): Promise<void>;
+    #private;
 }
 export type EmojiPicker = import("shared/chat/emoji-picker.js").default;
 export type EmojiDropdown = import("shared/chat/emoji-dropdown.js").default;

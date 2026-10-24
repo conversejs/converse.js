@@ -339,6 +339,77 @@ hook, which lets you add, modify, or remove the action buttons on chat messages.
 The [Actions](https://github.com/conversejs/community-plugins/tree/master/packages/actions)
 community plugin uses this hook to add extra actions like `like` or `dislike` to messages.
 
+## Composer panels
+
+A composer panel is anything shown directly above the message form of a one-to-one chat or
+groupchat, such as the reply preview. Add one through the `getComposerPanels` hook. Its
+handler receives the composer panels container and the list of panels so far, and returns
+the list:
+
+```javascript
+import { _converse, api } from '@converse/headless';
+import { html } from 'lit';
+
+api.listen.on('getComposerPanels', (container, panels) => {
+    panels.push({
+        name: 'my-panel',
+        order: 250,
+        template: html`<my-panel .model=${container.model}></my-panel>`,
+    });
+    return panels;
+});
+```
+
+The container sorts panels by `order`, smallest at the top. The built-in panels use these
+values, so leave gaps to fit between them:
+
+| Panel             | Order | Shown in                  |
+| ----------------- | ----- | ------------------------- |
+| Off-hours warning | 100   | One-to-one chats only     |
+| Reply preview     | 300   | One-to-one and groupchats |
+
+Panels with the same `order` keep the order their handlers ran in. A panel without a
+numeric `order` goes below the built-in ones.
+
+A handler must return the list. Each handler receives what the previous one returned, so
+one that throws, or forgets to return the list, breaks the chain: the container then logs
+an error and shows no panels at all.
+
+The container runs the hook once, when it initializes. A handler may leave its panel out
+of chats it never applies to, as the off-hours warning does in groupchats. Anything that
+changes while the chat is open, the panel decides for itself. The usual way is a custom
+element bound to the chat model, which renders nothing while it is inactive, so that it
+takes up no space.
+
+In a groupchat the container is rendered only when the user can post messages.
+
+### The panel frame
+
+Every panel should be drawn with the shared frame, which gives it the same background,
+border and padding as the built-in panels, and a close button in the top-right corner when
+it has a close action. The frame brings its own styles, so it looks the same wherever a
+plugin renders it. Get the frame from `_converse.exports.tplComposerPanel`:
+
+```javascript
+import { _converse } from '@converse/headless';
+import { html } from 'lit';
+
+const { tplComposerPanel } = _converse.exports;
+
+tplComposerPanel({
+    kind: 'context', // or 'warning', or 'tool'
+    content: html`<span>Replying to someone</span>`,
+    close: { label: 'Cancel reply', handler: (ev) => cancelReply() },
+});
+```
+
+The `kind` sets the colour of the left border: `context` for something about the draft,
+`warning` for something to notice, and `tool` for a control, which takes the chat's colour
+(or the groupchat's). The `close` action is run by the close button, and also by Escape
+when focus is inside the panel. After a close from the keyboard, focus returns to the
+message field; a click or tap leaves it where it is. The `label` is
+the close button's accessible name, so make it say what closing does.
+
 ## Overriding templates
 
 Converse uses [Lit](https://lit.dev/) templates, which are imported as separate files.

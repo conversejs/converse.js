@@ -1,5 +1,6 @@
 import { __ } from 'i18n';
 import { html } from 'lit';
+import 'shared/chat/composer-panels.js';
 
 /**
  * @param {import('../bottom-panel').default} el
@@ -15,7 +16,7 @@ export default (el) => {
                   ▼ ${unread_msgs} ▼
               </div>`
             : ''}
-        <converse-reply-preview .model=${el.model}></converse-reply-preview>
+        <converse-composer-panels .model=${el.model}></converse-composer-panels>
         <converse-message-form .model=${el.model}></converse-message-form>
     `;
 };

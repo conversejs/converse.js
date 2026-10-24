@@ -7,6 +7,7 @@ import { api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { html, nothing } from 'lit';
 import { __ } from 'i18n';
+import tplComposerPanel from './templates/composer-panel.js';
 
 import './styles/reply-preview.scss';
 
@@ -65,22 +66,16 @@ export default class ReplyPreview extends CustomElement {
         const body = reply_message.getMessageText();
         const truncated_body = body.length > 100 ? body.slice(0, 100) + '...' : body;
 
-        return html`
-            <div class="reply-preview">
+        return tplComposerPanel({
+            kind: 'context',
+            content: html`
                 <div class="reply-preview__content">
                     <span class="reply-preview__sender">${__('Replying to %1$s', sender)}</span>
                     <span class="reply-preview__text">${truncated_body}</span>
                 </div>
-                <button
-                    type="button"
-                    class="reply-preview__cancel"
-                    @click=${() => this.cancelReply()}
-                    title="${__('Cancel reply')}"
-                >
-                    <converse-icon class="fa fa-times" size="1em"></converse-icon>
-                </button>
-            </div>
-        `;
+            `,
+            close: { label: __('Cancel reply'), handler: () => this.cancelReply() },
+        });
     }
 }
 

@@ -2,7 +2,6 @@ import { __ } from 'i18n';
 import { api, constants, u } from '@converse/headless';
 import { html } from 'lit';
 import tplTypeahead from 'shared/rich-composer/templates/typeahead.js';
-import 'shared/chat/reply-preview.js';
 
 const { CHATROOMS_TYPE } = constants;
 
@@ -25,8 +24,7 @@ export default (el) => {
     const show_send_button = api.settings.get('show_send_button');
     const show_toolbar = api.settings.get('show_toolbar');
 
-    return html`<converse-reply-preview .model=${el.model}></converse-reply-preview>
-        <form class="chat-message-form" @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}">
+    return html`<form class="chat-message-form" @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}">
             ${
                 show_toolbar
                     ? html`<converse-chat-toolbar

@@ -1,0 +1,77 @@
+@import "shared/styles/_mixins.scss";
+
+// The frame and close button shared by every composer panel. A panel keeps its
+// own stylesheet for what it says; this one is what makes them look like a family.
+
+.conversejs {
+    converse-composer-panels {
+        display: block;
+    }
+
+    // Keyed to the frame's own class rather than to the container, so that a
+    // plugin can draw the frame wherever it renders a panel.
+    .composer-panel {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        padding: 0.5em 0.75em;
+        background-color: var(--inset-bg-color);
+        border-top: 1px solid var(--chat-separator-border-color, rgba(0, 0, 0, 0.1));
+        // The context colour. The other kinds override it.
+        border-left: 3px solid var(--link-color);
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+        // Set here rather than inherited, because the groupchat's bottom panel
+        // centres its text in a smaller size.
+        font-size: var(--font-size);
+        text-align: start;
+
+        &--warning {
+            border-left-color: var(--warning-color);
+        }
+
+        // The chat's colour, unless something above the frame sets
+        // --composer-panel-accent, as a groupchat does with its own colour.
+        &--tool {
+            border-left-color: var(--composer-panel-accent, var(--chat-color));
+        }
+
+        // Keeps the text clear of the close button, so it never runs under it.
+        &--closable {
+            padding-inline-end: 2.25em;
+        }
+
+        &__icon {
+            flex-shrink: 0;
+        }
+
+        &__body {
+            flex: 1;
+            min-width: 0;
+            color: var(--foreground-color);
+        }
+
+        &__actions {
+            display: flex;
+            flex-shrink: 0;
+            gap: 0.5em;
+        }
+
+        // In the top-right corner, where a modal puts its close button. The
+        // padding-less box is 24px square, the smallest target WCAG 2.2 allows.
+        &__close {
+            @include btn-quiet;
+
+            position: absolute;
+            top: 0.25em;
+            inset-inline-end: 0.25em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            min-height: 24px;
+            padding: 0;
+            color: var(--foreground-color);
+        }
+    }
+}

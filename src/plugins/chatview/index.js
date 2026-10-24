@@ -7,11 +7,17 @@ import 'shared/chat/help-messages.js';
 import 'shared/chat/toolbar.js';
 import ChatView from './chat.js';
 import { _converse, api, converse } from '@converse/headless';
+import { html } from 'lit';
 import { clearHistory } from './utils.js';
+import tplComposerPanel from 'shared/chat/templates/composer-panel.js';
+import 'shared/chat/reply-preview.js';
 
 import './styles/index.scss';
 
 const { Strophe } = converse.env;
+
+// The reply preview's slot among the composer panels, smallest at the top.
+const REPLY_PREVIEW_ORDER = 300;
 
 converse.plugins.add('converse-chatview', {
     /* Plugin dependencies are other plugins which might be
@@ -63,8 +69,18 @@ converse.plugins.add('converse-chatview', {
         };
         Object.assign(_converse, exports); // DEPRECATED
         Object.assign(_converse.exports, exports);
+        Object.assign(_converse.exports, { tplComposerPanel });
 
         api.listen.on('connected', () => api.disco.own.features.add(Strophe.NS.SPOILER));
         api.listen.on('chatBoxClosed', (model) => clearHistory(model.get('jid')));
+
+        api.listen.on('getComposerPanels', (container, panels) => {
+            panels.push({
+                name: 'reply-preview',
+                order: REPLY_PREVIEW_ORDER,
+                template: html`<converse-reply-preview .model=${container.model}></converse-reply-preview>`,
+            });
+            return panels;
+        });
     },
 });

@@ -41,8 +41,8 @@ describe('XEP-0461 Message Replies', function () {
                 expect(chatbox.get('reply_to')).toBe(`${muc_jid}/juliet`);
 
                 // Check that the reply preview is shown
-                await u.waitUntil(() => view.querySelector('.reply-preview'));
-                const replyPreview = view.querySelector('.reply-preview');
+                await u.waitUntil(() => view.querySelector('.composer-panel--context'));
+                const replyPreview = view.querySelector('.composer-panel--context');
                 expect(replyPreview.querySelector('.reply-preview__text').textContent).toContain('Hello from juliet');
             }),
         );

@@ -48,13 +48,11 @@ describe('The XEP-0202 plugins', function () {
                 const { api } = _converse;
                 const contact_jid = await openChatWithOnlineContact(_converse);
 
-                // No UI: the element was never defined, so the tag the chat
-                // template refers to stays an inert unknown element.
+                // No UI: the element was never defined, and the plugin that
+                // would have mounted it never added it to the composer panels.
                 expect(customElements.get('converse-entity-time-alert')).toBeUndefined();
                 const view = _converse.chatboxviews.get(contact_jid);
-                const alert_el = view.querySelector('converse-entity-time-alert');
-                expect(alert_el).not.toBeNull();
-                expect(alert_el.childElementCount).toBe(0);
+                expect(view.querySelector('converse-entity-time-alert')).toBeNull();
 
                 // The protocol half is untouched, which is what lets a
                 // non-browser client reuse it.

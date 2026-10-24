@@ -1,7 +1,7 @@
 /**
- * The send policy a restricted connection is held to: which JIDs it may
- * message, and how fast. The daemon applies it to every restricted send. Full
- * access is the user's own, so it isn't policed.
+ * The send policy a restricted connection is held to: which JIDs a draft may
+ * be for, and how fast drafts are made. The daemon applies it to every
+ * restricted send. Full access is the user's own, so it isn't policed.
  * @module @converse/daemon/policy
  */
 
@@ -11,7 +11,7 @@
  * @param {() => number} [options.now] - Milliseconds since the epoch
  */
 export function createPolicy({ policy, paths }, { now = () => Date.now() } = {}) {
-    const { allow, draft, rate_limit } = policy;
+    const { allow, rate_limit } = policy;
     const window_ms = rate_limit.window * 1000;
     /** @type {number[]} When each send went through in the last window */
     let overall = [];
@@ -37,7 +37,7 @@ export function createPolicy({ policy, paths }, { now = () => Date.now() } = {})
             if (!allow.includes(jid)) {
                 return refused(
                     'allowlist',
-                    `Restricted sends only go to the JIDs listed in "policy.allow" in ${paths.config}, ` +
+                    `Restricted sends are only drafted for the JIDs listed in "policy.allow" in ${paths.config}, ` +
                         `and ${jid} isn't one of them.`,
                 );
             }
@@ -65,17 +65,6 @@ export function createPolicy({ policy, paths }, { now = () => Date.now() } = {})
             overall.push(t);
             per_conversation.set(jid, [...conversation, t]);
             return { allowed: true };
-        },
-
-        /**
-         * Whether a send to `jid` that has been admitted is queued for approval
-         * instead of going out. Queueing counts toward the limits, so an agent
-         * can't fill the approval queue any faster than it could send.
-         * @param {string} jid
-         * @returns {boolean}
-         */
-        drafted(jid) {
-            return draft === true || (Array.isArray(draft) && draft.includes(jid));
         },
     };
 }

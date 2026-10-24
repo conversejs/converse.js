@@ -9,6 +9,9 @@ import path from 'node:path';
 
 export const JID = 'romeo@montague.lit/orchard';
 
+/** The user's own account, which drafts are delivered to. */
+export const BENVOLIO = 'benvolio@montague.lit';
+
 // Headless opens its database once per process and keeps it, whatever
 // `storage_path` a later `converse.initialize` names. So the daemons a spec
 // file starts share one storage directory, removed when the file is done.
@@ -36,6 +39,7 @@ export async function createAccount(settings = {}, config = {}) {
         path.join(env.XDG_CONFIG_HOME, 'converse', 'daemon.json'),
         JSON.stringify({
             jid: 'romeo@montague.lit',
+            owner: BENVOLIO,
             password: 'secret',
             websocket_url: 'ws://montague.lit/xmpp-websocket',
             resource: 'orchard',

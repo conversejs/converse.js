@@ -1,4 +1,10 @@
+@import "shared/styles/_mixins.scss";
+
 converse-audio-recorder {
+    // The controls take the conversation's colour, like the toolbar below them.
+    --recorder-accent: var(--chat-color);
+    --btn-quiet-tint: var(--recorder-accent);
+
     display: block;
 
     .audio-recorder {
@@ -66,6 +72,27 @@ converse-audio-recorder {
             align-items: center;
             justify-content: center;
         }
+
+        .btn-cancel,
+        .btn-pause,
+        .btn-resume {
+            @include btn-quiet;
+            color: var(--recorder-accent);
+        }
+
+        // Filled with the accent, like the toolbar's send button
+        .btn-stop,
+        .btn-retry {
+            --converse-btn-color: var(--background-color);
+            --converse-btn-bg: var(--recorder-accent);
+            --converse-btn-border-color: var(--recorder-accent);
+            --converse-btn-hover-color: var(--background-color);
+            --converse-btn-hover-bg: #{btn-fill-shade(var(--recorder-accent), 18%)};
+            --converse-btn-hover-border-color: #{btn-fill-shade(var(--recorder-accent), 18%)};
+            --converse-btn-active-color: var(--background-color);
+            --converse-btn-active-bg: #{btn-fill-shade(var(--recorder-accent), 30%)};
+            --converse-btn-active-border-color: #{btn-fill-shade(var(--recorder-accent), 30%)};
+        }
     }
 
     .recorder-error {
@@ -79,8 +106,13 @@ converse-audio-recorder {
             flex: 1 1 12rem;
             margin: 0;
             color: var(--danger-color);
+            text-align: start;
         }
     }
+}
+
+.conversejs .chatroom converse-audio-recorder {
+    --recorder-accent: var(--muc-color);
 }
 
 @keyframes voice-recorder-pulse {

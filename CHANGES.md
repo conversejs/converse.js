@@ -31,6 +31,8 @@
 - fix(notifications): Don't notify of a groupchat mention or a MEP notification while the room is
   visible. Rooms now follow the same rule as 1:1 chats: notify while the chat is hidden, or always
   when `show_desktop_notifications` is `all`.
+- fix(notifications): Don't play the notification sound for an OMEMO message that couldn't be
+  decrypted. It never showed a desktop notification.
 - feat(notifications): New `api.notifications.isNotable` tells whether a received message is worth
   drawing the user's attention to, according to the notification settings.
 - fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`

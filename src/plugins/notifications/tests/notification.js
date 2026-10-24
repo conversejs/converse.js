@@ -681,5 +681,35 @@ describe('Notifications', function () {
                 expect(await api.notifications.isNotable({ attrs: forwarded, chatbox })).toBe(false);
             }),
         );
+
+        it(
+            'is false for an error or for a headline without a body',
+            mock.initConverse(converse, [], {}, async (_converse) => {
+                const { api } = _converse;
+                // For example an OMEMO message that couldn't be decrypted
+                const error = { type: 'error', is_error: true, from: 'juliet@montague.lit/phone', body: 'Hello' };
+                expect(await api.notifications.isNotable({ attrs: error })).toBe(false);
+
+                const headline = { type: 'headline', is_headline: true, from: 'notify.example.com', body: 'Mail' };
+                expect(await api.notifications.isNotable({ attrs: headline })).toBe(true);
+                expect(await api.notifications.isNotable({ attrs: { ...headline, body: undefined } })).toBe(false);
+            }),
+        );
+
+        it(
+            'is false for a message in a room that is not open',
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+                const { api } = _converse;
+                const muc_jid = 'closed@montague.lit';
+                const attrs = {
+                    type: 'groupchat',
+                    from: `${muc_jid}/juliet`,
+                    from_muc: muc_jid,
+                    body: 'Hello romeo',
+                    references: [{ begin: 6, end: 11, type: 'mention', uri: `xmpp:${muc_jid}/romeo` }],
+                };
+                expect(await api.notifications.isNotable({ attrs })).toBe(false);
+            }),
+        );
     });
 });

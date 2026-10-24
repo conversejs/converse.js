@@ -107,7 +107,7 @@ export default class AudioRecorder extends CustomElement {
         });
         this.session = session;
         this.state = REQUESTING;
-        this.#focus('.audio-recorder');
+        this.#focus('.composer-panel__close');
 
         // Whatever the configured limit, a recording that outgrew the upload
         // service's file size limit couldn't be sent, so it's stopped before it does.
@@ -174,7 +174,11 @@ export default class AudioRecorder extends CustomElement {
         // after the recorder was closed or reused can tell it's no longer current.
         const recording = { ...this.recording, interrupted: false };
         this.recording = recording;
+        // The control that has focus goes away, so a keyboard user's focus
+        // moves to the close button rather than being dropped.
+        const keyboard_focus = !!this.querySelector(':focus-visible');
         this.state = UPLOADING;
+        if (keyboard_focus) this.#focus('.composer-panel__close');
         try {
             await sendVoiceMessage(this.model, recording);
         } catch (e) {
@@ -189,17 +193,13 @@ export default class AudioRecorder extends CustomElement {
     }
 
     close() {
-        this.model.ui.set('voice_recorder', false);
-        /** @type {HTMLElement} */ (this.parentElement?.querySelector('.chat-textarea'))?.focus();
-    }
-
-    /** @param {KeyboardEvent} ev */
-    onKeyDown(ev) {
-        if (ev.key === 'Escape') {
-            ev.preventDefault();
-            ev.stopPropagation();
-            this.cancel();
+        // Like a keyboard close of any composer panel, hand focus back to the
+        // message field if the user was working the recorder from the keyboard,
+        // since the control that has focus is about to disappear.
+        if (this.querySelector(':focus-visible')) {
+            this.dispatchEvent(new CustomEvent('composerpanelclose', { bubbles: true }));
         }
+        this.model.ui.set('voice_recorder', false);
     }
 
     #tick() {

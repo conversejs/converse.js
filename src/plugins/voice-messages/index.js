@@ -4,7 +4,7 @@
  * @description Record voice messages and send them via XEP-0363 HTTP File Upload.
  */
 import { api, converse } from '@converse/headless';
-import { getRecorder, getVoiceMessageButton } from './utils.js';
+import { getRecorderPanel, getVoiceMessageButton } from './utils.js';
 import './recorder.js';
 
 import './styles/recorder.scss';
@@ -21,6 +21,6 @@ converse.plugins.add('converse-voice-messages', {
         });
 
         api.listen.on('getToolbarButtons', getVoiceMessageButton);
-        api.listen.on('getBottomPanelContent', getRecorder);
+        api.listen.on('getComposerPanels', getRecorderPanel);
     },
 });

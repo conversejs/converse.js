@@ -41,8 +41,6 @@ export default class AudioRecorder extends CustomElement {
     send(): Promise<void>;
     cancel(): void;
     close(): void;
-    /** @param {KeyboardEvent} ev */
-    onKeyDown(ev: KeyboardEvent): void;
     #private;
 }
 import { CustomElement } from 'shared/components/element.js';

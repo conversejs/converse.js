@@ -49,7 +49,7 @@ describe('The voice message recorder', function () {
                 expect(el.querySelector('.error-message').textContent).toBe(message);
                 expect(el.querySelector('.recorder-error').getAttribute('role')).toBe('alert');
                 expect(el.querySelector('.btn-retry')).toBe(null);
-                await u.waitUntil(() => document.activeElement === el.querySelector('.btn-cancel'));
+                await u.waitUntil(() => document.activeElement === el.querySelector('.composer-panel__close'));
 
                 // Keys pressed elsewhere aren't intercepted
                 for (const key of ['Escape', 'Enter', ' ']) {
@@ -58,7 +58,7 @@ describe('The voice message recorder', function () {
                     expect(ev.defaultPrevented).toBe(false);
                 }
 
-                el.querySelector('.btn-cancel').click();
+                el.querySelector('.composer-panel__close').click();
                 await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
                 expect(slotRequests(_converse).length).toBe(0);
             }),
@@ -92,7 +92,7 @@ describe('The voice message recorder', function () {
             const view = await openChat(_converse);
             await recordAndFailUpload(_converse, view);
 
-            view.querySelector('converse-audio-recorder .btn-cancel').click();
+            view.querySelector('converse-audio-recorder .composer-panel__close').click();
             await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
             await new Promise((resolve) => setTimeout(resolve, 50));
             expect(slotRequests(_converse).length).toBe(0);
@@ -154,10 +154,10 @@ describe('The voice message recorder', function () {
             media.recorder.emitData('hello');
             view.querySelector('converse-audio-recorder .btn-stop').click();
             const el = await u.waitUntil(() => view.querySelector('converse-audio-recorder .audio-recorder--uploading'));
-            expect(el.querySelector('.btn-cancel').getAttribute('aria-label')).toBe('Close');
+            expect(el.querySelector('.composer-panel__close').getAttribute('aria-label')).toBe('Close');
 
             const ev = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
-            el.dispatchEvent(ev);
+            el.querySelector('.composer-panel').dispatchEvent(ev);
             expect(ev.defaultPrevented).toBe(true);
             await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
 
@@ -200,7 +200,7 @@ describe('The voice message recorder', function () {
             media.recorder.emitData('first');
             view.querySelector('converse-audio-recorder .btn-stop').click();
             const first = await u.waitUntil(() => slotRequests(_converse)[0]);
-            view.querySelector('converse-audio-recorder .audio-recorder--uploading .btn-cancel').click();
+            view.querySelector('converse-audio-recorder .audio-recorder--uploading .composer-panel__close').click();
             await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
 
             await startRecording(view);
@@ -257,7 +257,7 @@ describe('The voice message recorder', function () {
             await new Promise((resolve) => setTimeout(resolve, 50));
             expect(slotRequests(_converse).length).toBe(0);
 
-            el.querySelector('.btn-cancel').click();
+            el.querySelector('.composer-panel__close').click();
             await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
         }),
     );

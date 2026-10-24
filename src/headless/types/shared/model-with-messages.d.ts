@@ -329,7 +329,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         omit<K extends string | number>(...args: K[]): Omit<import("@converse/skeletor").ModelAttributes, K>;
         isEmpty(): boolean;
         has(attr: string | number): boolean;
-        matches(attrs: Partial<import("@converse/skeletor").ModelAttributes>): boolean;
+        matches(attrs: Partial<import("@converse/skeletor").ModelAttributes> | ((attrs: import("@converse/skeletor").ModelAttributes) => any)): boolean;
         set(key: string | import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): any;
         unset(attr: string | number, options?: import("@converse/skeletor").ModelOptions): any;
         clear(options?: import("@converse/skeletor").ModelOptions): any;

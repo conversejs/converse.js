@@ -25,11 +25,9 @@ Dialogs close with `Escape`.
 The message history of the open chat is a live region, so screen readers
 read out new messages as they arrive.
 
-Messages in chats that are not open are announced as well, for example
-"Romeo: Are you there?" or "Romeo in Balcony: Are you there?". Converse
-announces the same messages it would show a desktop notification for: direct
-messages, and groupchat messages that mention you (see
-[notify_all_room_messages](/docs/configuration/#notify_all_room_messages)).
+For messages in other chats, Converse shows a desktop notification (see
+[show_desktop_notifications](/docs/configuration/#show_desktop_notifications)),
+which screen readers read out as well.
 
 ## Configuration
 
@@ -42,14 +40,6 @@ Pass these settings to `converse.initialize()` like any other
 - **Default**: `true`
 
 Enables the keyboard shortcuts listed above.
-
-### enable_screen_reader_announcements
-
-- **Type**: Boolean
-- **Default**: `true`
-
-Enables the announcements for messages in chats that are not open. The live
-region of the open chat is not affected.
 
 ## Reporting problems
 

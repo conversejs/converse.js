@@ -8,9 +8,24 @@ description: How to set up a development environment for Converse.
 To develop and customize Converse, you'll first need to check out Converse's Git repository:
 
 ```bash
-git clone https://github.com/conversejs/converse.js.git
+git clone --filter=blob:none https://github.com/conversejs/converse.js.git
 cd converse.js
 ```
+
+Converse has been around for a long time and its Git history is large. The
+`--filter=blob:none` option makes a blobless clone: you get the full commit history,
+but the contents of older file versions are only downloaded when a command such as
+`git blame` or `git log -p` needs them. Cloning is much faster, and you can still
+work with the history as usual.
+
+If you don't need the history at all, for example to build Converse or try out a
+patch, a shallow clone is faster still:
+
+```bash
+git clone --depth 1 https://github.com/conversejs/converse.js.git
+```
+
+You can later fetch the full history of a shallow clone with `git fetch --unshallow`.
 
 We use development tools which depend on Node.js and NPM (the Node package manager). Make sure you have these installed on your system.
 

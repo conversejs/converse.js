@@ -22,7 +22,7 @@ You can also download and install [Converse Desktop](https://github.com/converse
 Or set up your own instance:
 
 ```bash
-git clone git@github.com:conversejs/converse.js.git
+git clone --filter=blob:none git@github.com:conversejs/converse.js.git
 cd converse.js
 git clone https://github.com/conversejs/media.git media; // To see images like sponsorship logos
 npm install
@@ -31,6 +31,10 @@ npm run serve -- -p 8008
 ```
 
 You can then open http://localhost:8008/dev.html in your browser to access Converse.
+
+The repository has a long history, so `--filter=blob:none` makes a blobless clone,
+which downloads the contents of older file versions only when they're needed.
+Use `--depth 1` instead if you don't need the history at all.
 
 See our [quickstart guide](https://conversejs.org/docs/quickstart/) for more details.
 

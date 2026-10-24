@@ -81,8 +81,8 @@ This package is used internally by Converse.js but can also be used independentl
 To contribute or run tests locally:
 
 ```bash
-git clone https://github.com/conversejs/converse.js.git
-cd src/log
+git clone --filter=blob:none https://github.com/conversejs/converse.js.git
+cd converse.js/src/log
 npm install
 npm test
 ```

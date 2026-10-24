@@ -11,7 +11,7 @@ import { ERRORS, RPCError } from './protocol.js';
 const { Strophe } = converse.env;
 const { CHATROOMS_TYPE } = constants;
 
-const EVENT_TYPES = ['message'];
+const EVENT_TYPES = ['message', 'draft'];
 const DIRECTIONS = ['incoming', 'outgoing'];
 
 /**
@@ -44,18 +44,48 @@ export function createEvents(_converse) {
         if (chatbox.get('type') === CHATROOMS_TYPE || message.get('is_archived')) return;
 
         const dto = toMessageDTO(message, chatbox.get('jid'), ownJID());
-        for (const [subscription, { client, filter, once }] of subscriptions) {
-            if (!matches(filter, dto, ownJID())) continue;
-            client.notify({ subscription, type: 'message', message: dto });
-            if (once) subscriptions.delete(subscription);
+        notify('message', dto, { message: dto });
+    }
+
+    /**
+     * Calls each subscription of `type` whose filter accepts the event. Ends
+     * the ones that were made to take only one.
+     * @param {import('./types').Subscription['type']} type
+     * @param {import('./types').MessageDTO} dto - What the filters are matched against
+     * @param {Record<string, unknown>} fields - The event's own fields
+     */
+    function notify(type, dto, fields) {
+        for (const [subscription, sub] of subscriptions) {
+            if (sub.type !== type || !matches(sub.filter, dto, ownJID())) continue;
+            sub.client.notify({ subscription, type, ...fields });
+            if (sub.once) subscriptions.delete(subscription);
         }
     }
 
     return {
+        /**
+         * Announces a draft to draft subscribers. A draft is an outgoing
+         * message from us, so the filters read it as one: the conversation
+         * filter is against whom it's addressed.
+         * @param {'queued'|'edited'|'approved'|'rejected'} action
+         * @param {import('./types').Draft} draft
+         */
+        publishDraft(action, draft) {
+            const as_message = {
+                id: draft.id,
+                conversation: draft.to,
+                from: ownJID(),
+                direction: 'outgoing',
+                time: draft.created,
+                body: draft.body,
+            };
+            notify('draft', as_message, { action, draft });
+        },
+
         methods: {
             /**
              * @param {Object} params
-             * @param {string} [params.type] - Only "message" for now
+             * @param {string} [params.type] - "message" (the default) or "draft"
              * @param {string} [params.conversation] - A JID
              * @param {string} [params.from] - A JID
              * @param {'incoming'|'outgoing'} [params.direction]
@@ -65,9 +95,9 @@ export function createEvents(_converse) {
              * @returns {{ subscription: number }}
              */
             'events.subscribe'(params, client) {
-                const { filter, once } = parseSubscription(params);
+                const { type, filter, once } = parseSubscription(params);
                 const subscription = next_id++;
-                subscriptions.set(subscription, { client, filter, once });
+                subscriptions.set(subscription, { client, type, filter, once });
                 return { subscription };
             },
 
@@ -97,7 +127,7 @@ export function createEvents(_converse) {
 
 /**
  * @param {Object} params
- * @returns {{ filter: import('./types').EventFilter, once: boolean }}
+ * @returns {{ type: import('./types').Subscription['type'], filter: import('./types').EventFilter, once: boolean }}
  */
 function parseSubscription({ type = 'message', conversation, from, direction, mention = false, once = false }) {
     if (!EVENT_TYPES.includes(type)) {
@@ -110,6 +140,7 @@ function parseSubscription({ type = 'message', conversation, from, direction, me
         throw new RPCError(ERRORS.INVALID_PARAMS, '"mention" and "once" must be true or false.');
     }
     return {
+        type,
         filter: {
             conversation: conversation === undefined ? undefined : parseJID(conversation, 'conversation'),
             from: from === undefined ? undefined : parseJID(from, 'from'),

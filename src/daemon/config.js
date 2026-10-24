@@ -21,6 +21,7 @@ const BARE_JID = /^[^@/\s]+@[^@/\s]+$/;
  */
 const DEFAULT_POLICY = {
     allow: [],
+    draft: false, // true: every restricted send is queued for approval. A list: only sends to those JIDs are
     rate_limit: { per_conversation: 5, overall: 20, window: 60 }, // Sends per window, in seconds
 };
 
@@ -92,16 +93,27 @@ export function loadConfig(env = process.env) {
  */
 function parsePolicy(raw, config_path) {
     const allow = raw?.allow ?? DEFAULT_POLICY.allow;
+    const draft = raw?.draft ?? DEFAULT_POLICY.draft;
     const rate_limit = { ...DEFAULT_POLICY.rate_limit, ...(raw?.rate_limit ?? {}) };
-    if (!Array.isArray(allow) || !allow.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
+    const isJIDList = (value) =>
+        Array.isArray(value) && value.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()));
+    if (!isJIDList(allow)) {
         throw new Error(`"policy.allow" in ${config_path} must be a list of bare JIDs.`);
+    }
+    if (typeof draft !== 'boolean' && !isJIDList(draft)) {
+        throw new Error(`"policy.draft" in ${config_path} must be true, false, or a list of bare JIDs.`);
     }
     for (const key of Object.keys(DEFAULT_POLICY.rate_limit)) {
         if (!Number.isInteger(rate_limit[key]) || rate_limit[key] < 1) {
             throw new Error(`"policy.rate_limit.${key}" in ${config_path} must be a whole number of at least 1.`);
         }
     }
-    return { allow: allow.map((jid) => jid.trim().toLowerCase()), rate_limit };
+    const normalise = (jids) => jids.map((jid) => jid.trim().toLowerCase());
+    return {
+        allow: normalise(allow),
+        draft: typeof draft === 'boolean' ? draft : normalise(draft),
+        rate_limit,
+    };
 }
 
 /**
@@ -130,6 +142,7 @@ function getPaths(jid, env) {
         log: path.join(state_home, 'converse', `${jid}.log`),
         cursors: path.join(state_home, 'converse', `${name}.cursors.json`),
         audit: path.join(state_home, 'converse', `${jid}.audit.jsonl`),
+        drafts: path.join(state_home, 'converse', `${name}.drafts.json`),
     };
 }
 

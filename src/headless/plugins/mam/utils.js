@@ -159,6 +159,8 @@ export async function handleMAMResult(model, result, query, options, should_page
  * @param {('forwards'|'backwards'|false)} [should_page=false] - Determines whether
  *  this function should recursively page through the entire result set if a limited
  *  number of results were returned.
+ * @returns {Promise<import('./types').MAMQueryResult|undefined>} The archive's
+ *  answer, which has an `error` if the query failed. Undefined if no query was made.
  */
 export async function fetchArchivedMessages(model, options = {}, should_page = false) {
     if (model.disable_mam) return;
@@ -202,6 +204,7 @@ export async function fetchArchivedMessages(model, options = {}, should_page = f
             createGapPlaceholder(model, options, result);
         }
     }
+    return result;
 }
 
 /**

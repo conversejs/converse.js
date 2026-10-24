@@ -5,3 +5,10 @@ updates:
   schedule:
     interval: weekly
   open-pull-requests-limit: 10
+  groups:
+    # lexical and its @lexical/* packages must move together: each pins the
+    # others, so bumping one alone nests a second copy of lexical and breaks types
+    lexical:
+      patterns:
+        - "lexical"
+        - "@lexical/*"

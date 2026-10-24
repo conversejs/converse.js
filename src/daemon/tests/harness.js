@@ -28,9 +28,10 @@ export { JID };
  * @param {Parameters<typeof serve>[0]['archive']} [options.archive]
  * @param {Record<string, unknown>} [options.settings] - More headless settings
  * @param {Parameters<typeof serve>[0]['mam_mode']} [options.mam_mode]
+ * @param {Partial<import('../types').Policy>} [options.policy] - The send policy, from the config file
  */
-export async function startDaemon({ roster = [], server_features, archive, settings, mam_mode } = {}) {
-    const { env, remove } = await createAccount(settings);
+export async function startDaemon({ roster = [], server_features, archive, settings, mam_mode, policy } = {}) {
+    const { env, remove } = await createAccount(settings, policy ? { policy } : {});
     const config = loadConfig(env);
     const daemon = await start(config);
     const connection = api.connection.get();

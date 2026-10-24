@@ -12,6 +12,17 @@ import { promisify } from 'node:util';
 
 const DEFAULT_RESOURCE = 'claude';
 const DEFAULT_CONSUMER = 'claude';
+const ACCESS_LEVELS = ['restricted', 'full'];
+const BARE_JID = /^[^@/\s]+@[^@/\s]+$/;
+
+/**
+ * Agents get restricted access and may send to nobody until the user lists
+ * them, so a fresh install can't send anything.
+ */
+const DEFAULT_POLICY = {
+    allow: [],
+    rate_limit: { per_conversation: 5, overall: 20, window: 60 }, // Sends per window, in seconds
+};
 
 /**
  * The longest unix socket path every platform accepts (macOS allows 104 bytes).
@@ -51,8 +62,13 @@ export function loadConfig(env = process.env) {
     }
 
     const jid = typeof raw.jid === 'string' ? raw.jid.trim().toLowerCase() : '';
-    if (!(/^[^@/\s]+@[^@/\s]+$/).test(jid)) {
+    if (!BARE_JID.test(jid)) {
         throw new Error(`"jid" in ${config_path} must be a bare JID such as "you@example.org".`);
+    }
+
+    const access = raw.access ?? 'restricted';
+    if (!ACCESS_LEVELS.includes(access)) {
+        throw new Error(`"access" in ${config_path} must be one of: ${ACCESS_LEVELS.join(', ')}.`);
     }
 
     return {
@@ -61,9 +77,31 @@ export function loadConfig(env = process.env) {
         websocket_url: raw.websocket_url,
         resource: raw.resource || DEFAULT_RESOURCE,
         consumer: raw.consumer || DEFAULT_CONSUMER,
+        // The access level the CLI connects at. Restricted unless the user says otherwise.
+        access,
+        policy: parsePolicy(raw.policy, config_path),
         settings: raw.settings ?? {},
         paths: getPaths(jid, env),
     };
+}
+
+/**
+ * @param {unknown} raw - The "policy" object from the config file, if any
+ * @param {string} config_path
+ * @returns {import('./types').Policy}
+ */
+function parsePolicy(raw, config_path) {
+    const allow = raw?.allow ?? DEFAULT_POLICY.allow;
+    const rate_limit = { ...DEFAULT_POLICY.rate_limit, ...(raw?.rate_limit ?? {}) };
+    if (!Array.isArray(allow) || !allow.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
+        throw new Error(`"policy.allow" in ${config_path} must be a list of bare JIDs.`);
+    }
+    for (const key of Object.keys(DEFAULT_POLICY.rate_limit)) {
+        if (!Number.isInteger(rate_limit[key]) || rate_limit[key] < 1) {
+            throw new Error(`"policy.rate_limit.${key}" in ${config_path} must be a whole number of at least 1.`);
+        }
+    }
+    return { allow: allow.map((jid) => jid.trim().toLowerCase()), rate_limit };
 }
 
 /**
@@ -81,15 +119,17 @@ function getPaths(jid, env) {
     const state_home = env.XDG_STATE_HOME || path.join(os.homedir(), '.local', 'state');
     // A unix socket's path can't be longer than about 104 bytes (108 on Linux,
     // less the terminator), so a long JID gets a hash of it instead.
-    const fits = Buffer.byteLength(path.join(runtime_dir, `${jid}.sock`)) <= MAX_SOCKET_PATH;
+    const fits = Buffer.byteLength(path.join(runtime_dir, `${jid}.restricted.sock`)) <= MAX_SOCKET_PATH;
     const name = fits ? jid : crypto.createHash('sha256').update(jid).digest('hex').slice(0, 16);
     return {
         config: getConfigPath(env),
         runtime_dir,
         socket: path.join(runtime_dir, `${name}.sock`),
+        restricted_socket: path.join(runtime_dir, `${name}.restricted.sock`),
         pidfile: path.join(runtime_dir, `${name}.pid`),
         log: path.join(state_home, 'converse', `${jid}.log`),
         cursors: path.join(state_home, 'converse', `${name}.cursors.json`),
+        audit: path.join(state_home, 'converse', `${jid}.audit.jsonl`),
     };
 }
 

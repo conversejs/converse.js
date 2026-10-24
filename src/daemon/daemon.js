@@ -7,7 +7,9 @@ import net from 'node:net';
 import readline from 'node:readline';
 import { _converse, api, converse, log } from '@converse/headless';
 import { getPassword } from './config.js';
+import { createCursors } from './cursors.js';
 import { createEvents } from './events.js';
+import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
 import { claimPidfile } from './pidfile.js';
 import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
@@ -52,6 +54,7 @@ async function serve(config) {
     const events = createEvents(_converse);
     const methods = {
         ...messageMethods(_converse),
+        ...inboxMethods(_converse, createCursors(paths.cursors)),
         ...events.methods,
         /** @returns {import('./types').Status} */
         'daemon.status': () => ({
@@ -157,7 +160,7 @@ function serveClient(socket, { config, methods, getJID, events }) {
 
     const send = (message) => socket.writable && socket.write(JSON.stringify({ jsonrpc: '2.0', ...message }) + '\n');
     /** @type {import('./types').Client} */
-    const client = { notify: (params) => send({ method: 'event', params }) };
+    const client = { consumer: null, notify: (params) => send({ method: 'event', params }) };
     socket.once('close', () => events.forget(client));
 
     const call = (method, params) => {
@@ -178,6 +181,7 @@ function serveClient(socket, { config, methods, getJID, events }) {
                 access: 'full',
                 jid: getJID(),
             };
+            client.consumer = hello.consumer;
             return hello;
         }
         if (!hello) {

@@ -155,7 +155,7 @@ function findMessage(messages, id, own_jid) {
  * @param {import('@converse/headless').RosterContact|null} contact - Its roster name is set by the user
  * @returns {import('./types').ConversationDTO}
  */
-function toConversationDTO(jid, contact) {
+export function toConversationDTO(jid, contact) {
     return { jid, type: 'chat', name: contact?.get('nickname') || null };
 }
 

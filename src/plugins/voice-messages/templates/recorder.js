@@ -13,16 +13,22 @@ const tplBusy = (message) => html`
 `;
 
 /**
+ * @param {string} label
+ * @param {() => void} onclick
+ */
+const tplCloseButton = (label, onclick) => html`
+    <button type="button" class="btn btn-cancel" title="${label}" aria-label="${label}" @click=${onclick}>
+        <converse-icon class="fa fa-times" size="1em"></converse-icon>
+    </button>
+`;
+
+/**
  * The upload carries on in the chat after the recorder is closed.
  * @param {import('../recorder').default} el
  */
 const tplUploading = (el) => html`
     ${tplBusy(__('Sending voice message…'))}
-    <div class="recorder-controls">
-        <button type="button" class="btn btn-outline-secondary btn-cancel" @click=${() => el.close()}>
-            ${__('Close')}
-        </button>
-    </div>
+    <div class="recorder-controls">${tplCloseButton(__('Close'), () => el.close())}</div>
 `;
 
 /**
@@ -43,18 +49,10 @@ function tplRecording(el) {
             <span class="visually-hidden" aria-live="polite">${el.time_warning}</span>
         </div>
         <div class="recorder-controls">
+            ${tplCloseButton(i18n_cancel, () => el.cancel())}
             <button
                 type="button"
-                class="btn btn-outline-secondary btn-cancel"
-                title="${i18n_cancel}"
-                aria-label="${i18n_cancel}"
-                @click=${() => el.cancel()}
-            >
-                <converse-icon class="fa fa-times" size="1em"></converse-icon>
-            </button>
-            <button
-                type="button"
-                class="btn btn-outline-secondary ${paused ? 'btn-resume' : 'btn-pause'}"
+                class="btn ${paused ? 'btn-resume' : 'btn-pause'}"
                 title="${i18n_pause}"
                 aria-label="${i18n_pause}"
                 @click=${() => (paused ? el.resume() : el.pause())}
@@ -63,12 +61,12 @@ function tplRecording(el) {
             </button>
             <button
                 type="button"
-                class="btn btn-primary btn-stop"
+                class="btn btn-stop"
                 title="${i18n_send}"
                 aria-label="${i18n_send}"
                 @click=${() => el.stop()}
             >
-                <converse-icon class="fa fa-paper-plane" size="1em"></converse-icon>
+                <converse-icon class="fa fa-paper-plane" color="var(--background-color)" size="1em"></converse-icon>
             </button>
         </div>
     `;
@@ -83,14 +81,12 @@ const tplError = (el) => html`
         <div class="recorder-controls">
             ${
                 el.recording
-                    ? html`<button type="button" class="btn btn-primary btn-retry" @click=${() => el.send()}>
+                    ? html`<button type="button" class="btn btn-retry" @click=${() => el.send()}>
                           ${el.recording.interrupted ? __('Send') : __('Retry')}
                       </button>`
                     : ''
             }
-            <button type="button" class="btn btn-outline-secondary btn-cancel" @click=${() => el.cancel()}>
-                ${el.recording ? __('Discard') : __('Close')}
-            </button>
+            ${tplCloseButton(el.recording ? __('Discard recording') : __('Close'), () => el.cancel())}
         </div>
     </div>
 `;

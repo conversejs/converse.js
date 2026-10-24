@@ -154,7 +154,7 @@ describe('The voice message recorder', function () {
             media.recorder.emitData('hello');
             view.querySelector('converse-audio-recorder .btn-stop').click();
             const el = await u.waitUntil(() => view.querySelector('converse-audio-recorder .audio-recorder--uploading'));
-            expect(el.querySelector('.btn-cancel').textContent.trim()).toBe('Close');
+            expect(el.querySelector('.btn-cancel').getAttribute('aria-label')).toBe('Close');
 
             const ev = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
             el.dispatchEvent(ev);

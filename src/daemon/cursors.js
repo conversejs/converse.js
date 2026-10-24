@@ -5,22 +5,15 @@
  * headless keeps and which no consumer touches.
  * @module @converse/daemon/cursors
  */
-import fs from 'node:fs';
-import path from 'node:path';
+import { readStateFile, writeStateFile } from './state-file.js';
 
 /**
  * @param {string} file - Where the cursors are kept, in the account's state directory
  */
 export function createCursors(file) {
-    const state = load(file);
-
-    function save() {
-        fs.mkdirSync(path.dirname(file), { recursive: true, mode: 0o700 });
-        // Written beside the file and renamed over it, so a crash mid-write
-        // leaves the previous version intact.
-        fs.writeFileSync(`${file}.tmp`, JSON.stringify(state, null, 2), { mode: 0o600 });
-        fs.renameSync(`${file}.tmp`, file);
-    }
+    /** @type {import('./types').CursorState} */
+    const state = readStateFile(file, { consumers: {} }, 'the read cursors');
+    const save = () => writeStateFile(file, state);
 
     /**
      * The consumer's record, created the first time the consumer is seen.
@@ -63,17 +56,4 @@ export function createCursors(file) {
             save();
         },
     };
-}
-
-/**
- * @param {string} file
- * @returns {import('./types').CursorState}
- */
-function load(file) {
-    try {
-        return JSON.parse(fs.readFileSync(file, 'utf8'));
-    } catch (e) {
-        if (e.code === 'ENOENT') return { consumers: {} };
-        throw new Error(`Couldn't read the read cursors in ${file}: ${e.message}`, { cause: e });
-    }
 }

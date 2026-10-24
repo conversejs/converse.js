@@ -180,7 +180,7 @@ describe('Event subscriptions', () => {
     it('refuses a filter it cannot apply, saying what is wrong with it', async () => {
         await expect(client.request('events.subscribe', { type: 'presence' })).rejects.toMatchObject({
             code: ERRORS.INVALID_PARAMS,
-            message: '"type" must be one of: message.',
+            message: '"type" must be one of: message, draft.',
         });
         await expect(client.request('events.subscribe', { direction: 'sideways' })).rejects.toMatchObject({
             code: ERRORS.INVALID_PARAMS,

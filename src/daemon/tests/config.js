@@ -45,7 +45,7 @@ describe('The account configuration', () => {
             resource: 'claude',
             consumer: 'claude',
             access: 'restricted',
-            policy: { allow: [], rate_limit: { per_conversation: 5, overall: 20, window: 60 } },
+            policy: { allow: [], draft: false, rate_limit: { per_conversation: 5, overall: 20, window: 60 } },
             settings: {},
             paths: {
                 config: path.join(dir, 'converse', 'daemon.json'),
@@ -56,6 +56,7 @@ describe('The account configuration', () => {
                 log: expect.stringMatching(/\/converse\/romeo@montague\.lit\.log$/),
                 cursors: expect.stringMatching(/\/converse\/romeo@montague\.lit\.cursors\.json$/),
                 audit: expect.stringMatching(/\/converse\/romeo@montague\.lit\.audit\.jsonl$/),
+                drafts: expect.stringMatching(/\/converse\/romeo@montague\.lit\.drafts\.json$/),
             },
         });
     });
@@ -70,8 +71,16 @@ describe('The account configuration', () => {
         expect(access).toBe('full');
         expect(policy).toEqual({
             allow: ['juliet@capulet.lit'],
+            draft: false,
             rate_limit: { per_conversation: 5, overall: 3, window: 60 },
         });
+    });
+
+    it('reads a draft setting that is either all sends or a list of JIDs to draft', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', policy: { draft: true } });
+        expect(loadConfig(env).policy.draft).toBe(true);
+        await writeConfig({ jid: 'romeo@montague.lit', policy: { draft: ['Juliet@Capulet.lit'] } });
+        expect(loadConfig(env).policy.draft).toEqual(['juliet@capulet.lit']);
     });
 
     it('refuses an access level it does not know', async () => {
@@ -83,6 +92,8 @@ describe('The account configuration', () => {
     it('refuses a send policy it cannot use', async () => {
         await writeConfig({ jid: 'romeo@montague.lit', policy: { allow: ['juliet'] } });
         expect(() => loadConfig(env)).toThrow('"policy.allow" in');
+        await writeConfig({ jid: 'romeo@montague.lit', policy: { draft: 'yes' } });
+        expect(() => loadConfig(env)).toThrow('"policy.draft" in');
         await writeConfig({ jid: 'romeo@montague.lit', policy: { rate_limit: { overall: 0 } } });
         expect(() => loadConfig(env)).toThrow('"policy.rate_limit.overall" in');
     });

@@ -11,7 +11,7 @@
  * @param {() => number} [options.now] - Milliseconds since the epoch
  */
 export function createPolicy({ policy, paths }, { now = () => Date.now() } = {}) {
-    const { allow, rate_limit } = policy;
+    const { allow, draft, rate_limit } = policy;
     const window_ms = rate_limit.window * 1000;
     /** @type {number[]} When each send went through in the last window */
     let overall = [];
@@ -65,6 +65,17 @@ export function createPolicy({ policy, paths }, { now = () => Date.now() } = {})
             overall.push(t);
             per_conversation.set(jid, [...conversation, t]);
             return { allowed: true };
+        },
+
+        /**
+         * Whether a send to `jid` that has been admitted is queued for approval
+         * instead of going out. Queueing counts toward the limits, so an agent
+         * can't fill the approval queue any faster than it could send.
+         * @param {string} jid
+         * @returns {boolean}
+         */
+        drafted(jid) {
+            return draft === true || (Array.isArray(draft) && draft.includes(jid));
         },
     };
 }

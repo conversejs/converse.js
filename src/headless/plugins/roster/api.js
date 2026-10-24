@@ -57,6 +57,29 @@ export default {
         },
 
         /**
+         * Whether a contact identifies itself as a bot, i.e. one of its online
+         * resources advertises the XEP-0030 identity `client/bot`.
+         *
+         * The identity is self-declared, so this is a label for people and
+         * must not gate anything else. It answers from the identities already
+         * known and never issues a disco#info query, so it's safe to call while
+         * rendering. A resource whose identities haven't been looked up yet
+         * doesn't count, so a contact is "not known to be a bot", not "a person".
+         *
+         * @method _converse.api.contacts.isBot
+         * @param {string} jid - A bare JID, or a full JID for one resource.
+         * @returns {boolean}
+         */
+        isBot(jid) {
+            const bare_jid = Strophe.getBareJidFromJid(jid);
+            const resource = Strophe.getResourceFromJid(jid);
+            const presence = _converse.state.presences?.get(bare_jid);
+            const names = resource ? [resource] : (presence?.resources.pluck('name') ?? []);
+            const entities = names.map((name) => _converse.state.disco_entities?.get(`${bare_jid}/${name}`));
+            return entities.some((entity) => !!entity?.identities.findWhere({ category: 'client', type: 'bot' }));
+        },
+
+        /**
          * Remove a contact from the roster
          * @param {string} jid
          * @param {boolean} [unsubscribe] - Whether we should unsubscribe

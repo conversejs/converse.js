@@ -17,8 +17,10 @@ const MAX_LIMIT = 1000;
  * @param {Object} deps
  * @param {ReturnType<typeof import('./policy.js').createPolicy>} deps.policy
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
+ * @param {ReturnType<typeof import('./drafts.js').createDraftStore>} deps.drafts
+ * @param {ReturnType<typeof import('./events.js').createEvents>} deps.events
  */
-export function messageMethods(_converse, { policy, audit }) {
+export function messageMethods(_converse, { policy, audit, drafts, events }) {
     const { api } = _converse;
     const ownJID = () => _converse.session.get('bare_jid');
 
@@ -80,7 +82,8 @@ export function messageMethods(_converse, { policy, audit }) {
 
         /**
          * Restricted connections are held to the send policy. A refusal is a
-         * result, not an error, and it's audited like a send.
+         * result, not an error, and it's audited like a send. A send the policy
+         * wants a person to approve is queued as a draft instead.
          * @param {Object} params
          * @param {string} params.to - A JID
          * @param {string} params.body
@@ -92,33 +95,52 @@ export function messageMethods(_converse, { policy, audit }) {
             if (typeof body !== 'string' || !body.trim()) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, 'There is nothing to send: "body" is empty.');
             }
-            const verdict = client.access === 'restricted' ? policy.admit(jid) : { allowed: true };
-            if (!verdict.allowed) {
-                audit.record({ consumer: client.consumer, to: jid, outcome: 'refused', rule: verdict.rule });
-                return { outcome: 'refused', rule: verdict.rule, message: verdict.message };
+            if (client.access === 'restricted') {
+                const verdict = policy.admit(jid);
+                if (!verdict.allowed) {
+                    audit.record({ consumer: client.consumer, to: jid, outcome: 'refused', rule: verdict.rule });
+                    return { outcome: 'refused', rule: verdict.rule, message: verdict.message };
+                }
+                if (policy.drafted(jid)) {
+                    // Queued even without a connection: the draft waits for the user, not for the server.
+                    const draft = drafts.add({ to: jid, body, consumer: client.consumer });
+                    audit.record({ consumer: client.consumer, to: jid, outcome: 'draft', draft: draft.id });
+                    events.publishDraft('queued', draft);
+                    return { outcome: 'draft', draft_id: draft.id };
+                }
             }
-            if (!api.connection.connected()) {
-                throw new RPCError(
-                    ERRORS.NOT_CONNECTED,
-                    'The daemon is not connected to the server, so nothing was sent. ' +
-                        'Check "converse-cli daemon status", then try again.',
-                );
-            }
-            const chat = await api.chats.get(jid, {}, true);
-            await chat.initialized;
-            const message = await chat.sendMessage({ body });
-            // Headless returns nothing when it can't build the stanza, and then nothing was sent.
-            if (!message) {
-                throw new RPCError(
-                    ERRORS.INTERNAL_ERROR,
-                    "The message couldn't be built, so nothing was sent. Try again.",
-                );
-            }
-            const dto = toMessageDTO(message, jid, ownJID());
+            const dto = await sendMessage(_converse, jid, body);
             audit.record({ consumer: client.consumer, to: jid, outcome: 'sent', id: dto.id });
             return { outcome: 'sent', message: dto };
         },
     };
+}
+
+/**
+ * Sends a message to a contact, once whoever asked has been cleared to: policy
+ * has let it through, or a full client has approved a draft.
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {string} jid - Bare JID
+ * @param {string} body
+ * @returns {Promise<import('./types').MessageDTO>}
+ */
+export async function sendMessage(_converse, jid, body) {
+    const { api } = _converse;
+    if (!api.connection.connected()) {
+        throw new RPCError(
+            ERRORS.NOT_CONNECTED,
+            'The daemon is not connected to the server, so nothing was sent. ' +
+                'Check "converse-cli daemon status", then try again.',
+        );
+    }
+    const chat = await api.chats.get(jid, {}, true);
+    await chat.initialized;
+    const message = await chat.sendMessage({ body });
+    // Headless returns nothing when it can't build the stanza, and then nothing was sent.
+    if (!message) {
+        throw new RPCError(ERRORS.INTERNAL_ERROR, "The message couldn't be built, so nothing was sent. Try again.");
+    }
+    return toMessageDTO(message, jid, _converse.session.get('bare_jid'));
 }
 
 /**

@@ -11,7 +11,14 @@ import { connect, DaemonUnavailableError, getConfigPath, loadConfig, stopDaemon 
 import { ERRORS, RPCError } from '@converse/daemon/protocol';
 import pkg from './package.json' with { type: 'json' };
 import { EXIT } from './exit-codes.js';
-import { formatConversation, formatDuration, formatMessage, MAX_BODY_LENGTH, parseSince } from './format.js';
+import {
+    formatConversation,
+    formatDraft,
+    formatDuration,
+    formatMessage,
+    MAX_BODY_LENGTH,
+    parseSince,
+} from './format.js';
 
 /**
  * @param {NodeJS.ProcessEnv} env
@@ -41,8 +48,14 @@ Commands:
                        Text that starts with a dash needs "--" before it, so it
                        isn't read as an option: send <jid> -- -1 for yes
                        At restricted access, the default, the JID must be listed
-                       in "policy.allow" in the config file
-  wait                 Wait for the next incoming message that matches, print
+                       in "policy.allow" in the config file. A send the config's
+                       "policy.draft" holds for approval is queued, not sent
+  drafts list          List the sends waiting for the user's approval (full access)
+  drafts approve <id>  Send a draft as it stands, and remove it from the queue
+  drafts edit <id> [text]  Change a draft's text; it stays queued. Without [text],
+                       it's read from stdin
+  drafts reject <id>   Remove a draft without sending it
+  wait                Wait for the next incoming message that matches, print
                        it and exit. Only messages that arrive after wait starts
                        are considered: use read for earlier ones
     --from <jid>       Only messages from this JID
@@ -88,6 +101,13 @@ class UsageError extends Error {}
 const EXIT_FOR_ERROR = {
     [ERRORS.NOT_FOUND]: EXIT.NOT_FOUND,
     [ERRORS.AMBIGUOUS]: EXIT.AMBIGUOUS,
+};
+
+/** How the outcome of a send maps onto exit codes. */
+const EXIT_FOR_OUTCOME = {
+    sent: EXIT.OK,
+    refused: EXIT.REFUSED,
+    draft: EXIT.DRAFT,
 };
 
 /**
@@ -180,14 +200,34 @@ const accessFor = (env) => loadConfig(env).access;
  * @param {Object} [params]
  * @param {Object} [options]
  * @param {boolean} [options.spawn]
+ * @param {import('@converse/daemon/types').Access} [options.access] - Defaults to the configured level
  */
-async function request({ env }, method, params, { spawn = true } = {}) {
-    const client = await connect({ spawn, env, access: accessFor(env) });
+async function request({ env }, method, params, { spawn = true, access = accessFor(env) } = {}) {
+    const client = await connect({ spawn, env, access });
     try {
         return await client.request(method, params);
     } finally {
         client.close();
     }
+}
+
+/**
+ * Prints what became of a send, whether it was made or approved from a draft.
+ * @param {import('@converse/daemon/types').SendResult} result
+ * @param {import('./types').Context} ctx
+ * @returns {number} The exit code.
+ */
+function reportSend(result, { options, out, err }) {
+    if (options.json) {
+        out(JSON.stringify(result) + '\n');
+    } else if (result.outcome === 'sent') {
+        out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
+    } else if (result.outcome === 'draft') {
+        out(`Queued as draft ${result.draft_id}. It isn't sent until the user approves it.\n`);
+    } else {
+        err(`converse-cli: ${result.message}\n`);
+    }
+    return EXIT_FOR_OUTCOME[result.outcome];
 }
 
 /**
@@ -241,14 +281,58 @@ const COMMANDS = {
         const body = words.length ? words.join(' ') : await readStdin(ctx);
         /** @type {import('@converse/daemon/types').SendResult} */
         const result = await request(ctx, 'messages.send', { to, body });
+        return reportSend(result, { options, out, err });
+    },
+
+    // Drafts are the user's to decide on, so these always ask for full access.
+    async 'drafts list'(ctx) {
+        const { options, out, err } = ctx;
+        /** @type {{ drafts: import('@converse/daemon/types').Draft[] }} */
+        const { drafts } = await request(ctx, 'drafts.list', {}, { access: 'full' });
         if (options.json) {
-            out(JSON.stringify(result) + '\n');
-        } else if (result.outcome === 'sent') {
-            out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
+            drafts.forEach((d) => out(JSON.stringify(d) + '\n'));
+        } else if (drafts.length) {
+            const now = new Date();
+            drafts.forEach((d) => out(formatDraft(d, { full: options.full, now })));
         } else {
-            err(`converse-cli: ${result.message}\n`);
+            err('No drafts.\n');
         }
-        return result.outcome === 'refused' ? EXIT.REFUSED : EXIT.OK;
+        return EXIT.OK;
+    },
+
+    async 'drafts approve'(ctx) {
+        const id = takeOne(ctx, 'draft id');
+        /** @type {import('@converse/daemon/types').SendResult} */
+        const result = await request(ctx, 'drafts.approve', { id }, { access: 'full' });
+        return reportSend(result, ctx);
+    },
+
+    async 'drafts edit'(ctx) {
+        const { args, options, out } = ctx;
+        if (args.length === 0) throw new UsageError('Expected a draft id to edit.');
+        const [id, ...words] = args;
+        const body = words.length ? words.join(' ') : await readStdin(ctx);
+        /** @type {{ draft: import('@converse/daemon/types').Draft }} */
+        const { draft } = await request(ctx, 'drafts.edit', { id, body }, { access: 'full' });
+        if (options.json) {
+            out(JSON.stringify(draft) + '\n');
+        } else {
+            out(`Edited draft ${draft.id}. It's still waiting for approval.\n`);
+        }
+        return EXIT.OK;
+    },
+
+    async 'drafts reject'(ctx) {
+        const { options, out } = ctx;
+        const id = takeOne(ctx, 'draft id');
+        /** @type {{ draft: import('@converse/daemon/types').Draft }} */
+        const { draft } = await request(ctx, 'drafts.reject', { id }, { access: 'full' });
+        if (options.json) {
+            out(JSON.stringify(draft) + '\n');
+        } else {
+            out(`Rejected draft ${draft.id}. Nothing was sent.\n`);
+        }
+        return EXIT.OK;
     },
 
     async conversations(ctx) {

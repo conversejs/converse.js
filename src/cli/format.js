@@ -28,14 +28,38 @@ export const SHORT_ID_LENGTH = 8;
  */
 export function formatMessage(message, { full = false, now = new Date() } = {}) {
     const time = new Date(message.time);
-    const chars = [...(message.body ?? '')];
+    return (
+        `${message.id.slice(0, SHORT_ID_LENGTH)}  ${formatTime(time)} (${formatAgo(time, now)})  ` +
+        `${message.from}  ${formatBody(message.body, { full })}\n`
+    );
+}
+
+/**
+ * One draft, on one line: its id, when it was queued, who it's for, and its body.
+ * @param {import('@converse/daemon/types').Draft} draft
+ * @param {Object} options
+ * @param {boolean} [options.full] - Don't truncate the body.
+ * @param {Date} [options.now]
+ */
+export function formatDraft(draft, { full = false, now = new Date() } = {}) {
+    const time = new Date(draft.created);
+    return (
+        `${draft.id}  ${formatTime(time)} (${formatAgo(time, now)})  to ${draft.to}  ` +
+        `${formatBody(draft.body, { full })}\n`
+    );
+}
+
+/**
+ * @param {string|null} text
+ * @param {Object} options
+ * @param {boolean} options.full
+ */
+function formatBody(text, { full }) {
+    const chars = [...(text ?? '')];
     const truncated = !full && chars.length > MAX_BODY_LENGTH;
     const body = JSON.stringify(truncated ? chars.slice(0, MAX_BODY_LENGTH).join('') : chars.join(''));
     const more = truncated ? ` [+${chars.length - MAX_BODY_LENGTH} chars, --full to show]` : '';
-    return (
-        `${message.id.slice(0, SHORT_ID_LENGTH)}  ${formatTime(time)} (${formatAgo(time, now)})  ` +
-        `${message.from}  ${body}${more}\n`
-    );
+    return body + more;
 }
 
 /**

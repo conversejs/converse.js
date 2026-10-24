@@ -36,14 +36,16 @@ export class DaemonUnavailableError extends Error {
  * `spawn` is false.
  * @param {Object} [options]
  * @param {string} [options.consumer] - Who is connecting; defaults to the configured consumer.
+ * @param {import('./types').Access} [options.access='full'] - Which socket to connect to
  * @param {boolean} [options.spawn=true]
  * @param {NodeJS.ProcessEnv} [options.env]
  */
-export async function connect({ consumer, spawn: may_spawn = true, env = process.env } = {}) {
+export async function connect({ consumer, access = 'full', spawn: may_spawn = true, env = process.env } = {}) {
     const config = loadConfig(env);
+    const socket_path = access === 'restricted' ? config.paths.restricted_socket : config.paths.socket;
     let socket;
     try {
-        socket = await openSocket(config.paths.socket);
+        socket = await openSocket(socket_path);
     } catch (e) {
         if (!may_spawn) {
             throw new DaemonUnavailableError(
@@ -51,7 +53,7 @@ export async function connect({ consumer, spawn: may_spawn = true, env = process
                 { cause: e },
             );
         }
-        socket = await spawnDaemon(config, env);
+        socket = await spawnDaemon(config, socket_path, env);
     }
     const client = new Client(socket);
     try {
@@ -212,10 +214,11 @@ function openSocket(socket_path) {
  * its socket accepts a connection. Fails early if the daemon exits first,
  * pointing at the log, which says why.
  * @param {import('./types').Config} config
+ * @param {string} socket_path - The socket the client is waiting for
  * @param {NodeJS.ProcessEnv} env
  * @returns {Promise<net.Socket>}
  */
-async function spawnDaemon(config, env) {
+async function spawnDaemon(config, socket_path, env) {
     const { paths } = config;
     fs.mkdirSync(path.dirname(paths.log), { recursive: true });
     const log_fd = fs.openSync(paths.log, 'a', 0o600);
@@ -233,7 +236,7 @@ async function spawnDaemon(config, env) {
     const deadline = Date.now() + SPAWN_TIMEOUT;
     while (Date.now() < deadline) {
         try {
-            return await openSocket(paths.socket);
+            return await openSocket(socket_path);
         } catch {
             // Ours exits if another client's daemon took the pidfile first. That one serves us too.
             if (exit_code !== null && (await pidfileHolder(paths.pidfile)) === null) {
@@ -245,6 +248,6 @@ async function spawnDaemon(config, env) {
         }
     }
     throw new DaemonUnavailableError(
-        `The daemon didn't open ${paths.socket} within ${SPAWN_TIMEOUT / 1000}s. See ${paths.log}.`,
+        `The daemon didn't open ${socket_path} within ${SPAWN_TIMEOUT / 1000}s. See ${paths.log}.`,
     );
 }

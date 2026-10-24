@@ -44,16 +44,47 @@ describe('The account configuration', () => {
             websocket_url: 'wss://montague.lit/ws',
             resource: 'claude',
             consumer: 'claude',
+            access: 'restricted',
+            policy: { allow: [], rate_limit: { per_conversation: 5, overall: 20, window: 60 } },
             settings: {},
             paths: {
                 config: path.join(dir, 'converse', 'daemon.json'),
                 runtime_dir: path.join(dir, 'run', 'converse'),
                 socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.sock'),
+                restricted_socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.restricted.sock'),
                 pidfile: path.join(dir, 'run', 'converse', 'romeo@montague.lit.pid'),
                 log: expect.stringMatching(/\/converse\/romeo@montague\.lit\.log$/),
                 cursors: expect.stringMatching(/\/converse\/romeo@montague\.lit\.cursors\.json$/),
+                audit: expect.stringMatching(/\/converse\/romeo@montague\.lit\.audit\.jsonl$/),
             },
         });
+    });
+
+    it('reads the access level and the send policy, lowercasing the allowlist', async () => {
+        await writeConfig({
+            jid: 'romeo@montague.lit',
+            access: 'full',
+            policy: { allow: ['Juliet@Capulet.lit '], rate_limit: { overall: 3 } },
+        });
+        const { access, policy } = loadConfig(env);
+        expect(access).toBe('full');
+        expect(policy).toEqual({
+            allow: ['juliet@capulet.lit'],
+            rate_limit: { per_conversation: 5, overall: 3, window: 60 },
+        });
+    });
+
+    it('refuses an access level it does not know', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', access: 'root' });
+        expect(() => loadConfig(env)).toThrow('"access" in');
+        expect(() => loadConfig(env)).toThrow('must be one of: restricted, full.');
+    });
+
+    it('refuses a send policy it cannot use', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', policy: { allow: ['juliet'] } });
+        expect(() => loadConfig(env)).toThrow('"policy.allow" in');
+        await writeConfig({ jid: 'romeo@montague.lit', policy: { rate_limit: { overall: 0 } } });
+        expect(() => loadConfig(env)).toThrow('"policy.rate_limit.overall" in');
     });
 
     it('names the socket after a hash of the JID when the JID would make its path too long', async () => {

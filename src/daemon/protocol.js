@@ -30,6 +30,7 @@ export const ERRORS = {
     NOT_CONNECTED: -32002, // The daemon has no XMPP session right now
     NOT_FOUND: -32003, // No such contact, conversation or message
     AMBIGUOUS: -32004, // More than one match; `data.candidates` lists them
+    ACCESS_DENIED: -32005, // The method needs full access, and this connection is restricted
 };
 
 /**

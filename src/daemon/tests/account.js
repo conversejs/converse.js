@@ -20,9 +20,10 @@ process.once('exit', () => fsSync.rmSync(STORAGE_DIR, { recursive: true, force: 
  * directories under a temporary directory, with a config file that puts the
  * daemon on the MockConnection.
  * @param {Record<string, unknown>} [settings] - More headless settings for the daemon
+ * @param {Record<string, unknown>} [config] - More of the account configuration, such as a send policy
  * @returns {Promise<{ env: NodeJS.ProcessEnv, remove: () => Promise<void> }>}
  */
-export async function createAccount(settings = {}) {
+export async function createAccount(settings = {}, config = {}) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-daemon-test-'));
     const env = {
         ...process.env,
@@ -38,6 +39,7 @@ export async function createAccount(settings = {}) {
             password: 'secret',
             websocket_url: 'ws://montague.lit/xmpp-websocket',
             resource: 'orchard',
+            ...config,
             settings: {
                 // This BOSH URL is what makes headless pick its MockConnection
                 // (see `isTestEnv`). BOSH itself is disabled under Node, so the

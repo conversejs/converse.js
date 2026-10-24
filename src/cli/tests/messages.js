@@ -34,7 +34,10 @@ describe('converse-cli read and send', () => {
     }
 
     beforeAll(async () => {
-        daemon = await startDaemon({ roster: [{ jid: JULIET, name: 'Juliet Capulet' }] });
+        daemon = await startDaemon({
+            roster: [{ jid: JULIET, name: 'Juliet Capulet' }],
+            policy: { allow: [JULIET] },
+        });
         await receive('a1b2c3d4e5f6', 'Wherefore art thou?', '2026-10-20T10:00:00.123Z');
         await receive('a1b2ffff0000', 'Line one\nLine two "quoted"', '2026-10-21T10:00:00Z');
         await receive('b0b0b0b0b0b0', 'x'.repeat(300), '2026-10-22T10:00:00Z');
@@ -50,9 +53,7 @@ describe('converse-cli read and send', () => {
         expect(lines).toHaveLength(2);
         expect(lines[0]).toMatch(/^a1b2ffff {2}2026-10-21T10:00:00Z \(\d+d ago\) {2}juliet@capulet\.lit {2}/);
         expect(lines[0]).toMatch(/ {2}"Line one\\nLine two \\"quoted\\""$/);
-        expect(lines[1]).toMatch(
-            new RegExp(`^b0b0b0b0 .* {2}"${'x'.repeat(280)}" \\[\\+20 chars, --full to show\\]$`),
-        );
+        expect(lines[1]).toMatch(new RegExp(`^b0b0b0b0 .* {2}"${'x'.repeat(280)}" \\[\\+20 chars, --full to show\\]$`));
     });
 
     it('shows long bodies whole with --full', async () => {
@@ -62,7 +63,12 @@ describe('converse-cli read and send', () => {
 
     it('prints DTOs as JSON lines with --json', async () => {
         const { stdout } = await run(daemon.env, 'read', JULIET, '--json', '--before', 'a1b2f');
-        expect(stdout.trim().split('\n').map((l) => JSON.parse(l))).toEqual([
+        expect(
+            stdout
+                .trim()
+                .split('\n')
+                .map((l) => JSON.parse(l)),
+        ).toEqual([
             {
                 id: 'a1b2c3d4e5f6',
                 conversation: JULIET,
@@ -76,7 +82,12 @@ describe('converse-cli read and send', () => {
 
     it('accepts --since as a duration or an ISO time', async () => {
         let { stdout } = await run(daemon.env, 'read', JULIET, '--since', '2026-10-21T00:00:00Z');
-        expect(stdout.split('\n').filter(Boolean).map((l) => l.slice(0, 8))).toEqual(['a1b2ffff', 'b0b0b0b0']);
+        expect(
+            stdout
+                .split('\n')
+                .filter(Boolean)
+                .map((l) => l.slice(0, 8)),
+        ).toEqual(['a1b2ffff', 'b0b0b0b0']);
 
         ({ stdout } = await run(daemon.env, 'read', JULIET, '--since', '100000d'));
         expect(stdout.split('\n').filter(Boolean)).toHaveLength(3);
@@ -141,6 +152,20 @@ describe('converse-cli read and send', () => {
         expect(code).toBe(EXIT.OK);
         const stanza = daemon.connection.sent_stanzas.filter((s) => s.nodeName === 'message').at(-1);
         expect(stanza.querySelector('body').textContent).toBe('-1 for yes');
+    });
+
+    it('exits with "refused by policy" and says which rule refused it, for a send off the allowlist', async () => {
+        const result = await run(daemon.env, 'send', 'tybalt@capulet.lit', 'Draw!');
+        expect(result.code).toBe(EXIT.REFUSED);
+        expect(result.stdout).toBe('');
+        expect(result.stderr).toContain('converse-cli: Restricted sends only go to the JIDs listed in "policy.allow"');
+        expect(result.stderr).toMatch(/ and tybalt@capulet\.lit isn't one of them\.\n$/);
+    });
+
+    it('prints a refusal as JSON with --json', async () => {
+        const { code, stdout } = await run(daemon.env, 'send', '--json', 'tybalt@capulet.lit', 'Draw!');
+        expect(code).toBe(EXIT.REFUSED);
+        expect(JSON.parse(stdout)).toMatchObject({ outcome: 'refused', rule: 'allowlist' });
     });
 
     it('refuses to send nothing', async () => {

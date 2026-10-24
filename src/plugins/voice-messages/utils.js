@@ -121,15 +121,19 @@ export function getVoiceMessageButton(toolbar_el, buttons) {
 }
 
 /**
- * `getBottomPanelContent` handler: the recorder, which renders nothing until opened.
- * @param {import('plugins/chatview/bottom-panel').default} panel
- * @param {Array<import('lit').TemplateResult|string>} content
+ * `getComposerPanels` handler: the recorder, which renders nothing until opened.
+ * @param {import('shared/chat/composer-panels').default} container
+ * @param {import('shared/chat/types').ComposerPanelEntry[]} panels
  */
-export function getRecorder(panel, content) {
-    if (isVoiceChat(panel.model)) {
-        content.push(html`<converse-audio-recorder .model=${panel.model}></converse-audio-recorder>`);
+export function getRecorderPanel(container, panels) {
+    if (isVoiceChat(container.model)) {
+        panels.push({
+            name: 'voice-recorder',
+            order: 200,
+            template: html`<converse-audio-recorder .model=${container.model}></converse-audio-recorder>`,
+        });
     }
-    return content;
+    return panels;
 }
 
 /**

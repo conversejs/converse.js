@@ -29,11 +29,11 @@ export function getUploadDurationLimit(bitrate: number): Promise<number>;
  */
 export function getVoiceMessageButton(toolbar_el: import("shared/chat/toolbar").ChatToolbar, buttons: Array<import("lit").TemplateResult | string>): (string | import("lit-html").TemplateResult<1 | 2 | 3>)[];
 /**
- * `getBottomPanelContent` handler: the recorder, which renders nothing until opened.
- * @param {import('plugins/chatview/bottom-panel').default} panel
- * @param {Array<import('lit').TemplateResult|string>} content
+ * `getComposerPanels` handler: the recorder, which renders nothing until opened.
+ * @param {import('shared/chat/composer-panels').default} container
+ * @param {import('shared/chat/types').ComposerPanelEntry[]} panels
  */
-export function getRecorder(panel: import("plugins/chatview/bottom-panel").default, content: Array<import("lit").TemplateResult | string>): (string | import("lit-html").TemplateResult<1 | 2 | 3>)[];
+export function getRecorderPanel(container: import("shared/chat/composer-panels").default, panels: import("shared/chat/types").ComposerPanelEntry[]): import("shared/chat/types").ComposerPanelEntry[];
 /**
  * Upload a recording and send it out as a file message.
  * Resolves once the upload has succeeded.

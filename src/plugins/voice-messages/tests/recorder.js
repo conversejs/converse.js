@@ -2,7 +2,7 @@ import { vi } from 'vitest';
 import { userEvent } from '@vitest/browser/context';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
-import { installFakeMedia, openChat, settings, startRecording } from './utils.js';
+import { answerSlotRequest, fakeUploads, installFakeMedia, openChat, settings, startRecording } from './utils.js';
 
 const { u } = converse.env;
 
@@ -37,7 +37,7 @@ describe('The voice message recorder', function () {
             recorder.auto_stop = false;
             recorder.emitData('hello');
 
-            view.querySelector('converse-audio-recorder .btn-cancel').click();
+            view.querySelector('converse-audio-recorder .composer-panel__close').click();
             await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
             expect(view.model.ui.get('voice_recorder')).toBe(false);
             expect(media.tracks.every((t) => t.stopped)).toBe(true);
@@ -61,12 +61,41 @@ describe('The voice message recorder', function () {
             await startRecording(view);
             media.recorder.emitData('hello');
 
-            view.querySelector('converse-audio-recorder .btn-cancel').focus();
+            view.querySelector('converse-audio-recorder .composer-panel__close').focus();
             await userEvent.keyboard('{Enter}');
             await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
             await new Promise((resolve) => setTimeout(resolve, 50));
             expect(slotRequests(_converse).length).toBe(0);
             expect(media.tracks.every((t) => t.stopped)).toBe(true);
+        }),
+    );
+
+    it(
+        'returns focus to the message field after sending from the keyboard',
+        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+            const media = installFakeMedia();
+            const view = await openChat(_converse);
+            await startRecording(view);
+            media.recorder.emitData('hello');
+
+            const send = view.querySelector('converse-audio-recorder .btn-stop');
+            await u.waitUntil(
+                () => document.activeElement === view.querySelector('converse-audio-recorder .btn-pause'),
+            );
+            await userEvent.keyboard('{Tab}');
+            expect(document.activeElement).toBe(send);
+            await userEvent.keyboard('{Enter}');
+
+            // The Send button goes away while uploading, so focus moves to the close button
+            await u.waitUntil(() => view.querySelector('converse-audio-recorder .audio-recorder--uploading'));
+            await u.waitUntil(
+                () => document.activeElement === view.querySelector('converse-audio-recorder .composer-panel__close'),
+            );
+
+            fakeUploads(201);
+            await answerSlotRequest(_converse);
+            await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
+            expect(document.activeElement).toBe(view.querySelector('.chat-textarea'));
         }),
     );
 

@@ -1,28 +1,14 @@
 @import "shared/styles/_mixins.scss";
 
+// The frame and the close button come from the composer panel. This is only
+// what the recorder puts inside it.
 converse-audio-recorder {
     // The controls take the conversation's colour, like the toolbar below them.
-    --recorder-accent: var(--chat-color);
+    // A groupchat sets --composer-panel-accent; a one-to-one chat doesn't.
+    --recorder-accent: var(--composer-panel-accent, var(--chat-color));
     --btn-quiet-tint: var(--recorder-accent);
 
     display: block;
-
-    .audio-recorder {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-        padding: 0.5rem 0.75rem;
-        border-top: 1px solid var(--subdued-color);
-        background-color: var(--background-color);
-        color: var(--foreground-color);
-
-        &:focus-visible {
-            outline: 2px solid var(--focus-color);
-            outline-offset: -2px;
-        }
-    }
 
     .recorder-status,
     .recorder-busy {
@@ -60,11 +46,9 @@ converse-audio-recorder {
         background-color: var(--warning-color);
     }
 
-    .recorder-controls {
-        display: flex;
-        gap: 0.5rem;
-        margin-inline-start: auto;
-
+    // Scoped to the panel's actions so the accent variables outrank the generic
+    // `.conversejs .btn` rules.
+    .composer-panel__actions {
         .btn {
             min-width: 2.5rem;
             min-height: 2.5rem;
@@ -73,7 +57,6 @@ converse-audio-recorder {
             justify-content: center;
         }
 
-        .btn-cancel,
         .btn-pause,
         .btn-resume {
             @include btn-quiet;
@@ -95,24 +78,11 @@ converse-audio-recorder {
         }
     }
 
-    .recorder-error {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem;
-        width: 100%;
-
-        .error-message {
-            flex: 1 1 12rem;
-            margin: 0;
-            color: var(--danger-color);
-            text-align: start;
-        }
+    .error-message {
+        margin: 0;
+        color: var(--danger-color);
+        text-align: start;
     }
-}
-
-.conversejs .chatroom converse-audio-recorder {
-    --recorder-accent: var(--muc-color);
 }
 
 @keyframes voice-recorder-pulse {

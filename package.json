@@ -140,7 +140,7 @@
     "webpack-merge": "^6.0.1"
   },
   "dependencies": {
-    "@babel/runtime": "^7.27.6",
+    "@babel/runtime": "^8.0.7",
     "@converse/log": "file:src/log",
     "@lexical/code": "^0.47.0",
     "@lexical/history": "^0.47.0",

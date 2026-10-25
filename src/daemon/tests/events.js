@@ -190,9 +190,9 @@ describe('Event subscriptions', () => {
             code: ERRORS.INVALID_PARAMS,
             message: '"mention" and "once" must be true or false.',
         });
-        await expect(client.request('events.subscribe', { from: 'not a jid' })).rejects.toMatchObject({
+        await expect(client.request('events.subscribe', { from: '' })).rejects.toMatchObject({
             code: ERRORS.INVALID_PARAMS,
-            message: '"from" must be a JID such as "juliet@capulet.lit".',
+            message: '"from" must be a JID, or the name of a contact.',
         });
     });
 

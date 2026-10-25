@@ -87,6 +87,7 @@ export interface MessagesAware {
     queueMessage(attrs: MessageAttributes): any;
     getOutgoingMessageAttributes(attrs?: MessageAttributes): Promise<MessageAttributes>;
     getReferencedMessage(reply_to_id: string): BaseMessage | undefined;
+    takeReplyAttributes(attrs?: MessageAttributes): Pick<MessageAttributes, 'reply_to_id' | 'reply_to'>;
     addReplyFallback(attrs: MessageAttributes): MessageAttributes;
     sendMessage(attrs?: any): Promise<BaseMessage>;
     retractOwnMessage(message: BaseMessage): void;

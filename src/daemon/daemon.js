@@ -15,6 +15,7 @@ import { createEvents } from './events.js';
 import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
 import { presenceMethods } from './presence.js';
+import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
 import { createPolicy } from './policy.js';
 import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
 
@@ -72,6 +73,7 @@ async function serve(config) {
     const policy = createPolicy(config);
     const audit = createAudit(paths.audit);
     const drafts = createDraftStore(paths.drafts);
+    const rooms = createRoomStore(paths.rooms);
     // Headless sets up its client identity on connect, so the bot identity has to be set after that.
     api.listen.on('addClientFeatures', () => {
         api.disco.own.identities.clear();
@@ -83,6 +85,7 @@ async function serve(config) {
         ...inboxMethods(_converse, createCursors(paths.cursors)),
         ...contactMethods(_converse),
         ...presenceMethods(_converse, { config }),
+        ...roomMethods(_converse, { config, policy, store: rooms }),
         ...events.methods,
         /** @returns {import('./types').Status} */
         'daemon.status': () => ({
@@ -118,6 +121,8 @@ async function serve(config) {
     ];
 
     await api.user.login(`${config.jid}/${config.resource}`, password);
+    // Not awaited: a room that takes a while to confirm mustn't hold up the socket.
+    rejoinRooms(_converse, rooms);
 
     const { promise: stopped, resolve: resolveStopped } = Promise.withResolvers();
     let stopping;

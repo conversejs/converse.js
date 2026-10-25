@@ -6,8 +6,12 @@
  * @module @converse/daemon/inbox
  */
 import { isMessage } from './history.js';
-import { toConversationDTO, toMessageDTO } from './messages.js';
+import { constants } from '@converse/headless';
+import { toConversationDTO, toMessageDTO, toRoomDTO } from './messages.js';
 import { ERRORS, RPCError } from './protocol.js';
+
+/** @param {import('@converse/headless').ChatBox} box - A chat or a room */
+const isRoom = (box) => box.get('type') === constants.CHATROOMS_TYPE;
 
 /**
  * @param {import('@converse/headless').ConversePrivateGlobal} _converse
@@ -36,13 +40,16 @@ export function inboxMethods(_converse, cursors) {
      */
     async function survey() {
         const surveyed = [];
-        for (const chat of (await api.chats.get()) ?? []) {
+        const conversations = [...((await api.chats.get()) ?? []), ...((await api.rooms.get()) ?? [])];
+        for (const chat of conversations) {
             await chat.messages.fetched;
             const jid = chat.get('jid');
-            const contact = await api.contacts.get(jid);
             const messages = chat.messages.models.filter(isMessage).map((m) => toMessageDTO(m, jid, ownJID()));
             if (messages.length) {
-                surveyed.push({ jid, conversation: toConversationDTO(jid, contact), messages, last: messages.at(-1) });
+                const conversation = isRoom(chat)
+                    ? toRoomDTO(chat)
+                    : toConversationDTO(jid, await api.contacts.get(jid));
+                surveyed.push({ jid, conversation, messages, last: messages.at(-1) });
             }
         }
         return surveyed.sort((a, b) => Date.parse(b.last.time) - Date.parse(a.last.time));

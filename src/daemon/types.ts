@@ -8,6 +8,7 @@ export type Paths = {
     cursors: string; // Each consumer's read cursors
     audit: string; // Every send, draft and refusal, one JSON line each
     drafts: string; // Drafts awaiting the owner's decision, and the id each was given
+    rooms: string; // The rooms the daemon is meant to be in, and the nickname it uses in each
 };
 
 /**
@@ -18,8 +19,10 @@ export type Access = 'full' | 'restricted';
 
 export type Policy = {
     allow: string[]; // Bare JIDs that restricted sends may be drafted for
+    rooms: string[]; // Bare JIDs of rooms that restricted access may send to, and join or leave
     rate_limit: {
-        per_conversation: number; // Restricted sends to one JID per window
+        per_conversation: number; // Restricted sends to one contact per window
+        per_room: number; // Restricted sends to one room per window
         overall: number; // Restricted sends to anyone per window
         window: number; // Seconds
     };
@@ -55,8 +58,8 @@ export type Status = {
 
 export type ConversationDTO = {
     jid: string; // Bare JID of the contact or room
-    type: 'chat';
-    name: string | null; // The roster name, if they're a contact
+    type: 'chat' | 'groupchat'; // A groupchat is a MUC room
+    name: string | null; // The roster name for a contact, or the room's name for a room
 };
 
 export type MessageDTO = {
@@ -65,10 +68,31 @@ export type MessageDTO = {
     // message accept any of the three, or a unique prefix of this one.
     id: string;
     conversation: string; // Bare JID
-    from: string; // Bare JID of the sender
+    // In a chat, the sender's bare JID. In a room, the sender's occupant JID,
+    // the room's JID with the sender's nickname as resource.
+    from: string;
+    nick: string | null; // In a room, the sender's nickname; null in a chat
     direction: 'incoming' | 'outgoing';
     time: string; // ISO 8601
     body: string | null; // Untrusted: written by whoever sent the message
+};
+
+/**
+ * Someone in a room, as `rooms.occupants` shows them.
+ */
+export type OccupantDTO = {
+    nick: string;
+    jid: string | null; // Their bare JID, when the room reveals it
+    role: string; // "moderator", "participant", "visitor" or "none"
+    affiliation: string; // "owner", "admin", "member", "outcast" or "none"
+};
+
+/**
+ * A room the daemon has joined, or a room on a service, as `rooms.discover` lists it.
+ */
+export type RoomListing = {
+    jid: string;
+    name: string | null;
 };
 
 export type MessageList = {
@@ -96,7 +120,7 @@ export type SendResult =
     | { outcome: 'sent'; message: MessageDTO }
     | {
           outcome: 'refused';
-          rule: 'allowlist' | 'rate_conversation' | 'rate_overall';
+          rule: 'allowlist' | 'rate_conversation' | 'room_allowlist' | 'rate_room' | 'rate_overall';
           message: string;
       }
     | { outcome: 'draft'; draft_id: string };
@@ -133,7 +157,16 @@ export type EventFilter = {
     conversation?: string; // Bare JID
     from?: string; // Bare JID
     direction?: 'incoming' | 'outgoing';
-    mention?: boolean; // The body names our account
+    mention?: boolean; // The body names us: by our nickname in a room, else by our JID's name
+};
+
+/**
+ * What the from and mention filters are matched against, which a message's
+ * DTO doesn't carry for a room.
+ */
+export type EventSender = {
+    sender: string | null; // The sender's bare JID. In a room, null unless the room reveals it.
+    own_name: string | null; // The name we're addressed by: our nickname in a room, else our JID's name
 };
 
 export type Subscription = {

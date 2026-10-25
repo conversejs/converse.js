@@ -97,6 +97,7 @@ describe('converse-cli wait', () => {
             id: expect.any(String),
             conversation: MERCUTIO,
             from: MERCUTIO,
+            nick: null,
             direction: 'incoming',
             time: expect.any(String),
             body: expect.stringMatching(/^Good morrow \d+$/),

@@ -7,8 +7,9 @@ import { converse } from '@converse/headless';
 import { getPage, hasArchivedMessages } from './history.js';
 import { draftNotice } from './notices.js';
 import { ERRORS, RPCError } from './protocol.js';
+import { resolveJID } from './resolve.js';
 
-const { Strophe, u } = converse.env;
+const { Strophe } = converse.env;
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 1000;
@@ -31,14 +32,14 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
          * The recent messages of a conversation: from the local store, and
          * from the server's archive where that falls short.
          * @param {Object} params
-         * @param {string} params.conversation - A JID
+         * @param {string} params.conversation - A JID, or a contact's name
          * @param {number} [params.limit]
          * @param {string} [params.before] - Only messages older than the one with this id
          * @param {string} [params.since] - Only messages at or after this ISO 8601 time
          * @returns {Promise<import('./types').MessageList>}
          */
         async 'messages.list'({ conversation, limit = DEFAULT_LIMIT, before, since }) {
-            const jid = parseJID(conversation, 'conversation');
+            const jid = await resolveJID(_converse, conversation, 'conversation');
             if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, `"limit" must be a whole number from 1 to ${MAX_LIMIT}.`);
             }
@@ -87,13 +88,13 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
          * result, not an error, and it's audited like a send. A send the policy
          * wants a person to approve is queued as a draft instead.
          * @param {Object} params
-         * @param {string} params.to - A JID
+         * @param {string} params.to - A JID, or a contact's name
          * @param {string} params.body
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>}
          */
         async 'messages.send'({ to, body }, client) {
-            const jid = parseJID(to, 'to');
+            const jid = await resolveJID(_converse, to, 'to');
             if (typeof body !== 'string' || !body.trim()) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, 'There is nothing to send: "body" is empty.');
             }
@@ -148,19 +149,6 @@ export async function sendMessage(_converse, jid, body) {
         throw new RPCError(ERRORS.INTERNAL_ERROR, "The message couldn't be built, so nothing was sent. Try again.");
     }
     return toMessageDTO(message, jid, _converse.session.get('bare_jid'));
-}
-
-/**
- * @param {unknown} value
- * @param {string} name - The parameter's name, for the error message.
- * @returns {string} The bare JID
- */
-export function parseJID(value, name) {
-    const jid = typeof value === 'string' ? Strophe.getBareJidFromJid(value.trim()).toLowerCase() : '';
-    if (!u.isValidJID(jid)) {
-        throw new RPCError(ERRORS.INVALID_PARAMS, `"${name}" must be a JID such as "juliet@capulet.lit".`);
-    }
-    return jid;
 }
 
 /**

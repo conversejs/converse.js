@@ -5,8 +5,9 @@
  * @module @converse/daemon/events
  */
 import { constants, converse } from '@converse/headless';
-import { parseJID, toMessageDTO } from './messages.js';
+import { toMessageDTO } from './messages.js';
 import { ERRORS, RPCError } from './protocol.js';
+import { resolveJID } from './resolve.js';
 
 const { Strophe } = converse.env;
 const { CHATROOMS_TYPE } = constants;
@@ -86,16 +87,16 @@ export function createEvents(_converse) {
             /**
              * @param {Object} params
              * @param {string} [params.type] - "message" (the default) or "draft"
-             * @param {string} [params.conversation] - A JID
-             * @param {string} [params.from] - A JID
+             * @param {string} [params.conversation] - A JID, or a contact's name
+             * @param {string} [params.from] - A JID, or a contact's name
              * @param {'incoming'|'outgoing'} [params.direction]
              * @param {boolean} [params.mention] - Whether the body names our account
              * @param {boolean} [params.once] - End the subscription after the first event
              * @param {import('./types').Client} client
              * @returns {{ subscription: number }}
              */
-            'events.subscribe'(params, client) {
-                const { type, filter, once } = parseSubscription(params);
+            async 'events.subscribe'(params, client) {
+                const { type, filter, once } = await parseSubscription(_converse, params);
                 const subscription = next_id++;
                 subscriptions.set(subscription, { client, type, filter, once });
                 return { subscription };
@@ -126,10 +127,14 @@ export function createEvents(_converse) {
 }
 
 /**
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
  * @param {Object} params
- * @returns {{ type: import('./types').Subscription['type'], filter: import('./types').EventFilter, once: boolean }}
+ * @returns {Promise<{ type: import('./types').Subscription['type'], filter: import('./types').EventFilter, once: boolean }>}
  */
-function parseSubscription({ type = 'message', conversation, from, direction, mention = false, once = false }) {
+async function parseSubscription(
+    _converse,
+    { type = 'message', conversation, from, direction, mention = false, once = false },
+) {
     if (!EVENT_TYPES.includes(type)) {
         throw new RPCError(ERRORS.INVALID_PARAMS, `"type" must be one of: ${EVENT_TYPES.join(', ')}.`);
     }
@@ -142,8 +147,9 @@ function parseSubscription({ type = 'message', conversation, from, direction, me
     return {
         type,
         filter: {
-            conversation: conversation === undefined ? undefined : parseJID(conversation, 'conversation'),
-            from: from === undefined ? undefined : parseJID(from, 'from'),
+            conversation:
+                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation'),
+            from: from === undefined ? undefined : await resolveJID(_converse, from, 'from'),
             direction,
             mention,
         },

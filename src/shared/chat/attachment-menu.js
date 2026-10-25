@@ -145,6 +145,7 @@ export default class AttachmentMenu extends DropdownBase {
                             class="dropdown-item attachment-menu__item"
                             role="menuitem"
                             data-name="${item.name}"
+                            @mousemove=${(/** @type {MouseEvent} */ ev) => this.#onItemHover(ev)}
                             @click=${(/** @type {MouseEvent} */ ev) => this.#activate(ev, item)}
                         >
                             <converse-icon color="var(${color})" class="fa ${item.icon}" size="1em"></converse-icon>
@@ -166,6 +167,15 @@ export default class AttachmentMenu extends DropdownBase {
      */
     updated(changed) {
         if (!this.button && this.items.length) super.firstUpdated(changed);
+    }
+
+    /**
+     * Move focus to the item under the pointer, so that the one highlight
+     * follows the mouse rather than staying on the item that was focused on open.
+     * @param {MouseEvent} ev
+     */
+    #onItemHover(ev) {
+        /** @type {HTMLElement} */ (ev.currentTarget).focus();
     }
 
     /**

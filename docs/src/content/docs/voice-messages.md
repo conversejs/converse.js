@@ -11,12 +11,12 @@ play it with their usual audio player, in Converse or any other client.
 
 ## Enabling voice messages
 
-The plugin is included in the Converse build but is not enabled by default.
-Add it to [whitelisted_plugins](/docs/configuration/#whitelisted_plugins):
+The plugin is enabled by default. To turn it off, add it to
+[blacklisted_plugins](/docs/configuration/#blacklisted_plugins):
 
 ```javascript
 converse.initialize({
-    whitelisted_plugins: ['converse-voice-messages'],
+    blacklisted_plugins: ['converse-voice-messages'],
 });
 ```
 

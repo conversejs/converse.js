@@ -57,6 +57,50 @@ export default {
         },
 
         /**
+         * Finds the roster contacts that a query refers to, so that a command
+         * can take "Romeo" as well as a JID.
+         *
+         * Pass exactly one of `jid` or `name`. The two are never told apart from
+         * each other, so a name that happens to look like a JID is still looked up
+         * as a name when it's passed as one.
+         *
+         * A `jid` matches that JID, whether or not it's on the roster. A `name`
+         * matches the contacts whose nickname or vCard name is the same, ignoring
+         * case. Nothing is guessed: a name shared by several contacts returns all of
+         * them, and the caller decides what to do.
+         *
+         * @method _converse.api.contacts.resolve
+         * @param {{jid?: string, name?: string}} query - Exactly one of a bare JID or a name
+         * @returns {Promise<{jid: string, name: string|null}[]>} The matches,
+         *  ordered by JID. Empty when a name matches nothing.
+         * @throws {Error} If neither or both of `jid` and `name` are given, or the `jid` is not a JID.
+         */
+        async resolve({ jid, name } = {}) {
+            if ((jid === undefined) === (name === undefined)) {
+                throw new Error('Pass exactly one of "jid" or "name" to resolve');
+            }
+            await api.waitUntil('rosterContactsFetched');
+            const { roster } = _converse.state;
+
+            if (jid !== undefined) {
+                const bare = typeof jid === 'string' ? Strophe.getBareJidFromJid(jid.trim()) : '';
+                if (!isValidJID(bare)) throw new Error(`"${jid}" is not a JID`);
+                return [{ jid: bare, name: roster.get(bare)?.getDisplayName({ no_jid: true }) ?? null }];
+            }
+
+            const wanted = typeof name === 'string' ? name.trim().toLowerCase() : '';
+            if (!wanted) return [];
+
+            const matches = roster.filter((contact) => {
+                const names = [contact.get('nickname'), contact.vcard?.getDisplayName()];
+                return names.some((candidate) => candidate?.toLowerCase() === wanted);
+            });
+            return matches
+                .map((contact) => ({ jid: contact.get('jid'), name: contact.getDisplayName({ no_jid: true }) ?? null }))
+                .sort((a, b) => a.jid.localeCompare(b.jid));
+        },
+
+        /**
          * Remove a contact from the roster
          * @param {string} jid
          * @param {boolean} [unsubscribe] - Whether we should unsubscribe
@@ -84,7 +128,7 @@ export default {
             if (!isValidJID(attributes?.jid)) throw new Error('api.contacts.add: Valid JID required');
 
             const { roster } = _converse.state;
-            return roster.addContact(attributes, persist, subscribe, message);
+            return await roster.addContact(attributes, persist, subscribe, message);
         },
     },
 };

@@ -119,7 +119,7 @@ Formatting is set by `.prettierrc`. Naming conventions:
 - **Private methods**: `#privateMethod()`
 - **Templates**: `tplPlaceholder`
 - **Unused vars**: prefix with `_`
-- **Logging**: use `log.debug/info/warn/error` from `@converse/log`, not `console`
+- **Logging**: use `log.debug/info/warn/error`, not `console`. Outside `src/headless/`, import `log` from `@converse/headless`, never `@converse/log` directly (that bundles a second logger)
 - **Line endings**: LF
 
 Types are JSDoc annotations in `.js` files. `npm run types` regenerates the `.d.ts` files
@@ -233,7 +233,7 @@ a hook instead of an event only when the call site genuinely needs a return valu
 import { _converse, api, converse, u } from '@converse/headless';
 
 // Logging
-import { log } from '@converse/log';
+import { log } from '@converse/headless';
 
 // Lit framework
 import { html, css } from 'lit';

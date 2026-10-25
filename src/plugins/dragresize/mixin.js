@@ -1,5 +1,4 @@
-import log from '@converse/log';
-import { api, u } from '@converse/headless';
+import { api, log, u } from '@converse/headless';
 import { applyDragResistance, getResizingDirection } from './utils.js';
 
 /**

@@ -2,8 +2,7 @@
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { api, converse, PubSubMessage } from '@converse/headless';
-import log from '@converse/log';
+import { api, converse, log, PubSubMessage } from '@converse/headless';
 import { __ } from 'i18n';
 import { ObservableElement } from 'shared/components/observable.js';
 import 'shared/modals/image.js';

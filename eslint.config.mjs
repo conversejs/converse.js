@@ -282,4 +282,17 @@ export default defineConfig([{
         "yield-star-spacing": "error",
         yoda: "off",
     },
+}, {
+    // The headless bundle inlines its own copy of @converse/log. Importing it
+    // directly from outside headless bundles a second, separate logger.
+    files: ["src/**/*.js"],
+    ignores: ["src/headless/**", "src/log/**"],
+    rules: {
+        "no-restricted-imports": ["error", {
+            paths: [{
+                name: "@converse/log",
+                message: "Import { log } from '@converse/headless' instead.",
+            }],
+        }],
+    },
 }]);

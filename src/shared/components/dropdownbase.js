@@ -1,6 +1,5 @@
 import { createPopper } from '@popperjs/core';
-import log from '@converse/log';
-import { constants } from '@converse/headless';
+import { constants, log } from '@converse/headless';
 import { CustomElement } from './element.js';
 
 const { KEYCODES } = constants;

@@ -80,6 +80,40 @@ export default {
         },
 
         /**
+         * Finds the roster contacts that a query refers to, so that a command
+         * can take "Romeo" as well as a JID.
+         *
+         * A query that is a JID matches that JID, whether or not it's on the
+         * roster. Any other query matches the contacts whose nickname or vCard
+         * name is the same, ignoring case. Nothing is guessed: a name shared by
+         * several contacts returns all of them, and the caller decides what to do.
+         *
+         * @method _converse.api.contacts.resolve
+         * @param {string} query - A bare JID, or a name
+         * @returns {Promise<{jid: string, name: string|null}[]>} The matches,
+         *  ordered by JID. Empty when nothing matches.
+         */
+        async resolve(query) {
+            await api.waitUntil('rosterContactsFetched');
+            const { roster } = _converse.state;
+            const text = typeof query === 'string' ? query.trim() : '';
+            if (isValidJID(text)) {
+                const jid = Strophe.getBareJidFromJid(text);
+                return [{ jid, name: roster.get(jid)?.getDisplayName({ no_jid: true }) ?? null }];
+            }
+            const wanted = text.toLowerCase();
+            if (!wanted) return [];
+
+            const matches = roster.filter((contact) => {
+                const names = [contact.get('nickname'), contact.vcard?.getDisplayName()];
+                return names.some((name) => name?.toLowerCase() === wanted);
+            });
+            return matches
+                .map((contact) => ({ jid: contact.get('jid'), name: contact.getDisplayName({ no_jid: true }) ?? null }))
+                .sort((a, b) => a.jid.localeCompare(b.jid));
+        },
+
+        /**
          * Remove a contact from the roster
          * @param {string} jid
          * @param {boolean} [unsubscribe] - Whether we should unsubscribe

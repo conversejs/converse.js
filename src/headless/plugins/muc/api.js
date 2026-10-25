@@ -3,6 +3,7 @@
  */
 import _converse from '../../shared/_converse.js';
 import chatboxes from '../../plugins/chatboxes/api.js';
+import sizzle from '#sizzle';
 import log from '@converse/log';
 import promise_api from '../../shared/api/promise.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
@@ -166,6 +167,27 @@ const rooms = {
             return _get(jids);
         }
         return Promise.all(jids.map((jid) => _get(jid)));
+    },
+
+    /**
+     * Lists the rooms that a MUC service hosts, by asking it for its items
+     * (XEP-0030). This only lists them: joining is a separate step.
+     *
+     * @method api.rooms.discover
+     * @param {string} service - The JID of the MUC service, e.g. "conference.example.org"
+     * @param {Object} [options]
+     * @param {number} [options.timeout] - How long to wait for the service to answer
+     * @returns {Promise<{jid: string, name: string|null}[]>} The rooms, in the order the service gave them
+     *
+     * @example
+     * const rooms = await api.rooms.discover('conference.example.org');
+     */
+    async discover(service, options) {
+        const stanza = await _converse.api.disco.items(service, null, options);
+        const items = sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza);
+        return items
+            .filter((item) => !item.getAttribute('node'))
+            .map((item) => ({ jid: item.getAttribute('jid'), name: item.getAttribute('name') || null }));
     },
 };
 

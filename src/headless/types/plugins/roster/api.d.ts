@@ -33,6 +33,47 @@ declare namespace _default {
          */
         function get(jids: (string[] | string)): Promise<any>;
         /**
+         * Whether a contact identifies itself as a bot, i.e. one of its online
+         * resources advertises the XEP-0030 identity `client/bot`.
+         *
+         * The identity is self-declared, so this is a label for people and
+         * must not gate anything else. It answers from the identities already
+         * known and never issues a disco#info query, so it's safe to call while
+         * rendering. A resource whose identities haven't been looked up yet
+         * doesn't count, so a contact is "not known to be a bot", not "a person".
+         *
+         * @method _converse.api.contacts.isBot
+         * @param {string} jid - A bare JID, or a full JID for one resource.
+         * @returns {boolean}
+         */
+        function isBot(jid: string): boolean;
+        /**
+         * Finds the roster contacts that a query refers to, so that a command
+         * can take "Romeo" as well as a JID.
+         *
+         * Pass exactly one of `jid` or `name`. The two are never told apart from
+         * each other, so a name that happens to look like a JID is still looked up
+         * as a name when it's passed as one.
+         *
+         * A `jid` matches that JID, whether or not it's on the roster. A `name`
+         * matches the contacts whose nickname or vCard name is the same, ignoring
+         * case. Nothing is guessed: a name shared by several contacts returns all of
+         * them, and the caller decides what to do.
+         *
+         * @method _converse.api.contacts.resolve
+         * @param {{jid?: string, name?: string}} query - Exactly one of a bare JID or a name
+         * @returns {Promise<{jid: string, name: string|null}[]>} The matches,
+         *  ordered by JID. Empty when a name matches nothing.
+         * @throws {Error} If neither or both of `jid` and `name` are given, or the `jid` is not a JID.
+         */
+        function resolve({ jid, name }?: {
+            jid?: string;
+            name?: string;
+        }): Promise<{
+            jid: string;
+            name: string | null;
+        }[]>;
+        /**
          * Remove a contact from the roster
          * @param {string} jid
          * @param {boolean} [unsubscribe] - Whether we should unsubscribe

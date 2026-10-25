@@ -52,7 +52,7 @@ describe('The account configuration', () => {
             resource: 'claude',
             consumer: 'claude',
             access: 'restricted',
-            policy: { allow: [], rate_limit: { per_conversation: 5, overall: 20, window: 60 } },
+            policy: { allow: [], rate_limit: { per_conversation: 5, overall: 20, window: 60 }, presence: false },
             settings: {},
             paths: {
                 config: path.join(dir, 'converse', 'daemon.json'),
@@ -79,6 +79,7 @@ describe('The account configuration', () => {
         expect(policy).toEqual({
             allow: ['juliet@capulet.lit'],
             rate_limit: { per_conversation: 5, overall: 3, window: 60 },
+            presence: false,
         });
     });
 

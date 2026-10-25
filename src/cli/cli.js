@@ -12,6 +12,8 @@ import { ERRORS, RPCError } from '@converse/daemon/protocol';
 import pkg from './package.json' with { type: 'json' };
 import { EXIT } from './exit-codes.js';
 import {
+    formatContact,
+    formatContactDetails,
     formatConversation,
     formatDraft,
     formatDuration,
@@ -63,6 +65,14 @@ Commands:
     --conversation <contact>  Only messages in this conversation
     --mention          Only messages that name you: your JID's name, as a whole word
     --timeout <s>      Give up after this many seconds (default 60)
+  contacts [query]     List your roster contacts with their presence. A query matches
+                       a contact's name or JID, ignoring case
+  whois <contact>      Show a contact's vCard, and each client they're connected with,
+                       with the identities each client advertises
+  presence set <show> [message]
+                       Set your availability: online, chat, away, xa or dnd, with an
+                       optional status message. Restricted access needs
+                       "policy.presence" set to true in the config file
   daemon start         Start the daemon (if needed) and show its status
   daemon status        Show whether the daemon is connected, as which JID, and for how long
   daemon stop          Log out and stop the daemon
@@ -374,6 +384,49 @@ const COMMANDS = {
             out(JSON.stringify(message) + '\n');
         } else {
             out(formatMessage(message, { full: options.full }));
+        }
+        return EXIT.OK;
+    },
+
+    async contacts(ctx) {
+        const { args, options, out, err } = ctx;
+        const query = args.length ? args.join(' ') : undefined;
+        /** @type {{ contacts: import('@converse/daemon/types').ContactSummary[] }} */
+        const { contacts } = await request(ctx, 'contacts.list', { query });
+        if (options.json) {
+            contacts.forEach((c) => out(JSON.stringify(c) + '\n'));
+        } else if (contacts.length) {
+            contacts.forEach((c) => out(formatContact(c)));
+        } else {
+            err(query === undefined ? 'No contacts.\n' : `No contacts match ${JSON.stringify(query)}.\n`);
+        }
+        return EXIT.OK;
+    },
+
+    async whois(ctx) {
+        const { options, out } = ctx;
+        const jid = takeOne(ctx, 'contact');
+        /** @type {import('@converse/daemon/types').ContactDetails} */
+        const details = await request(ctx, 'contacts.whois', { jid });
+        out(options.json ? JSON.stringify(details) + '\n' : formatContactDetails(details));
+        return EXIT.OK;
+    },
+
+    async 'presence set'(ctx) {
+        const { args, options, out } = ctx;
+        if (args.length === 0) throw new UsageError('Expected a presence: online, chat, away, xa or dnd.');
+        const [show, ...words] = args;
+        /** @type {import('@converse/daemon/types').PresenceDTO} */
+        const presence = await request(ctx, 'presence.set', {
+            show,
+            message: words.length ? words.join(' ') : undefined,
+        });
+        if (options.json) {
+            out(JSON.stringify(presence) + '\n');
+        } else {
+            const status =
+                presence.status_message === null ? '' : ` with status ${JSON.stringify(presence.status_message)}`;
+            out(`Your presence is now ${presence.show}${status}.\n`);
         }
         return EXIT.OK;
     },

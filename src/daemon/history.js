@@ -112,7 +112,10 @@ function collect(chat, { limit, before, since }) {
  * @param {import('@converse/headless').Message} model
  */
 export function isMessage(model) {
-    return !(model instanceof MAMPlaceholderMessage) && !!model.get('body');
+    if (model instanceof MAMPlaceholderMessage) return false;
+    // A retraction or reaction whose target hasn't arrived is held until it does. It's not a message.
+    if (model.get('dangling_retraction') || model.get('dangling_reaction')) return false;
+    return !!model.get('body');
 }
 
 /**

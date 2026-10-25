@@ -27,19 +27,23 @@ export function createDraftStore(file) {
 
     return {
         /** @returns {import('./types').Draft[]} Oldest first */
-        list: () => [...state.drafts],
+        list: () => state.drafts.map(withDefaults),
 
         /** @returns {import('./types').Draft|undefined} */
-        get: (id) => state.drafts.find((draft) => draft.id === id),
+        get: (id) => {
+            const draft = state.drafts.find((d) => d.id === id);
+            return draft && withDefaults(draft);
+        },
 
         /**
-         * @param {Omit<import('./types').Draft, 'id'|'created'>} attrs
+         * @param {Pick<import('./types').Draft, 'to'|'body'|'consumer'> & Partial<import('./types').Draft>} attrs
          * @returns {import('./types').Draft}
          */
-        add({ to, body, consumer }) {
+        add({ to, body, consumer, reply_to = null, reaction_to = null }) {
             // Ids are never reused, so a draft named in the audit log is always the one it named.
             state.next += 1;
-            const draft = { id: `d${state.next}`, to, body, consumer, created: new Date().toISOString() };
+            const created = new Date().toISOString();
+            const draft = { id: `d${state.next}`, to, body, consumer, created, reply_to, reaction_to };
             state.drafts.push(draft);
             save();
             return draft;
@@ -104,6 +108,13 @@ export function draftMethods(_converse, { drafts, audit, events, owner }) {
         },
     };
 }
+
+/**
+ * Drafts stored before a field existed get its default.
+ * @param {import('./types').Draft} draft
+ * @returns {import('./types').Draft}
+ */
+const withDefaults = (draft) => ({ reply_to: null, reaction_to: null, ...draft });
 
 /**
  * @param {string} file

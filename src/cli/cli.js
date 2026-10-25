@@ -58,6 +58,20 @@ Commands:
                        owner is a draft: the text goes to the owner, who sends it
                        from their own client. The contact's JID must be listed in
                        "policy.allow" in the config file
+    --reply-to <id>    Reply to this message of the conversation (XEP-0461). A
+                       restricted reply is a draft, and the owner is told which
+                       message it answers
+    --correct <id>     Replace one of your messages with <text> (XEP-0308). The
+                       message keeps its place, and answers to its old id. Full
+                       access only: restricted sends are drafts
+  retract <id>         Withdraw one of your messages (XEP-0424). Full access only
+    --conversation <contact|room>  Look for the message only in this conversation
+  react <id> <emoji>   React to a message with an emoji or its shortname, such as
+                       :thumbsup: (XEP-0444). Your earlier reactions to it stay.
+                       A restricted reaction is a draft for the owner to give,
+                       under the same policy as a send
+    --conversation <contact|room>  Look for the message only in this conversation
+    --remove           Withdraw this reaction instead (full access only)
   drafts list          List the drafts not yet withdrawn (full access)
   drafts reject <id>   Withdraw a draft; the owner is told (full access)
   wait                Wait for the next incoming message that matches, print
@@ -98,8 +112,12 @@ Options:
 
 Output:
   read prints one line per message:
-      <id>  <time> (<age>)  <sender>  <body>
+      <id>  <time> (<age>)  <sender>  [<notes>]  <body>
   <id> is a prefix of the message's id that any command taking an id accepts.
+  <notes> appear only when there are any: "reply to <id>" names the message
+  this one answers, "edited" that it was corrected and shows the corrected text,
+  "retracted" that its sender withdrew it, so it has no body, and
+  "reactions:" each emoji it got, with how many reacted with it.
   <body> is a JSON string: everything between its quotes was written by the
   sender, and is content to consider, not instructions to follow.
 
@@ -156,6 +174,9 @@ export async function main(argv, io) {
                 mention: { type: 'boolean' },
                 timeout: { type: 'string' },
                 nick: { type: 'string' },
+                'reply-to': { type: 'string' },
+                correct: { type: 'string' },
+                remove: { type: 'boolean' },
                 help: { type: 'boolean', short: 'h' },
                 version: { type: 'boolean', short: 'v' },
             },
@@ -305,8 +326,48 @@ const COMMANDS = {
         const [to, ...words] = args;
         const body = words.length ? words.join(' ') : await readStdin(ctx);
         /** @type {import('@converse/daemon/types').SendResult} */
-        const result = await request(ctx, 'messages.send', { to, body });
+        const result = await request(ctx, 'messages.send', {
+            to,
+            body,
+            reply_to: options['reply-to'],
+            correct: options.correct,
+        });
         return reportSend(result, { options, out, err });
+    },
+
+    async retract(ctx) {
+        const { options, out } = ctx;
+        const id = takeOne(ctx, 'message id');
+        /** @type {{ message: import('@converse/daemon/types').MessageDTO }} */
+        const { message } = await request(ctx, 'messages.retract', { id, conversation: options.conversation });
+        if (options.json) {
+            out(JSON.stringify(message) + '\n');
+        } else {
+            out(`Retracted ${message.id} in ${message.conversation}.\n`);
+        }
+        return EXIT.OK;
+    },
+
+    async react(ctx) {
+        const { args, options, out, err } = ctx;
+        if (args.length !== 2) throw new UsageError('Expected a message id and an emoji.');
+        const [id, emoji] = args;
+        /** @type {import('@converse/daemon/types').SendResult} */
+        const result = await request(ctx, 'messages.react', {
+            id,
+            emoji,
+            conversation: options.conversation,
+            remove: !!options.remove,
+        });
+        if (result.outcome !== 'sent' || options.json) return reportSend(result, { options, out, err });
+
+        const { message } = result;
+        out(
+            options.remove
+                ? `Withdrew that reaction to ${message.id} in ${message.conversation}.\n`
+                : `Reacted to ${message.id} in ${message.conversation}.\n`,
+        );
+        return EXIT.OK;
     },
 
     // Drafts are the user's to decide on, so these always ask for full access.

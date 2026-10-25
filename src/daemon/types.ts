@@ -74,7 +74,22 @@ export type MessageDTO = {
     nick: string | null; // In a room, the sender's nickname; null in a chat
     direction: 'incoming' | 'outgoing';
     time: string; // ISO 8601
-    body: string | null; // Untrusted: written by whoever sent the message
+    // Untrusted: written by whoever sent the message. A reply's quote of what
+    // it answers, kept for clients that don't know replies, is left out.
+    body: string | null;
+    // The message this one replies to (XEP-0461): its id as above if we hold
+    // it, else the id the reply gave.
+    reply_to: string | null;
+    // When the message was last corrected (XEP-0308), ISO 8601. The body is the
+    // corrected text. The id may then change, but the old one still finds it.
+    edited: string | null;
+    // When the message was retracted (XEP-0424), by its sender or a room's
+    // moderator, ISO 8601. The body of a retracted message is null.
+    retracted: string | null;
+    // The reactions to the message (XEP-0444): for each emoji, who reacted with
+    // it. A reactor is named like `from`: a bare JID in a chat, an occupant JID
+    // in a room, or the room's opaque occupant id if the occupant isn't known.
+    reactions: Record<string, string[]>;
 };
 
 /**
@@ -107,10 +122,19 @@ export type MessageList = {
 export type Draft = {
     id: string; // Short, and unique for the account, e.g. "d17"
     to: string; // Bare JID
-    body: string; // Untrusted: written by the consumer that queued it
     consumer: string | null; // Who queued it
     created: string; // ISO 8601
-};
+} & DraftAction;
+
+/**
+ * What a draft does when it's sent, and only what that needs. Each body is
+ * untrusted: the consumer that queued the draft wrote it. Each target is the
+ * id of the message the draft acts on.
+ */
+export type DraftAction =
+    | { action: 'send'; body: string } // A new message
+    | { action: 'reply'; body: string; target: string }
+    | { action: 'react'; body: string; target: string }; // The body is the emoji
 
 /**
  * What a send came to. A refused send says which rule refused it, and what to
@@ -135,6 +159,8 @@ export type AuditEntry = {
     id?: string; // The DTO id, for a send
     draft?: string; // The draft's id, for a draft or a rejection
     rule?: string; // For a refusal
+    action?: 'reply' | 'correct' | 'retract' | 'react'; // For a send that acts on another message
+    target?: string; // The id of the message acted on
 };
 
 export type Hello = {

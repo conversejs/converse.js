@@ -23,16 +23,18 @@ export function createDraftStore(file) {
         list: () => [...state.drafts],
 
         /** @returns {import('./types').Draft|undefined} */
-        get: (id) => state.drafts.find((draft) => draft.id === id),
+        get: (id) => state.drafts.find((d) => d.id === id),
 
         /**
-         * @param {Omit<import('./types').Draft, 'id'|'created'>} attrs
+         * @param {{ to: string, consumer: string|null } & import('./types').DraftAction} attrs
          * @returns {import('./types').Draft}
          */
-        add({ to, body, consumer }) {
+        add({ to, consumer, ...action }) {
             // Ids are never reused, so a draft named in the audit log is always the one it named.
             state.next += 1;
-            const draft = { id: `d${state.next}`, to, body, consumer, created: new Date().toISOString() };
+            const created = new Date().toISOString();
+            /** @type {import('./types').Draft} */
+            const draft = { id: `d${state.next}`, to, consumer, created, ...action };
             state.drafts.push(draft);
             save();
             return draft;

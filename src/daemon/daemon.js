@@ -7,12 +7,14 @@ import net from 'node:net';
 import readline from 'node:readline';
 import { _converse, api, converse, log } from '@converse/headless';
 import { createAudit } from './audit.js';
+import { contactMethods } from './contacts.js';
 import { getPassword } from './config.js';
 import { createCursors } from './cursors.js';
 import { createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
 import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
+import { presenceMethods } from './presence.js';
 import { createPolicy } from './policy.js';
 import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
 
@@ -79,6 +81,8 @@ async function serve(config) {
         ...messageMethods(_converse, { policy, audit, drafts, events, owner: config.owner }),
         ...draftMethods(_converse, { drafts, audit, events, owner: config.owner }),
         ...inboxMethods(_converse, createCursors(paths.cursors)),
+        ...contactMethods(_converse),
+        ...presenceMethods(_converse, { config }),
         ...events.methods,
         /** @returns {import('./types').Status} */
         'daemon.status': () => ({

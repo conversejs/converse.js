@@ -376,6 +376,21 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
+         * The message an outgoing one replies to (XEP-0461). A reply passed in
+         * with `attrs` wins over the one chosen on the chat, which then stays
+         * chosen. Otherwise the chosen one is used up, and cleared.
+         * @param {MessageAttributes} [attrs]
+         * @returns {Pick<MessageAttributes, 'reply_to_id'|'reply_to'>}
+         */
+        takeReplyAttributes(attrs) {
+            if (attrs?.reply_to_id) return { reply_to_id: attrs.reply_to_id, reply_to: attrs.reply_to };
+
+            const reply = { reply_to_id: this.get('reply_to_id'), reply_to: this.get('reply_to') };
+            if (reply.reply_to_id) this.save({ reply_to_id: undefined, reply_to: undefined });
+            return reply;
+        }
+
+        /**
          * XEP-0461 compatibility fallback. When sending a reply, prepend a
          * XEP-0393 `>`-quoted copy of the replied-to text to the body, so clients
          * that don't support structured replies still see the context.
@@ -430,6 +445,11 @@ export default function ModelWithMessages(BaseModel) {
          * set to `failed` and `send_error_code` set to that code. Nothing resends it on its
          * own. Call {@link resendFailedMessage} or {@link discardFailedMessage} to act on it.
          * @param {Object} [attrs] - A map of attributes to be saved on the message
+         * @param {Object} [options]
+         * @param {BaseMessage} [options.replying_to] - A message of this conversation that this
+         *  one replies to (XEP-0461). Defaults to the one chosen with the chat's `reply_to_id`.
+         * @param {BaseMessage} [options.correcting] - One of our messages in this conversation
+         *  that this one corrects (XEP-0308). Defaults to the one marked `correcting`.
          * @returns {Promise<BaseMessage>}
          * @throws {Error} When the message could not be sent. Its `code` gives the reason.
          * @example
@@ -440,7 +460,7 @@ export default function ModelWithMessages(BaseModel) {
          *      // e.code is set, for example 'no-omemo-devices'
          *  }
          */
-        async sendMessage(attrs) {
+        async sendMessage(attrs, { replying_to, correcting } = {}) {
             await api.emojis.initialize();
 
             if (!this.canPostMessages()) {
@@ -448,8 +468,20 @@ export default function ModelWithMessages(BaseModel) {
                 return;
             }
 
+            if (replying_to) {
+                // In a groupchat a message is referred to by the id the room gave it, elsewhere by its own.
+                const reply_to_id =
+                    this.get('message_type') === 'groupchat'
+                        ? replying_to.get(`stanza_id ${this.get('jid')}`)
+                        : replying_to.get('msgid');
+                if (!reply_to_id) {
+                    throw new Error("Can't reply to a groupchat message that has no stanza-id from the room");
+                }
+                attrs = { ...attrs, reply_to_id, reply_to: replying_to.get('from') };
+            }
+
             attrs = await this.getOutgoingMessageAttributes(attrs);
-            let message = this.messages.findWhere('correcting');
+            let message = correcting ?? this.messages.findWhere('correcting');
             if (message) {
                 const older_versions = message.get('older_versions') || {};
                 const edited_time = message.get('edited') || message.get('time');

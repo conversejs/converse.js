@@ -28,9 +28,22 @@ export const SHORT_ID_LENGTH = 8;
  */
 export function formatMessage(message, { full = false, now = new Date() } = {}) {
     const time = new Date(message.time);
+    const notes = [
+        message.reply_to && `reply to ${message.reply_to.slice(0, SHORT_ID_LENGTH)}`,
+        message.edited && 'edited',
+        message.retracted && 'retracted',
+        Object.keys(message.reactions ?? {}).length &&
+            'reactions: ' +
+                Object.entries(message.reactions)
+                    .map(([emoji, reactors]) => `${emoji} ${reactors.length}`)
+                    .join(', '),
+    ]
+        .filter(Boolean)
+        .map((note) => `[${note}]  `)
+        .join('');
     return (
         `${message.id.slice(0, SHORT_ID_LENGTH)}  ${formatTime(time)} (${formatAgo(time, now)})  ` +
-        `${message.from}  ${formatBody(message.body, { full })}\n`
+        `${message.from}  ${notes}${formatBody(message.body, { full })}\n`
     );
 }
 

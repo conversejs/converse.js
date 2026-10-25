@@ -90,6 +90,10 @@ describe('Event subscriptions', () => {
                     direction: 'incoming',
                     time: expect.any(String),
                     body: 'Wherefore art thou?',
+                    reply_to: null,
+                    edited: null,
+                    retracted: null,
+                    reactions: {},
                 },
             },
         ]);

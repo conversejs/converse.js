@@ -46,6 +46,10 @@ describe('Event subscriptions on a real Prosody', () => {
                 direction: 'incoming',
                 time: expect.any(String),
                 body,
+                reply_to: null,
+                edited: null,
+                retracted: null,
+                reactions: {},
             },
         });
     });

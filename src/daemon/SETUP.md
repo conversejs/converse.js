@@ -64,6 +64,17 @@ Draft d1 for juliet@example.org, from claude. Nothing was sent. To send it, copy
 "Shall we meet at noon?"
 ```
 
+A draft can also be a reply, or a reaction, to a message. The notice then
+quotes the start of that message, so you can find it:
+
+```
+Draft d2 for juliet@example.org, from claude. Nothing was sent. To send it, react to the message from juliet@example.org, "Noon?", with:
+"👍"
+```
+
+The agent can't correct or retract messages: what it sends are drafts, and
+drafts go to you.
+
 If you don't want it, withdraw it from the command line with
 `converse-cli drafts reject d1`, and you get a note confirming it was withdrawn.
 Nothing reaches Juliet unless you send it yourself.

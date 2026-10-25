@@ -128,3 +128,48 @@ export function parseSince(value, now = new Date()) {
     }
     return new Date(time).toISOString();
 }
+
+/**
+ * Text that came from someone else, as a JSON string, or `-` when there's none.
+ * @param {string|null} text
+ */
+function quoted(text) {
+    return text === null ? '-' : JSON.stringify(text);
+}
+
+/**
+ * One contact, on one line: JID, presence, then the name.
+ * @param {import('@converse/daemon/types').ContactSummary} contact
+ */
+export function formatContact(contact) {
+    return `${contact.jid}  ${contact.presence}  ${quoted(contact.name)}\n`;
+}
+
+/**
+ * A contact in full: what the roster says, their vCard, and each client they
+ * are connected with. Every field that came from the contact is quoted.
+ * @param {import('@converse/daemon/types').ContactDetails} details
+ */
+export function formatContactDetails(details) {
+    const lines = [`${details.jid}  ${details.presence}  ${details.on_roster ? 'on roster' : 'not on roster'}`];
+    lines.push(`  name: ${quoted(details.name)}`);
+    if (details.vcard) {
+        for (const [field, value] of Object.entries(details.vcard)) {
+            if (value !== null) lines.push(`  ${field}: ${quoted(value)}`);
+        }
+    } else {
+        lines.push('  vcard: could not be fetched');
+    }
+    if (!details.resources.length) lines.push('  no connected clients');
+    for (const resource of details.resources) {
+        const identities = resource.identities.map(
+            ({ category, type, name }) => `${category}/${type}${name ? ` ${JSON.stringify(name)}` : ''}`,
+        );
+        const status = resource.status === null ? '' : `, status ${JSON.stringify(resource.status)}`;
+        lines.push(
+            `  client ${JSON.stringify(resource.name)}: ${resource.presence}, priority ${resource.priority}${status}` +
+                `; identities: ${identities.join(', ') || 'none known'}`,
+        );
+    }
+    return lines.join('\n') + '\n';
+}

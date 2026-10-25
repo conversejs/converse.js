@@ -47,6 +47,9 @@ agent's user or yours.
 - `owner` is the account drafts are delivered to. It must be your account.
 - `policy.allow` lists the people a draft may be for. A draft to anyone else is
   refused, and nothing is sent.
+- `policy.presence` (default `false`) lets a restricted agent change your
+  availability and status message with `converse-cli presence set`. Full access
+  can always do it.
 - The agent's password goes in the keyring under the service `converse`, with
   the agent's JID as the account, or in `password` if the daemon user's config
   is private to that user.

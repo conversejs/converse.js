@@ -24,6 +24,7 @@ const BARE_JID = /^[^@/\s]+@[^@/\s]+$/;
 const DEFAULT_POLICY = {
     allow: [],
     rate_limit: { per_conversation: 5, overall: 20, window: 60 }, // Sends per window, in seconds
+    presence: false, // Whether restricted access may change our availability and status message
 };
 
 /**
@@ -113,7 +114,11 @@ function parsePolicy(raw, config_path) {
             throw new Error(`"policy.rate_limit.${key}" in ${config_path} must be a whole number of at least 1.`);
         }
     }
-    return { allow: allow.map((jid) => jid.trim().toLowerCase()), rate_limit };
+    const presence = raw?.presence ?? DEFAULT_POLICY.presence;
+    if (typeof presence !== 'boolean') {
+        throw new Error(`"policy.presence" in ${config_path} must be true or false.`);
+    }
+    return { allow: allow.map((jid) => jid.trim().toLowerCase()), rate_limit, presence };
 }
 
 /**

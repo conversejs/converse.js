@@ -23,6 +23,7 @@ export type Policy = {
         overall: number; // Restricted sends to anyone per window
         window: number; // Seconds
     };
+    presence: boolean; // Whether restricted access may change our presence
 };
 
 export type Config = {
@@ -188,4 +189,51 @@ export type InboxGroup = {
 
 export type Inbox = {
     conversations: InboxGroup[]; // Most recent activity first
+};
+
+/**
+ * A roster contact as `contacts.list` shows it.
+ */
+export type ContactSummary = {
+    jid: string; // Bare JID
+    name: string | null; // The roster nickname, or the vCard name. Set by the contact, so untrusted
+    presence: string; // "online", "chat", "away", "xa", "dnd" or "offline", from the contact's best resource
+};
+
+/**
+ * A client a contact is connected with, as `contacts.whois` shows it.
+ */
+export type ResourceDTO = {
+    name: string; // The resource, e.g. "mobile"
+    presence: string; // As ContactSummary.presence, for this resource alone
+    priority: number;
+    status: string | null; // The resource's status message. Untrusted
+    identities: { category: string; type: string; name: string | null }[]; // From disco#info, empty if it didn't answer
+};
+
+/**
+ * What `contacts.whois` knows about a JID. Any JID is accepted, not only
+ * roster contacts, so `on_roster` says which this is.
+ */
+export type ContactDetails = {
+    jid: string;
+    name: string | null;
+    on_roster: boolean;
+    presence: string;
+    vcard: {
+        fullname: string | null; // Untrusted, like everything in a vCard
+        nickname: string | null;
+        email: string | null;
+        url: string | null;
+        role: string | null;
+    } | null; // Null if the vCard couldn't be fetched
+    resources: ResourceDTO[];
+};
+
+/**
+ * Our own presence, as `presence.set` leaves it.
+ */
+export type PresenceDTO = {
+    show: string; // "online", "chat", "away", "xa" or "dnd"
+    status_message: string | null;
 };

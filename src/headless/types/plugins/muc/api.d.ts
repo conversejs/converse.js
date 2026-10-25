@@ -107,5 +107,24 @@ declare namespace rooms {
         nick?: string;
         password?: string;
     }, create?: boolean): Promise<MUC[] | MUC>;
+    /**
+     * Lists the rooms that a MUC service hosts, by asking it for its items
+     * (XEP-0030). This only lists them: joining is a separate step.
+     *
+     * @method api.rooms.discover
+     * @param {string} service - The JID of the MUC service, e.g. "conference.example.org"
+     * @param {Object} [options]
+     * @param {number} [options.timeout] - How long to wait for the service to answer
+     * @returns {Promise<{jid: string, name: string|null}[]>} The rooms, in the order the service gave them
+     *
+     * @example
+     * const rooms = await api.rooms.discover('conference.example.org');
+     */
+    function discover(service: string, options?: {
+        timeout?: number;
+    }): Promise<{
+        jid: string;
+        name: string | null;
+    }[]>;
 }
 //# sourceMappingURL=api.d.ts.map

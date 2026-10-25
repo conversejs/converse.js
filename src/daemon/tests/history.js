@@ -64,6 +64,7 @@ describe('Reading history', () => {
                 id,
                 conversation: JULIET,
                 from: JULIET,
+                nick: null,
                 direction: 'incoming',
                 time: new Date(Date.UTC(2026, 9, 1, 10, 4 + i)).toISOString(),
                 body: `Message ${5 + i}`,

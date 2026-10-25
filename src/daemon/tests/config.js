@@ -52,7 +52,12 @@ describe('The account configuration', () => {
             resource: 'claude',
             consumer: 'claude',
             access: 'restricted',
-            policy: { allow: [], rate_limit: { per_conversation: 5, overall: 20, window: 60 }, presence: false },
+            policy: {
+                allow: [],
+                rooms: [],
+                rate_limit: { per_conversation: 5, per_room: 2, overall: 20, window: 60 },
+                presence: false,
+            },
             settings: {},
             paths: {
                 config: path.join(dir, 'converse', 'daemon.json'),
@@ -64,6 +69,7 @@ describe('The account configuration', () => {
                 cursors: expect.stringMatching(/\/converse\/romeo@montague\.lit\.cursors\.json$/),
                 audit: expect.stringMatching(/\/converse\/romeo@montague\.lit\.audit\.jsonl$/),
                 drafts: expect.stringMatching(/\/converse\/romeo@montague\.lit\.drafts\.json$/),
+                rooms: expect.stringMatching(/\/converse\/romeo@montague\.lit\.rooms\.json$/),
             },
         });
     });
@@ -78,7 +84,8 @@ describe('The account configuration', () => {
         expect(access).toBe('full');
         expect(policy).toEqual({
             allow: ['juliet@capulet.lit'],
-            rate_limit: { per_conversation: 5, overall: 3, window: 60 },
+            rooms: [],
+            rate_limit: { per_conversation: 5, per_room: 2, overall: 3, window: 60 },
             presence: false,
         });
     });

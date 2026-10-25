@@ -54,3 +54,5 @@ VirtualHost "localhost"
 
 Component "conference.localhost" "muc"
     modules_enabled = { "muc_mam" }
+    -- So that a room is listed by the service's disco#items, as a rooms.discover spec needs.
+    muc_room_default_public = true

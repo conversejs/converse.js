@@ -4,7 +4,7 @@
  * @module @converse/daemon/contacts
  */
 import { ERRORS, RPCError } from './protocol.js';
-import { resolveJID } from './resolve.js';
+import { requireRoster, resolveJID } from './resolve.js';
 import { TIMED_OUT, withTimeout } from './timeout.js';
 
 /**
@@ -31,6 +31,7 @@ export function contactMethods(_converse) {
             if (query !== undefined && typeof query !== 'string') {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"query" must be text.');
             }
+            requireRoster(api, 'Listing contacts');
             const wanted = (query ?? '').trim().toLowerCase();
             const contacts = (await api.contacts.get()).map(toContactSummary);
             const matching = contacts.filter(({ jid, name }) => `${name ?? ''} ${jid}`.toLowerCase().includes(wanted));
@@ -47,6 +48,7 @@ export function contactMethods(_converse) {
          * @returns {Promise<import('./types').ContactDetails>}
          */
         async 'contacts.whois'({ jid }) {
+            requireRoster(api, 'Looking someone up');
             const bare_jid = await resolveJID(_converse, jid, 'jid');
             const contact = _converse.state.roster.get(bare_jid);
             const presence = _converse.state.presences?.get(bare_jid);

@@ -73,6 +73,7 @@ describe('converse-cli read and send', () => {
                 id: 'a1b2c3d4e5f6',
                 conversation: JULIET,
                 from: JULIET,
+                nick: null,
                 direction: 'incoming',
                 time: '2026-10-20T10:00:00.123Z',
                 body: 'Wherefore art thou?',

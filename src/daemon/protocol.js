@@ -32,6 +32,7 @@ export const ERRORS = {
     AMBIGUOUS: -32004, // More than one match; `data.candidates` lists them
     ACCESS_DENIED: -32005, // The method needs full access, and this connection is restricted
     CONFLICT: -32006, // The request clashes with what's happening now, such as approving a draft already being sent
+    JOIN_REFUSED: -32007, // The room turned the join down: banned, nickname taken, or a password is needed
 };
 
 /**

@@ -99,14 +99,18 @@ describe('Messages in a 1:1 chat', () => {
             expect(stanza.getAttribute('to')).toBe('mercutio@montague.lit');
         });
 
-        it('refuses an empty body or a malformed JID, saying what is wrong', async () => {
+        it('refuses an empty body or an empty recipient, saying what is wrong', async () => {
             await expect(client.request('messages.send', { to: JULIET, body: '  ' })).rejects.toMatchObject({
                 code: ERRORS.INVALID_PARAMS,
                 message: 'There is nothing to send: "body" is empty.',
             });
-            await expect(client.request('messages.send', { to: 'not a jid', body: 'x' })).rejects.toMatchObject({
+            await expect(client.request('messages.send', { to: '', body: 'x' })).rejects.toMatchObject({
                 code: ERRORS.INVALID_PARAMS,
-                message: '"to" must be a JID such as "juliet@capulet.lit".',
+                message: '"to" must be a JID, or the name of a contact.',
+            });
+            // Anything that isn't a JID is a name, and this one is nobody's.
+            await expect(client.request('messages.send', { to: 'not a jid', body: 'x' })).rejects.toMatchObject({
+                code: ERRORS.NOT_FOUND,
             });
         });
 

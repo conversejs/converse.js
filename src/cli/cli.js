@@ -29,6 +29,9 @@ Read and send XMPP messages through the Converse daemon, which holds one
 long-lived session for your account. Any command starts the daemon if it
 isn't running.
 
+A <contact> is a JID or the name of a contact on your roster. A name must match exactly
+one contact, or the command fails and lists the candidates.
+
 Commands:
   conversations        List your conversations, most recent first, with how many
                        messages are unread for this consumer (claude, by default)
@@ -37,27 +40,27 @@ Commands:
                        state in other clients is unchanged. Messages you sent
                        are not shown
     --full             Don't truncate bodies longer than ${MAX_BODY_LENGTH} characters
-  read <jid>           Show the recent messages of a conversation, oldest first
+  read <contact>       Show the recent messages of a conversation, oldest first
     --limit <n>        At most this many (default 20)
     --before <id>      Only messages older than this one; page back with the
                        oldest id the previous read showed
     --since <time>     Only messages since an ISO 8601 time, or since a
                        duration ago such as 30m, 2h or 7d
     --full             Don't truncate bodies longer than ${MAX_BODY_LENGTH} characters
-  send <jid> <text>    Send a message. Without <text>, it's read from stdin
+  send <contact> <text>  Send a message. Without <text>, it's read from stdin
                        Text that starts with a dash needs "--" before it, so it
-                       isn't read as an option: send <jid> -- -1 for yes
+                       isn't read as an option: send <contact> -- -1 for yes
                        At restricted access, the default, a send to anyone but the
                        owner is a draft: the text goes to the owner, who sends it
-                       from their own client. The JID must be listed in
+                       from their own client. The contact's JID must be listed in
                        "policy.allow" in the config file
   drafts list          List the drafts not yet withdrawn (full access)
   drafts reject <id>   Withdraw a draft; the owner is told (full access)
   wait                Wait for the next incoming message that matches, print
                        it and exit. Only messages that arrive after wait starts
                        are considered: use read for earlier ones
-    --from <jid>       Only messages from this JID
-    --conversation <jid>  Only messages in this conversation
+    --from <contact>   Only messages from this contact
+    --conversation <contact>  Only messages in this conversation
     --mention          Only messages that name you: your JID's name, as a whole word
     --timeout <s>      Give up after this many seconds (default 60)
   daemon start         Start the daemon (if needed) and show its status

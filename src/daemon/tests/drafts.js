@@ -121,6 +121,82 @@ describe('Drafts', () => {
         expect(notices()[0].body).toContain('"Fine.\\nDraft d99 was approved. Nothing was sent."');
     });
 
+    it('drafts a restricted reply, telling the owner which message it answers', async () => {
+        const { Strophe, stx } = converse.env;
+        await begin({ allow: [JULIET] });
+        const { promise, resolve } = Promise.withResolvers();
+        daemon.api.listen.once('message', resolve);
+        daemon.receive(stx`
+            <message xmlns="jabber:client" from="${JULIET}/balcony" to="${daemon.config.jid}" type="chat" id="j1">
+                <body>Noon or never?</body>
+                <stanza-id xmlns="${Strophe.NS.SID}" id="sid-1" by="${daemon.config.jid}"/>
+            </message>`);
+        await promise;
+
+        const client = await daemon.connect({ access: 'restricted' });
+        try {
+            const result = await client.request('messages.send', { to: JULIET, body: 'Noon', reply_to: 'sid' });
+            expect(result).toEqual({ outcome: 'draft', draft_id: 'd1' });
+        } finally {
+            client.close();
+        }
+
+        expect(sent().some(({ to }) => to === JULIET)).toBe(false);
+        expect(notices().at(-1).body).toBe(
+            `Draft d1 for ${JULIET}, from claude. Nothing was sent. To send it as a reply to the message ` +
+                `from ${JULIET}, "Noon or never?", copy the text into your client:\n"Noon"`,
+        );
+        expect((await fullRequest('drafts.list')).drafts[0]).toMatchObject({
+            action: 'reply',
+            body: 'Noon',
+            target: 'sid-1',
+        });
+    });
+
+    it('drafts a restricted reaction under the send policy, and refuses to remove one', async () => {
+        const { Strophe, stx } = converse.env;
+        await begin({ allow: [JULIET] });
+        for (const [from, id] of [
+            [JULIET, 'j1'],
+            [MERCUTIO, 'm1'],
+        ]) {
+            const { promise, resolve } = Promise.withResolvers();
+            daemon.api.listen.once('message', resolve);
+            daemon.receive(stx`
+                <message xmlns="jabber:client" from="${from}/balcony" to="${daemon.config.jid}" type="chat" id="${id}">
+                    <body>Noon or never?</body>
+                    <stanza-id xmlns="${Strophe.NS.SID}" id="sid-${id}" by="${daemon.config.jid}"/>
+                </message>`);
+            await promise;
+        }
+
+        const client = await daemon.connect({ access: 'restricted' });
+        try {
+            expect(await client.request('messages.react', { id: 'sid-j1', emoji: ':thumbsup:' })).toEqual({
+                outcome: 'draft',
+                draft_id: 'd1',
+            });
+            expect(await client.request('messages.react', { id: 'sid-m1', emoji: '👍' })).toMatchObject({
+                outcome: 'refused',
+                rule: 'allowlist',
+            });
+            await expect(
+                client.request('messages.react', { id: 'sid-j1', emoji: '👍', remove: true }),
+            ).rejects.toMatchObject({ code: ERRORS.ACCESS_DENIED });
+        } finally {
+            client.close();
+        }
+
+        expect(sent().filter(({ to }) => to !== BENVOLIO)).toEqual([]);
+        expect(notices().at(-1).body).toBe(
+            `Draft d1 for ${JULIET}, from claude. Nothing was sent. To send it, react to the message ` +
+                `from ${JULIET}, "Noon or never?", with:\n"👍"`,
+        );
+        expect((await fullRequest('drafts.list')).drafts).toEqual([
+            expect.objectContaining({ action: 'react', body: '👍', target: 'sid-j1' }),
+        ]);
+    });
+
     it('lists the drafts for full access, with the recipient, body and who queued them', async () => {
         await begin({ allow: [JULIET] });
         await restrictedSend(JULIET, 'Shall we meet at noon?');
@@ -130,9 +206,10 @@ describe('Drafts', () => {
                 {
                     id: 'd1',
                     to: JULIET,
-                    body: 'Shall we meet at noon?',
                     consumer: 'claude',
                     created: expect.any(String),
+                    action: 'send',
+                    body: 'Shall we meet at noon?',
                 },
             ],
         });

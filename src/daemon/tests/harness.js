@@ -31,9 +31,22 @@ export { JID };
  * @param {Parameters<typeof serve>[0]['mam_mode']} [options.mam_mode]
  * @param {Partial<import('../types').Policy>} [options.policy] - The send policy, from the config file
  * @param {{ jid: string, nick: string }[]} [options.rooms] - The rooms stored from an earlier run, to rejoin
+ * @param {import('../types').Access} [options.access] - The level the CLI connects at
  */
-export async function startDaemon({ roster = [], server_features, archive, settings, mam_mode, policy, rooms } = {}) {
-    const { env, remove } = await createAccount(settings, policy ? { policy } : {});
+export async function startDaemon({
+    roster = [],
+    server_features,
+    archive,
+    settings,
+    mam_mode,
+    policy,
+    rooms,
+    access,
+} = {}) {
+    const { env, remove } = await createAccount(settings, {
+        ...(policy ? { policy } : {}),
+        ...(access ? { access } : {}),
+    });
     const config = loadConfig(env);
     if (rooms) {
         const store = createRoomStore(config.paths.rooms);

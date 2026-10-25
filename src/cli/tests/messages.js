@@ -77,6 +77,10 @@ describe('converse-cli read and send', () => {
                 direction: 'incoming',
                 time: '2026-10-20T10:00:00.123Z',
                 body: 'Wherefore art thou?',
+                reply_to: null,
+                edited: null,
+                retracted: null,
+                reactions: {},
             },
         ]);
     });
@@ -157,6 +161,29 @@ describe('converse-cli read and send', () => {
         const { code } = await run(daemon.env, 'send', JULIET, '--', '-1 for yes');
         expect(code).toBe(EXIT.DRAFT);
         expect(lastToOwner()).toContain(JSON.stringify('-1 for yes'));
+    });
+
+    it('notes which message a reply answers', async () => {
+        const { promise, resolve } = Promise.withResolvers();
+        daemon.api.listen.once('message', resolve);
+        daemon.receive(stx`
+            <message xmlns="jabber:client" from="${JULIET}/balcony" to="${JID}" type="chat" id="c0c0c0c0c0c0">
+                <body>Here</body>
+                <reply xmlns="${Strophe.NS.REPLY}" id="a1b2c3d4e5f6" to="${JULIET}/balcony"/>
+            </message>`);
+        await promise;
+        const { stdout } = await run(daemon.env, 'read', JULIET, '--limit', '1');
+        expect(stdout).toMatch(/^c0c0c0c0 .* {2}juliet@capulet\.lit {2}\[reply to a1b2c3d4\] {2}"Here"\n$/);
+    });
+
+    it('drafts a reply to a message addressed by the short id read printed', async () => {
+        const { code } = await run(daemon.env, 'send', JULIET, 'Here', '--reply-to', 'a1b2c3d4');
+        expect(code).toBe(EXIT.DRAFT);
+        expect(lastToOwner()).toContain(`as a reply to the message from ${JULIET}, "Wherefore art thou?"`);
+
+        const result = await run(daemon.env, 'send', JULIET, 'Here', '--reply-to', 'zzz');
+        expect(result.code).toBe(EXIT.NOT_FOUND);
+        expect(result.stderr).toBe('converse-cli: No message with id "zzz" in this conversation.\n');
     });
 
     it('exits with "refused by policy" and says which rule refused it, for a send off the allowlist', async () => {

@@ -5,9 +5,9 @@ const { Strophe, sizzle, u, stx } = converse.env;
 
 describe('XEP-0363: HTTP File Upload', function () {
     describe('When not supported', function () {
-        describe('A file upload toolbar button', function () {
+        describe('The attachment menu', function () {
             it(
-                'does not appear in MUC chats',
+                'has no file item in MUC chats',
                 mock.initConverse(converse, [], {}, async (_converse) => {
                     await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                     mock.waitUntilDiscoConfirmed(
@@ -21,17 +21,17 @@ describe('XEP-0363: HTTP File Upload', function () {
 
                     await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items');
                     const view = _converse.chatboxviews.get('lounge@montague.lit');
-                    await u.waitUntil(() => view.querySelector('.chat-toolbar .fileupload') === null);
-                    expect(1).toBe(1);
+                    await u.waitUntil(() => view.querySelector('.chat-toolbar .toggle-emojis'));
+                    expect(view.querySelector('.chat-toolbar .attachment-menu__item[data-name="file"]')).toBe(null);
                 }),
             );
         });
     });
 
     describe('When supported', function () {
-        describe('A file upload toolbar button', function () {
+        describe('The attachment menu', function () {
             it(
-                'appears in MUC chats',
+                'has a file item in MUC chats',
                 mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
                     await mock.waitUntilDiscoConfirmed(
                         _converse,
@@ -58,15 +58,15 @@ describe('XEP-0363: HTTP File Upload', function () {
                         [],
                     );
                     await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
-                    await u.waitUntil(() =>
-                        _converse.chatboxviews.get('lounge@montague.lit').querySelector('.fileupload'),
-                    );
                     const view = _converse.chatboxviews.get('lounge@montague.lit');
-                    expect(view.querySelector('.chat-toolbar .fileupload')).not.toBe(null);
+                    const item = await u.waitUntil(() =>
+                        view.querySelector('.chat-toolbar .attachment-menu__item[data-name="file"]'),
+                    );
+                    expect(item).not.toBe(null);
                 }),
             );
 
-            describe('when clicked and a file chosen', function () {
+            describe('when a file is chosen', function () {
                 it(
                     'is uploaded and sent out from a groupchat',
                     mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {

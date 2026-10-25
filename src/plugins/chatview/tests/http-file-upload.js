@@ -129,9 +129,9 @@ describe('XEP-0363: HTTP File Upload', function () {
             }),
         );
 
-        describe('A file upload toolbar button', function () {
+        describe('The attachment menu', function () {
             it(
-                'does not appear in private chats',
+                'has no file item in private chats',
                 mock.initConverse(converse, [], {}, async function (_converse) {
                     await mock.waitForRoster(_converse, 'current', 3);
                     mock.openControlBox(_converse);
@@ -148,16 +148,16 @@ describe('XEP-0363: HTTP File Upload', function () {
 
                     await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items');
                     const view = _converse.chatboxviews.get(contact_jid);
-                    expect(view.querySelector('.chat-toolbar .fileupload')).toBe(null);
+                    expect(view.querySelector('.chat-toolbar .attachment-menu__item[data-name="file"]')).toBe(null);
                 }),
             );
         });
     });
 
     describe('When supported', function () {
-        describe('A file upload toolbar button', function () {
+        describe('The attachment menu', function () {
             it(
-                'appears in private chats',
+                'has a file item in private chats',
                 mock.initConverse(converse, [], {}, async (_converse) => {
                     await mock.waitForRoster(_converse, 'current', 3);
                     const contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -189,12 +189,14 @@ describe('XEP-0363: HTTP File Upload', function () {
                         [],
                     );
 
-                    const el = await u.waitUntil(() => view.querySelector('.chat-toolbar .fileupload'));
+                    const el = await u.waitUntil(() =>
+                        view.querySelector('.chat-toolbar .attachment-menu__item[data-name="file"]'),
+                    );
                     expect(el).not.toEqual(null);
                 }),
             );
 
-            describe('when clicked and a file chosen', function () {
+            describe('when a file is chosen', function () {
                 it(
                     'is uploaded and sent out',
                     mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {

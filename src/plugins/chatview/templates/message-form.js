@@ -15,16 +15,14 @@ export default (el) => {
     const message_limit = api.settings.get('message_limit');
     const toolbar_buttons = api.settings.get('visible_toolbar_buttons');
     const is_groupchat = el.model.get('type') === CHATROOMS_TYPE;
-    const {
-        emoji: show_emoji_button,
-        fileupload: show_fileupload_button,
-        location: show_location_button,
-        spoiler: show_spoiler_button,
-    } = toolbar_buttons;
+    const { emoji: show_emoji_button, spoiler: show_spoiler_button } = toolbar_buttons;
     const show_send_button = api.settings.get('show_send_button');
     const show_toolbar = api.settings.get('show_toolbar');
 
-    return html`<form class="chat-message-form" @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}">
+    return html`<form
+            class="chat-message-form"
+            @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}"
+        >
             ${
                 show_toolbar
                     ? html`<converse-chat-toolbar
@@ -33,8 +31,6 @@ export default (el) => {
                           ?composing_spoiler="${composing_spoiler}"
                           ?is_groupchat="${is_groupchat}"
                           ?show_emoji_button="${show_emoji_button}"
-                          ?show_fileupload_button="${show_fileupload_button}"
-                          ?show_location_button="${show_location_button}"
                           ?show_send_button="${show_send_button}"
                           ?show_spoiler_button="${show_spoiler_button}"
                           ?show_toolbar="${show_toolbar}"

@@ -197,6 +197,32 @@ function getMessageForm(view) {
 }
 
 /**
+ * Click the paperclip in a chat view's toolbar, wait for the attachment menu to open, and
+ * return the menu element.
+ * @param {HTMLElement} view
+ * @returns {Promise<HTMLElement>}
+ */
+async function openAttachmentMenu(view) {
+    const { u } = window.converse.env;
+    const button = await u.waitUntil(() => view.querySelector('converse-chat-toolbar .toggle-attachment-menu'));
+    button.click();
+    const menu = button.closest('converse-attachment-menu');
+    await u.waitUntil(() => u.isVisible(menu.querySelector('.attachment-menu')));
+    return menu;
+}
+
+/**
+ * The labels of a chat view's attachment menu items, in the order they are listed. Synchronous,
+ * so it can be used inside `u.waitUntil`.
+ * @param {HTMLElement} view
+ * @returns {string[]}
+ */
+function attachmentMenuItems(view) {
+    const items = view.querySelectorAll('converse-chat-toolbar .attachment-menu__item');
+    return Array.from(items).map((el) => el.textContent.trim());
+}
+
+/**
  * The composer's current text, whichever composer it is. Deliberately synchronous, so it
  * can be used inside `u.waitUntil` (which tests the predicate's return value for
  * truthiness, and would treat a promise as an immediate success).
@@ -736,6 +762,8 @@ export default {
     returnMemberLists,
     sendMessage,
     getMessageForm,
+    openAttachmentMenu,
+    attachmentMenuItems,
     composerText,
     setComposerText,
     pressComposerKey,

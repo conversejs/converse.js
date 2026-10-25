@@ -23,11 +23,12 @@ export function openRecorder(model: ChatModel): void;
  */
 export function getUploadDurationLimit(bitrate: number): Promise<number>;
 /**
- * `getToolbarButtons` handler: the microphone button.
- * @param {import('shared/chat/toolbar').ChatToolbar} toolbar_el
- * @param {Array<import('lit').TemplateResult|string>} buttons
+ * `getAttachmentMenuItems` handler: the "Record a voice message" item, listed
+ * once the server is known to offer HTTP File Upload.
+ * @param {import('shared/chat/attachment-menu').default} menu
+ * @param {import('shared/chat/types').AttachmentMenuItem[]} items
  */
-export function getVoiceMessageButton(toolbar_el: import("shared/chat/toolbar").ChatToolbar, buttons: Array<import("lit").TemplateResult | string>): (string | import("lit-html").TemplateResult<1 | 2 | 3>)[];
+export function getVoiceMessageItem(menu: import("shared/chat/attachment-menu").default, items: import("shared/chat/types").AttachmentMenuItem[]): Promise<import("shared/chat/types").AttachmentMenuItem[]>;
 /**
  * `getComposerPanels` handler: the recorder, which renders nothing until opened.
  * @param {import('shared/chat/composer-panels').default} container

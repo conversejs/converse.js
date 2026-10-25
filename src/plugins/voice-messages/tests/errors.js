@@ -6,6 +6,7 @@ import {
     fakeUploads,
     installFakeMedia,
     openChat,
+    openRecorder,
     settings,
     startRecording,
 } from './utils.js';
@@ -41,7 +42,7 @@ describe('The voice message recorder', function () {
             mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
                 installFakeMedia({ error });
                 const view = await openChat(_converse);
-                (await u.waitUntil(() => view.querySelector('.toggle-voice-message'))).click();
+                await openRecorder(view);
 
                 const el = await u.waitUntil(() =>
                     view.querySelector('converse-audio-recorder .audio-recorder--error'),
@@ -104,13 +105,12 @@ describe('The voice message recorder', function () {
         mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const media = installFakeMedia({ error: 'NotAllowedError' });
             const view = await openChat(_converse);
-            const button = await u.waitUntil(() => view.querySelector('.toggle-voice-message'));
-            button.click();
+            await openRecorder(view);
             await u.waitUntil(() => view.querySelector('converse-audio-recorder .audio-recorder--error'));
 
             media.getUserMedia.mockRestore();
             installFakeMedia();
-            button.click();
+            await openRecorder(view);
             await u.waitUntil(() => view.querySelector('converse-audio-recorder .audio-recorder--recording'));
         }),
     );

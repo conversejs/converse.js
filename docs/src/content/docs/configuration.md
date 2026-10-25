@@ -1860,13 +1860,16 @@ See also [emoji_image_path](#emoji_image_path).
     clear: true,
     emoji: true,
     fileupload: true,
-    location: true,
+    location: false,
     spoiler: false,
     voice_message: true, // With the converse-voice-messages plugin
 }
 ```
 
-Allows you to show or hide buttons on the chatboxes' toolbars.
+Allows you to show or hide the buttons on the chatboxes' toolbars, and the entries of the
+attachment menu that the toolbar's paperclip opens. The paperclip is only shown while the
+menu has at least one entry, so turning off every attachment key (`fileupload`, `location`
+and `voice_message`) removes it, for a text-only chat.
 
 - _call_:
   Shows a telephone button in 1:1 chats that starts an audio call with the contact.
@@ -1878,17 +1881,20 @@ Allows you to show or hide buttons on the chatboxes' toolbars.
   Enables rendering of emoji and provides a toolbar button for choosing them.
 
 - _fileupload_:
-  Shows the button (a paperclip) for sharing files via [XEP-0363](https://xmpp.org/extensions/xep-0363.html) HTTP File Upload. The button only appears if the server actually advertises HTTP Upload support; setting this to `false` hides it even when supported. For backwards compatibility an absent `fileupload` key is treated as `true`.
+  Lists the "Send a file" and "Send an image" entries in the attachment menu, for sharing files via [XEP-0363](https://xmpp.org/extensions/xep-0363.html) HTTP File Upload. The entries only appear if the server actually advertises HTTP Upload support; setting this to `false` hides them even when supported. For backwards compatibility an absent `fileupload` key is treated as `true`.
 
 - _location_:
-  Shows a button for sharing your geo-location.
+  Lists the "Share your location" entry in the attachment menu, for sharing your geo-location. Off by default.
 
 - _spoiler_:
-  Shows a button for showing[XEP-0382](https://xmpp.org/extensions/xep-0382.html) spoiler messages.
+  Shows a button for showing [XEP-0382](https://xmpp.org/extensions/xep-0382.html) spoiler messages.
 
 - _voice_message_:
-  Shows a microphone button for recording and sending a [voice message](/docs/voice-messages/).
-  The button comes with the `converse-voice-messages` plugin, so without it there is none.
+  Lists the "Record a voice message" entry in the attachment menu, for recording and sending a [voice message](/docs/voice-messages/).
+  The entry comes with the `converse-voice-messages` plugin, so without it there is none.
+
+To add an entry of your own to the attachment menu, use the `getAttachmentMenuItems`
+[hook](/docs/development/plugin-development/#attachment-menu).
 
 ### websocket_url
 

@@ -175,10 +175,18 @@ export async function openChat(_converse, options) {
 }
 
 /**
- * Click the microphone button and wait until recording.
+ * Open the recorder the way a user does: from the attachment menu's "Record a
+ * voice message" item.
+ */
+export async function openRecorder(view) {
+    await mock.openAttachmentMenu(view);
+    view.querySelector('.attachment-menu__item[data-name="voice-message"]').click();
+}
+
+/**
+ * Open the recorder and wait until it is recording.
  */
 export async function startRecording(view) {
-    const button = await u.waitUntil(() => view.querySelector('.toggle-voice-message'));
-    button.click();
+    await openRecorder(view);
     return u.waitUntil(() => view.querySelector('converse-audio-recorder .audio-recorder--recording'));
 }

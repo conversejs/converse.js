@@ -7,18 +7,21 @@ import {
     fakeUploads,
     installFakeMedia,
     openChat,
+    openRecorder,
     settings,
 } from './utils.js';
 
 const { u } = converse.env;
 
 /**
- * Click the microphone button with the clock under the test's control.
+ * Open the recorder with the clock under the test's control from the moment
+ * recording starts. The menu is opened with the real clock, since its waits
+ * need real timers.
  */
 async function startRecordingWithFakeClock(view) {
-    const button = await u.waitUntil(() => view.querySelector('.toggle-voice-message'));
+    await mock.openAttachmentMenu(view);
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
-    button.click();
+    view.querySelector('.attachment-menu__item[data-name="voice-message"]').click();
     await vi.advanceTimersByTimeAsync(0);
     expect(view.querySelector('converse-audio-recorder .audio-recorder--recording')).not.toBe(null);
 }
@@ -219,7 +222,7 @@ describe('The voice message recorder', function () {
             async function (_converse) {
                 const media = installFakeMedia();
                 const view = await openChat(_converse);
-                (await u.waitUntil(() => view.querySelector('.toggle-voice-message'))).click();
+                await openRecorder(view);
                 await u.waitUntil(() => view.querySelector('converse-audio-recorder .btn-stop'));
                 expect(media.recorder.options).toEqual({
                     audioBitsPerSecond: 48000,
@@ -248,7 +251,7 @@ describe('The voice message recorder', function () {
                 FakeMediaRecorder.supported = ['audio/mp4'];
                 try {
                     const view = await openChat(_converse);
-                    (await u.waitUntil(() => view.querySelector('.toggle-voice-message'))).click();
+                    await openRecorder(view);
                     await u.waitUntil(() => view.querySelector('converse-audio-recorder .btn-stop'));
                     expect(media.recorder.options.mimeType).toBe('audio/mp4');
                     media.recorder.emitData('hello');

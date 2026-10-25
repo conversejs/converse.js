@@ -70,11 +70,11 @@
             border-radius: 0;
         }
 
-        // The row of quiet controls: emoji, call, spoiler, location, attachment,
-        // OMEMO, and whatever a plugin has added through the `getToolbarButtons`
-        // hook. Selecting on `.btn` rather than on each of them in turn means a
-        // plugin's button is dressed like the built-in ones without having to know
-        // anything about this file.
+        // The row of quiet controls: emoji, spoiler, the attachment menu's
+        // paperclip, call, OMEMO, and whatever a plugin has added through the
+        // `getToolbarButtons` hook. Selecting on `.btn` rather than on each of them
+        // in turn means a plugin's button is dressed like the built-in ones without
+        // having to know anything about this file.
         .toolbar-buttons {
             align-items: center;
             gap: 0.1em;
@@ -96,8 +96,8 @@
         // positions against it — treats its children as a segmented control: it
         // overlaps them by a border width and squares off their inner corners.
         // Only the bare <button>s are direct children though, because the emoji and
-        // location buttons sit inside custom elements of their own, so half the row
-        // would keep a rounded plate and half would lose it.
+        // attachment buttons sit inside custom elements of their own, so half the
+        // row would keep a rounded plate and half would lose it.
         //
         // Undone here, spaced with the gap above instead. Written through
         // `&.btn-toolbar` purely for the extra specificity: the Bootstrap rules

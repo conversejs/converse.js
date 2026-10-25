@@ -11,6 +11,16 @@ export type ComposerPanelEntry = {
     order: number;
     template: TemplateResult;
 };
+/**
+ * A row in the attachment menu, which the paperclip in a chat's toolbar opens.
+ */
+export type AttachmentMenuItem = {
+    name: string;
+    order?: number;
+    icon: string;
+    label: string;
+    handler: () => void;
+};
 export type MessageActionButton = {
     i18n_text: string;
     handler: (ev: Event) => void;

@@ -5,7 +5,23 @@ const { stx, u } = converse.env;
 
 const settings = { 'view_mode': 'fullscreen', 'visible_toolbar_buttons': { 'location': true } };
 
-describe('The Location Button', function () {
+/**
+ * The server answers disco without an upload service, so location is the only attachment.
+ */
+async function confirmDisco(_converse) {
+    const domain = _converse.session.get('domain');
+    await mock.waitUntilDiscoConfirmed(
+        _converse,
+        domain,
+        [{ category: 'server', type: 'IM' }],
+        ['http://jabber.org/protocol/disco#items'],
+        [],
+        'info',
+    );
+    await mock.waitUntilDiscoConfirmed(_converse, domain, [], [], [], 'items');
+}
+
+describe('The location attachment', function () {
     it(
         'shows a confirmation prompt and sends the geo URI as a message in a MUC',
         mock.initConverse(converse, ['discoInitialized'], settings, async function (_converse) {
@@ -17,15 +33,13 @@ describe('The Location Button', function () {
                 success({ coords: { latitude: 51.5074, longitude: -0.1278 } });
             });
 
+            await confirmDisco(_converse);
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
-            const toolbar = view.querySelector('.chat-toolbar');
 
-            const location_button = toolbar.querySelector('converse-location-button');
-            expect(location_button).not.toBeNull();
-
-            const button = location_button.querySelector('.toggle-location');
-            button.click();
+            await mock.openAttachmentMenu(view);
+            expect(mock.attachmentMenuItems(view)).toEqual(['Share your location']);
+            view.querySelector('.attachment-menu__item[data-name="location"]').click();
 
             await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
             expect(_converse.api.confirm).toHaveBeenCalledWith('Confirm', [
@@ -55,6 +69,7 @@ describe('The Location Button', function () {
                 success({ coords: { latitude: 40.7128, longitude: -74.006 } });
             });
 
+            await confirmDisco(_converse);
             await mock.openAndEnterMUC(_converse, muc_jid, nick);
             const view = _converse.chatboxviews.get(muc_jid);
 
@@ -84,14 +99,11 @@ describe('The Location Button', function () {
             // Click the occupant avatar to open the PM panel in the sidebar
             view.querySelector('.occupant-list converse-avatar[name="firstwitch"]').click();
 
-            // Wait for the occupant panel to render with toolbar
-            const location_button = await u.waitUntil(() =>
-                view.querySelector('converse-muc-occupant converse-location-button'),
-            );
-            expect(location_button).not.toBeNull();
-
-            const button = location_button.querySelector('.toggle-location');
-            button.click();
+            // The occupant panel has a composer of its own, with its own attachment menu.
+            const occupant_view = await u.waitUntil(() => view.querySelector('converse-muc-occupant'));
+            await mock.openAttachmentMenu(occupant_view);
+            expect(mock.attachmentMenuItems(occupant_view)).toEqual(['Share your location']);
+            occupant_view.querySelector('.attachment-menu__item[data-name="location"]').click();
 
             await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
             expect(_converse.api.confirm).toHaveBeenCalledWith('Confirm', [

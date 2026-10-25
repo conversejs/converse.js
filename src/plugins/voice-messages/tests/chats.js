@@ -22,32 +22,58 @@ async function openMUC(_converse, features = [], role = 'participant') {
     return _converse.chatboxviews.get(muc_jid);
 }
 
-describe('The voice message button', function () {
+const VOICE_ITEM = '.attachment-menu__item[data-name="voice-message"]';
+const FILE_ITEM = '.attachment-menu__item[data-name="file"]';
+
+describe('The voice message attachment', function () {
     afterEach(() => vi.unstubAllGlobals());
 
     it(
-        "isn't shown when the plugin isn't loaded",
+        'is listed last in the attachment menu',
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { ...settings, visible_toolbar_buttons: { location: true } },
+            async function (_converse) {
+                installFakeMedia();
+                const view = await openChat(_converse);
+                await mock.openAttachmentMenu(view);
+                expect(mock.attachmentMenuItems(view)).toEqual([
+                    'Send a file',
+                    'Send an image',
+                    'Share your location',
+                    'Record a voice message',
+                ]);
+                expect(view.querySelector(`${VOICE_ITEM} converse-icon`).getAttribute('class')).toBe(
+                    'fa fa-microphone',
+                );
+            },
+        ),
+    );
+
+    it(
+        "isn't listed when the plugin isn't loaded",
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             installFakeMedia();
             const view = await openChat(_converse);
-            await u.waitUntil(() => view.querySelector('.chat-toolbar .fileupload'));
-            expect(view.querySelector('.toggle-voice-message')).toBe(null);
+            await u.waitUntil(() => view.querySelector(FILE_ITEM));
+            expect(view.querySelector(VOICE_ITEM)).toBe(null);
             expect(view.querySelector('converse-audio-recorder')).toBe(null);
         }),
     );
 
     it(
-        "isn't shown when the browser can't record",
+        "isn't listed when the browser can't record",
         mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             vi.stubGlobal('MediaRecorder', undefined);
             const view = await openChat(_converse);
-            await u.waitUntil(() => view.querySelector('.chat-toolbar .fileupload'));
-            expect(view.querySelector('.toggle-voice-message')).toBe(null);
+            await u.waitUntil(() => view.querySelector(FILE_ITEM));
+            expect(view.querySelector(VOICE_ITEM)).toBe(null);
         }),
     );
 
     it(
-        "isn't shown when the server doesn't support HTTP File Upload",
+        "isn't listed when the server doesn't support HTTP File Upload, so there is no paperclip",
         mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             installFakeMedia();
             await mock.waitUntilDiscoConfirmed(
@@ -62,14 +88,16 @@ describe('The voice message button', function () {
             await mock.waitForRoster(_converse, 'current', 1);
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
-            await u.waitUntil(() => view.querySelector('.chat-toolbar converse-emoji-dropdown'));
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            expect(view.querySelector('.toggle-voice-message')).toBe(null);
+            const menu = await u.waitUntil(() => view.querySelector('.chat-toolbar converse-attachment-menu'));
+            await menu.initialized;
+            await menu.updateComplete;
+            expect(view.querySelector(VOICE_ITEM)).toBe(null);
+            expect(view.querySelector('.chat-toolbar .toggle-attachment-menu')).toBe(null);
         }),
     );
 
     it(
-        "isn't shown when hidden through visible_toolbar_buttons",
+        "isn't listed when hidden through visible_toolbar_buttons",
         mock.initConverse(
             converse,
             ['chatBoxesFetched'],
@@ -77,19 +105,19 @@ describe('The voice message button', function () {
             async function (_converse) {
                 installFakeMedia();
                 const view = await openChat(_converse);
-                await u.waitUntil(() => view.querySelector('.chat-toolbar .fileupload'));
-                expect(view.querySelector('.toggle-voice-message')).toBe(null);
+                await u.waitUntil(() => view.querySelector(FILE_ITEM));
+                expect(view.querySelector(VOICE_ITEM)).toBe(null);
             },
         ),
     );
 
     it(
-        "isn't shown to a visitor in a moderated groupchat",
+        "isn't offered to a visitor in a moderated groupchat",
         mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             installFakeMedia();
             const view = await openMUC(_converse, ['moderated'], 'visitor');
             await u.waitUntil(() => view.querySelector('.muc-bottom-panel--muted'));
-            expect(view.querySelector('.toggle-voice-message')).toBe(null);
+            expect(view.querySelector('converse-attachment-menu')).toBe(null);
             expect(view.querySelector('converse-audio-recorder')).toBe(null);
         }),
     );

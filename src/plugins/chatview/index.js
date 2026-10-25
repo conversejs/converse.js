@@ -9,6 +9,7 @@ import ChatView from './chat.js';
 import { _converse, api, converse } from '@converse/headless';
 import { html } from 'lit';
 import { clearHistory } from './utils.js';
+import { getAttachmentMenuItems } from './attachments.js';
 import tplComposerPanel from 'shared/chat/templates/composer-panel.js';
 import 'shared/chat/reply-preview.js';
 
@@ -73,6 +74,7 @@ converse.plugins.add('converse-chatview', {
 
         api.listen.on('connected', () => api.disco.own.features.add(Strophe.NS.SPOILER));
         api.listen.on('chatBoxClosed', (model) => clearHistory(model.get('jid')));
+        api.listen.on('getAttachmentMenuItems', getAttachmentMenuItems);
 
         api.listen.on('getComposerPanels', (container, panels) => {
             panels.push({

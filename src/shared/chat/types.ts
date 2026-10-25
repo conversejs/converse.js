@@ -26,6 +26,24 @@ export type ComposerPanelEntry = {
     template: TemplateResult;
 };
 
+/**
+ * A row in the attachment menu, which the paperclip in a chat's toolbar opens.
+ */
+export type AttachmentMenuItem = {
+    // A stable identifier, such as `file`, `image`, `location` or `voice-message`.
+    name: string;
+    // Sorts the item against the others, smallest first. The built-in values are
+    // listed under "Attachment menu" in the plugin development docs. An item
+    // without a numeric order goes last.
+    order?: number;
+    // The icon class to draw, such as `fa-paperclip`.
+    icon: string;
+    // The translated text shown next to the icon.
+    label: string;
+    // Called when the item is activated. The menu closes before it runs.
+    handler: () => void;
+};
+
 export type MessageActionButton = {
     i18n_text: string;
     handler: (ev: Event) => void;

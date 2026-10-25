@@ -3,7 +3,6 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { html } from 'lit';
-import { until } from 'lit/directives/until.js';
 import { _converse, api, constants, converse, getUploadService } from '@converse/headless';
 import { __ } from 'i18n';
 import { isRecordingSupported } from './session.js';
@@ -25,6 +24,9 @@ const EXTENSIONS = {
     'audio/ogg': 'ogg',
     'audio/webm': 'weba',
 };
+
+// The voice message's place in the attachment menu: after file, image and location.
+const VOICE_MESSAGE_ORDER = 400;
 
 /**
  * The share of the upload service's file size limit that a recording may
@@ -85,39 +87,32 @@ export async function getUploadDurationLimit(bitrate) {
 }
 
 /**
- * `getToolbarButtons` handler: the microphone button.
- * @param {import('shared/chat/toolbar').ChatToolbar} toolbar_el
- * @param {Array<import('lit').TemplateResult|string>} buttons
+ * `getAttachmentMenuItems` handler: the "Record a voice message" item, listed
+ * once the server is known to offer HTTP File Upload.
+ * @param {import('shared/chat/attachment-menu').default} menu
+ * @param {import('shared/chat/types').AttachmentMenuItem[]} items
  */
-export function getVoiceMessageButton(toolbar_el, buttons) {
-    const { model } = toolbar_el;
+export async function getVoiceMessageItem(menu, items) {
+    const { model } = menu;
     if (
         !api.settings.get('visible_toolbar_buttons')?.voice_message ||
         !isRecordingSupported() ||
         !isVoiceChat(model) ||
         (model.get('type') === CHATROOMS_TYPE && !(/** @type {any} */ (model).canPostMessages()))
     ) {
-        return buttons;
+        return items;
     }
-    const i18n_record = __('Record a voice message');
-    const color = toolbar_el.is_groupchat ? '--muc-color' : '--chat-color';
     const domain = _converse.session.get('domain');
-    const button = html`<button
-        type="button"
-        class="btn toggle-voice-message"
-        title="${i18n_record}"
-        aria-label="${i18n_record}"
-        @click=${() => openRecorder(model)}
-    >
-        <converse-icon color="var(${color})" class="fa fa-microphone" size="1em"></converse-icon>
-    </button>`;
-    buttons.push(
-        html`${until(
-            api.disco.supports(Strophe.NS.HTTPUPLOAD, domain).then((supported) => (supported ? button : '')),
-            '',
-        )}`,
-    );
-    return buttons;
+    if (await api.disco.supports(Strophe.NS.HTTPUPLOAD, domain)) {
+        items.push({
+            name: 'voice-message',
+            order: VOICE_MESSAGE_ORDER,
+            icon: 'fa-microphone',
+            label: __('Record a voice message'),
+            handler: () => openRecorder(model),
+        });
+    }
+    return items;
 }
 
 /**

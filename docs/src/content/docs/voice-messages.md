@@ -20,7 +20,7 @@ converse.initialize({
 });
 ```
 
-The microphone button is only shown when:
+The "Record a voice message" entry in the attachment menu is only shown when:
 
 - your XMPP server supports HTTP File Upload,
 - the browser supports the `MediaRecorder` and `getUserMedia` APIs, and
@@ -31,8 +31,9 @@ they record.
 
 ## Recording a voice message
 
-Click the microphone button in the chat toolbar to open the recorder above the
-message form. Recording starts once microphone access is granted. You can pause
+Open the attachment menu from the paperclip in the chat toolbar and choose
+"Record a voice message" to open the recorder above the message form.
+Recording starts once microphone access is granted. You can pause
 and resume, send the recording, or cancel it. Pressing `Escape` while the
 recorder has focus cancels the recording.
 
@@ -44,7 +45,7 @@ again or discarded.
 
 ## Configuration
 
-The microphone button can be hidden with the `voice_message` key of
+The "Record a voice message" entry can be hidden with the `voice_message` key of
 [visible_toolbar_buttons](/docs/configuration/#visible_toolbar_buttons).
 
 ### max_voice_message_duration

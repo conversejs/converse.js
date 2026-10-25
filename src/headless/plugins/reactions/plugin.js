@@ -7,6 +7,7 @@
 
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
+import reactions_api from './api.js';
 import { parseReactionsMessage } from './parsers.js';
 import {
     getDuplicateMessageQueries,
@@ -24,6 +25,8 @@ converse.plugins.add('converse-reactions', {
     dependencies: ['converse-chat', 'converse-muc', 'converse-pubsub', 'converse-emoji'],
 
     initialize() {
+        Object.assign(api, reactions_api);
+
         api.listen.on('parseMessage', parseReactionsMessage);
         api.listen.on('parseMUCMessage', parseReactionsMessage);
         api.listen.on('parseEncryptedContent', parseReactionsMessage);

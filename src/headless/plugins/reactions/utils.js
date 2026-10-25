@@ -1,6 +1,7 @@
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
 import _converse from '../../shared/_converse.js';
+import { buildReactionFallbackBody } from './fallback.js';
 
 const { Strophe, u } = converse.env;
 
@@ -218,6 +219,7 @@ export function getOwnReactionJID(chatbox) {
 Object.assign(u, {
     reactions: {
         ...u.reactions,
+        buildReactionFallbackBody,
         getOwnReactionJID,
     },
 });

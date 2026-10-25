@@ -3,6 +3,58 @@ import converse from '../../../dist/converse-headless.js';
 
 const { Strophe, sizzle, u, stx } = converse.env;
 
+describe('buildReactionFallbackBody', function () {
+    const { buildReactionFallbackBody } = u.reactions;
+
+    it('prefixes the text with "> " and appends the emoji on a new line', function () {
+        expect(buildReactionFallbackBody('Hello world', ['👍'])).toBe('> Hello world\n👍');
+    });
+
+    it('joins multiple emojis without a separator', function () {
+        expect(buildReactionFallbackBody('Hello', ['👍', '❤️'])).toBe('> Hello\n👍❤️');
+    });
+
+    it('truncates to 80 code points and appends an ellipsis', function () {
+        const long_text = 'a'.repeat(90);
+        const result = buildReactionFallbackBody(long_text, ['👍']);
+        const [quote] = result.split('\n');
+        expect(quote).toBe('> ' + 'a'.repeat(80) + '…');
+    });
+
+    it('does not truncate text that is exactly 80 code points', function () {
+        const exact = 'a'.repeat(80);
+        expect(buildReactionFallbackBody(exact, ['👍'])).toBe(`> ${exact}\n👍`);
+    });
+
+    it('counts code points, not UTF-16 units, when truncating', function () {
+        // Each '𝄞' (U+1D11E MUSICAL SYMBOL G CLEF) is 1 code point but 2 UTF-16 units.
+        const musical = '𝄞'.repeat(81);
+        const result = buildReactionFallbackBody(musical, ['👍']);
+        const [quote] = result.split('\n');
+        expect([...quote].length).toBe(2 + 80 + 1); // "> " + 80 code points + "…"
+    });
+
+    it('collapses internal whitespace to a single space', function () {
+        expect(buildReactionFallbackBody('Hello   world\nand\tthere', ['👍'])).toBe('> Hello world and there\n👍');
+    });
+
+    it('returns bare emoji when the text is empty', function () {
+        expect(buildReactionFallbackBody('', ['👍'])).toBe('👍');
+    });
+
+    it('returns bare emoji when the text is null', function () {
+        expect(buildReactionFallbackBody(null, ['👍'])).toBe('👍');
+    });
+
+    it('returns bare emoji when the text is whitespace-only', function () {
+        expect(buildReactionFallbackBody('   ', ['👍'])).toBe('👍');
+    });
+
+    it('returns an empty string when the emoji set is empty (retraction)', function () {
+        expect(buildReactionFallbackBody('Hello world', [])).toBe('');
+    });
+});
+
 describe('Message Reactions (XEP-0444)', function () {
     it(
         'does not overwrite from_real_jid or occupant_id on the target message when a different occupant reacts',
@@ -156,6 +208,37 @@ describe('Message Reactions (XEP-0444)', function () {
             await u.waitUntil(() => Object.keys(msg.get('reactions') || {}).length);
             expect(Object.values(msg.get('reactions'))).toEqual([['👍']]);
             expect(msg.get('time')).toBe(original_time);
+        }),
+    );
+
+    it(
+        'sends our whole set of reactions to a message, and an empty set to withdraw them',
+        mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const chat = await mock.openChatBoxFor(_converse, contact_jid);
+            await _converse.handleMessageStanza(stx`
+                <message xmlns="jabber:client" from="${contact_jid}/orchard" to="${_converse.bare_jid}"
+                        type="chat" id="target-1">
+                    <body>Wherefore art thou?</body>
+                </message>`);
+            const message = await u.waitUntil(() => chat.messages.findWhere({ msgid: 'target-1' }));
+            const { sent_stanzas } = api.connection.get();
+            const lastReactions = () =>
+                sent_stanzas
+                    .filter((s) => s.nodeName === 'message')
+                    .pop()
+                    .querySelector('reactions');
+
+            await api.reactions.send(message, ['👍', '❤️']);
+            expect(lastReactions().getAttribute('id')).toBe('target-1');
+            expect([...lastReactions().querySelectorAll('reaction')].map((r) => r.textContent)).toEqual(['👍', '❤️']);
+            expect(message.get('reactions')).toEqual({ [_converse.bare_jid]: ['👍', '❤️'] });
+
+            await api.reactions.send(message, []);
+            expect(lastReactions().querySelectorAll('reaction').length).toBe(0);
+            expect(message.get('reactions')).toEqual({});
         }),
     );
 });

@@ -6,25 +6,8 @@
  */
 export function getPopularReactions(allowed_emojis: string[]): Promise<string[]>;
 /**
- * Helper function to update a message with reactions (JID-keyed format).
- * Used for optimistic updates when sending reactions.
- *
- * Reactions are stored as `{ jid: [emoji1, emoji2, ...] }`.
- * For MUC the key is the full JID (room@domain/nick), matching what the
- * server will echo back. For 1:1 chats the key is the bare JID.
- *
- * @param {BaseMessage} message - The message model to update
- * @param {string[]} emojis - The list of emojis (can be empty for removal)
- */
-export function updateMessageReactions(message: BaseMessage, emojis: string[]): void;
-/**
- * Send a XEP-0444 reaction stanza and optimistically update the message.
- *
- * The message's `reactions` are updated optimistically (so the UI is
- * responsive); for the OMEMO-encrypted path, if the send fails the optimistic
- * update is rolled back (`api.omemo.send` has already surfaced the error to the
- * user). The cleartext path stays fire-and-forget — a bounced reaction stanza is
- * rolled back later via the `getErrorAttributesForMessage` hook.
+ * Toggles one of our reactions to a message: adds the emoji if we haven't
+ * reacted with it, removes it if we have. Headless sends our resulting set.
  *
  * @param {BaseMessage} message - The message model to update
  * @param {string} emoji - The selected emoji or shortname
@@ -62,8 +45,6 @@ export function getReactorNames(jids: string[], chatbox: ChatBoxOrMUC): Promise<
  * Registers a handler for disco#info result stanzas to check for restricted reactions support.
  */
 export function registerRestrictedReactionsHandler(): void;
-export { buildReactionFallbackBody };
 export type BaseMessage = import("@converse/headless/types/shared/message").default;
 export type ChatBoxOrMUC = import("@converse/headless/types/shared/types").ChatBoxOrMUC;
-import { buildReactionFallbackBody } from './fallback.js';
 //# sourceMappingURL=utils.d.ts.map

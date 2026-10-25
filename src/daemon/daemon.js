@@ -7,14 +7,17 @@ import net from 'node:net';
 import readline from 'node:readline';
 import { _converse, api, converse, log } from '@converse/headless';
 import { createAudit } from './audit.js';
+import { contactMethods } from './contacts.js';
 import { getPassword } from './config.js';
 import { createCursors } from './cursors.js';
 import { createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
 import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
+import { presenceMethods } from './presence.js';
 import { createPolicy } from './policy.js';
 import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
+import { TIMED_OUT, withTimeout } from './timeout.js';
 
 /**
  * How long shutdown waits for the server to see us leave before giving up.
@@ -79,6 +82,8 @@ async function serve(config) {
         ...messageMethods(_converse, { policy, audit, drafts, events, owner: config.owner }),
         ...draftMethods(_converse, { drafts, audit, events, owner: config.owner }),
         ...inboxMethods(_converse, createCursors(paths.cursors)),
+        ...contactMethods(_converse),
+        ...presenceMethods(_converse, { config }),
         ...events.methods,
         /** @returns {import('./types').Status} */
         'daemon.status': () => ({
@@ -124,7 +129,9 @@ async function serve(config) {
             clients.forEach((socket) => socket.end());
             try {
                 if (api.connection.connected()) {
-                    await withTimeout(leave(), SHUTDOWN_TIMEOUT);
+                    if ((await withTimeout(leave(), SHUTDOWN_TIMEOUT)) === TIMED_OUT) {
+                        log.warn(`Gave up waiting to leave after ${SHUTDOWN_TIMEOUT}ms`);
+                    }
                 }
             } catch (e) {
                 // Still clean up below: a daemon left with its pidfile behind blocks the next one.
@@ -299,19 +306,4 @@ function isRunning(pid) {
     } catch (e) {
         return e.code === 'EPERM';
     }
-}
-
-/**
- * @param {Promise<unknown>} promise
- * @param {number} ms
- */
-function withTimeout(promise, ms) {
-    let timer;
-    const timeout = new Promise((resolve) => {
-        timer = setTimeout(() => {
-            log.warn(`Gave up waiting after ${ms}ms`);
-            resolve(undefined);
-        }, ms);
-    });
-    return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }

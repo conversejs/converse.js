@@ -138,6 +138,23 @@ function quoted(text) {
 }
 
 /**
+ * One occupant of a room, on one line: nickname, role, affiliation, then
+ * their JID if the room shows it. The nickname is chosen by the occupant, so it's quoted.
+ * @param {import('@converse/daemon/types').OccupantDTO} occupant
+ */
+export function formatOccupant(occupant) {
+    return `${JSON.stringify(occupant.nick)}  ${occupant.role}  ${occupant.affiliation}  ${occupant.jid ?? '-'}\n`;
+}
+
+/**
+ * One room a service lists, on one line: its JID, then its name.
+ * @param {import('@converse/daemon/types').RoomListing} room
+ */
+export function formatRoomListing(room) {
+    return `${room.jid}  ${quoted(room.name)}\n`;
+}
+
+/**
  * One contact, on one line: JID, presence, then the name.
  * @param {import('@converse/daemon/types').ContactSummary} contact
  */

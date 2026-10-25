@@ -1,7 +1,8 @@
 /**
  * Answers the IQs a daemon on the MockConnection sends that a real server
- * would answer on its own: service discovery, and MAM queries against an
- * archive the spec supplies. What it doesn't answer, a spec answers itself.
+ * would answer on its own: service discovery, including that of the rooms on
+ * the MUC service, their member lists, and MAM queries against an archive the
+ * spec supplies. What it doesn't answer, a spec answers itself.
  */
 import { converse } from '@converse/headless';
 
@@ -27,6 +28,7 @@ const TIMED_OUT = Symbol('timed out');
 export function serve({ connection, receive, jid, server_features = [], archive, mam_mode = 'answer' }) {
     const bare_jid = Strophe.getBareJidFromJid(jid);
     const domain = Strophe.getDomainFromJid(jid);
+    const muc_domain = `conference.${domain}`;
     const account_features = archive ? [NS_MAM] : [];
     /** Every MAM query received, for specs to assert on. */
     const mam_queries = [];
@@ -52,6 +54,24 @@ export function serve({ connection, receive, jid, server_features = [], archive,
                         <identity category="${identity[0]}" type="${identity[1]}"/>
                         ${features.map((f) => stx`<feature var="${f}"/>`)}
                     </query>
+                </iq>`;
+        }
+        if (disco_info && Strophe.getDomainFromJid(to) === muc_domain && Strophe.getNodeFromJid(to)) {
+            // Every room asked about exists. Whether it lets us in is up to the spec.
+            return stx`
+                <iq xmlns="jabber:client" type="result" from="${to}" to="${jid}" id="${id}">
+                    <query xmlns="${Strophe.NS.DISCO_INFO}">
+                        <identity category="conference" type="text"/>
+                        <feature var="${Strophe.NS.MUC}"/>
+                        <feature var="${Strophe.NS.OCCUPANTID}"/>
+                    </query>
+                </iq>`;
+        }
+        if (iq.querySelector(`query[xmlns="${Strophe.NS.MUC_ADMIN}"]`) && Strophe.getDomainFromJid(to) === muc_domain) {
+            // Asked for its members, a room lists none.
+            return stx`
+                <iq xmlns="jabber:client" type="result" from="${to}" to="${jid}" id="${id}">
+                    <query xmlns="${Strophe.NS.MUC_ADMIN}"/>
                 </iq>`;
         }
         if (disco_items && to === domain) {

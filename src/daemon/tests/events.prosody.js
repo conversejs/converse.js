@@ -42,6 +42,7 @@ describe('Event subscriptions on a real Prosody', () => {
                 id: expect.any(String),
                 conversation: romeo.jid,
                 from: romeo.jid,
+                nick: null,
                 direction: 'incoming',
                 time: expect.any(String),
                 body,

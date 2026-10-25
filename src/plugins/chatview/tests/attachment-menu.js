@@ -5,6 +5,12 @@ import converse from '../../../../dist/converse.js';
 
 const { Strophe, u } = converse.env;
 
+// The voice-messages plugin is on by default and adds its own item to the menu.
+// These tests are about the built-in items, so it is left out here.
+function initConverse(converse, promise_names, settings, func) {
+    return mock.initConverse(converse, promise_names, { blacklisted_plugins: ['converse-voice-messages'], ...settings }, func);
+}
+
 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
 
 /**
@@ -77,7 +83,7 @@ function chooseFiles(input, files) {
 describe('The attachment menu in a one-to-one chat', function () {
     it(
         'opens from a paperclip in the toolbar once the server is known to offer HTTP File Upload',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const view = await openChat(_converse);
             const menu = await mock.openAttachmentMenu(view);
             expect(mock.attachmentMenuItems(view)).toEqual(['Send a file', 'Send an image']);
@@ -89,8 +95,19 @@ describe('The attachment menu in a one-to-one chat', function () {
     );
 
     it(
+        'moves focus to the item under the pointer, so that only one item is highlighted',
+        initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const view = await openChat(_converse);
+            await mock.openAttachmentMenu(view);
+            const image = view.querySelector('.attachment-menu__item[data-name="image"]');
+            await userEvent.hover(image);
+            expect(document.activeElement).toBe(image);
+        }),
+    );
+
+    it(
         'has no paperclip when there is nothing to attach',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const view = await openChat(_converse, { upload: false });
             await u.waitUntil(() => view.querySelector('.chat-toolbar .toggle-emojis'));
             await expectNoPaperclip(view);
@@ -99,7 +116,7 @@ describe('The attachment menu in a one-to-one chat', function () {
 
     it(
         'lists file, image and location, in that order, when location sharing is on',
-        mock.initConverse(
+        initConverse(
             converse,
             ['chatBoxesFetched'],
             { visible_toolbar_buttons: { location: true } },
@@ -120,7 +137,7 @@ describe('The attachment menu in a one-to-one chat', function () {
 
     it(
         'lists only location when the server has no HTTP File Upload but location sharing is on',
-        mock.initConverse(
+        initConverse(
             converse,
             ['chatBoxesFetched'],
             { visible_toolbar_buttons: { location: true } },
@@ -134,7 +151,7 @@ describe('The attachment menu in a one-to-one chat', function () {
 
     it(
         'leaves out file and image when the fileupload setting is off, but keeps location',
-        mock.initConverse(
+        initConverse(
             converse,
             ['chatBoxesFetched'],
             { visible_toolbar_buttons: { fileupload: false, location: true } },
@@ -148,7 +165,7 @@ describe('The attachment menu in a one-to-one chat', function () {
 
     it(
         'leaves out location when the location setting is off, but keeps file and image',
-        mock.initConverse(
+        initConverse(
             converse,
             ['chatBoxesFetched'],
             { visible_toolbar_buttons: { location: false } },
@@ -162,7 +179,7 @@ describe('The attachment menu in a one-to-one chat', function () {
 
     it(
         'has no paperclip when every attachment setting is off',
-        mock.initConverse(
+        initConverse(
             converse,
             ['chatBoxesFetched'],
             { visible_toolbar_buttons: { fileupload: false, location: false } },
@@ -176,7 +193,7 @@ describe('The attachment menu in a one-to-one chat', function () {
 
     it(
         'closes when "Send a file" is picked, opens a picker for any file, and sends what is chosen',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const view = await openChat(_converse);
             await mock.openAttachmentMenu(view);
 
@@ -199,7 +216,7 @@ describe('The attachment menu in a one-to-one chat', function () {
 
     it(
         'opens a picker for images only when "Send an image" is picked, and sends the chosen image',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const view = await openChat(_converse);
             await mock.openAttachmentMenu(view);
 
@@ -245,7 +262,7 @@ describe('The attachment menu and the keyboard', function () {
 
     it(
         'opens from Enter on the paperclip with focus on the first item, which the arrow keys move',
-        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const view = await openChat(_converse);
             const { button, items } = await openWithKeyboard(view);
             expect(items.length).toBe(3);
@@ -268,7 +285,7 @@ describe('The attachment menu and the keyboard', function () {
 
     it(
         'activates the focused item with Enter, and with Space',
-        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const view = await openChat(_converse);
             const { button } = await openWithKeyboard(view);
             const input = view.querySelector('converse-attachment-menu input.fileupload');
@@ -291,7 +308,7 @@ describe('The attachment menu and the keyboard', function () {
 
     it(
         'closes on Escape and puts focus back on the paperclip',
-        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const view = await openChat(_converse);
             const { button } = await openWithKeyboard(view);
             await userEvent.keyboard('{ArrowDown}');
@@ -305,7 +322,7 @@ describe('The attachment menu and the keyboard', function () {
 
     it(
         'closes on Escape even when focus is in the message field, and leaves focus there',
-        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const view = await openChat(_converse);
             await mock.openAttachmentMenu(view);
 
@@ -320,7 +337,7 @@ describe('The attachment menu and the keyboard', function () {
 
     it(
         'is announced as a menu of labelled items opened by an "Add attachment" button',
-        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const view = await openChat(_converse);
             const menu = await mock.openAttachmentMenu(view);
 
@@ -352,7 +369,7 @@ describe('The attachment menu and plugins', function () {
 
     it(
         'lists an item added through the getAttachmentMenuItems hook at its order, and runs its handler when picked',
-        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const handler = vi.fn();
             _converse.api.listen.on('getAttachmentMenuItems', (menu, items) => {
                 items.push({
@@ -383,7 +400,7 @@ describe('The attachment menu and plugins', function () {
 
     it(
         'puts an item without a numeric order last, after a numbered one however large its order',
-        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             _converse.api.listen.on('getAttachmentMenuItems', (_menu, items) => {
                 items.unshift({ name: 'test-item', icon: 'fa-star', label: 'Share a star', handler: () => {} });
                 items.push({
@@ -409,7 +426,7 @@ describe('The attachment menu and plugins', function () {
 
     it(
         'logs an error and shows no paperclip when a handler does not return the list',
-        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const log_error = vi.spyOn(converse.env.log, 'error').mockImplementation(() => {});
             _converse.api.listen.on('getAttachmentMenuItems', (_menu, items) => {
                 items.push({ name: 'test-item', order: 250, icon: 'fa-star', label: 'Share a star', handler: () => {} });
@@ -425,7 +442,7 @@ describe('The attachment menu and plugins', function () {
 
     it(
         'logs an error and shows no paperclip when a handler throws',
-        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const log_error = vi.spyOn(converse.env.log, 'error').mockImplementation(() => {});
             const error = new Error('broken item');
             _converse.api.listen.on('getAttachmentMenuItems', () => {
@@ -445,7 +462,7 @@ describe('The attachment menu and plugins', function () {
 describe('Sending files without the attachment menu', function () {
     it(
         'still works by pasting or dropping them into the message field',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const view = await openChat(_converse);
             const send_files = vi.spyOn(view.model, 'sendFiles').mockResolvedValue([]);
             const editable = view.querySelector('.chat-textarea');

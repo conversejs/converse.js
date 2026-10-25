@@ -4,6 +4,12 @@ import converse from '../../../../dist/converse.js';
 
 const { Strophe, stx, u } = converse.env;
 
+// The voice-messages plugin is on by default and adds its own item to the menu.
+// These tests are about the built-in items, so it is left out here.
+function initConverse(converse, promise_names, settings, func) {
+    return mock.initConverse(converse, promise_names, { blacklisted_plugins: ['converse-voice-messages'], ...settings }, func);
+}
+
 const muc_jid = 'lounge@montague.lit';
 
 /**
@@ -26,7 +32,7 @@ async function confirmDisco(_converse) {
 describe('The attachment menu in a groupchat', function () {
     it(
         'opens from a paperclip in the groupchat colour and lists the same items as a one-to-one chat',
-        mock.initConverse(
+        initConverse(
             converse,
             ['chatBoxesFetched'],
             { visible_toolbar_buttons: { location: true } },
@@ -47,7 +53,7 @@ describe('The attachment menu in a groupchat', function () {
 
     it(
         'sends a chosen file to the groupchat',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await confirmDisco(_converse);
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
             const view = _converse.chatboxviews.get(muc_jid);
@@ -72,7 +78,7 @@ describe('The attachment menu in a groupchat', function () {
 
     it(
         'is not offered to a visitor in a moderated room, who has no composer at all',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await confirmDisco(_converse);
             const features = ['muc_moderated'];
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features, [], true, {}, 'member', 'visitor');
@@ -84,7 +90,7 @@ describe('The attachment menu in a groupchat', function () {
 
     it(
         'lists an item added through the getAttachmentMenuItems hook, and runs its handler when picked',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const handler = vi.fn();
             _converse.api.listen.on('getAttachmentMenuItems', (menu, items) => {
                 items.push({
@@ -109,7 +115,7 @@ describe('The attachment menu in a groupchat', function () {
 
     it(
         "is in the occupant sidebar's private message composer too, with the items that apply there",
-        mock.initConverse(converse, ['chatBoxesFetched'], { view_mode: 'fullscreen' }, async function (_converse) {
+        initConverse(converse, ['chatBoxesFetched'], { view_mode: 'fullscreen' }, async function (_converse) {
             const room_jid = 'coven@chat.shakespeare.lit';
             await confirmDisco(_converse);
             await mock.openAndEnterMUC(_converse, room_jid, 'romeo');

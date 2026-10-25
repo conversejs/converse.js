@@ -53,13 +53,18 @@ describe('The voice message attachment', function () {
 
     it(
         "isn't listed when the plugin isn't loaded",
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
-            installFakeMedia();
-            const view = await openChat(_converse);
-            await u.waitUntil(() => view.querySelector(FILE_ITEM));
-            expect(view.querySelector(VOICE_ITEM)).toBe(null);
-            expect(view.querySelector('converse-audio-recorder')).toBe(null);
-        }),
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { blacklisted_plugins: ['converse-voice-messages'] },
+            async function (_converse) {
+                installFakeMedia();
+                const view = await openChat(_converse);
+                await u.waitUntil(() => view.querySelector(FILE_ITEM));
+                expect(view.querySelector(VOICE_ITEM)).toBe(null);
+                expect(view.querySelector('converse-audio-recorder')).toBe(null);
+            },
+        ),
     );
 
     it(

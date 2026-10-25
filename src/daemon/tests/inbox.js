@@ -85,6 +85,10 @@ describe('Inbox and conversations', () => {
             direction: 'incoming',
             time: expect.any(String),
             body: 'one',
+            reply_to: null,
+            edited: null,
+            retracted: null,
+            reactions: {},
         });
 
         expect(await claude.request('inbox.read')).toEqual({ conversations: [] });

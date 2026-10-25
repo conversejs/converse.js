@@ -81,6 +81,7 @@ describe('Inbox and conversations', () => {
             id: expect.any(String),
             conversation: JULIET,
             from: JULIET,
+            nick: null,
             direction: 'incoming',
             time: expect.any(String),
             body: 'one',

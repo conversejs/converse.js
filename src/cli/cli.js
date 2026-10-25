@@ -14,6 +14,8 @@ import { EXIT } from './exit-codes.js';
 import {
     formatContact,
     formatContactDetails,
+    formatOccupant,
+    formatRoomListing,
     formatConversation,
     formatDraft,
     formatDuration,
@@ -59,11 +61,14 @@ Commands:
   drafts list          List the drafts not yet withdrawn (full access)
   drafts reject <id>   Withdraw a draft; the owner is told (full access)
   wait                Wait for the next incoming message that matches, print
-                       it and exit. Only messages that arrive after wait starts
-                       are considered: use read for earlier ones
-    --from <contact>   Only messages from this contact
-    --conversation <contact>  Only messages in this conversation
-    --mention          Only messages that name you: your JID's name, as a whole word
+                       it and exit. Messages in the rooms you've joined count
+                       too. Only messages that arrive after wait starts are
+                       considered: use read for earlier ones
+    --from <contact>   Only messages from this contact. In a room, only where
+                       the room shows the sender's JID
+    --conversation <contact|room>  Only messages in this conversation or room
+    --mention          Only messages that name you, as a whole word: your
+                       nickname in a room, else your JID's name
     --timeout <s>      Give up after this many seconds (default 60)
   contacts [query]     List your roster contacts with their presence. A query matches
                        a contact's name or JID, ignoring case
@@ -73,6 +78,14 @@ Commands:
                        Set your availability: online, chat, away, xa or dnd, with an
                        optional status message. Restricted access needs
                        "policy.presence" set to true in the config file
+  rooms join <room>    Join a room, and rejoin it after every restart until you leave it.
+    --nick <name>      The nickname to use there (default: claude). Restricted
+                       access may join only the rooms listed in "policy.rooms"
+  rooms leave <room>   Leave a room, and forget it. Restricted access, as for join
+  rooms occupants <room>  Who is in a room you're in: nickname, role, affiliation and,
+                       where the room shows it, their JID
+  rooms discover <service>  The rooms a MUC service hosts, such as conference.example.org.
+                       Lists them only: nothing is joined
   daemon start         Start the daemon (if needed) and show its status
   daemon status        Show whether the daemon is connected, as which JID, and for how long
   daemon stop          Log out and stop the daemon
@@ -142,6 +155,7 @@ export async function main(argv, io) {
                 conversation: { type: 'string' },
                 mention: { type: 'boolean' },
                 timeout: { type: 'string' },
+                nick: { type: 'string' },
                 help: { type: 'boolean', short: 'h' },
                 version: { type: 'boolean', short: 'v' },
             },
@@ -427,6 +441,64 @@ const COMMANDS = {
             const status =
                 presence.status_message === null ? '' : ` with status ${JSON.stringify(presence.status_message)}`;
             out(`Your presence is now ${presence.show}${status}.\n`);
+        }
+        return EXIT.OK;
+    },
+
+    async 'rooms join'(ctx) {
+        const { options, out } = ctx;
+        const room = takeOne(ctx, 'room JID');
+        /** @type {{ conversation: import('@converse/daemon/types').ConversationDTO, nick: string }} */
+        const joined = await request(ctx, 'rooms.join', { room, nick: options.nick });
+        if (options.json) {
+            out(JSON.stringify(joined) + '\n');
+        } else {
+            out(`Joined ${joined.conversation.jid} as ${JSON.stringify(joined.nick)}.\n`);
+        }
+        return EXIT.OK;
+    },
+
+    async 'rooms leave'(ctx) {
+        const { options, out } = ctx;
+        const room = takeOne(ctx, 'room');
+        /** @type {{ conversation: import('@converse/daemon/types').ConversationDTO, was_in: boolean }} */
+        const left = await request(ctx, 'rooms.leave', { room });
+        if (options.json) {
+            out(JSON.stringify(left) + '\n');
+        } else if (left.was_in) {
+            out(`Left ${left.conversation.jid}.\n`);
+        } else {
+            out(`Forgot ${left.conversation.jid}, which we weren't in, so a restart won't rejoin it.\n`);
+        }
+        return EXIT.OK;
+    },
+
+    async 'rooms occupants'(ctx) {
+        const { options, out, err } = ctx;
+        const room = takeOne(ctx, 'room');
+        /** @type {{ occupants: import('@converse/daemon/types').OccupantDTO[] }} */
+        const { occupants } = await request(ctx, 'rooms.occupants', { room });
+        if (options.json) {
+            occupants.forEach((o) => out(JSON.stringify(o) + '\n'));
+        } else if (occupants.length) {
+            occupants.forEach((o) => out(formatOccupant(o)));
+        } else {
+            err('Nobody is listed in that room.\n');
+        }
+        return EXIT.OK;
+    },
+
+    async 'rooms discover'(ctx) {
+        const { options, out, err } = ctx;
+        const service = takeOne(ctx, 'service');
+        /** @type {{ rooms: import('@converse/daemon/types').RoomListing[] }} */
+        const { rooms } = await request(ctx, 'rooms.discover', { service });
+        if (options.json) {
+            rooms.forEach((r) => out(JSON.stringify(r) + '\n'));
+        } else if (rooms.length) {
+            rooms.forEach((r) => out(formatRoomListing(r)));
+        } else {
+            err(`${service} lists no rooms.\n`);
         }
         return EXIT.OK;
     },

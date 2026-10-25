@@ -154,3 +154,63 @@ describe('Whois', () => {
         expect(error.message).toContain('converse-cli contacts');
     });
 });
+
+describe('Before the roster is loaded', () => {
+    let daemon, client;
+
+    beforeAll(async () => {
+        daemon = await startDaemon({ roster: [{ jid: JULIET, name: 'Juliet Capulet' }] });
+        client = await daemon.connect();
+        // The consumer's first look, so that what comes next is unread.
+        await client.request('inbox.read');
+        // A conversation held from before, so that the inbox has one to name.
+        const { promise, resolve } = Promise.withResolvers();
+        daemon.api.listen.once('message', resolve);
+        daemon.receive(stx`
+            <message xmlns="jabber:client" from="${JULIET}/balcony" to="${JID}" type="chat" id="early">
+                <body>Hello</body>
+            </message>`);
+        await promise;
+
+        // As for a daemon that hasn't connected since it started: headless
+        // loads the roster on the first connection, so it never settles.
+        const { waitUntil } = daemon.api;
+        const never = Object.assign(new Promise(() => {}), { isResolved: false });
+        vi.spyOn(daemon.api, 'waitUntil').mockImplementation((condition) =>
+            condition === 'rosterContactsFetched' ? never : waitUntil(condition),
+        );
+        vi.spyOn(daemon.api.connection, 'connected').mockReturnValue(false);
+    });
+
+    afterAll(async () => {
+        vi.restoreAllMocks();
+        client?.close();
+        await daemon?.stop();
+    });
+
+    it('refuses to list contacts or look someone up, rather than waiting for the roster', async () => {
+        for (const [method, params] of [
+            ['contacts.list', {}],
+            ['contacts.whois', { jid: JULIET }],
+        ]) {
+            await expect(client.request(method, params)).rejects.toMatchObject({
+                code: ERRORS.NOT_CONNECTED,
+                message: expect.stringContaining(
+                    "the daemon loads when it first connects, and it hasn't connected yet",
+                ),
+            });
+        }
+    });
+
+    it('reads what it holds without waiting for the roster, though it can name nobody from it', async () => {
+        const { conversations } = await client.request('inbox.read');
+        expect(conversations.map((g) => [g.conversation, g.messages.map((m) => m.body)])).toEqual([
+            [{ jid: JULIET, type: 'chat', name: null }, ['Hello']],
+        ]);
+        const { messages } = await client.request('messages.list', { conversation: JULIET });
+        expect(messages.map((m) => m.body)).toEqual(['Hello']);
+        await expect(client.request('messages.list', { conversation: STRANGER })).rejects.toMatchObject({
+            code: ERRORS.NOT_CONNECTED,
+        });
+    });
+});

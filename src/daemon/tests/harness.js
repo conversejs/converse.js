@@ -11,6 +11,7 @@ import { api, converse } from '@converse/headless';
 import { connect } from '../client.js';
 import { loadConfig } from '../config.js';
 import { start } from '../daemon.js';
+import { createRoomStore } from '../rooms.js';
 import { createAccount, JID } from './account.js';
 import { serve } from './fake-server.js';
 
@@ -29,10 +30,15 @@ export { JID };
  * @param {Record<string, unknown>} [options.settings] - More headless settings
  * @param {Parameters<typeof serve>[0]['mam_mode']} [options.mam_mode]
  * @param {Partial<import('../types').Policy>} [options.policy] - The send policy, from the config file
+ * @param {{ jid: string, nick: string }[]} [options.rooms] - The rooms stored from an earlier run, to rejoin
  */
-export async function startDaemon({ roster = [], server_features, archive, settings, mam_mode, policy } = {}) {
+export async function startDaemon({ roster = [], server_features, archive, settings, mam_mode, policy, rooms } = {}) {
     const { env, remove } = await createAccount(settings, policy ? { policy } : {});
     const config = loadConfig(env);
+    if (rooms) {
+        const store = createRoomStore(config.paths.rooms);
+        rooms.forEach(({ jid, nick }) => store.add(jid, nick));
+    }
     const daemon = await start(config);
     const connection = api.connection.get();
 
@@ -61,6 +67,20 @@ export async function startDaemon({ roster = [], server_features, archive, setti
     await api.waitUntil('rosterContactsFetched');
     const server = serve({ connection, receive, jid: JID, server_features, archive, mam_mode });
 
+    /**
+     * Waits for the presence that joins a room as `nick`. The room's disco#info
+     * is the fake server's to answer.
+     * @param {string} room
+     * @param {string} nick
+     */
+    const awaitJoin = (room, nick) =>
+        u.waitUntil(() =>
+            connection.sent_stanzas.some(
+                (s) =>
+                    s.nodeName === 'presence' && s.getAttribute('to') === `${room}/${nick}` && !s.getAttribute('type'),
+            ),
+        );
+
     return {
         api,
         /** The MAM queries the daemon sent, in order. */
@@ -77,6 +97,36 @@ export async function startDaemon({ roster = [], server_features, archive, setti
          * @param {string} [options.consumer]
          */
         connect: (options) => connect({ ...options, spawn: false, env }),
+        /**
+         * Lets the daemon into a room it's joining, under `nick`.
+         * @param {string} room
+         * @param {string} [nick]
+         */
+        async enterRoom(room, nick = 'claude') {
+            await awaitJoin(room, nick);
+            receive(stx`
+                <presence xmlns="jabber:client" from="${room}/${nick}" to="${JID}">
+                    <x xmlns="http://jabber.org/protocol/muc#user">
+                        <item affiliation="member" role="participant" jid="${JID}"/>
+                        <status code="110"/>
+                    </x>
+                </presence>`);
+            const model = await api.rooms.get(room);
+            await u.waitUntil(() => model.isEntered());
+        },
+        /**
+         * Turns down the daemon's join of a room, as one it's banned from.
+         * @param {string} room
+         * @param {string} [nick]
+         */
+        async refuseRoom(room, nick = 'claude') {
+            await awaitJoin(room, nick);
+            receive(stx`
+                <presence xmlns="jabber:client" from="${room}/${nick}" to="${JID}" type="error">
+                    <x xmlns="${Strophe.NS.MUC}"/>
+                    <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+                </presence>`);
+        },
         /** The running daemon. A spec that restarts it puts the new one here. */
         daemon,
         async stop() {

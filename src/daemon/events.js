@@ -4,13 +4,12 @@
  * the connection that made them and end with it.
  * @module @converse/daemon/events
  */
-import { constants, converse } from '@converse/headless';
-import { toMessageDTO } from './messages.js';
+import { converse } from '@converse/headless';
+import { isRoomMessage, toMessageDTO } from './messages.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 
 const { Strophe } = converse.env;
-const { CHATROOMS_TYPE } = constants;
 
 const EVENT_TYPES = ['message', 'draft'];
 const DIRECTIONS = ['incoming', 'outgoing'];
@@ -41,11 +40,30 @@ export function createEvents(_converse) {
      * connected a moment ago.
      */
     function publish(chatbox, message) {
-        // Groupchats are ticket 12's.
-        if (chatbox.get('type') === CHATROOMS_TYPE || message.get('is_archived')) return;
+        if (message.get('is_archived')) return;
 
         const dto = toMessageDTO(message, chatbox.get('jid'), ownJID());
-        notify('message', dto, { message: dto });
+        const room = isRoomMessage(message);
+        const sender = {
+            sender: room ? roomSender(message, dto) : dto.from,
+            // In a room we're addressed by our nickname there, in a chat by our JID's name.
+            own_name: room ? chatbox.get('nick') : Strophe.getNodeFromJid(ownJID()),
+        };
+        notify('message', dto, { message: dto }, sender);
+    }
+
+    /**
+     * The bare JID of whoever sent a room message, which the room reveals
+     * only to some, so it may be null.
+     * @param {import('@converse/headless').Message} message
+     * @param {import('./types').MessageDTO} dto
+     * @returns {string|null}
+     */
+    function roomSender(message, dto) {
+        if (dto.direction === 'outgoing') return ownJID();
+
+        const real_jid = message.get('from_real_jid');
+        return real_jid ? Strophe.getBareJidFromJid(real_jid).toLowerCase() : null;
     }
 
     /**
@@ -54,10 +72,11 @@ export function createEvents(_converse) {
      * @param {import('./types').Subscription['type']} type
      * @param {import('./types').MessageDTO} dto - What the filters are matched against
      * @param {Record<string, unknown>} fields - The event's own fields
+     * @param {import('./types').EventSender} sender - Who sent it, for the from and mention filters
      */
-    function notify(type, dto, fields) {
+    function notify(type, dto, fields, sender) {
         for (const [subscription, sub] of subscriptions) {
-            if (sub.type !== type || !matches(sub.filter, dto, ownJID())) continue;
+            if (sub.type !== type || !matches(sub.filter, dto, sender)) continue;
             sub.client.notify({ subscription, type, ...fields });
             if (sub.once) subscriptions.delete(subscription);
         }
@@ -80,7 +99,8 @@ export function createEvents(_converse) {
                 time: draft.created,
                 body: draft.body,
             };
-            notify('draft', as_message, { action, draft });
+            const sender = { sender: ownJID(), own_name: Strophe.getNodeFromJid(ownJID()) };
+            notify('draft', as_message, { action, draft }, sender);
         },
 
         methods: {
@@ -88,9 +108,11 @@ export function createEvents(_converse) {
              * @param {Object} params
              * @param {string} [params.type] - "message" (the default) or "draft"
              * @param {string} [params.conversation] - A JID, or a contact's name
-             * @param {string} [params.from] - A JID, or a contact's name
+             * @param {string} [params.from] - A JID, or a contact's name. In a room, this matches only
+             *  the occupants whose JID the room reveals.
              * @param {'incoming'|'outgoing'} [params.direction]
-             * @param {boolean} [params.mention] - Whether the body names our account
+             * @param {boolean} [params.mention] - Whether the body names us: by our nickname in a room,
+             *  else by our JID's name
              * @param {boolean} [params.once] - End the subscription after the first event
              * @param {import('./types').Client} client
              * @returns {{ subscription: number }}
@@ -160,25 +182,26 @@ async function parseSubscription(
 /**
  * @param {import('./types').EventFilter} filter
  * @param {import('./types').MessageDTO} message
- * @param {string} own_jid
+ * @param {import('./types').EventSender} sender
  */
-function matches({ conversation, from, direction, mention }, message, own_jid) {
+function matches({ conversation, from, direction, mention }, message, { sender, own_name }) {
     if (conversation && message.conversation !== conversation) return false;
-    if (from && message.from !== from) return false;
+    if (from && sender !== from) return false;
     if (direction && message.direction !== direction) return false;
-    if (mention && !mentions(message.body, own_jid)) return false;
+    if (mention && !mentions(message.body, own_name)) return false;
     return true;
 }
 
 /**
- * Whether a body names our account, as a whole word: the local part of our
- * JID, which is the name people address us by in a 1:1 chat.
+ * Whether a body names us, as a whole word, ignoring case. A nickname may
+ * start or end with a character that isn't a word character, so "whole word"
+ * means not run together with one.
  * @param {string|null} body
- * @param {string} own_jid
+ * @param {string|null} own_name
  */
-function mentions(body, own_jid) {
-    if (!body) return false;
+function mentions(body, own_name) {
+    if (!body || !own_name) return false;
 
-    const nick = Strophe.getNodeFromJid(own_jid).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp(`\\b${nick}\\b`, 'i').test(body);
+    const name = own_name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(?<![\\p{L}\\p{N}_])${name}(?![\\p{L}\\p{N}_])`, 'iu').test(body);
 }

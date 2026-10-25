@@ -85,6 +85,7 @@ describe('Messages in a 1:1 chat', () => {
                     id: origin_id,
                     conversation: JULIET,
                     from: OWN,
+                    nick: null,
                     direction: 'outgoing',
                     time: expect.any(String),
                     body: 'But soft!',
@@ -106,7 +107,7 @@ describe('Messages in a 1:1 chat', () => {
             });
             await expect(client.request('messages.send', { to: '', body: 'x' })).rejects.toMatchObject({
                 code: ERRORS.INVALID_PARAMS,
-                message: '"to" must be a JID, or the name of a contact.',
+                message: '"to" must be a JID, or the name of a contact or room.',
             });
             // Anything that isn't a JID is a name, and this one is nobody's.
             await expect(client.request('messages.send', { to: 'not a jid', body: 'x' })).rejects.toMatchObject({
@@ -157,6 +158,7 @@ describe('Messages in a 1:1 chat', () => {
                 id: 'msgid-1',
                 conversation: JULIET,
                 from: JULIET,
+                nick: null,
                 direction: 'incoming',
                 time: '2026-10-20T10:00:00.000Z',
                 body: 'Only a msgid',

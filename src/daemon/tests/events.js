@@ -86,6 +86,7 @@ describe('Event subscriptions', () => {
                     id: 'event-1',
                     conversation: JULIET,
                     from: JULIET,
+                    nick: null,
                     direction: 'incoming',
                     time: expect.any(String),
                     body: 'Wherefore art thou?',
@@ -134,6 +135,48 @@ describe('Event subscriptions', () => {
         await flush();
 
         expect(bodiesFor(subscription)).toEqual(['What ho, ROMEO', 'Romeo, come here']);
+    });
+
+    it('in a room, matches the sender by the JID the room shows, and a mention by our nickname there', async () => {
+        const GARDEN = 'garden@conference.montague.lit';
+        const joined = client.request('rooms.join', { room: GARDEN, nick: 'Friar' });
+        await daemon.enterRoom(GARDEN, 'Friar');
+        await joined;
+
+        // The room shows Juliet's JID, but not Mercutio's. The occupant id is what ties her messages to that JID.
+        daemon.receive(stx`
+            <presence xmlns="jabber:client" from="${GARDEN}/jules" to="${JID}">
+                <x xmlns="http://jabber.org/protocol/muc#user">
+                    <item affiliation="member" role="participant" jid="${JULIET}/balcony"/>
+                </x>
+                <occupant-id xmlns="urn:xmpp:occupant-id:0" id="occupant-jules"/>
+            </presence>`);
+        const room = await daemon.api.rooms.get(GARDEN);
+        await u.waitUntil(() => room.occupants.findWhere({ nick: 'jules' }));
+
+        events = [];
+        const by_sender = (await client.request('events.subscribe', { from: JULIET })).subscription;
+        const by_mention = (await client.request('events.subscribe', { mention: true })).subscription;
+
+        /** @param {string} nick @param {string} body @param {string} [occupant_id] */
+        const say = async (nick, body, occupant_id) => {
+            daemon.receive(stx`
+                <message xmlns="jabber:client" from="${GARDEN}/${nick}" to="${JID}" type="groupchat"
+                        id="${u.getUniqueId()}">
+                    <body>${body}</body>
+                    ${occupant_id ? stx`<occupant-id xmlns="urn:xmpp:occupant-id:0" id="${occupant_id}"/>` : ''}
+                </message>`);
+            await u.waitUntil(() => room.messages.findWhere({ body }));
+        };
+        await say('jules', 'Good morrow', 'occupant-jules');
+        await say('mercu', 'A word, friar!');
+        await say('mercu', 'Where is Romeo?');
+        await say('mercu', 'Friars are plenty');
+        await flush();
+
+        expect(bodiesFor(by_sender)).toEqual(['Good morrow']);
+        // Our JID's name isn't how the room knows us, so "Romeo" doesn't name us there.
+        expect(bodiesFor(by_mention)).toEqual(['A word, friar!']);
     });
 
     it('ends a subscription made with "once" after its first event', async () => {
@@ -192,7 +235,7 @@ describe('Event subscriptions', () => {
         });
         await expect(client.request('events.subscribe', { from: '' })).rejects.toMatchObject({
             code: ERRORS.INVALID_PARAMS,
-            message: '"from" must be a JID, or the name of a contact.',
+            message: '"from" must be a JID, or the name of a contact or room.',
         });
     });
 

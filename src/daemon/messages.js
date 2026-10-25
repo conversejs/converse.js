@@ -48,6 +48,19 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"since" must be an ISO 8601 time.');
             }
 
+            const room = await api.rooms.get(jid);
+            if (room) {
+                const messages = await getPage(room, {
+                    limit,
+                    since: since_ms,
+                    before: before === undefined ? undefined : (models) => findMessage(models, before, ownJID()),
+                });
+                return {
+                    conversation: toRoomDTO(room),
+                    messages: messages.map((m) => toMessageDTO(m, jid, ownJID())),
+                };
+            }
+
             let chat = await api.chats.get(jid);
             const contact = await api.contacts.get(jid);
             if (!chat) {
@@ -100,7 +113,9 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
             }
             if (client.access === 'restricted') {
                 // An agent never sends to anyone directly. Its send becomes a draft, whose text goes to the owner.
-                const verdict = policy.admit(jid);
+                const room = await api.rooms.get(jid);
+                if (room && !room.isEntered()) throw notJoined(room.get('jid'));
+                const verdict = room ? policy.admitRoom(jid) : policy.admit(jid);
                 if (!verdict.allowed) {
                     audit.record({ consumer: client.consumer, to: jid, outcome: 'refused', rule: verdict.rule });
                     return { outcome: 'refused', rule: verdict.rule, message: verdict.message };
@@ -141,6 +156,15 @@ export async function sendMessage(_converse, jid, body) {
                 'Check "converse-cli daemon status", then try again.',
         );
     }
+    const room = await api.rooms.get(jid);
+    if (room) {
+        if (!room.isEntered()) throw notJoined(jid);
+        const message = await room.sendMessage({ body });
+        if (!message) {
+            throw new RPCError(ERRORS.INTERNAL_ERROR, "The message couldn't be built, so nothing was sent. Try again.");
+        }
+        return toMessageDTO(message, jid, _converse.session.get('bare_jid'));
+    }
     const chat = await api.chats.get(jid, {}, true);
     await chat.initialized;
     const message = await chat.sendMessage({ body });
@@ -152,12 +176,32 @@ export async function sendMessage(_converse, jid, body) {
 }
 
 /**
+ * A room's messages can't be sent until we're in the room.
+ * @param {string} jid
+ */
+function notJoined(jid) {
+    return new RPCError(
+        ERRORS.NOT_FOUND,
+        `We aren't in ${jid}, so the message wasn't sent. Join it first with "converse-cli rooms join ${jid}".`,
+    );
+}
+
+/**
  * The ids a message can be addressed by, its DTO id first.
  * @param {import('@converse/headless').Message} message
  * @param {string} own_jid
  */
 function getIDs(message, own_jid) {
-    return [message.get(`stanza_id ${own_jid}`), message.get('origin_id'), message.get('msgid')].filter(Boolean);
+    const stanza_id_by = isRoomMessage(message) ? Strophe.getBareJidFromJid(message.get('from')) : own_jid;
+    return [message.get(`stanza_id ${stanza_id_by}`), message.get('origin_id'), message.get('msgid')].filter(Boolean);
+}
+
+/**
+ * A message in a room is one a room's occupants exchange, not a chat.
+ * @param {import('@converse/headless').Message} message
+ */
+export function isRoomMessage(message) {
+    return message.get('type') === 'groupchat';
 }
 
 /**
@@ -190,6 +234,14 @@ export function toConversationDTO(jid, contact) {
 }
 
 /**
+ * @param {import('@converse/headless').ChatRoom} room
+ * @returns {import('./types').ConversationDTO}
+ */
+export function toRoomDTO(room) {
+    return { jid: room.get('jid'), type: 'groupchat', name: room.get('name')?.trim() || null };
+}
+
+/**
  * @param {import('@converse/headless').Message} message
  * @param {string} conversation - Bare JID of the conversation
  * @param {string} own_jid
@@ -197,12 +249,30 @@ export function toConversationDTO(jid, contact) {
  */
 export function toMessageDTO(message, conversation, own_jid) {
     const outgoing = message.get('sender') === 'me';
+    const id = getIDs(message, own_jid)[0];
+    const direction = outgoing ? 'outgoing' : 'incoming';
+    const time = message.get('time');
+    const body = message.get('body') ?? null;
+    if (isRoomMessage(message)) {
+        // The sender of a room message is its occupant, so the JID is the room's with the nickname.
+        const from = message.get('from');
+        return {
+            id,
+            conversation,
+            from,
+            nick: message.get('nick') ?? Strophe.getResourceFromJid(from),
+            direction,
+            time,
+            body,
+        };
+    }
     return {
-        id: getIDs(message, own_jid)[0],
+        id,
         conversation,
         from: outgoing ? own_jid : Strophe.getBareJidFromJid(message.get('from')),
-        direction: outgoing ? 'outgoing' : 'incoming',
-        time: message.get('time'),
-        body: message.get('body') ?? null,
+        nick: null,
+        direction,
+        time,
+        body,
     };
 }

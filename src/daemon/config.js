@@ -23,7 +23,8 @@ const BARE_JID = /^[^@/\s]+@[^@/\s]+$/;
  */
 const DEFAULT_POLICY = {
     allow: [],
-    rate_limit: { per_conversation: 5, overall: 20, window: 60 }, // Sends per window, in seconds
+    rooms: [], // Rooms restricted access may send to, and join or leave
+    rate_limit: { per_conversation: 5, per_room: 2, overall: 20, window: 60 }, // Sends per window, in seconds
     presence: false, // Whether restricted access may change our availability and status message
 };
 
@@ -105,9 +106,13 @@ export function loadConfig(env = process.env) {
  */
 function parsePolicy(raw, config_path) {
     const allow = raw?.allow ?? DEFAULT_POLICY.allow;
+    const rooms = raw?.rooms ?? DEFAULT_POLICY.rooms;
     const rate_limit = { ...DEFAULT_POLICY.rate_limit, ...(raw?.rate_limit ?? {}) };
     if (!Array.isArray(allow) || !allow.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
         throw new Error(`"policy.allow" in ${config_path} must be a list of bare JIDs.`);
+    }
+    if (!Array.isArray(rooms) || !rooms.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
+        throw new Error(`"policy.rooms" in ${config_path} must be a list of room JIDs.`);
     }
     for (const key of Object.keys(DEFAULT_POLICY.rate_limit)) {
         if (!Number.isInteger(rate_limit[key]) || rate_limit[key] < 1) {
@@ -118,7 +123,12 @@ function parsePolicy(raw, config_path) {
     if (typeof presence !== 'boolean') {
         throw new Error(`"policy.presence" in ${config_path} must be true or false.`);
     }
-    return { allow: allow.map((jid) => jid.trim().toLowerCase()), rate_limit, presence };
+    return {
+        allow: allow.map((jid) => jid.trim().toLowerCase()),
+        rooms: rooms.map((jid) => jid.trim().toLowerCase()),
+        rate_limit,
+        presence,
+    };
 }
 
 /**
@@ -148,6 +158,7 @@ function getPaths(jid, env) {
         cursors: path.join(state_home, 'converse', `${name}.cursors.json`),
         audit: path.join(state_home, 'converse', `${jid}.audit.jsonl`),
         drafts: path.join(state_home, 'converse', `${name}.drafts.json`),
+        rooms: path.join(state_home, 'converse', `${name}.rooms.json`),
     };
 }
 

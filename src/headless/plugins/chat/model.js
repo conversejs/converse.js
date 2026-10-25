@@ -242,10 +242,6 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         const text = attrs?.body;
         const body = text ? u.emojis.shortnamesToUnicode(text) : undefined;
 
-        // Get reply attributes from chatbox model if replying to a message
-        const reply_to_id = this.get('reply_to_id');
-        const reply_to = this.get('reply_to');
-
         attrs = Object.assign(
             {},
             attrs,
@@ -260,8 +256,6 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
                 msgid: origin_id,
                 nick: this.get('nickname'),
                 origin_id,
-                reply_to_id,
-                reply_to,
                 sender: 'me',
                 time: new Date().toISOString(),
                 type: this.get('message_type'),
@@ -270,12 +264,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         );
 
         // Add the XEP-0461 reply fallback before the hook
-        attrs = this.addReplyFallback(attrs);
-
-        // Clear reply state after capturing it
-        if (reply_to_id) {
-            this.save({ reply_to_id: undefined, reply_to: undefined });
-        }
+        attrs = this.addReplyFallback({ ...attrs, ...this.takeReplyAttributes(attrs) });
 
         /**
          * *Hook* which allows plugins to update the attributes of an outgoing message.

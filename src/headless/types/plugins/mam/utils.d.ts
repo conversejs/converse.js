@@ -56,6 +56,27 @@ export function createScrollupPlaceholder(model: ChatBox | MUC): void;
  * @param {ChatBox|MUC} model
  */
 export function fetchNewestMessages(model: ChatBox | MUC): Promise<import("./types").MAMQueryResult>;
+/**
+ * Searches the archive for messages whose text matches `text` (XEP-0431), and
+ * holds the ones found in their conversations, so that they're messages like
+ * any other: they can be read, replied to and reacted to.
+ *
+ * A room's archive is searched only if we're in the room, since a message from
+ * one we aren't in has no conversation to be held in.
+ * @param {string} text
+ * @param {Object} [options]
+ * @param {string} [options.with] - The bare JID of a contact or room, to search only that conversation
+ * @param {number} [options.max] - The most matches to return, the newest
+ * @returns {Promise<{messages: import('../../shared/message.js').default[], complete: boolean}|null>}
+ *  The matches, oldest first, or null if the server can't search its archive. Throws if the query fails.
+ */
+export function searchArchive(text: string, { with: jid, max }?: {
+    with?: string;
+    max?: number;
+}): Promise<{
+    messages: import("../../shared/message.js").default[];
+    complete: boolean;
+} | null>;
 export type MUC = import("../muc/muc").default;
 export type ChatBox = import("../chat/model").default;
 export type Model = import("@converse/skeletor").Model;

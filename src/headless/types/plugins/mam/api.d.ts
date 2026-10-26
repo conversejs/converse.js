@@ -170,6 +170,35 @@ declare namespace _default {
          *
          */
         function query(options?: import("./types").ArchiveQueryOptions): Promise<import("./types").MAMQueryResult>;
+        /**
+         * Searches the archive for messages containing `text`, using the
+         * server's full-text search ([XEP-0431](https://xmpp.org/extensions/xep-0431.html)).
+         *
+         * The matches are held in their conversations, as messages fetched from the
+         * archive are, so that each has the id the rest of the API knows it by.
+         *
+         * @method _converse.api.archive.search
+         * @param {string} text - The words to search for, as the server interprets them
+         * @param {Object} [options]
+         * @param {string} [options.with] - The bare JID of a contact or room, to search only that conversation
+         * @param {number} [options.max] - The most matches to return, the newest
+         * @returns {Promise<{messages: import('../../shared/message.js').default[], complete: boolean}|null>}
+         *  The matches, oldest first. Null if the server can't search its archive, or we aren't connected.
+         * @throws {Error} If the server's answer is an error, or doesn't come.
+         *
+         * @example
+         * const result = await api.archive.search('lunch', { with: 'juliet@capulet.lit' });
+         * if (result === null) {
+         *     // The server has no full-text search, so search the messages held locally instead.
+         * }
+         */
+        function search(text: string, options?: {
+            with?: string;
+            max?: number;
+        }): Promise<{
+            messages: import("../../shared/message.js").default[];
+            complete: boolean;
+        } | null>;
     }
 }
 export default _default;

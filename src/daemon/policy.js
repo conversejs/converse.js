@@ -85,32 +85,12 @@ export function createPolicy({ mode, owner, policy, paths }, { now = () => Date.
          * @returns {{ allowed: true, route: 'direct'|'draft' } | { allowed: false, rule: string, message: string }}
          */
         admit(jid, { room = false } = {}) {
-            const verdict = routeOf(jid, room);
-            if (!verdict.allowed) return verdict;
+            return decide(jid, room, true);
+        },
 
-            const t = now();
-            overall = recent(overall, t);
-            const target = recent(per_target.get(jid) ?? [], t);
-            const limit = limits[verdict.kind];
-            if (target.length >= limit.max) {
-                return refused(
-                    limit.rule,
-                    `Too many messages to ${jid} in the last ${rate_limit.window}s (the limit is ` +
-                        `${limit.max}). Wait before sending again, or raise "${limit.key}" in ${paths.config}.`,
-                );
-            }
-            if (overall.length >= rate_limit.overall) {
-                return refused(
-                    'rate_overall',
-                    `Too many messages in the last ${rate_limit.window}s across all conversations (the limit is ` +
-                        `${rate_limit.overall}). Wait before sending again, or raise ` +
-                        `"policy.rate_limit.overall" in ${paths.config}.`,
-                );
-            }
-
-            overall.push(t);
-            per_target.set(jid, [...target, t]);
-            return { allowed: true, route: verdict.route };
+        /** Check the current policy without reserving rate-limit capacity. */
+        check(jid, { room = false } = {}) {
+            return decide(jid, room, false);
         },
 
         /**
@@ -122,12 +102,47 @@ export function createPolicy({ mode, owner, policy, paths }, { now = () => Date.
             return rooms.includes(jid);
         },
     };
+
+    function decide(jid, room, consume) {
+        const verdict = routeOf(jid, room);
+        if (!verdict.allowed) return verdict;
+
+        const t = now();
+        overall = recent(overall, t);
+        const target = recent(per_target.get(jid) ?? [], t);
+        const limit = limits[verdict.kind];
+        if (target.length >= limit.max) {
+            return refused(
+                limit.rule,
+                `Too many messages to ${jid} in the last ${rate_limit.window}s (the limit is ` +
+                    `${limit.max}). Wait before sending again, or raise "${limit.key}" in ${paths.config}.`,
+                { transient: true },
+            );
+        }
+        if (overall.length >= rate_limit.overall) {
+            return refused(
+                'rate_overall',
+                `Too many messages in the last ${rate_limit.window}s across all conversations (the limit is ` +
+                    `${rate_limit.overall}). Wait before sending again, or raise ` +
+                    `"policy.rate_limit.overall" in ${paths.config}.`,
+                { transient: true },
+            );
+        }
+
+        if (consume) {
+            overall.push(t);
+            per_target.set(jid, [...target, t]);
+        }
+        return { allowed: true, route: verdict.route };
+    }
 }
 
 /**
  * @param {string} rule - Names the rule that refused the send
  * @param {string} message - What to do about it
+ * @param {Object} [options]
+ * @param {boolean} [options.transient=false] - Whether the same send is let through later
  */
-function refused(rule, message) {
-    return { allowed: false, rule, message };
+function refused(rule, message, { transient = false } = {}) {
+    return { allowed: false, rule, message, transient };
 }

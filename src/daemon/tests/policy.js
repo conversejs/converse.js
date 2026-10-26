@@ -82,6 +82,7 @@ describe('The send policy', () => {
                 'Restricted sends are only drafted for the JIDs listed in ' +
                 `"policy.allow" in ${daemon.config.paths.config}, ` +
                 `and ${TYBALT} isn't one of them.`,
+            transient: false,
         });
         expect(sent()).toHaveLength(0);
         expect(audit()).toEqual([
@@ -129,6 +130,7 @@ describe('The send policy', () => {
             outcome: 'refused',
             rule: 'rate_conversation',
             message: expect.stringContaining('"policy.rate_limit.per_conversation"'),
+            transient: true,
         });
         expect((await send(MERCUTIO)).outcome).toBe('draft');
         client.close();

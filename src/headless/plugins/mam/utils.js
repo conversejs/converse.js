@@ -293,3 +293,84 @@ export function fetchNewestMessages(model) {
         return fetchArchivedMessages(model, { rsm: { before: '' } }, should_page);
     }
 }
+
+/**
+ * Searches the archive for messages whose text matches `text` (XEP-0431), and
+ * holds the ones found in their conversations, so that they're messages like
+ * any other: they can be read, replied to and reacted to.
+ *
+ * A match is left out if it has no conversation to be held in: one in a room
+ * we aren't in, or in a chat we don't have, unless `create` is set.
+ * @param {string} text
+ * @param {Object} [options]
+ * @param {string} [options.with] - The bare JID of a contact or room, to search only that conversation
+ * @param {number} [options.max] - The most matches to return, the newest
+ * @param {boolean} [options.create] - Whether to create the chats that matches are in, if we don't have them
+ * @returns {Promise<{messages: import('../../shared/message.js').default[], complete: boolean}|null>}
+ *  The matches, oldest first, or null if the server can't search its archive. Throws if the query fails.
+ */
+export async function searchArchive(
+    text,
+    { with: jid, max = api.settings.get('archived_messages_page_size'), create = false } = {},
+) {
+    if (!api.connection.connected()) return null;
+
+    const bare_jid = _converse.session.get('bare_jid');
+    const room = jid ? await api.rooms.get(jid) : undefined;
+    const archive_jid = room ? jid : bare_jid;
+    const supported =
+        (await api.disco.supports(NS.MAM, archive_jid)) && (await api.disco.supports(NS.FULLTEXT, archive_jid));
+    if (!supported) return null;
+
+    const query = {
+        is_groupchat: !!room,
+        mam: { fulltext: text, with: jid },
+        rsm: { max, before: '' },
+    };
+    const result = await api.archive.query(query);
+    if (result.error) throw result.error;
+
+    // Each match belongs to the conversation the other party of it is in.
+    /** @type {Map<string, { is_room: boolean, matches: { archive_id: string, stanza: Element }[] }>} */
+    const conversations = new Map();
+    for (const stanza of result.messages) {
+        const forwarded = sizzle(`[xmlns="${NS.MAM}"] > forwarded[xmlns="${NS.FORWARD}"] > message`, stanza).pop();
+        // A malformed result is left out, rather than failing the whole search.
+        if (!forwarded) continue;
+
+        const from = Strophe.getBareJidFromJid(forwarded.getAttribute('from'));
+        const to = Strophe.getBareJidFromJid(forwarded.getAttribute('to'));
+        const is_room = forwarded.getAttribute('type') === 'groupchat';
+        const conversation = is_room ? from : from === bare_jid ? to : from;
+
+        const archive_id = sizzle(`[xmlns="${NS.MAM}"]`, stanza).pop()?.getAttribute('id');
+        const group = conversations.get(conversation) ?? { is_room, matches: [] };
+        group.matches.push({ archive_id, stanza });
+        conversations.set(conversation, group);
+    }
+
+    /** @type {Map<string, import('../../shared/message.js').default>} */
+    const held = new Map();
+    for (const [conversation, { is_room, matches }] of conversations) {
+        const model = is_room ? await api.rooms.get(conversation) : await api.chats.get(conversation, {}, create);
+        if (!model) continue;
+
+        await model.messages.fetched;
+        await handleMAMResult(model, { messages: matches.map((m) => m.stanza) }, query, {}, false);
+        await model.msg_chain;
+
+        // Held under the archive's id, which is the stanza-id by the account, or by the room.
+        const key = `stanza_id ${is_room ? conversation : bare_jid}`;
+        for (const { archive_id } of matches) {
+            const message = archive_id && model.messages.findWhere({ [key]: archive_id });
+            if (message) held.set(archive_id, message);
+        }
+    }
+
+    // The archive's order is kept, and matches with no conversation to be held in are left out.
+    const messages = result.messages
+        .map((stanza) => sizzle(`[xmlns="${NS.MAM}"]`, stanza).pop()?.getAttribute('id'))
+        .map((archive_id) => held.get(archive_id))
+        .filter(Boolean);
+    return { messages, complete: !!result.complete };
+}

@@ -12,12 +12,14 @@ import { getPassword } from './config.js';
 import { createCursors } from './cursors.js';
 import { createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
+import { fileMethods } from './files.js';
 import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
 import { presenceMethods } from './presence.js';
 import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
 import { createPolicy } from './policy.js';
 import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
+import { createSendRouter } from './routing.js';
 
 /**
  * How long shutdown waits for the server to see us leave before giving up.
@@ -80,13 +82,15 @@ async function serve(config) {
     const audit = createAudit(paths.audit);
     const drafts = createDraftStore(paths.drafts);
     const rooms = createRoomStore(paths.rooms);
+    const routeSend = createSendRouter(_converse, { policy, audit, mode: config.mode });
     // Headless sets up its client identity on connect, so the bot identity has to be set after that.
     api.listen.on('addClientFeatures', () => {
         api.disco.own.identities.clear();
         api.disco.own.identities.add(BOT_IDENTITY.category, BOT_IDENTITY.type, BOT_IDENTITY.name);
     });
     const methods = {
-        ...messageMethods(_converse, { policy, audit, drafts, events, owner: config.owner, mode: config.mode }),
+        ...messageMethods(_converse, { routeSend, audit, drafts, events, owner: config.owner }),
+        ...fileMethods(_converse, { routeSend, audit, drafts, events, owner: config.owner }),
         ...draftMethods(_converse, { drafts, audit, events, owner: config.owner }),
         ...inboxMethods(_converse, createCursors(paths.cursors)),
         ...contactMethods(_converse),

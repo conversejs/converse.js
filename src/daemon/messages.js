@@ -17,13 +17,13 @@ const MAX_LIMIT = 1000;
 /**
  * @param {import('@converse/headless').ConversePrivateGlobal} _converse
  * @param {Object} deps
- * @param {ReturnType<typeof import('./policy.js').createPolicy>} deps.policy
+ * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
  * @param {ReturnType<typeof import('./drafts.js').createDraftStore>} deps.drafts
  * @param {ReturnType<typeof import('./events.js').createEvents>} deps.events
  * @param {string} deps.owner - Bare JID of the user, to whom drafts are delivered
  */
-export function messageMethods(_converse, { policy, audit, drafts, events, owner, mode }) {
+export function messageMethods(_converse, { routeSend, audit, drafts, events, owner }) {
     const { api } = _converse;
     const ownJID = () => _converse.session.get('bare_jid');
 
@@ -169,17 +169,14 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
                 });
                 return { outcome: 'sent', message: dto };
             };
-            if (client.access === 'restricted') {
-                return routeRestricted(client, jid, {
-                    direct: send,
-                    draft:
-                        correct === undefined
-                            ? (routing) => draft(client, { to: jid, body, reply_to: replying_to }, routing)
-                            : undefined,
-                    cannot_draft: ownMessagesOnly('correct'),
-                });
-            }
-            return send();
+            return routeSend(client, jid, {
+                direct: send,
+                draft:
+                    correct === undefined
+                        ? (routing) => draft(client, { to: jid, body, reply_to: replying_to }, routing)
+                        : undefined,
+                cannot_draft: ownMessagesOnly('correct'),
+            });
         },
 
         /**
@@ -217,10 +214,7 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
                 audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'retract', target, ...routing });
                 return { outcome: 'sent', message: toMessageDTO(message, to, ownJID()) };
             };
-            if (client.access === 'restricted') {
-                return routeRestricted(client, to, { direct: retract, cannot_draft: ownMessagesOnly('retract') });
-            }
-            return retract();
+            return routeSend(client, to, { direct: retract, cannot_draft: ownMessagesOnly('retract') });
         },
 
         /**
@@ -253,48 +247,19 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
                 audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'react', target, ...routing });
                 return { outcome: 'sent', message: toMessageDTO(message, to, ownJID()) };
             };
-            if (client.access === 'restricted') {
-                return routeRestricted(client, to, {
-                    direct: react,
-                    draft: remove
-                        ? undefined
-                        : (routing) => draft(client, { to, body: reaction, reaction_to: message }, routing),
-                    cannot_draft: new RPCError(
-                        ERRORS.ACCESS_DENIED,
-                        "Restricted access can't remove reactions: its reactions are drafts, which the owner gives " +
-                            "or doesn't.",
-                    ),
-                });
-            }
-            return react();
+            return routeSend(client, to, {
+                direct: react,
+                draft: remove
+                    ? undefined
+                    : (routing) => draft(client, { to, body: reaction, reaction_to: message }, routing),
+                cannot_draft: new RPCError(
+                    ERRORS.ACCESS_DENIED,
+                    "Restricted access can't remove reactions: its reactions are drafts, which the owner gives " +
+                        "or doesn't.",
+                ),
+            });
         },
     };
-
-    /**
-     * Routes a restricted client's send to a contact or a room. The policy
-     * picks the route. A refusal is audited and returned as the result. Each
-     * route's callback gets the routing to record in the audit log.
-     * @param {import('./types').Client} client
-     * @param {string} to - The bare JID of the conversation
-     * @param {Object} how
-     * @param {(routing: import('./types').Routing) => Promise<import('./types').SendResult>} how.direct - Sends it from the account
-     * @param {(routing: import('./types').Routing) => Promise<import('./types').SendResult>} [how.draft] - Queues it for the owner. Absent where a draft can't carry the send.
-     * @param {Error} how.cannot_draft - Thrown where the send would be a draft, but it can't be one
-     * @returns {Promise<import('./types').SendResult>}
-     */
-    async function routeRestricted(client, to, { direct, draft: queue, cannot_draft }) {
-        const room = await api.rooms.get(to);
-        if (room && !room.isEntered()) throw notJoined(to);
-        const verdict = policy.admit(to, { room: !!room });
-        if (!verdict.allowed) {
-            audit.record({ consumer: client.consumer, to, mode, outcome: 'refused', rule: verdict.rule });
-            return { outcome: 'refused', rule: verdict.rule, message: verdict.message };
-        }
-        const routing = { route: verdict.route, mode };
-        if (verdict.route === 'direct') return direct(routing);
-        if (!queue) throw cannot_draft;
-        return queue(routing);
-    }
 
     /**
      * A restricted send that the policy routes to the owner: its text goes to
@@ -489,16 +454,17 @@ export function ownMessagesOnly(verb) {
  * @param {Object} [targets] - Messages of the same conversation
  * @param {import('@converse/headless').Message} [targets.replying_to]
  * @param {import('@converse/headless').Message} [targets.correcting] - One of ours
+ * @param {Object} [attributes] - More outgoing message attributes, such as an XEP-0066 URL
  * @returns {Promise<import('./types').MessageDTO>}
  */
-export async function sendMessage(_converse, jid, body, targets = {}) {
+export async function sendMessage(_converse, jid, body, targets = {}, attributes = {}) {
     const { api } = _converse;
     if (!api.connection.connected()) throw notConnected();
 
     const room = await api.rooms.get(jid);
     if (room) {
         if (!room.isEntered()) throw notJoined(jid);
-        const message = await room.sendMessage({ body }, targets);
+        const message = await room.sendMessage({ body, ...attributes }, targets);
         if (!message) {
             throw new RPCError(ERRORS.INTERNAL_ERROR, "The message couldn't be built, so nothing was sent. Try again.");
         }
@@ -506,7 +472,7 @@ export async function sendMessage(_converse, jid, body, targets = {}) {
     }
     const chat = await api.chats.get(jid, {}, true);
     await chat.initialized;
-    const message = await chat.sendMessage({ body }, targets);
+    const message = await chat.sendMessage({ body, ...attributes }, targets);
     // Headless returns nothing when it can't build the stanza, and then nothing was sent.
     if (!message) {
         throw new RPCError(ERRORS.INTERNAL_ERROR, "The message couldn't be built, so nothing was sent. Try again.");

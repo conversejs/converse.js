@@ -275,7 +275,7 @@ export function roomMethods(_converse, { config, policy, store }) {
          * @returns {Promise<{ rooms: import('./types').RoomListing[] }>}
          */
         async 'rooms.discover'({ service }) {
-            if (typeof service !== 'string' || !/^[^\s@/]+$/.test(service.trim())) {
+            if (typeof service !== 'string' || !(/^[^\s@/]+$/).test(service.trim())) {
                 throw new RPCError(
                     ERRORS.INVALID_PARAMS,
                     '"service" must be the domain of a MUC service, such as "conference.capulet.lit".',

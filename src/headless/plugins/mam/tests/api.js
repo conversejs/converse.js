@@ -336,5 +336,121 @@ describe('Message Archive Management', function () {
                 expect(result.rsm.result.last).toBe('09af3-cc343-b409f');
             }),
         );
+
+        it(
+            'sends a full-text search as a field of the MAM form',
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
+                let sent_stanza, IQ_id;
+                const sendIQ = _converse.api.connection.get().sendIQ;
+                spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                _converse.api.archive.query({ mam: { fulltext: 'balcony' } });
+                await u.waitUntil(() => sent_stanza);
+                const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+                expect(sent_stanza).toEqualStanza(stx`
+                <iq id="${IQ_id}" type="set" xmlns="jabber:client">
+                    <query queryid="${queryid}" xmlns="urn:xmpp:mam:2">
+                        <x type="submit" xmlns="jabber:x:data">
+                            <field type="hidden" var="FORM_TYPE">
+                                <value>urn:xmpp:mam:2</value>
+                            </field>
+                            <field var="{urn:xmpp:fulltext:0}fulltext">
+                                <value>balcony</value>
+                            </field>
+                        </x>
+                    </query>
+                </iq>`);
+            }),
+        );
+    });
+
+    describe('The archive.search API', function () {
+        it(
+            'returns null when the server does not offer full-text search',
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
+                expect(await _converse.api.archive.search('balcony')).toBeNull();
+            }),
+        );
+
+        /**
+         * Answers the search that was sent with a match from each of `senders`,
+         * then the <fin/>.
+         * @param {import('../../../shared/_converse.js').ConversePrivateGlobal} _converse
+         * @param {string[]} senders
+         * @param {Object} [options]
+         * @param {boolean} [options.malformed] - Whether to answer first with a result that forwards nothing
+         */
+        async function answerSearch(_converse, senders, { malformed = false } = {}) {
+            const { api } = _converse;
+            await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [
+                Strophe.NS.MAM,
+                Strophe.NS.FULLTEXT,
+            ]);
+            const sent_stanzas = api.connection.get().sent_stanzas;
+            const sent_stanza = await u.waitUntil(() =>
+                sent_stanzas.filter((s) => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop(),
+            );
+            const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+            const receive = (stanza) => api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+            if (malformed) {
+                receive(stx`<message id='m0' to='romeo@montague.lit' xmlns="jabber:client">
+                        <result xmlns='urn:xmpp:mam:2' queryid='${queryid}' id='archive-0'/>
+                    </message>`);
+            }
+            senders.forEach((sender, i) =>
+                receive(stx`<message id='m${i + 1}' to='romeo@montague.lit' xmlns="jabber:client">
+                        <result xmlns='urn:xmpp:mam:2' queryid='${queryid}' id='archive-${i + 1}'>
+                            <forwarded xmlns='urn:xmpp:forward:0'>
+                                <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:0${i}:25Z'/>
+                                <message xmlns='jabber:client'
+                                    to='romeo@montague.lit'
+                                    from='${sender}/balcony'
+                                    type='chat'>
+                                    <body>Meet me on the balcony.</body>
+                                </message>
+                            </forwarded>
+                        </result>
+                    </message>`),
+            );
+            receive(stx`<iq type='result' id='${sent_stanza.getAttribute('id')}' xmlns="jabber:client">
+                    <fin xmlns='urn:xmpp:mam:2' complete='true'/>
+                </iq>`);
+        }
+
+        it(
+            'holds each match in its conversation, where it can be found by the archive id',
+            mock.initConverse(converse, ['rosterInitialized'], {}, async function (_converse) {
+                const { api } = _converse;
+                await mock.waitForRoster(_converse, 'current');
+                const promise = api.archive.search('balcony', { create: true });
+                await answerSearch(_converse, ['mercutio@montague.lit'], { malformed: true });
+
+                const result = await promise;
+                expect(result.complete).toBe(true);
+                expect(result.messages.map((m) => m.get('body'))).toEqual(['Meet me on the balcony.']);
+                const [message] = result.messages;
+                expect(message.get('stanza_id romeo@montague.lit')).toBe('archive-1');
+                expect(message.collection.chatbox.get('jid')).toBe('mercutio@montague.lit');
+            }),
+        );
+
+        it(
+            "leaves out a match in a chat we don't have, rather than creating it",
+            mock.initConverse(converse, ['rosterInitialized'], {}, async function (_converse) {
+                const { api } = _converse;
+                await mock.waitForRoster(_converse, 'current');
+                await api.chats.get('mercutio@montague.lit', {}, true);
+                const promise = api.archive.search('balcony');
+                await answerSearch(_converse, ['mercutio@montague.lit', 'benvolio@montague.lit']);
+
+                const result = await promise;
+                expect(result.messages.map((m) => m.collection.chatbox.get('jid'))).toEqual(['mercutio@montague.lit']);
+                expect(await api.chats.get('benvolio@montague.lit')).toBeNull();
+            }),
+        );
     });
 });

@@ -91,6 +91,7 @@ Strophe.addNamespace('EME', 'urn:xmpp:eme:0');
 Strophe.addNamespace('FALLBACK', 'urn:xmpp:fallback:0');
 Strophe.addNamespace('FASTEN', 'urn:xmpp:fasten:0');
 Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
+Strophe.addNamespace('FULLTEXT', 'urn:xmpp:fulltext:0');
 Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
 Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
 Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');

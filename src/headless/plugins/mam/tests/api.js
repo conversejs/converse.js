@@ -336,5 +336,87 @@ describe('Message Archive Management', function () {
                 expect(result.rsm.result.last).toBe('09af3-cc343-b409f');
             }),
         );
+
+        it(
+            'sends a full-text search as a field of the MAM form',
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
+                let sent_stanza, IQ_id;
+                const sendIQ = _converse.api.connection.get().sendIQ;
+                spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                _converse.api.archive.query({ mam: { fulltext: 'balcony' } });
+                await u.waitUntil(() => sent_stanza);
+                const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+                expect(sent_stanza).toEqualStanza(stx`
+                <iq id="${IQ_id}" type="set" xmlns="jabber:client">
+                    <query queryid="${queryid}" xmlns="urn:xmpp:mam:2">
+                        <x type="submit" xmlns="jabber:x:data">
+                            <field type="hidden" var="FORM_TYPE">
+                                <value>urn:xmpp:mam:2</value>
+                            </field>
+                            <field var="{urn:xmpp:fulltext:0}fulltext">
+                                <value>balcony</value>
+                            </field>
+                        </x>
+                    </query>
+                </iq>`);
+            }),
+        );
+    });
+
+    describe('The archive.search API', function () {
+        it(
+            'returns null when the server does not offer full-text search',
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
+                expect(await _converse.api.archive.search('balcony')).toBeNull();
+            }),
+        );
+
+        it(
+            'holds each match in its conversation, where it can be found by the archive id',
+            mock.initConverse(converse, ['rosterInitialized'], {}, async function (_converse) {
+                const { api } = _converse;
+                await mock.waitForRoster(_converse, 'current');
+                const promise = api.archive.search('balcony');
+                await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [
+                    Strophe.NS.MAM,
+                    Strophe.NS.FULLTEXT,
+                ]);
+                const sent_stanzas = api.connection.get().sent_stanzas;
+                const sent_stanza = await u.waitUntil(() =>
+                    sent_stanzas.filter((s) => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop(),
+                );
+                const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
+                const match = stx`<message id='m1' to='romeo@montague.lit' xmlns="jabber:client">
+                        <result xmlns='urn:xmpp:mam:2' queryid='${queryid}' id='archive-1'>
+                            <forwarded xmlns='urn:xmpp:forward:0'>
+                                <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
+                                <message xmlns='jabber:client'
+                                    to='romeo@montague.lit'
+                                    from='mercutio@montague.lit/balcony'
+                                    type='chat'>
+                                    <body>Meet me on the balcony.</body>
+                                </message>
+                            </forwarded>
+                        </result>
+                    </message>`;
+                api.connection.get()._dataRecv(mock.createRequest(_converse, match));
+                const fin = stx`<iq type='result' id='${sent_stanza.getAttribute('id')}' xmlns="jabber:client">
+                    <fin xmlns='urn:xmpp:mam:2' complete='true'/>
+                </iq>`;
+                api.connection.get()._dataRecv(mock.createRequest(_converse, fin));
+
+                const result = await promise;
+                expect(result.complete).toBe(true);
+                expect(result.messages.map((m) => m.get('body'))).toEqual(['Meet me on the balcony.']);
+                const [message] = result.messages;
+                expect(message.get('stanza_id romeo@montague.lit')).toBe('archive-1');
+                expect(message.collection.chatbox.get('jid')).toBe('mercutio@montague.lit');
+            }),
+        );
     });
 });

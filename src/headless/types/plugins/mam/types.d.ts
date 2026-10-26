@@ -4,6 +4,7 @@ import BaseMessage from '../../shared/message';
 export type MAMQueryOptions = {
     end?: string;
     start?: string;
+    fulltext?: string;
     with?: string;
 };
 export type FetchArchivedMessagesOptions = {

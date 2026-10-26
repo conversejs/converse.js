@@ -145,6 +145,7 @@ export const CORE_PLUGINS = [
     'converse-pubsub',
     'converse-reactions',
     'converse-roster',
+    'converse-scheduled-messages',
     'converse-smacks',
     'converse-status',
     'converse-time',

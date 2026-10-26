@@ -49,6 +49,7 @@ export {
     getAncestors,
 } from './plugins/microblog/index.js'; // XEP-0277 Microblogging
 import './plugins/reactions/index.js'; // XEP-0444 Message Reactions
+export { ScheduledMessage, ScheduledMessages } from './plugins/scheduled-messages/index.js';
 import './plugins/version/index.js'; // XEP-0092 Software Version
 
 // RFC-6121 Contacts Roster

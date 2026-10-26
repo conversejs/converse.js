@@ -165,12 +165,25 @@ export type Draft = {
  */
 export type SendResult =
     | { outcome: 'sent'; message: MessageDTO }
+    | { outcome: 'scheduled'; schedule: ScheduleDTO }
     | {
           outcome: 'refused';
           rule: 'allowlist' | 'rate_conversation' | 'room_allowlist' | 'rate_room' | 'rate_overall';
           message: string;
       }
     | { outcome: 'draft'; draft_id: string };
+
+export type ScheduleDTO = {
+    id: string;
+    to: string;
+    body: string; // Untrusted: written by the consumer that scheduled it
+    send_at: string; // ISO 8601
+    created: string; // ISO 8601
+    consumer: string | null;
+    access: Access;
+    reply_to: string | null;
+    correct: string | null;
+};
 
 /**
  * An entry in the audit log. The body of a message isn't recorded.

@@ -57,7 +57,15 @@ describe('The send policy', () => {
         expect(notices()[0].body).toContain(`Draft d1 for ${JULIET}`);
         expect(notices()[0].body).toContain('"Hi"');
         expect(audit()).toEqual([
-            { time: expect.any(String), consumer: 'claude', to: JULIET, outcome: 'draft', draft: 'd1' },
+            {
+                time: expect.any(String),
+                consumer: 'claude',
+                to: JULIET,
+                outcome: 'draft',
+                draft: 'd1',
+                route: 'draft',
+                mode: 'owner_only',
+            },
         ]);
     });
 
@@ -77,7 +85,14 @@ describe('The send policy', () => {
         });
         expect(sent()).toHaveLength(0);
         expect(audit()).toEqual([
-            { time: expect.any(String), consumer: 'claude', to: TYBALT, outcome: 'refused', rule: 'allowlist' },
+            {
+                time: expect.any(String),
+                consumer: 'claude',
+                to: TYBALT,
+                outcome: 'refused',
+                rule: 'allowlist',
+                mode: 'owner_only',
+            },
         ]);
     });
 

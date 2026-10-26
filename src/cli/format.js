@@ -25,8 +25,9 @@ export const SHORT_ID_LENGTH = 8;
  * @param {Object} options
  * @param {boolean} [options.full] - Don't truncate the body.
  * @param {Date} [options.now]
+ * @param {boolean} [options.conversation] - Name the conversation the message is in, as a search does.
  */
-export function formatMessage(message, { full = false, now = new Date() } = {}) {
+export function formatMessage(message, { full = false, now = new Date(), conversation = false } = {}) {
     const time = new Date(message.time);
     const notes = [
         message.reply_to && `reply to ${message.reply_to.slice(0, SHORT_ID_LENGTH)}`,
@@ -41,8 +42,9 @@ export function formatMessage(message, { full = false, now = new Date() } = {}) 
         .filter(Boolean)
         .map((note) => `[${note}]  `)
         .join('');
+    const place = conversation ? `in ${message.conversation}  ` : '';
     return (
-        `${message.id.slice(0, SHORT_ID_LENGTH)}  ${formatTime(time)} (${formatAgo(time, now)})  ` +
+        `${message.id.slice(0, SHORT_ID_LENGTH)}  ${formatTime(time)} (${formatAgo(time, now)})  ${place}` +
         `${message.from}  ${notes}${formatBody(message.body, { full })}\n`
     );
 }

@@ -51,6 +51,15 @@ Commands:
     --since <time>     Only messages since an ISO 8601 time, or since a
                        duration ago such as 30m, 2h or 7d
     --full             Don't truncate bodies longer than ${MAX_BODY_LENGTH} characters
+  search <query>       Find messages whose text has every word of <query>, ignoring case
+                       and accents. The server's own full-text search of its archive is
+                       used where it offers one (XEP-0431), else the messages held locally.
+                       The first line says which was searched. Matches are oldest first,
+                       in the same format as read, each with the conversation it's in.
+                       With --json, one object holds the method and the messages
+    --conversation <contact|room>  Only in this conversation
+    --limit <n>        At most this many, the newest (default 20)
+    --full             Don't truncate bodies longer than ${MAX_BODY_LENGTH} characters
   send <contact> <text>  Send a message. Without <text>, it's read from stdin
                        Text that starts with a dash needs "--" before it, so it
                        isn't read as an option: send <contact> -- -1 for yes
@@ -288,16 +297,29 @@ function takeOne({ args }, what) {
     return args[0];
 }
 
+/**
+ * @param {string} [limit] - The value of --limit
+ * @returns {number|undefined}
+ */
+function parseLimit(limit) {
+    if (limit === undefined) return undefined;
+    const number = Number(limit);
+    if (!Number.isInteger(number)) throw new UsageError(`--limit "${limit}" isn't a whole number.`);
+    return number;
+}
+
+/** What `search` says it searched, as the first line of its output. */
+const SEARCHED = {
+    server: "Searched the server's archive, with its full-text search (XEP-0431).",
+    local: "Searched the messages held locally, as the server's full-text search wasn't available.",
+};
+
 /** @type {Record<string, (ctx: import('./types').Context) => Promise<number>>} */
 const COMMANDS = {
     async read(ctx) {
         const { options, out, err } = ctx;
         const conversation = takeOne(ctx, 'JID to read');
-        let limit;
-        if (options.limit !== undefined) {
-            limit = Number(options.limit);
-            if (!Number.isInteger(limit)) throw new UsageError(`--limit "${options.limit}" isn't a whole number.`);
-        }
+        const limit = parseLimit(options.limit);
         let since;
         try {
             since = options.since === undefined ? undefined : parseSince(options.since);
@@ -319,6 +341,29 @@ const COMMANDS = {
             messages.forEach((m) => out(formatMessage(m, { full: options.full, now })));
         } else {
             err('No messages.\n');
+        }
+        return EXIT.OK;
+    },
+
+    async search(ctx) {
+        const { args, options, out, err } = ctx;
+        if (args.length === 0) throw new UsageError('Expected what to search for.');
+        /** @type {import('@converse/daemon/types').SearchResult} */
+        const result = await request(ctx, 'messages.search', {
+            query: args.join(' '),
+            conversation: options.conversation,
+            limit: parseLimit(options.limit),
+        });
+        if (options.json) {
+            out(JSON.stringify(result) + '\n');
+            return EXIT.OK;
+        }
+        out(SEARCHED[result.method] + '\n');
+        if (result.messages.length) {
+            const now = new Date();
+            result.messages.forEach((m) => out(formatMessage(m, { full: options.full, now, conversation: true })));
+        } else {
+            err('No messages match.\n');
         }
         return EXIT.OK;
     },

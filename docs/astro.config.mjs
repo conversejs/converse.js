@@ -40,6 +40,13 @@ export default defineConfig({
                 { label: 'Session Management', slug: 'session' },
                 { label: 'Configuration', slug: 'configuration' },
                 {
+                    label: 'Daemon and CLI',
+                    items: [
+                        { label: 'Setting up the daemon', slug: 'daemon/setup' },
+                        { label: 'Command line reference', slug: 'daemon/cli' },
+                    ],
+                },
+                {
                     label: 'Development',
                     items: [
                         { label: 'Development Documentation', slug: 'development/overview' },

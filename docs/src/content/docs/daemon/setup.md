@@ -1,4 +1,7 @@
-# Setting up the daemon
+---
+title: Setting up the daemon
+description: How to create the account, keep its password safe, and configure the daemon that lets an agent use your XMPP account.
+---
 
 The daemon lets an agent read your XMPP messages, and send or draft messages
 for you. What the agent may send, and how, depends on the `mode` in the config
@@ -38,7 +41,7 @@ agent's user or yours.
     "jid": "agent@example.org",
     "owner": "you@example.org",
     "websocket_url": "wss://example.org/xmpp-websocket",
-    "consumer": "claude",
+    "consumer": "agent",
     "mode": "owner_only",
     "policy": {
         "allow": ["juliet@example.org"],
@@ -51,6 +54,9 @@ agent's user or yours.
 
 - `owner` is the account drafts are delivered to, and direct sends to you go
   to. It must be your account.
+- `consumer` is the name the agent goes by: its read cursors and drafts are
+  kept under it. It defaults to `claude`. Every client of the restricted socket
+  is this consumer, and the daemon refuses one that asks to be another.
 - `mode` is how the agent acts. See "Modes" below. It defaults to `owner_only`.
 - `policy.allow` lists the people a draft may be for. A draft to anyone else is
   refused, and nothing is sent.
@@ -89,7 +95,7 @@ When the agent asks to send to Juliet, you get a message from the agent's
 account like this:
 
 ```
-Draft d1 for juliet@example.org, from claude. Nothing was sent. To send it, copy the text into your client:
+Draft d1 for juliet@example.org, from agent. Nothing was sent. To send it, copy the text into your client:
 "Shall we meet at noon?"
 ```
 
@@ -97,7 +103,7 @@ A draft can also be a reply, or a reaction, to a message. The notice then
 quotes the start of that message, so you can find it:
 
 ```
-Draft d2 for juliet@example.org, from claude. Nothing was sent. To send it, react to the message from juliet@example.org, "Noon?", with:
+Draft d2 for juliet@example.org, from agent. Nothing was sent. To send it, react to the message from juliet@example.org, "Noon?", with:
 "👍"
 ```
 

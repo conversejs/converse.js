@@ -1,4 +1,7 @@
-# Setting up the daemon
+---
+title: Setting up the daemon
+description: How to create the account, keep its password safe, and configure the daemon that lets an agent use your XMPP account.
+---
 
 The daemon lets an agent read your XMPP messages, and send or draft messages
 for you. What the agent may send, and how, depends on the `mode` in the config
@@ -38,7 +41,7 @@ agent's user or yours.
     "jid": "agent@example.org",
     "owner": "you@example.org",
     "websocket_url": "wss://example.org/xmpp-websocket",
-    "consumer": "claude",
+    "consumer": "agent",
     "mode": "owner_only",
     "policy": {
         "allow": ["juliet@example.org"],
@@ -89,7 +92,7 @@ When the agent asks to send to Juliet, you get a message from the agent's
 account like this:
 
 ```
-Draft d1 for juliet@example.org, from claude. Nothing was sent. To send it, copy the text into your client:
+Draft d1 for juliet@example.org, from agent. Nothing was sent. To send it, copy the text into your client:
 "Shall we meet at noon?"
 ```
 
@@ -97,7 +100,7 @@ A draft can also be a reply, or a reaction, to a message. The notice then
 quotes the start of that message, so you can find it:
 
 ```
-Draft d2 for juliet@example.org, from claude. Nothing was sent. To send it, react to the message from juliet@example.org, "Noon?", with:
+Draft d2 for juliet@example.org, from agent. Nothing was sent. To send it, react to the message from juliet@example.org, "Noon?", with:
 "👍"
 ```
 

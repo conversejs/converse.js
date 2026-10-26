@@ -189,7 +189,7 @@ export type AuditEntry = {
     id?: string; // The DTO id, for a send
     draft?: string; // The draft's id, for a draft or a rejection
     rule?: string; // For a refusal
-    action?: 'reply' | 'correct' | 'retract' | 'react'; // For a send that acts on another message
+    action?: 'reply' | 'correct' | 'retract' | 'react' | 'upload';
     target?: string; // The id of the message acted on
     mode?: Mode; // For a restricted send, or a refusal of one
     route?: Route; // For a restricted send that was sent or drafted

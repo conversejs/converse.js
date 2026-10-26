@@ -30,6 +30,7 @@ export { JID };
  * @param {Record<string, unknown>} [options.settings] - More headless settings
  * @param {Parameters<typeof serve>[0]['mam_mode']} [options.mam_mode]
  * @param {boolean} [options.fulltext] - Whether the archive offers full-text search. Defaults to true.
+ * @param {Parameters<typeof serve>[0]['upload_service']} [options.upload_service] - An XEP-0363 service
  * @param {Partial<import('../types').Policy>} [options.policy] - The send policy, from the config file
  * @param {import('../types').Mode} [options.mode] - How the account acts, from the config file
  * @param {{ jid: string, nick: string }[]} [options.rooms] - The rooms stored from an earlier run, to rejoin
@@ -42,6 +43,7 @@ export async function startDaemon({
     settings,
     mam_mode,
     fulltext,
+    upload_service,
     policy,
     mode,
     rooms,
@@ -83,7 +85,16 @@ export async function startDaemon({
             </query>
         </iq>`);
     await api.waitUntil('rosterContactsFetched');
-    const server = serve({ connection, receive, jid: JID, server_features, archive, mam_mode, fulltext });
+    const server = serve({
+        connection,
+        receive,
+        jid: JID,
+        server_features,
+        archive,
+        mam_mode,
+        fulltext,
+        upload_service,
+    });
 
     /**
      * Waits for the presence that joins a room as `nick`. The room's disco#info

@@ -7,6 +7,7 @@
  * history and agent transcripts. The account comes from the config file.
  */
 import { parseArgs } from 'node:util';
+import path from 'node:path';
 import { connect, DaemonUnavailableError, getConfigPath, loadConfig, stopDaemon } from '@converse/daemon/client';
 import { ERRORS, RPCError } from '@converse/daemon/protocol';
 import pkg from './package.json' with { type: 'json' };
@@ -75,6 +76,10 @@ Commands:
     --correct <id>     Replace one of your messages with <text> (XEP-0308). The
                        message keeps its place, and answers to its old id. A
                        restricted correction is only sent directly, never drafted
+  upload <contact> <path>  Upload a local file with XEP-0363 and share its URL.
+                       It follows the same restricted send policy as send: a
+                       direct route shares the URL with the contact or room; a
+                       draft route sends the URL to the owner, who may share it
   retract <id>         Withdraw one of your messages (XEP-0424). A restricted
                        retraction is only sent directly, never drafted
     --conversation <contact|room>  Look for the message only in this conversation
@@ -381,6 +386,21 @@ const COMMANDS = {
             correct: options.correct,
         });
         return reportSend(result, { options, out, err });
+    },
+
+    async upload(ctx) {
+        const { args, options, out, err } = ctx;
+        if (args.length !== 2) throw new UsageError('Expected a recipient and a local file path.');
+        const [to, file_path] = args;
+        /** @type {import('@converse/daemon/types').SendResult} */
+        const result = await request(ctx, 'files.upload', { to, path: path.resolve(file_path) });
+        if (result.outcome !== 'sent' || options.json) return reportSend(result, { options, out, err });
+
+        out(
+            `Uploaded ${JSON.stringify(path.basename(file_path))} to ${result.message.conversation} ` +
+                `as ${result.message.id}\n`,
+        );
+        return EXIT.OK;
     },
 
     async retract(ctx) {

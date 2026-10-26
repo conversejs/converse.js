@@ -1,7 +1,12 @@
 /**
- * The send policy a restricted connection is held to: which JIDs and rooms a
- * draft may be for, and how fast drafts are made. The daemon applies it to
- * every restricted send. Full access is the user's own, so it isn't policed.
+ * The send policy a restricted connection is held to: where a send may go,
+ * and how fast. The daemon applies it to every restricted send. Full access is
+ * the user's own, so it isn't policed.
+ *
+ * A send goes one of three ways. Direct: the account sends it itself. Draft:
+ * its text goes to the owner, who sends it or doesn't. Refused: the policy
+ * doesn't let it through at all. The mode and the target decide which, and the
+ * rate limits count direct sends and drafts alike.
  *
  * A room is stricter than a contact. It has its own allowlist, which is empty
  * by default, and its own limit, since one message reaches everyone in the room.
@@ -13,13 +18,25 @@
  * @param {Object} [options]
  * @param {() => number} [options.now] - Milliseconds since the epoch
  */
-export function createPolicy({ policy, paths }, { now = () => Date.now() } = {}) {
-    const { allow, rooms, rate_limit } = policy;
+export function createPolicy({ mode, owner, policy, paths }, { now = () => Date.now() } = {}) {
+    const { allow, direct, rooms, rate_limit } = policy;
     const window_ms = rate_limit.window * 1000;
     /** @type {number[]} When each send went through in the last window */
     let overall = [];
     /** @type {Map<string, number[]>} */
     const per_target = new Map();
+
+    /**
+     * The limit each kind of target is held to, and the rule that names it.
+     */
+    const limits = {
+        contact: {
+            max: rate_limit.per_conversation,
+            key: 'policy.rate_limit.per_conversation',
+            rule: 'rate_conversation',
+        },
+        room: { max: rate_limit.per_room, key: 'policy.rate_limit.per_room', rule: 'rate_room' },
+    };
 
     /**
      * Drops the sends that have left the window.
@@ -29,83 +46,71 @@ export function createPolicy({ policy, paths }, { now = () => Date.now() } = {})
     const recent = (sends, t) => sends.filter((sent) => sent > t - window_ms);
 
     /**
-     * Applies an allowlist and the rate limits to one target: a contact or a
-     * room. The attempt counts toward the limits if it passes the allowlist,
-     * whatever happens to it afterwards, so a failed send can't be retried for free.
+     * The route a send to a contact or a room takes in this mode, if the
+     * allowlists let it through at all.
      * @param {string} jid
-     * @param {Object} kind
-     * @param {string[]} kind.list - The allowlist for this kind of target
-     * @param {string} kind.list_key - The config key of that list, for the error message
-     * @param {string} kind.allow_rule - Names the rule that refuses a target not on the list
-     * @param {number} kind.limit - Sends allowed to one target per window
-     * @param {string} kind.limit_key - The config key of that limit, for the error message
-     * @param {string} kind.limit_rule - Names the rule that refuses a target over its limit
+     * @param {boolean} room
+     * @returns {{ allowed: true, route: 'direct'|'draft', kind: 'contact'|'room' } | { allowed: false, rule: string, message: string }}
      */
-    function admitTo(jid, { list, list_key, allow_rule, limit, limit_key, limit_rule }) {
-        if (!list.includes(jid)) {
-            return refused(
-                allow_rule,
-                `Restricted sends are only drafted for the JIDs listed in "${list_key}" in ${paths.config}, ` +
-                    `and ${jid} isn't one of them.`,
-            );
+    function routeOf(jid, room) {
+        if (room) {
+            if (!rooms.includes(jid)) {
+                return refused(
+                    'room_allowlist',
+                    `Restricted sends are only drafted for the JIDs listed in "policy.rooms" in ${paths.config}, ` +
+                        `and ${jid} isn't one of them.`,
+                );
+            }
+            return { allowed: true, route: mode === 'bot' ? 'direct' : 'draft', kind: 'room' };
         }
-
-        const t = now();
-        overall = recent(overall, t);
-        const target = recent(per_target.get(jid) ?? [], t);
-        if (target.length >= limit) {
-            return refused(
-                limit_rule,
-                `Too many messages to ${jid} in the last ${rate_limit.window}s (the limit is ` +
-                    `${limit}). Wait before sending again, or raise "${limit_key}" in ${paths.config}.`,
-            );
-        }
-        if (overall.length >= rate_limit.overall) {
-            return refused(
-                'rate_overall',
-                `Too many messages in the last ${rate_limit.window}s across all conversations (the limit is ` +
-                    `${rate_limit.overall}). Wait before sending again, or raise ` +
-                    `"policy.rate_limit.overall" in ${paths.config}.`,
-            );
-        }
-
-        overall.push(t);
-        per_target.set(jid, [...target, t]);
-        return { allowed: true };
+        if (jid === owner) return { allowed: true, route: 'direct', kind: 'contact' };
+        if (mode === 'bot' && direct.includes(jid)) return { allowed: true, route: 'direct', kind: 'contact' };
+        if (allow.includes(jid)) return { allowed: true, route: 'draft', kind: 'contact' };
+        return refused(
+            'allowlist',
+            `Restricted sends are only drafted for the JIDs listed in "policy.allow" in ${paths.config}, ` +
+                `and ${jid} isn't one of them.`,
+        );
     }
 
     return {
         /**
-         * Decides whether a send to a contact may go ahead. The attempt counts
-         * toward the rate limits if it passes the allowlist.
-         * @param {string} jid - The bare JID of the recipient
-         * @returns {{ allowed: true } | { allowed: false, rule: string, message: string }}
+         * Decides how a restricted send to a contact or a room goes: direct,
+         * as a draft, or refused. A send that passes the allowlist counts toward
+         * the rate limits whichever route it takes, and whatever happens to it
+         * afterwards, so a failed send can't be retried for free.
+         * @param {string} jid - The bare JID of the recipient, or of the room
+         * @param {Object} [target]
+         * @param {boolean} [target.room] - Whether the JID is a room
+         * @returns {{ allowed: true, route: 'direct'|'draft' } | { allowed: false, rule: string, message: string }}
          */
-        admit(jid) {
-            return admitTo(jid, {
-                list: allow,
-                list_key: 'policy.allow',
-                allow_rule: 'allowlist',
-                limit: rate_limit.per_conversation,
-                limit_key: 'policy.rate_limit.per_conversation',
-                limit_rule: 'rate_conversation',
-            });
-        },
+        admit(jid, { room = false } = {}) {
+            const verdict = routeOf(jid, room);
+            if (!verdict.allowed) return verdict;
 
-        /**
-         * Decides whether a send to a room may go ahead.
-         * @param {string} jid - The bare JID of the room
-         * @returns {{ allowed: true } | { allowed: false, rule: string, message: string }}
-         */
-        admitRoom(jid) {
-            return admitTo(jid, {
-                list: rooms,
-                list_key: 'policy.rooms',
-                allow_rule: 'room_allowlist',
-                limit: rate_limit.per_room,
-                limit_key: 'policy.rate_limit.per_room',
-                limit_rule: 'rate_room',
-            });
+            const t = now();
+            overall = recent(overall, t);
+            const target = recent(per_target.get(jid) ?? [], t);
+            const limit = limits[verdict.kind];
+            if (target.length >= limit.max) {
+                return refused(
+                    limit.rule,
+                    `Too many messages to ${jid} in the last ${rate_limit.window}s (the limit is ` +
+                        `${limit.max}). Wait before sending again, or raise "${limit.key}" in ${paths.config}.`,
+                );
+            }
+            if (overall.length >= rate_limit.overall) {
+                return refused(
+                    'rate_overall',
+                    `Too many messages in the last ${rate_limit.window}s across all conversations (the limit is ` +
+                        `${rate_limit.overall}). Wait before sending again, or raise ` +
+                        `"policy.rate_limit.overall" in ${paths.config}.`,
+                );
+            }
+
+            overall.push(t);
+            per_target.set(jid, [...target, t]);
+            return { allowed: true, route: verdict.route };
         },
 
         /**

@@ -52,8 +52,10 @@ describe('The account configuration', () => {
             resource: 'claude',
             consumer: 'claude',
             access: 'restricted',
+            mode: 'owner_only',
             policy: {
                 allow: [],
+                direct: [],
                 rooms: [],
                 rate_limit: { per_conversation: 5, per_room: 2, overall: 20, window: 60 },
                 presence: false,
@@ -84,6 +86,7 @@ describe('The account configuration', () => {
         expect(access).toBe('full');
         expect(policy).toEqual({
             allow: ['juliet@capulet.lit'],
+            direct: [],
             rooms: [],
             rate_limit: { per_conversation: 5, per_room: 2, overall: 3, window: 60 },
             presence: false,
@@ -97,6 +100,37 @@ describe('The account configuration', () => {
         expect(() => loadConfig(env)).toThrow('"owner" in');
         await writeConfig({ jid: 'romeo@montague.lit', owner: 'Romeo@Montague.lit' });
         expect(() => loadConfig(env)).toThrow('must be a different account from "jid"');
+    });
+
+    it('refuses the owner being the agent itself in owner_only and bot modes', async () => {
+        const load = () => loadConfig(env);
+        for (const mode of ['owner_only', 'bot']) {
+            await writeConfig({ jid: 'romeo@montague.lit', owner: 'romeo@montague.lit', mode });
+            expect(load).toThrow('must be a different account from "jid"');
+        }
+    });
+
+    it('reads the mode, which is owner_only unless the config says otherwise', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit' });
+        expect(loadConfig(env).mode).toBe('owner_only');
+        await writeConfig({ jid: 'romeo@montague.lit', mode: 'bot' });
+        expect(loadConfig(env).mode).toBe('bot');
+        await writeConfig({ jid: 'romeo@montague.lit', mode: 'as_user' });
+        expect(loadConfig(env).mode).toBe('as_user');
+    });
+
+    it('refuses a mode it does not know, and names the ones it does', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', mode: 'root' });
+        expect(() => loadConfig(env)).toThrow(
+            '"mode" in ' + path.join(dir, 'converse', 'daemon.json') + ' must be one of: owner_only, bot, as_user.',
+        );
+    });
+
+    it('reads the direct list, lowercasing it, and refuses one that is not a list of JIDs', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', mode: 'bot', policy: { direct: ['Juliet@Capulet.lit'] } });
+        expect(loadConfig(env).policy.direct).toEqual(['juliet@capulet.lit']);
+        await writeConfig({ jid: 'romeo@montague.lit', policy: { direct: ['juliet'] } });
+        expect(() => loadConfig(env)).toThrow('"policy.direct" in');
     });
 
     it('refuses an access level it does not know', async () => {

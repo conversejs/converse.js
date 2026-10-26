@@ -13,6 +13,7 @@ import { promisify } from 'node:util';
 const DEFAULT_RESOURCE = 'claude';
 const DEFAULT_CONSUMER = 'claude';
 const ACCESS_LEVELS = ['restricted', 'full'];
+const MODES = ['owner_only', 'bot', 'as_user'];
 const BARE_JID = /^[^@/\s]+@[^@/\s]+$/;
 
 /**
@@ -22,7 +23,8 @@ const BARE_JID = /^[^@/\s]+@[^@/\s]+$/;
  * draft may be for.
  */
 const DEFAULT_POLICY = {
-    allow: [],
+    allow: [], // Contacts a restricted send may be drafted for
+    direct: [], // Contacts restricted access may message directly, in "bot" mode
     rooms: [], // Rooms restricted access may send to, and join or leave
     rate_limit: { per_conversation: 5, per_room: 2, overall: 20, window: 60 }, // Sends per window, in seconds
     presence: false, // Whether restricted access may change our availability and status message
@@ -75,12 +77,19 @@ export function loadConfig(env = process.env) {
         throw new Error(`"access" in ${config_path} must be one of: ${ACCESS_LEVELS.join(', ')}.`);
     }
 
-    // Drafts are delivered here, so the agent's own account must never be the owner.
+    const mode = raw.mode ?? 'owner_only';
+    if (!MODES.includes(mode)) {
+        throw new Error(`"mode" in ${config_path} must be one of: ${MODES.join(', ')}.`);
+    }
+
+    // Drafts are delivered here, and direct sends to the owner go here, so the
+    // agent's own account must never be the owner. The rule doesn't apply to
+    // "as_user", which the daemon refuses to run anyway.
     const owner = typeof raw.owner === 'string' ? raw.owner.trim().toLowerCase() : '';
     if (!BARE_JID.test(owner)) {
         throw new Error(`"owner" in ${config_path} must be your bare JID, such as "you@example.org".`);
     }
-    if (owner === jid) {
+    if (owner === jid && mode !== 'as_user') {
         throw new Error(`"owner" in ${config_path} must be a different account from "jid", the agent's own.`);
     }
 
@@ -93,6 +102,7 @@ export function loadConfig(env = process.env) {
         consumer: raw.consumer || DEFAULT_CONSUMER,
         // The access level the CLI connects at. Restricted unless the user says otherwise.
         access,
+        mode,
         policy: parsePolicy(raw.policy, config_path),
         settings: raw.settings ?? {},
         paths: getPaths(jid, env),
@@ -106,10 +116,14 @@ export function loadConfig(env = process.env) {
  */
 function parsePolicy(raw, config_path) {
     const allow = raw?.allow ?? DEFAULT_POLICY.allow;
+    const direct = raw?.direct ?? DEFAULT_POLICY.direct;
     const rooms = raw?.rooms ?? DEFAULT_POLICY.rooms;
     const rate_limit = { ...DEFAULT_POLICY.rate_limit, ...(raw?.rate_limit ?? {}) };
     if (!Array.isArray(allow) || !allow.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
         throw new Error(`"policy.allow" in ${config_path} must be a list of bare JIDs.`);
+    }
+    if (!Array.isArray(direct) || !direct.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
+        throw new Error(`"policy.direct" in ${config_path} must be a list of bare JIDs.`);
     }
     if (!Array.isArray(rooms) || !rooms.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
         throw new Error(`"policy.rooms" in ${config_path} must be a list of room JIDs.`);
@@ -125,6 +139,7 @@ function parsePolicy(raw, config_path) {
     }
     return {
         allow: allow.map((jid) => jid.trim().toLowerCase()),
+        direct: direct.map((jid) => jid.trim().toLowerCase()),
         rooms: rooms.map((jid) => jid.trim().toLowerCase()),
         rate_limit,
         presence,

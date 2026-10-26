@@ -200,23 +200,23 @@ describe('The room send policy', () => {
 
     it('refuses a room that is not on the policy list', () => {
         const policy = policyWith({});
-        expect(policy.admitRoom(HALL)).toMatchObject({ allowed: false, rule: 'room_allowlist' });
+        expect(policy.admit(HALL, { room: true })).toMatchObject({ allowed: false, rule: 'room_allowlist' });
     });
 
     it('allows a listed room once per window, and then refuses it until the window has passed', () => {
         clock = 0;
         const policy = policyWith({});
-        expect(policy.admitRoom(GARDEN)).toEqual({ allowed: true });
-        expect(policy.admitRoom(GARDEN)).toMatchObject({ allowed: false, rule: 'rate_room' });
+        expect(policy.admit(GARDEN, { room: true })).toEqual({ allowed: true, route: 'draft' });
+        expect(policy.admit(GARDEN, { room: true })).toMatchObject({ allowed: false, rule: 'rate_room' });
 
         clock = 61_000;
-        expect(policy.admitRoom(GARDEN)).toEqual({ allowed: true });
+        expect(policy.admit(GARDEN, { room: true })).toEqual({ allowed: true, route: 'draft' });
     });
 
     it('does not let a contact send count against a room, or the other way round', () => {
         clock = 0;
         const policy = policyWith({ allow: ['juliet@capulet.lit'] });
-        expect(policy.admit('juliet@capulet.lit')).toEqual({ allowed: true });
-        expect(policy.admitRoom(GARDEN)).toEqual({ allowed: true });
+        expect(policy.admit('juliet@capulet.lit')).toEqual({ allowed: true, route: 'draft' });
+        expect(policy.admit(GARDEN, { room: true })).toEqual({ allowed: true, route: 'draft' });
     });
 });

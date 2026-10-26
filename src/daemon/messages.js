@@ -3,7 +3,7 @@
  * DTOs clients see.
  * @module @converse/daemon/messages
  */
-import { converse } from '@converse/headless';
+import { converse, log } from '@converse/headless';
 import { getPage, hasArchivedMessages, isMessage } from './history.js';
 import { draftNotice } from './notices.js';
 import { ERRORS, RPCError } from './protocol.js';
@@ -94,6 +94,35 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
                 conversation: toConversationDTO(jid, contact),
                 messages: messages.map((m) => toMessageDTO(m, jid, ownJID())),
             };
+        },
+
+        /**
+         * The messages whose text has every word of `query`, ignoring case and
+         * accents. The server's full-text search of its archive is used where the
+         * server offers it. Otherwise, or if the server's search fails, the messages
+         * held locally are searched.
+         * @param {Object} params
+         * @param {string} params.query
+         * @param {string} [params.conversation] - A JID, or a contact's name. Without it, every conversation is searched
+         * @param {number} [params.limit] - The newest matches, at most this many
+         * @returns {Promise<import('./types').SearchResult>}
+         */
+        async 'messages.search'({ query, conversation, limit = DEFAULT_LIMIT }) {
+            if (typeof query !== 'string' || !query.trim()) {
+                throw new RPCError(ERRORS.INVALID_PARAMS, 'There is nothing to search for: "query" is empty.');
+            }
+            if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
+                throw new RPCError(ERRORS.INVALID_PARAMS, `"limit" must be a whole number from 1 to ${MAX_LIMIT}.`);
+            }
+            const jid = conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
+            const text = query.trim();
+
+            const found = await searchServer(_converse, text, jid, limit);
+            if (found) {
+                return { method: 'server', messages: found.map((m) => toMessageDTO(m, conversationOf(m), ownJID())) };
+            }
+            const held = await searchLocal(_converse, text, jid, limit);
+            return { method: 'local', messages: held.map((m) => toMessageDTO(m, conversationOf(m), ownJID())) };
         },
 
         /**
@@ -312,15 +341,82 @@ export async function findTarget(_converse, id, jid) {
     if (typeof id !== 'string' || !id) {
         throw new RPCError(ERRORS.INVALID_PARAMS, 'A message id must be one that "converse-cli read" showed.');
     }
+    const messages = (await heldConversations(_converse, jid)).flatMap((c) => c.messages.models.filter(isMessage));
+    const where = jid ? 'in this conversation' : 'in any conversation';
+    return findMessage(messages, id, _converse.session.get('bare_jid'), where);
+}
+
+/**
+ * The conversations held locally, with their messages fetched: the one with
+ * `jid`, or every one.
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {string} [jid] - The bare JID of the conversation
+ * @returns {Promise<(import('@converse/headless').ChatBox|import('@converse/headless').ChatRoom)[]>}
+ */
+async function heldConversations(_converse, jid) {
     const { api } = _converse;
     const chatboxes = jid
         ? [(await api.rooms.get(jid)) ?? (await api.chats.get(jid))].filter(Boolean)
         : [...((await api.chats.get()) ?? []), ...((await api.rooms.get()) ?? [])];
     await Promise.all(chatboxes.map((c) => c.messages.fetched));
-    const messages = chatboxes.flatMap((c) => c.messages.models.filter(isMessage));
-    const where = jid ? 'in this conversation' : 'in any conversation';
-    return findMessage(messages, id, _converse.session.get('bare_jid'), where);
+    return chatboxes;
 }
+
+/**
+ * The matches for `text` that the server's archive holds, or null where the
+ * server can't search it. A search that fails is logged, and is treated the same.
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {string} text
+ * @param {string} [jid] - The bare JID of the conversation to search, else every one
+ * @param {number} limit
+ * @returns {Promise<import('@converse/headless').Message[]|null>}
+ */
+async function searchServer(_converse, text, jid, limit) {
+    const { api } = _converse;
+    if (!api.connection.connected()) return null;
+    try {
+        // Created, so that each match is held, and its id works with the other commands.
+        const result = await api.archive.search(text, { with: jid, max: limit, create: true });
+        return result?.messages ?? null;
+    } catch (e) {
+        log.warn(`The server couldn't search its archive, so the messages held locally are searched: ${e.message}`);
+        return null;
+    }
+}
+
+/**
+ * The newest `limit` messages held locally whose text has every word of `text`,
+ * oldest first.
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {string} text
+ * @param {string} [jid] - The bare JID of the conversation to search, else every one
+ * @param {number} limit
+ * @returns {Promise<import('@converse/headless').Message[]>}
+ */
+async function searchLocal(_converse, text, jid, limit) {
+    const words = fold(text).split(/\s+/);
+    return (await heldConversations(_converse, jid))
+        .flatMap((c) => c.messages.models.filter(isMessage))
+        .filter((m) => !m.isRetracted())
+        .filter((m) => {
+            const body = fold(m.stripReplyFallback(m.get('body')) ?? '');
+            return words.every((word) => body.includes(word));
+        })
+        .sort((a, b) => Date.parse(a.get('time')) - Date.parse(b.get('time')))
+        .slice(-limit);
+}
+
+/**
+ * Text as a search compares it: neither case nor accents count.
+ * @param {string} text
+ */
+const fold = (text) => text.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase();
+
+/**
+ * @param {import('@converse/headless').Message} message
+ * @returns {string} The bare JID of the conversation the message is in
+ */
+const conversationOf = (message) => message.collection.chatbox.get('jid');
 
 /**
  * A reaction is a single emoji (XEP-0444). A shortname such as ":thumbsup:"

@@ -136,6 +136,16 @@ export type MessageList = {
 };
 
 /**
+ * The messages a search found. "server" means the server's own full-text
+ * search of its archive (XEP-0431); "local" means the messages held locally,
+ * which is where the search goes when the server can't, or fails.
+ */
+export type SearchResult = {
+    method: 'server' | 'local';
+    messages: MessageDTO[]; // Oldest first, each naming its conversation
+};
+
+/**
  * A send the agent asked for that went to the owner as text, not to its
  * recipient. The owner sends it themselves, from their own client, or doesn't.
  */

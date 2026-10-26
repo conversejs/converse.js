@@ -10,6 +10,7 @@ const { Strophe, stx } = converse.env;
 
 const NS_MAM = 'urn:xmpp:mam:2';
 const NS_RSM = 'http://jabber.org/protocol/rsm';
+const NS_FULLTEXT = 'urn:xmpp:fulltext:0';
 /** What `respond` returns for an IQ the server never answers: it times out. */
 const TIMED_OUT = Symbol('timed out');
 
@@ -22,14 +23,24 @@ const TIMED_OUT = Symbol('timed out');
  * @param {{ id: string, from: string, to: string, body: string, time: string }[]} [options.archive]
  *  Messages in our account's archive, oldest first, each with the stanza-id the archive
  *  assigned it. If given, our account supports MAM.
+ * @param {boolean} [options.fulltext] - Whether the archive offers full-text search (XEP-0431), which
+ *  matches each word of the text case-insensitively in a message's body. Defaults to true.
  * @param {'answer'|'error'|'silent'} [options.mam_mode] - How MAM queries are answered: with the
  *  archive, with an error, or not at all (so that they time out). Can be changed with `setMAMMode`.
  */
-export function serve({ connection, receive, jid, server_features = [], archive, mam_mode = 'answer' }) {
+export function serve({
+    connection,
+    receive,
+    jid,
+    server_features = [],
+    archive,
+    mam_mode = 'answer',
+    fulltext = true,
+}) {
     const bare_jid = Strophe.getBareJidFromJid(jid);
     const domain = Strophe.getDomainFromJid(jid);
     const muc_domain = `conference.${domain}`;
-    const account_features = archive ? [NS_MAM] : [];
+    const account_features = archive ? [NS_MAM, ...(fulltext ? [NS_FULLTEXT] : [])] : [];
     /** Every MAM query received, for specs to assert on. */
     const mam_queries = [];
     let current_mam_mode = mam_mode;
@@ -107,6 +118,7 @@ export function serve({ connection, receive, jid, server_features = [], archive,
             query.querySelector(`x field[var="${name}"] value`)?.textContent ?? undefined;
         const rsm = (name) => query.querySelector(`set[xmlns="${NS_RSM}"] > ${name}`)?.textContent;
         const [with_jid, start, end] = [field('with'), field('start'), field('end')];
+        const words = (field(`{${NS_FULLTEXT}}fulltext`) ?? '').toLowerCase().split(/\s+/).filter(Boolean);
         const max = Number(rsm('max') ?? 50);
         const before = rsm('before');
 
@@ -114,7 +126,8 @@ export function serve({ connection, receive, jid, server_features = [], archive,
             (m) =>
                 (!with_jid || m.from === with_jid || m.to === with_jid) &&
                 (!start || m.time >= start) &&
-                (!end || m.time <= end),
+                (!end || m.time <= end) &&
+                words.every((word) => m.body.toLowerCase().includes(word)),
         );
         if (before) matches = matches.slice(0, matches.findIndex((m) => m.id === before));
         // Without an `after`, every query here pages backwards: the newest `max`.

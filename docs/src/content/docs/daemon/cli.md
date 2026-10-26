@@ -60,6 +60,28 @@ anything as seen.
   `2026-10-23T09:00:00Z`, or since a duration ago, such as `30m`, `2h` or `7d`.
 - `--full`: don't truncate long bodies.
 
+### `search <query>`
+
+Finds messages whose text has every word of the query, ignoring case and accents,
+across all your conversations or in one. Where the server's archive offers
+full-text search ([XEP-0431](https://xmpp.org/extensions/xep-0431.html)), the
+server does the search. Otherwise, or if the server's search fails, the messages
+held locally are searched. The first line of output says which one was used.
+
+- `--conversation <contact|room>`: only in this conversation.
+- `--limit <n>`: at most this many, the newest. The default is 20.
+- `--full`: don't truncate long bodies.
+- `--json`: print one object with the `method` used (`server` or `local`) and the
+  `messages`, oldest first.
+
+```sh
+converse-cli search "balcony" --conversation "Juliet Capulet"
+```
+
+Each match is printed as `read` prints a message, with the conversation it's in,
+and its id works with `read`, `send --reply-to`, `react` and the other commands
+that take an id.
+
 ### `wait`
 
 Waits for the next incoming message that matches, prints it and exits. Messages in
@@ -202,11 +224,13 @@ step with this page.
 
 ## Reading message output
 
-`read` and `inbox` print one line per message:
+`read`, `inbox` and `search` print one line per message:
 
 ```
-<id>  <time> (<age>)  <sender>  [<notes>]  <body>
+<id>  <time> (<age>)  [in <conversation>]  <sender>  [<notes>]  <body>
 ```
+
+`in <conversation>` only appears in `search`, which can match messages from any conversation.
 
 - `<id>` is a short prefix of the message's id. Any command that takes an id
   accepts it.

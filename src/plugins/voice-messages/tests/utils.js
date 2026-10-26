@@ -128,7 +128,7 @@ export async function waitForUploadService(_converse, { max_file_size } = {}) {
  * @param {Element} [request] - A specific slot request to answer instead of the latest one.
  * @returns {Promise<Element>} The slot request IQ
  */
-export async function answerSlotRequest(_converse, get_url = 'https://upload.montague.tld/voice.weba', request) {
+export async function answerSlotRequest(_converse, get_url = 'https://upload.montague.tld/voice.m4a', request) {
     const connection = _converse.api.connection.get();
     const iq =
         request ??
@@ -142,7 +142,7 @@ export async function answerSlotRequest(_converse, get_url = 'https://upload.mon
             stx`<iq from="upload.montague.tld" id="${iq.getAttribute('id')}" to="romeo@montague.lit/orchard"
                     type="result" xmlns="jabber:client">
                 <slot xmlns="urn:xmpp:http:upload:0">
-                    <put url="https://upload.montague.tld/put/voice.weba"></put>
+                    <put url="https://upload.montague.tld/put/voice.m4a"></put>
                     <get url="${get_url}"></get>
                 </slot>
             </iq>`,

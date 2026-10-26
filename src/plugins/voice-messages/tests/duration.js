@@ -234,7 +234,7 @@ describe('The voice message recorder', function () {
                 fakeUploads(201);
                 const request = (await answerSlotRequest(_converse)).querySelector('request');
                 expect(request.getAttribute('content-type')).toBe('audio/ogg');
-                expect(request.getAttribute('filename')).toMatch(/^voice-message-\d+\.ogg$/);
+                expect(request.getAttribute('filename')).toMatch(/^voice-message-\d+\.oga$/);
                 await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
             },
         ),
@@ -267,5 +267,29 @@ describe('The voice message recorder', function () {
                 }
             },
         ),
+    );
+
+    it(
+        'prefers Ogg over WebM when MP4 is not supported',
+        mock.initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+            const media = installFakeMedia();
+            FakeMediaRecorder.supported = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus'];
+            try {
+                const view = await openChat(_converse);
+                await openRecorder(view);
+                await u.waitUntil(() => view.querySelector('converse-audio-recorder .btn-stop'));
+                expect(media.recorder.options.mimeType).toBe('audio/ogg;codecs=opus');
+                media.recorder.emitData('hello');
+                view.querySelector('converse-audio-recorder .btn-stop').click();
+
+                fakeUploads(201);
+                const request = (await answerSlotRequest(_converse)).querySelector('request');
+                expect(request.getAttribute('content-type')).toBe('audio/ogg');
+                expect(request.getAttribute('filename')).toMatch(/^voice-message-\d+\.oga$/);
+                await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
+            } finally {
+                FakeMediaRecorder.supported = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4'];
+            }
+        }),
     );
 });

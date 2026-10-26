@@ -211,7 +211,7 @@ describe('The voice message recorder', function () {
 
             // The first upload fails, which is reported in the chat but not in the recorder
             const failing = fakeUploads(500);
-            await answerSlotRequest(_converse, 'https://upload.montague.tld/first.weba', first);
+            await answerSlotRequest(_converse, 'https://upload.montague.tld/first.m4a', first);
             await u.waitUntil(() => view.model.messages.models.some((m) => m.get('upload') === 'failure'));
             await new Promise((resolve) => setTimeout(resolve, 50));
             expect(view.querySelector('converse-audio-recorder .audio-recorder--uploading')).not.toBe(null);
@@ -234,7 +234,7 @@ describe('The voice message recorder', function () {
 
             const el = await u.waitUntil(() => view.querySelector('converse-audio-recorder .audio-recorder--error'));
             const text = el.querySelector('.error-message').textContent;
-            expect(text).toMatch(/^The size of your file, voice-message-\d+\.weba, exceeds the maximum allowed/);
+            expect(text).toMatch(/^The size of your file, voice-message-\d+\.m4a, exceeds the maximum allowed/);
             expect(text).toMatch(/by your server, which is 3 B\.$/);
             await new Promise((resolve) => setTimeout(resolve, 50));
             expect(slotRequests(_converse).length).toBe(0);

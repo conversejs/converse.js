@@ -4,7 +4,9 @@
  */
 import { html } from 'lit';
 import { _converse, api, constants, converse, getUploadService } from '@converse/headless';
+import log from '@converse/log';
 import { __ } from 'i18n';
+import { encodeOpus } from './encode.js';
 import { isRecordingSupported } from './session.js';
 
 const { Strophe } = converse.env;
@@ -18,10 +20,12 @@ export const PAUSED = 'paused';
 export const UPLOADING = 'uploading';
 export const ERROR = 'error';
 
+// Audio-only extensions. Conversations recognises audio by these, not by .ogg
+// (which it treats as a generic container) or .weba (which it doesn't know).
 const EXTENSIONS = {
     'audio/mp4': 'm4a',
     'audio/mpeg': 'mp3',
-    'audio/ogg': 'ogg',
+    'audio/ogg': 'oga',
     'audio/webm': 'weba',
 };
 
@@ -132,10 +136,27 @@ export function getRecorderPanel(container, panels) {
 }
 
 /**
+ * Re-encode the recording as Opus in a seekable MP4. When the browser can't do
+ * that, the recording is used as it was made.
  * @param {Recording} recording
- * @returns {File}
+ * @returns {Promise<Recording>}
  */
-function createAudioFile({ blob, mime_type }) {
+async function encodeRecording(recording) {
+    try {
+        const blob = await encodeOpus(recording.blob, api.settings.get('voice_message_bitrate'));
+        if (blob) return { ...recording, blob, mime_type: 'audio/mp4' };
+    } catch (e) {
+        log.error(e);
+    }
+    return recording;
+}
+
+/**
+ * @param {Recording} recording
+ * @returns {Promise<File>}
+ */
+async function createAudioFile(recording) {
+    const { blob, mime_type } = await encodeRecording(recording);
     const type = mime_type.split(';')[0];
     const extension = EXTENSIONS[type] ?? type.split('/')[1] ?? 'audio';
     return new File([blob], `voice-message-${Date.now()}.${extension}`, { type });
@@ -149,7 +170,7 @@ function createAudioFile({ blob, mime_type }) {
  * @throws {Error} if the file could not be uploaded, with a message for the user.
  */
 export async function sendVoiceMessage(model, recording) {
-    const [message] = await model.sendFiles([createAudioFile(recording)]);
+    const [message] = await model.sendFiles([await createAudioFile(recording)]);
     if (!message) {
         // The server has no upload service
         throw new Error(__('Sorry, looks like file upload is not supported by your server.'));

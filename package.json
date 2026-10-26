@@ -159,6 +159,7 @@
     "lexical": "^0.52.0",
     "lit": "^3.1.4",
     "lodash-es": "^4.17.21",
+    "mediabunny": "^1.62.1",
     "pluggable.js": "^3.0.1",
     "prettier": "^3.2.5",
     "sdp-transform": "^3.0.0",

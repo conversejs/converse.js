@@ -15,8 +15,9 @@ converse.plugins.add('converse-voice-messages', {
     initialize() {
         api.settings.extend({
             max_voice_message_duration: 0, // seconds, 0 for no limit beyond what the upload service accepts
-            voice_message_bitrate: 32000, // bits per second, plenty for speech in Opus
-            voice_message_mime_type: 'audio/webm;codecs=opus',
+            voice_message_bitrate: 32000, // bits per second, plenty for speech
+            // MP4 audio is saved as .m4a, the extension XMPP clients such as Conversations recognise as audio
+            voice_message_mime_type: 'audio/mp4',
             visible_toolbar_buttons: { voice_message: true },
         });
 

@@ -7,7 +7,7 @@
  * Formats to fall back to, in order of preference, when the browser can't
  * record in the configured one.
  */
-const FALLBACK_MIME_TYPES = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4'];
+const FALLBACK_MIME_TYPES = ['audio/mp4', 'audio/ogg;codecs=opus', 'audio/webm;codecs=opus'];
 
 /** The longest delay `setTimeout` accepts; longer ones fire immediately. */
 const MAX_TIMEOUT = 2 ** 31 - 1;

@@ -64,6 +64,12 @@ export function formatDraft(draft, { full = false, now = new Date() } = {}) {
     );
 }
 
+/** One scheduled message, on one line: id, delivery time, recipient and body. */
+export function formatSchedule(schedule, { full = false } = {}) {
+    const parked = schedule.parked ? `  NOT SENT: ${schedule.parked.message}` : '';
+    return `${schedule.id}  ${schedule.send_at}  to ${schedule.to}  ${formatBody(schedule.body, { full })}${parked}\n`;
+}
+
 /**
  * @param {string|null} text
  * @param {Object} options

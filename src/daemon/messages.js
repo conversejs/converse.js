@@ -139,7 +139,11 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>}
          */
-        async 'messages.send'({ to, body, reply_to, correct }, client) {
+        async 'messages.send'({ to, body, reply_to, correct, at }, client) {
+            // Refused, rather than ignored, which would send now what was meant for later.
+            if (at !== undefined) {
+                throw new RPCError(ERRORS.INVALID_PARAMS, '"at" is for "schedules.create", which sends it later.');
+            }
             const jid = await resolveJID(_converse, to, 'to');
             if (typeof body !== 'string' || !body.trim()) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, 'There is nothing to send: "body" is empty.');

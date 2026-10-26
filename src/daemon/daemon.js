@@ -20,6 +20,7 @@ import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
 import { createPolicy } from './policy.js';
 import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
 import { createSendRouter } from './routing.js';
+import { scheduleMethods } from './schedules.js';
 
 /**
  * How long shutdown waits for the server to see us leave before giving up.
@@ -88,8 +89,12 @@ async function serve(config) {
         api.disco.own.identities.clear();
         api.disco.own.identities.add(BOT_IDENTITY.category, BOT_IDENTITY.type, BOT_IDENTITY.name);
     });
+    const messages = messageMethods(_converse, { routeSend, audit, drafts, events, owner: config.owner });
+    const schedules = scheduleMethods(_converse, { routeSend, sendNow: messages['messages.send'] });
+    api.listen.on('scheduledMessageDue', schedules.onDue);
     const methods = {
-        ...messageMethods(_converse, { routeSend, audit, drafts, events, owner: config.owner }),
+        ...messages,
+        ...schedules.methods,
         ...fileMethods(_converse, { routeSend, audit, drafts, events, owner: config.owner }),
         ...draftMethods(_converse, { drafts, audit, events, owner: config.owner }),
         ...inboxMethods(_converse, createCursors(paths.cursors)),

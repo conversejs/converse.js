@@ -28,6 +28,7 @@ export { Call, Calls } from "./plugins/jingle/index.js";
 export { Device, Devices, DeviceList, DeviceLists } from "./plugins/omemo/index.js";
 export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants } from "./plugins/muc/index.js";
 export { MicroblogProfile, PubSubFeed, PubSubFeeds, PubSubMessage, PubSubMessages, buildCommentTree, computeThreadCounts, getAncestors } from "./plugins/microblog/index.js";
+export { ScheduledMessage, ScheduledMessages } from "./plugins/scheduled-messages/index.js";
 export { RosterContact, RosterContacts, RosterFilter, Presence, Presences } from "./plugins/roster/index.js";
 export { VCard, VCards } from "./plugins/vcard/index.js";
 //# sourceMappingURL=index.d.ts.map

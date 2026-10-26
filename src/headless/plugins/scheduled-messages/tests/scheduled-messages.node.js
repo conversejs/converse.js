@@ -1,0 +1,79 @@
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { NodeSQLiteStorage, PersistentStorage } from '@converse/skeletor';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import ScheduledMessages from '../collection.js';
+
+const NOON = new Date('2026-10-26T12:00:00Z');
+const LATER = new Date('2026-10-26T12:05:00Z');
+
+describe('ScheduledMessages', () => {
+    let dir;
+    let storage;
+
+    beforeEach(async () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(NOON);
+        dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-schedules-'));
+        const driver = new NodeSQLiteStorage('converse', dir, false);
+        storage = new PersistentStorage('scheduled-messages', driver, false);
+    });
+
+    afterEach(async () => {
+        vi.useRealTimers();
+        await fs.rm(dir, { recursive: true, force: true });
+    });
+
+    const attrs = () => ({
+        id: 'schedule-1',
+        to: 'juliet@capulet.lit',
+        body: 'Good afternoon',
+        send_at: LATER.toISOString(),
+        created: NOON.toISOString(),
+    });
+
+    it('dispatches a message at its scheduled time and removes it afterwards', async () => {
+        const on_due = vi.fn().mockResolvedValue(undefined);
+        const schedules = new ScheduledMessages([], { storage, on_due });
+        await schedules.hydrated;
+        await schedules.schedule(attrs());
+
+        await schedules.resume();
+        await vi.advanceTimersByTimeAsync(LATER.getTime() - NOON.getTime());
+
+        expect(on_due).toHaveBeenCalledOnce();
+        expect(on_due.mock.calls[0][0].toJSON()).toEqual(attrs());
+        expect(schedules).toHaveLength(0);
+    });
+
+    it('does not dispatch a cancelled message', async () => {
+        const on_due = vi.fn().mockResolvedValue(undefined);
+        const schedules = new ScheduledMessages([], { storage, on_due });
+        await schedules.hydrated;
+        await schedules.schedule(attrs());
+
+        expect((await schedules.cancel('schedule-1')).toJSON()).toEqual(attrs());
+        await schedules.resume();
+        await vi.advanceTimersByTimeAsync(LATER.getTime() - NOON.getTime());
+
+        expect(on_due).not.toHaveBeenCalled();
+    });
+
+    it('rehydrates a message and dispatches it immediately when it became due while stopped', async () => {
+        const first = new ScheduledMessages([], { storage, on_due: vi.fn() });
+        await first.hydrated;
+        await first.schedule(attrs());
+        first.pause();
+
+        vi.setSystemTime(new Date('2026-10-26T12:10:00Z'));
+        const on_due = vi.fn().mockResolvedValue(undefined);
+        const restarted = new ScheduledMessages([], { storage, on_due });
+        await restarted.hydrated;
+        await restarted.resume();
+
+        expect(restarted).toHaveLength(0);
+        expect(on_due).toHaveBeenCalledOnce();
+        expect(on_due.mock.calls[0][0].id).toBe('schedule-1');
+    });
+});

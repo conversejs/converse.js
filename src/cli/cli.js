@@ -17,6 +17,7 @@ import {
     formatContactDetails,
     formatOccupant,
     formatRoomListing,
+    formatSchedule,
     formatConversation,
     formatDraft,
     formatDuration,
@@ -76,6 +77,8 @@ Commands:
     --correct <id>     Replace one of your messages with <text> (XEP-0308). The
                        message keeps its place, and answers to its old id. A
                        restricted correction is only sent directly, never drafted
+    --at <time>        Schedule it for this future ISO 8601 time. Policy is checked
+                       now and again when it becomes due, even after a restart
   upload <contact> <path>  Upload a local file with XEP-0363 and share its URL.
                        It follows the same restricted send policy as send: a
                        direct route shares the URL with the contact or room; a
@@ -91,6 +94,8 @@ Commands:
     --remove           Withdraw this reaction instead (full access only)
   drafts list          List the drafts not yet withdrawn (full access)
   drafts reject <id>   Withdraw a draft; the owner is told (full access)
+  schedules list       List messages waiting for their scheduled delivery time
+  schedules cancel <id>  Cancel one; nothing is sent
   wait                Wait for the next incoming message that matches, print
                        it and exit. Messages in the rooms you've joined count
                        too. Only messages that arrive after wait starts are
@@ -167,6 +172,7 @@ const EXIT_FOR_OUTCOME = {
     sent: EXIT.OK,
     refused: EXIT.REFUSED,
     draft: EXIT.DRAFT,
+    scheduled: EXIT.OK,
 };
 
 /**
@@ -193,6 +199,7 @@ export async function main(argv, io) {
                 nick: { type: 'string' },
                 'reply-to': { type: 'string' },
                 correct: { type: 'string' },
+                at: { type: 'string' },
                 remove: { type: 'boolean' },
                 help: { type: 'boolean', short: 'h' },
                 version: { type: 'boolean', short: 'v' },
@@ -287,6 +294,9 @@ function reportSend(result, { options, out, err }) {
         out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
     } else if (result.outcome === 'draft') {
         out(`Drafted as ${result.draft_id}. Its text went to the owner, and nothing was sent.\n`);
+    } else if (result.outcome === 'scheduled') {
+        const { schedule } = result;
+        out(`Scheduled ${schedule.id} to ${schedule.to} for ${schedule.send_at}.\n`);
     } else {
         err(`converse-cli: ${result.message}\n`);
     }
@@ -384,6 +394,7 @@ const COMMANDS = {
             body,
             reply_to: options['reply-to'],
             correct: options.correct,
+            at: options.at,
         });
         return reportSend(result, { options, out, err });
     },
@@ -465,6 +476,33 @@ const COMMANDS = {
             out(JSON.stringify(draft) + '\n');
         } else {
             out(`Withdrew draft ${draft.id}. Nothing was sent.\n`);
+        }
+        return EXIT.OK;
+    },
+
+    async 'schedules list'(ctx) {
+        const { options, out, err } = ctx;
+        /** @type {{ schedules: import('@converse/daemon/types').ScheduleDTO[] }} */
+        const { schedules } = await request(ctx, 'schedules.list');
+        if (options.json) {
+            schedules.forEach((schedule) => out(JSON.stringify(schedule) + '\n'));
+        } else if (schedules.length) {
+            schedules.forEach((schedule) => out(formatSchedule(schedule, { full: options.full })));
+        } else {
+            err('No scheduled messages.\n');
+        }
+        return EXIT.OK;
+    },
+
+    async 'schedules cancel'(ctx) {
+        const { options, out } = ctx;
+        const id = takeOne(ctx, 'scheduled message id');
+        /** @type {{ schedule: import('@converse/daemon/types').ScheduleDTO }} */
+        const { schedule } = await request(ctx, 'schedules.cancel', { id });
+        if (options.json) {
+            out(JSON.stringify(schedule) + '\n');
+        } else {
+            out(`Cancelled scheduled message ${schedule.id}. Nothing was sent.\n`);
         }
         return EXIT.OK;
     },

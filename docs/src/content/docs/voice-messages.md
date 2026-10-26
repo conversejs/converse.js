@@ -67,17 +67,20 @@ A fixed limit is only needed to keep messages short for some other reason.
 - **Default**: `32000`
 
 The audio bitrate of a recording, in bits per second. The default is plenty
-for speech in Opus, the default format, and keeps recordings small, at about a
-quarter of a megabyte a minute. Raise it for music, or for a format that
-compresses less well.
+for speech in Opus, and keeps recordings small, at about a quarter of a megabyte
+a minute. Raise it for music.
 
 ### voice_message_mime_type
 
 - **Type**: String
-- **Default**: `'audio/webm;codecs=opus'`
+- **Default**: `'audio/mp4'`
 
-The preferred audio format. If the browser can't record in this format,
-Converse uses the first supported one of Opus in WebM, Opus in Ogg and MP4 audio.
+The preferred format the browser records in. Whatever is recorded is then
+re-encoded as Opus in an MP4 file that can be seeked, and sent as `.m4a`, which XMPP
+clients such as Conversations recognise as audio. If the browser can't re-encode the
+recording, it is sent as it was recorded. If the browser can't record in the
+preferred format, Converse uses the first supported one of MP4 audio, Opus in Ogg
+and Opus in WebM.
 
 ## Customizing the recorder
 

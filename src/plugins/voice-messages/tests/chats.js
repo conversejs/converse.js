@@ -142,10 +142,10 @@ describe('A voice message', function () {
 
             fakeUploads(201);
             const iq = await answerSlotRequest(_converse);
-            expect(iq.querySelector('request').getAttribute('content-type')).toBe('audio/webm');
+            expect(iq.querySelector('request').getAttribute('content-type')).toBe('audio/mp4');
 
             const player = await u.waitUntil(() => view.querySelector('.chat-content converse-audio-player'));
-            expect(player.getAttribute('src')).toBe('https://upload.montague.tld/voice.weba');
+            expect(player.getAttribute('src')).toBe('https://upload.montague.tld/voice.m4a');
             await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
             expect(media.tracks.every((t) => t.stopped)).toBe(true);
         }),

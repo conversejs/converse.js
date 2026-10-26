@@ -354,6 +354,7 @@ describe('Messages in a 1:1 chat', () => {
                     outcome: 'refused',
                     rule: 'allowlist',
                     message: expect.stringContaining('"policy.allow"'),
+                    transient: false,
                 });
             } finally {
                 restricted.close();

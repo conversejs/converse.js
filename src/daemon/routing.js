@@ -23,14 +23,15 @@ export function createSendRouter(_converse, { policy, audit, mode }) {
      * @param {(routing: import('./types').Routing) => Promise<import('./types').SendResult>} [routes.draft]
      * @param {Error} [routes.cannot_draft]
      * @param {import('./types').AuditEntry['action']} [routes.action]
+     * @param {boolean} [routes.consume=true] - Whether an allowed route spends rate-limit capacity
      */
-    return async function routeSend(client, to, { direct, draft, cannot_draft, action }) {
+    return async function routeSend(client, to, { direct, draft, cannot_draft, action, consume = true }) {
         if (client.access === 'full') return direct();
 
         const room = await api.rooms.get(to);
         if (room && !room.isEntered()) throw notJoined(to);
 
-        const verdict = policy.admit(to, { room: !!room });
+        const verdict = policy[consume ? 'admit' : 'check'](to, { room: !!room });
         if (!verdict.allowed) {
             audit.record({
                 consumer: client.consumer,
@@ -40,7 +41,8 @@ export function createSendRouter(_converse, { policy, audit, mode }) {
                 rule: verdict.rule,
                 ...(action ? { action } : {}),
             });
-            return { outcome: 'refused', rule: verdict.rule, message: verdict.message };
+            const { rule, message, transient } = verdict;
+            return { outcome: 'refused', rule, message, transient };
         }
 
         const routing = { route: verdict.route, mode };

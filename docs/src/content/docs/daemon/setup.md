@@ -54,9 +54,10 @@ agent's user or yours.
 
 - `owner` is the account drafts are delivered to, and direct sends to you go
   to. It must be your account.
-- `consumer` is the name the agent goes by: its read cursors and drafts are
-  kept under it. It defaults to `claude`. Every client of the restricted socket
-  is this consumer, and the daemon refuses one that asks to be another.
+- `consumer` is the name the agent goes by: its read cursors, scheduled
+  messages and drafts are kept under it. It defaults to `claude`. Every client of
+  the restricted socket is this consumer, and the daemon refuses one that asks
+  to be another.
 - `mode` is how the agent acts. See "Modes" below. It defaults to `owner_only`.
 - `policy.allow` lists the people a draft may be for. A draft to anyone else is
   refused, and nothing is sent.

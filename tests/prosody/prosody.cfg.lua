@@ -56,3 +56,9 @@ Component "conference.localhost" "muc"
     modules_enabled = { "muc_mam" }
     -- So that a room is listed by the service's disco#items, as a rooms.discover spec needs.
     muc_room_default_public = true
+
+Component "upload.localhost" "http_file_share"
+    modules_disabled = { "s2s" }
+    http_host = "127.0.0.1"
+    http_external_url = os.getenv("CONVERSE_PROSODY_HTTP_EXTERNAL_URL")
+    http_file_share_size_limit = 10*1024*1024

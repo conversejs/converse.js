@@ -54,17 +54,20 @@ Commands:
   send <contact> <text>  Send a message. Without <text>, it's read from stdin
                        Text that starts with a dash needs "--" before it, so it
                        isn't read as an option: send <contact> -- -1 for yes
-                       At restricted access, the default, a send to anyone but the
-                       owner is a draft: the text goes to the owner, who sends it
-                       from their own client. The contact's JID must be listed in
-                       "policy.allow" in the config file
+                       At restricted access, the default, a send to the owner goes
+                       out directly. Other sends follow the config's "mode": in
+                       owner_only, a contact listed in "policy.allow" gets a draft,
+                       the text going to the owner, who sends it from their own
+                       client. In bot, a room in "policy.rooms" or a contact in
+                       "policy.direct" is sent directly. Anything else is refused
     --reply-to <id>    Reply to this message of the conversation (XEP-0461). A
                        restricted reply is a draft, and the owner is told which
                        message it answers
     --correct <id>     Replace one of your messages with <text> (XEP-0308). The
-                       message keeps its place, and answers to its old id. Full
-                       access only: restricted sends are drafts
-  retract <id>         Withdraw one of your messages (XEP-0424). Full access only
+                       message keeps its place, and answers to its old id. A
+                       restricted correction is only sent directly, never drafted
+  retract <id>         Withdraw one of your messages (XEP-0424). A restricted
+                       retraction is only sent directly, never drafted
     --conversation <contact|room>  Look for the message only in this conversation
   react <id> <emoji>   React to a message with an emoji or its shortname, such as
                        :thumbsup: (XEP-0444). Your earlier reactions to it stay.
@@ -338,8 +341,10 @@ const COMMANDS = {
     async retract(ctx) {
         const { options, out } = ctx;
         const id = takeOne(ctx, 'message id');
-        /** @type {{ message: import('@converse/daemon/types').MessageDTO }} */
-        const { message } = await request(ctx, 'messages.retract', { id, conversation: options.conversation });
+        /** @type {import('@converse/daemon/types').SendResult} */
+        const result = await request(ctx, 'messages.retract', { id, conversation: options.conversation });
+        if (result.outcome !== 'sent') return reportSend(result, ctx);
+        const { message } = result;
         if (options.json) {
             out(JSON.stringify(message) + '\n');
         } else {

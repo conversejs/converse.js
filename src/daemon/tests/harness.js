@@ -30,6 +30,7 @@ export { JID };
  * @param {Record<string, unknown>} [options.settings] - More headless settings
  * @param {Parameters<typeof serve>[0]['mam_mode']} [options.mam_mode]
  * @param {Partial<import('../types').Policy>} [options.policy] - The send policy, from the config file
+ * @param {import('../types').Mode} [options.mode] - How the account acts, from the config file
  * @param {{ jid: string, nick: string }[]} [options.rooms] - The rooms stored from an earlier run, to rejoin
  * @param {import('../types').Access} [options.access] - The level the CLI connects at
  */
@@ -40,11 +41,13 @@ export async function startDaemon({
     settings,
     mam_mode,
     policy,
+    mode,
     rooms,
     access,
 } = {}) {
     const { env, remove } = await createAccount(settings, {
         ...(policy ? { policy } : {}),
+        ...(mode ? { mode } : {}),
         ...(access ? { access } : {}),
     });
     const config = loadConfig(env);

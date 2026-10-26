@@ -1,9 +1,10 @@
 # Setting up the daemon
 
-The daemon lets an agent read your XMPP messages and draft replies for you.
-It is built so that the agent never sends to anyone directly. Each send the
-agent asks for becomes a draft, and the text of that draft is delivered to you.
-You send it yourself, from your own client, or you don't.
+The daemon lets an agent read your XMPP messages, and send or draft messages
+for you. What the agent may send, and how, depends on the `mode` in the config
+(see "Modes" below). By default, the agent never sends to anyone directly. Each
+send it asks for becomes a draft, and the text of that draft is delivered to
+you. You send it yourself, from your own client, or you don't.
 
 For that to hold, the agent must not be able to act as you. The code can't
 enforce that alone. The setup below is what makes it true.
@@ -11,7 +12,8 @@ enforce that alone. The setup below is what makes it true.
 ## 1. Create a bot account for the agent
 
 Create a separate XMPP account for the agent, with its own password. Don't use
-your own account. The config refuses to start if `jid` and `owner` are the same.
+your own account. In the `owner_only` and `bot` modes, the config refuses to
+start if `jid` and `owner` are the same.
 
 ## 2. Keep your password away from the agent
 
@@ -37,22 +39,49 @@ agent's user or yours.
     "owner": "you@example.org",
     "websocket_url": "wss://example.org/xmpp-websocket",
     "consumer": "claude",
+    "mode": "owner_only",
     "policy": {
         "allow": ["juliet@example.org"],
+        "direct": [],
+        "rooms": [],
         "rate_limit": { "per_conversation": 5, "overall": 20, "window": 60 }
     }
 }
 ```
 
-- `owner` is the account drafts are delivered to. It must be your account.
+- `owner` is the account drafts are delivered to, and direct sends to you go
+  to. It must be your account.
+- `mode` is how the agent acts. See "Modes" below. It defaults to `owner_only`.
 - `policy.allow` lists the people a draft may be for. A draft to anyone else is
   refused, and nothing is sent.
+- `policy.direct` lists the people the agent may message directly, in `bot`
+  mode. It is empty by default, and ignored in `owner_only` mode.
+- `policy.rooms` lists the rooms the agent may join, leave and send to. In
+  `owner_only` mode a send to one of them is a draft. In `bot` mode it goes out
+  directly.
 - `policy.presence` (default `false`) lets a restricted agent change your
   availability and status message with `converse-cli presence set`. Full access
   can always do it.
 - The agent's password goes in the keyring under the service `converse`, with
   the agent's JID as the account, or in `password` if the daemon user's config
   is private to that user.
+
+## Modes
+
+The `mode` decides which account the agent acts with, and so what each send
+does. Every restricted send goes one of three ways. It is sent directly, queued
+as a draft for you, or refused by the policy. The rate limits count all of them
+alike.
+
+- **`owner_only`** (the default). The agent sends nothing to anyone but you
+  directly. A send to you goes out. A send to someone on `policy.allow`, or to a
+  room on `policy.rooms`, is a draft. Anything else is refused.
+- **`bot`**. As `owner_only`, plus: a send to a room on `policy.rooms`, or to a
+  contact on `policy.direct`, goes out directly, from the agent's account. The
+  agent's messages then come from the bot account, and show it as a bot. A
+  contact on `policy.allow` is still a draft.
+- **`as_user`**. Acting with your own credentials. Not implemented yet, and the
+  daemon refuses to start in it.
 
 ## What you will see
 
@@ -72,8 +101,9 @@ Draft d2 for juliet@example.org, from claude. Nothing was sent. To send it, reac
 "👍"
 ```
 
-The agent can't correct or retract messages: what it sends are drafts, and
-drafts go to you.
+In `owner_only` mode the agent can't correct, retract or remove a reaction
+from a message, since a draft can't do any of those. In `bot` mode it can, where
+the policy sends the message directly, and only to its own messages.
 
 If you don't want it, withdraw it from the command line with
 `converse-cli drafts reject d1`, and you get a note confirming it was withdrawn.

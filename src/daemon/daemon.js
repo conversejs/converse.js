@@ -45,6 +45,12 @@ const BOT_IDENTITY = { category: 'client', type: 'bot', name: 'Converse daemon' 
  */
 export async function start(config) {
     const { paths } = config;
+    if (config.mode === 'as_user') {
+        throw new Error(
+            `"mode": "as_user" in ${paths.config} isn't implemented yet, so the daemon can't start in it. ` +
+                'Use "owner_only" or "bot".',
+        );
+    }
     await fs.mkdir(paths.runtime_dir, { recursive: true, mode: 0o700 });
     // mkdir leaves the mode of an existing directory alone.
     await fs.chmod(paths.runtime_dir, 0o700);
@@ -81,7 +87,7 @@ async function serve(config) {
         api.disco.own.identities.add(BOT_IDENTITY.category, BOT_IDENTITY.type, BOT_IDENTITY.name);
     });
     const methods = {
-        ...messageMethods(_converse, { policy, audit, drafts, events, owner: config.owner }),
+        ...messageMethods(_converse, { policy, audit, drafts, events, owner: config.owner, mode: config.mode }),
         ...draftMethods(_converse, { drafts, audit, events, owner: config.owner }),
         ...inboxMethods(_converse, createCursors(paths.cursors)),
         ...contactMethods(_converse),

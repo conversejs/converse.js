@@ -23,7 +23,7 @@ const MAX_LIMIT = 1000;
  * @param {ReturnType<typeof import('./events.js').createEvents>} deps.events
  * @param {string} deps.owner - Bare JID of the user, to whom drafts are delivered
  */
-export function messageMethods(_converse, { policy, audit, drafts, events, owner }) {
+export function messageMethods(_converse, { policy, audit, drafts, events, owner, mode }) {
     const { api } = _converse;
     const ownJID = () => _converse.session.get('bare_jid');
 
@@ -97,15 +97,15 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
         },
 
         /**
-         * Restricted connections are held to the send policy. A refusal is a
-         * result, not an error, and it's audited like a send. A send the policy
-         * wants a person to approve is queued as a draft instead.
+         * Restricted connections are held to the send policy, which decides
+         * whether the message goes out directly, is queued as a draft for the
+         * owner, or is refused. A refusal is a result, not an error.
          * @param {Object} params
          * @param {string} params.to - A JID, or a contact's name
          * @param {string} params.body
          * @param {string} [params.reply_to] - The id of a message in the conversation that this replies to
          * @param {string} [params.correct] - The id of one of our messages in the conversation, which
-         *  this replaces. Full access only: what a restricted connection sends is a draft.
+         *  this replaces. A draft can't correct a message, so this is only sent directly.
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>}
          */
@@ -120,120 +120,166 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
                     'A message either replies or corrects: pass one of "reply_to" and "correct".',
                 );
             }
-            if (correct !== undefined && client.access === 'restricted') {
-                throw ownMessagesOnly('correct');
-            }
             const replying_to = reply_to === undefined ? undefined : await findTarget(_converse, reply_to, jid);
+            const send = async (routing) => {
+                const correcting =
+                    correct === undefined ? undefined : await findOwn(_converse, correct, jid, 'correct');
+                // Taken before the send: a correction gets a new origin-id, which can change the message's id.
+                const target = replying_to ?? correcting;
+                const action = target
+                    ? { action: replying_to ? 'reply' : 'correct', target: getIDs(target, ownJID())[0] }
+                    : {};
+                const dto = await sendMessage(_converse, jid, body, { replying_to, correcting });
+                audit.record({
+                    consumer: client.consumer,
+                    to: jid,
+                    outcome: 'sent',
+                    id: dto.id,
+                    ...action,
+                    ...routing,
+                });
+                return { outcome: 'sent', message: dto };
+            };
             if (client.access === 'restricted') {
-                return draft(client, { to: jid, body, reply_to: replying_to });
+                return routeRestricted(client, jid, {
+                    direct: send,
+                    draft:
+                        correct === undefined
+                            ? (routing) => draft(client, { to: jid, body, reply_to: replying_to }, routing)
+                            : undefined,
+                    cannot_draft: ownMessagesOnly('correct'),
+                });
             }
-            const correcting = correct === undefined ? undefined : await findOwn(_converse, correct, jid, 'correct');
-            // Taken before the send: a correction gets a new origin-id, which can change the message's id.
-            const target = replying_to ?? correcting;
-            const action = target
-                ? { action: replying_to ? 'reply' : 'correct', target: getIDs(target, ownJID())[0] }
-                : {};
-            const dto = await sendMessage(_converse, jid, body, { replying_to, correcting });
-            audit.record({ consumer: client.consumer, to: jid, outcome: 'sent', id: dto.id, ...action });
-            return { outcome: 'sent', message: dto };
+            return send();
         },
 
         /**
-         * Withdraws one of our messages (XEP-0424). Full access only: what a
-         * restricted connection sends is a draft.
+         * Withdraws one of our messages (XEP-0424). Restricted access can only
+         * do it where the policy sends directly, since a draft can't retract.
          * @param {Object} params
          * @param {string} params.id - The message's id
          * @param {string} [params.conversation] - A JID, or a contact's name. Without it, the
          *  message is looked for in every conversation.
          * @param {import('./types').Client} client
-         * @returns {Promise<{ message: import('./types').MessageDTO }>}
+         * @returns {Promise<import('./types').SendResult>}
          */
         async 'messages.retract'({ id, conversation }, client) {
-            if (client.access === 'restricted') throw ownMessagesOnly('retract');
-
             const jid =
                 conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
-            const message = await findOwn(_converse, id, jid, 'retract');
-            if (message.isRetracted()) {
-                throw new RPCError(ERRORS.INVALID_PARAMS, `Message "${id}" has already been retracted.`);
-            }
-            if (!api.connection.connected()) throw notConnected();
+            const found = await findTarget(_converse, id, jid);
+            const to = found.collection.chatbox.get('jid');
+            const retract = async (routing) => {
+                const message = ownedBy(found, id, 'retract');
+                if (message.isRetracted()) {
+                    throw new RPCError(ERRORS.INVALID_PARAMS, `Message "${id}" has already been retracted.`);
+                }
+                if (!api.connection.connected()) throw notConnected();
 
-            const chatbox = message.collection.chatbox;
-            const target = getIDs(message, ownJID())[0];
-            await chatbox.retractOwnMessage(message);
-            if (!message.get('retracted')) {
-                // A room that doesn't answer in time has the retraction undone.
-                throw new RPCError(
-                    ERRORS.INTERNAL_ERROR,
-                    `The room didn't confirm the retraction of "${id}", so it may not have happened. Try again.`,
-                );
+                const chatbox = message.collection.chatbox;
+                const target = getIDs(message, ownJID())[0];
+                await chatbox.retractOwnMessage(message);
+                if (!message.get('retracted')) {
+                    // A room that doesn't answer in time has the retraction undone.
+                    throw new RPCError(
+                        ERRORS.INTERNAL_ERROR,
+                        `The room didn't confirm the retraction of "${id}", so it may not have happened. Try again.`,
+                    );
+                }
+                audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'retract', target, ...routing });
+                return { outcome: 'sent', message: toMessageDTO(message, to, ownJID()) };
+            };
+            if (client.access === 'restricted') {
+                return routeRestricted(client, to, { direct: retract, cannot_draft: ownMessagesOnly('retract') });
             }
-            const to = chatbox.get('jid');
-            audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'retract', target });
-            return { message: toMessageDTO(message, to, ownJID()) };
+            return retract();
         },
 
         /**
          * Reacts to a message with an emoji (XEP-0444), keeping the reactions
-         * we gave it before. At restricted access, the reaction is a draft for
-         * the owner to give, held to the send policy like a message.
+         * we gave it before. Restricted access reacts as the policy routes it:
+         * directly, or as a draft for the owner to give.
          * @param {Object} params
          * @param {string} params.id - The message's id
          * @param {string} params.emoji - An emoji, or its shortname such as ":thumbsup:"
          * @param {string} [params.conversation] - A JID, or a contact's name. Without it, the
          *  message is looked for in every conversation.
-         * @param {boolean} [params.remove] - Withdraw this reaction instead. Full access only.
+         * @param {boolean} [params.remove] - Withdraw this reaction instead. A draft can't withdraw one.
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>} When sent, the message reacted to
          */
         async 'messages.react'({ id, emoji, conversation, remove = false }, client) {
             const reaction = await toEmoji(_converse, emoji);
-            if (remove && client.access === 'restricted') {
-                throw new RPCError(
-                    ERRORS.ACCESS_DENIED,
-                    "Restricted access can't remove reactions: its reactions are drafts, which the owner gives " +
-                        "or doesn't.",
-                );
-            }
             const jid =
                 conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
             const message = await findTarget(_converse, id, jid);
             const chatbox = message.collection.chatbox;
             const to = chatbox.get('jid');
-            if (client.access === 'restricted') {
-                return draft(client, { to, body: reaction, reaction_to: message });
-            }
-            if (!api.connection.connected()) throw notConnected();
+            const react = async (routing) => {
+                if (!api.connection.connected()) throw notConnected();
 
-            const mine = message.get('reactions')?.[u.reactions.getOwnReactionJID(chatbox)] ?? [];
-            const emojis = remove ? mine.filter((e) => e !== reaction) : [...new Set([...mine, reaction])];
-            await api.reactions.send(message, emojis);
-            const target = getIDs(message, ownJID())[0];
-            audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'react', target });
-            return { outcome: 'sent', message: toMessageDTO(message, to, ownJID()) };
+                const mine = message.get('reactions')?.[u.reactions.getOwnReactionJID(chatbox)] ?? [];
+                const emojis = remove ? mine.filter((e) => e !== reaction) : [...new Set([...mine, reaction])];
+                await api.reactions.send(message, emojis);
+                const target = getIDs(message, ownJID())[0];
+                audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'react', target, ...routing });
+                return { outcome: 'sent', message: toMessageDTO(message, to, ownJID()) };
+            };
+            if (client.access === 'restricted') {
+                return routeRestricted(client, to, {
+                    direct: react,
+                    draft: remove
+                        ? undefined
+                        : (routing) => draft(client, { to, body: reaction, reaction_to: message }, routing),
+                    cannot_draft: new RPCError(
+                        ERRORS.ACCESS_DENIED,
+                        "Restricted access can't remove reactions: its reactions are drafts, which the owner gives " +
+                            "or doesn't.",
+                    ),
+                });
+            }
+            return react();
         },
     };
 
     /**
-     * An agent never sends to anyone directly. Its send becomes a draft, whose
-     * text goes to the owner, if the policy lets it through.
+     * Routes a restricted client's send to a contact or a room. The policy
+     * picks the route. A refusal is audited and returned as the result. Each
+     * route's callback gets the routing to record in the audit log.
+     * @param {import('./types').Client} client
+     * @param {string} to - The bare JID of the conversation
+     * @param {Object} how
+     * @param {(routing: import('./types').Routing) => Promise<import('./types').SendResult>} how.direct - Sends it from the account
+     * @param {(routing: import('./types').Routing) => Promise<import('./types').SendResult>} [how.draft] - Queues it for the owner. Absent where a draft can't carry the send.
+     * @param {Error} how.cannot_draft - Thrown where the send would be a draft, but it can't be one
+     * @returns {Promise<import('./types').SendResult>}
+     */
+    async function routeRestricted(client, to, { direct, draft: queue, cannot_draft }) {
+        const room = await api.rooms.get(to);
+        if (room && !room.isEntered()) throw notJoined(to);
+        const verdict = policy.admit(to, { room: !!room });
+        if (!verdict.allowed) {
+            audit.record({ consumer: client.consumer, to, mode, outcome: 'refused', rule: verdict.rule });
+            return { outcome: 'refused', rule: verdict.rule, message: verdict.message };
+        }
+        const routing = { route: verdict.route, mode };
+        if (verdict.route === 'direct') return direct(routing);
+        if (!queue) throw cannot_draft;
+        return queue(routing);
+    }
+
+    /**
+     * A restricted send that the policy routes to the owner: its text goes to
+     * the owner, who sends it or doesn't.
      * @param {import('./types').Client} client
      * @param {Object} send
      * @param {string} send.to - Bare JID
      * @param {string} send.body - For a reaction, the emoji
      * @param {import('@converse/headless').Message} [send.reply_to]
      * @param {import('@converse/headless').Message} [send.reaction_to]
+     * @param {import('./types').Routing} routing
      * @returns {Promise<import('./types').SendResult>}
      */
-    async function draft(client, { to, body, reply_to, reaction_to }) {
-        const room = await api.rooms.get(to);
-        if (room && !room.isEntered()) throw notJoined(room.get('jid'));
-        const verdict = room ? policy.admitRoom(to) : policy.admit(to);
-        if (!verdict.allowed) {
-            audit.record({ consumer: client.consumer, to, outcome: 'refused', rule: verdict.rule });
-            return { outcome: 'refused', rule: verdict.rule, message: verdict.message };
-        }
+    async function draft(client, { to, body, reply_to, reaction_to }, routing) {
         const target_model = reply_to ?? reaction_to;
         const target = target_model ? toMessageDTO(target_model, to, ownJID()) : null;
         /** @type {import('./types').DraftAction} */
@@ -248,7 +294,7 @@ export function messageMethods(_converse, { policy, audit, drafts, events, owner
             drafts.remove(added.id);
             throw e;
         }
-        audit.record({ consumer: client.consumer, to, outcome: 'draft', draft: added.id });
+        audit.record({ consumer: client.consumer, to, outcome: 'draft', draft: added.id, ...routing });
         events.publishDraft('queued', added);
         return { outcome: 'draft', draft_id: added.id };
     }
@@ -306,7 +352,15 @@ async function toEmoji(_converse, emoji) {
  * @param {string} verb - What's to be done to it, for the error message
  */
 export async function findOwn(_converse, id, jid, verb) {
-    const message = await findTarget(_converse, id, jid);
+    return ownedBy(await findTarget(_converse, id, jid), id, verb);
+}
+
+/**
+ * @param {import('@converse/headless').Message} message - Found by the id given
+ * @param {string} id
+ * @param {string} verb
+ */
+function ownedBy(message, id, verb) {
     if (message.get('sender') !== 'me') {
         throw new RPCError(
             ERRORS.INVALID_PARAMS,
@@ -317,7 +371,8 @@ export async function findOwn(_converse, id, jid, verb) {
 }
 
 /**
- * Restricted access sends nothing itself, so it has no sent messages of its own to act on.
+ * A draft can't correct, retract or remove a reaction, so where the policy
+ * would make a restricted send a draft, these are refused instead.
  * @param {string} verb
  */
 export function ownMessagesOnly(verb) {
@@ -329,8 +384,8 @@ export function ownMessagesOnly(verb) {
 }
 
 /**
- * Sends a message from the account. Restricted connections never reach this
- * for a recipient other than the owner: their sends become drafts.
+ * Sends a message from the account. Restricted connections only reach this
+ * where the policy routes a send directly.
  * @param {import('@converse/headless').ConversePrivateGlobal} _converse
  * @param {string} jid - Bare JID
  * @param {string} body

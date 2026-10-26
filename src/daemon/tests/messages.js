@@ -343,18 +343,17 @@ describe('Messages in a 1:1 chat', () => {
             ).rejects.toMatchObject({ code: ERRORS.INVALID_PARAMS });
         });
 
-        it('refuses a correction from restricted access, which has no sent messages of its own', async () => {
+        it('refuses a correction from restricted access to a contact the policy does not list', async () => {
             const { message } = await client.request('messages.send', { to: MERCUTIO, body: 'Mine' });
             const restricted = await daemon.connect({ access: 'restricted' });
             const before = sentStanzas().length;
             try {
-                await expect(
-                    restricted.request('messages.send', { to: MERCUTIO, body: 'x', correct: message.id }),
-                ).rejects.toMatchObject({
-                    code: ERRORS.ACCESS_DENIED,
-                    message:
-                        "Restricted access can't correct messages: its sends are drafts, which the owner sends " +
-                        "or doesn't. Draft a new message instead.",
+                expect(
+                    await restricted.request('messages.send', { to: MERCUTIO, body: 'x', correct: message.id }),
+                ).toEqual({
+                    outcome: 'refused',
+                    rule: 'allowlist',
+                    message: expect.stringContaining('"policy.allow"'),
                 });
             } finally {
                 restricted.close();
@@ -403,7 +402,7 @@ describe('Messages in a 1:1 chat', () => {
             expect(JSON.stringify(messages)).not.toContain('A secret');
         });
 
-        it("refuses to retract someone else's message, or one from restricted access", async () => {
+        it("refuses to retract someone else's message, at either access level", async () => {
             await expect(
                 client.request('messages.retract', { id: 'r1-origin', conversation: BENVOLIO }),
             ).rejects.toMatchObject({ code: ERRORS.INVALID_PARAMS });
@@ -421,7 +420,9 @@ describe('Messages in a 1:1 chat', () => {
             const restricted = await daemon.connect({ access: 'restricted' });
             try {
                 await expect(restricted.request('messages.retract', { id: 'r1-origin' })).rejects.toMatchObject({
-                    code: ERRORS.ACCESS_DENIED,
+                    code: ERRORS.INVALID_PARAMS,
+                    message:
+                        'Message "r1-origin" was sent by someone else, and only our own messages can be retracted.',
                 });
             } finally {
                 restricted.close();

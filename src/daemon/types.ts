@@ -17,8 +17,27 @@ export type Paths = {
  */
 export type Access = 'full' | 'restricted';
 
+/**
+ * How the account acts. "owner_only": restricted sends are drafts for the owner,
+ * and direct only to the owner. "bot": restricted sends also go out directly to
+ * the rooms and contacts the policy lists. "as_user": acting with the user's own
+ * credentials, which the daemon doesn't implement yet.
+ */
+export type Mode = 'owner_only' | 'bot' | 'as_user';
+
+/**
+ * How a restricted send went: sent by the account itself, or queued for the owner.
+ */
+export type Route = 'direct' | 'draft';
+
+/**
+ * Where a restricted send went, as recorded in the audit log.
+ */
+export type Routing = { route: Route; mode: Mode };
+
 export type Policy = {
     allow: string[]; // Bare JIDs that restricted sends may be drafted for
+    direct: string[]; // Bare JIDs that restricted sends may go to directly, in "bot" mode
     rooms: string[]; // Bare JIDs of rooms that restricted access may send to, and join or leave
     rate_limit: {
         per_conversation: number; // Restricted sends to one contact per window
@@ -37,6 +56,7 @@ export type Config = {
     resource: string;
     consumer: string; // The name a client identifies itself by unless told otherwise
     access: Access; // The level the CLI connects at
+    mode: Mode; // How the account acts, see Mode
     policy: Policy;
     settings: Record<string, unknown>; // Passed through to converse.initialize
     paths: Paths;
@@ -161,6 +181,8 @@ export type AuditEntry = {
     rule?: string; // For a refusal
     action?: 'reply' | 'correct' | 'retract' | 'react'; // For a send that acts on another message
     target?: string; // The id of the message acted on
+    mode?: Mode; // For a restricted send, or a refusal of one
+    route?: Route; // For a restricted send that was sent or drafted
 };
 
 export type Hello = {

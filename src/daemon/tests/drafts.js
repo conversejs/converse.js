@@ -111,7 +111,15 @@ describe('Drafts', () => {
             },
         ]);
         expect(audit()).toEqual([
-            { time: expect.any(String), consumer: 'claude', to: JULIET, outcome: 'draft', draft: 'd1' },
+            {
+                time: expect.any(String),
+                consumer: 'claude',
+                to: JULIET,
+                outcome: 'draft',
+                draft: 'd1',
+                route: 'draft',
+                mode: 'owner_only',
+            },
         ]);
     });
 

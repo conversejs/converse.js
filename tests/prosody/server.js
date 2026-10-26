@@ -58,17 +58,25 @@ export async function start() {
         return false;
     }
     await docker(
-        'run',
-        '--detach',
+        'create',
         '--rm',
         '--name',
         CONTAINER,
         '--publish',
         `127.0.0.1:${PORT}:5280`,
-        '--volume',
-        `${CONFIG}:/etc/prosody/prosody.cfg.lua:ro`,
+        '--env',
+        `CONVERSE_PROSODY_HTTP_EXTERNAL_URL=http://127.0.0.1:${PORT}/`,
         IMAGE,
     );
+    try {
+        // Copying works from nested git worktrees too; a bind mount would have
+        // to be visible at the same path to the Docker daemon host.
+        await docker('cp', CONFIG, `${CONTAINER}:/etc/prosody/prosody.cfg.lua`);
+        await docker('start', CONTAINER);
+    } catch (e) {
+        await docker('rm', '--force', CONTAINER).catch(() => '');
+        throw e;
+    }
     await waitUntilReady();
     return true;
 }

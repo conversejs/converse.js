@@ -27,6 +27,7 @@ const TIMED_OUT = Symbol('timed out');
  *  matches each word of the text case-insensitively in a message's body. Defaults to true.
  * @param {'answer'|'error'|'silent'} [options.mam_mode] - How MAM queries are answered: with the
  *  archive, with an error, or not at all (so that they time out). Can be changed with `setMAMMode`.
+ * @param {{ jid: string, put_url: string, get_url: string, max_file_size: number }} [options.upload_service]
  */
 export function serve({
     connection,
@@ -36,6 +37,7 @@ export function serve({
     archive,
     mam_mode = 'answer',
     fulltext = true,
+    upload_service,
 }) {
     const bare_jid = Strophe.getBareJidFromJid(jid);
     const domain = Strophe.getDomainFromJid(jid);
@@ -57,13 +59,28 @@ export function serve({
         const disco_items = iq.querySelector(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`);
 
         if (disco_info && (to === domain || to === bare_jid)) {
-            const [identity, features] =
+            const [identity, advertised_features] =
                 to === domain ? [['server', 'im'], server_features] : [['account', 'registered'], account_features];
+            let features = advertised_features;
+            if (to === domain && upload_service) features = [...features, Strophe.NS.DISCO_ITEMS];
             return stx`
                 <iq xmlns="jabber:client" type="result" from="${to}" to="${jid}" id="${id}">
                     <query xmlns="${Strophe.NS.DISCO_INFO}">
                         <identity category="${identity[0]}" type="${identity[1]}"/>
                         ${features.map((f) => stx`<feature var="${f}"/>`)}
+                    </query>
+                </iq>`;
+        }
+        if (disco_info && to === upload_service?.jid) {
+            return stx`
+                <iq xmlns="jabber:client" type="result" from="${to}" to="${jid}" id="${id}">
+                    <query xmlns="${Strophe.NS.DISCO_INFO}">
+                        <identity category="store" type="file" name="HTTP File Upload"/>
+                        <feature var="${Strophe.NS.HTTPUPLOAD}"/>
+                        <x xmlns="jabber:x:data" type="result">
+                            <field var="FORM_TYPE" type="hidden"><value>${Strophe.NS.HTTPUPLOAD}</value></field>
+                            <field var="max-file-size"><value>${upload_service.max_file_size}</value></field>
+                        </x>
                     </query>
                 </iq>`;
         }
@@ -88,7 +105,19 @@ export function serve({
         if (disco_items && to === domain) {
             return stx`
                 <iq xmlns="jabber:client" type="result" from="${to}" to="${jid}" id="${id}">
-                    <query xmlns="${Strophe.NS.DISCO_ITEMS}"/>
+                    <query xmlns="${Strophe.NS.DISCO_ITEMS}">
+                        ${upload_service ? stx`<item jid="${upload_service.jid}" name="HTTP File Upload"/>` : ''}
+                    </query>
+                </iq>`;
+        }
+        const slot_request = iq.querySelector(`request[xmlns="${Strophe.NS.HTTPUPLOAD}"]`);
+        if (slot_request && to === upload_service?.jid) {
+            return stx`
+                <iq xmlns="jabber:client" type="result" from="${to}" to="${jid}" id="${id}">
+                    <slot xmlns="${Strophe.NS.HTTPUPLOAD}">
+                        <put url="${upload_service.put_url}"/>
+                        <get url="${upload_service.get_url}"/>
+                    </slot>
                 </iq>`;
         }
         const mam = iq.querySelector(`query[xmlns="${NS_MAM}"]`);
@@ -115,8 +144,7 @@ export function serve({
      * @param {string} iq_id
      */
     function answerMAM(query, iq_id) {
-        const field = (name) =>
-            query.querySelector(`x field[var="${name}"] value`)?.textContent ?? undefined;
+        const field = (name) => query.querySelector(`x field[var="${name}"] value`)?.textContent ?? undefined;
         const rsm = (name) => query.querySelector(`set[xmlns="${NS_RSM}"] > ${name}`)?.textContent;
         const [with_jid, start, end] = [field('with'), field('start'), field('end')];
         const words = (field(`{${NS_FULLTEXT}}fulltext`) ?? '').toLowerCase().split(/\s+/).filter(Boolean);
@@ -130,7 +158,11 @@ export function serve({
                 (!end || m.time <= end) &&
                 words.every((word) => m.body.toLowerCase().includes(word)),
         );
-        if (before) matches = matches.slice(0, matches.findIndex((m) => m.id === before));
+        if (before)
+            matches = matches.slice(
+                0,
+                matches.findIndex((m) => m.id === before),
+            );
         // Without an `after`, every query here pages backwards: the newest `max`.
         const page = matches.slice(-max);
 

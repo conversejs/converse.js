@@ -46,6 +46,7 @@ describe('Event subscriptions on a real Prosody', () => {
                 direction: 'incoming',
                 time: expect.any(String),
                 body,
+                encryption: null,
                 reply_to: null,
                 edited: null,
                 retracted: null,

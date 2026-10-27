@@ -132,6 +132,24 @@ describe('Searching messages', () => {
             ]);
             expect(ids(await search({ query: 'cafe lunch' }))).toEqual([]);
         });
+
+        it("searches an encrypted message's decrypted text, not the fallback body", async () => {
+            await start({ fulltext: false, archive: [] });
+            const chat = await daemon.api.chats.get(JULIET, {}, true);
+            await chat.messages.fetched;
+            await chat.messages.create({
+                type: 'chat',
+                from: JULIET,
+                msgid: 'encrypted-1',
+                time: new Date().toISOString(),
+                is_encrypted: true,
+                body: 'This is an OMEMO encrypted message which your client doesn’t seem to support.',
+                plaintext: 'Meet me at the balcony',
+            });
+
+            expect(ids(await search({ query: 'balcony' }))).toEqual(['encrypted-1']);
+            expect(ids(await search({ query: 'OMEMO' }))).toEqual([]);
+        });
     });
 
     describe('input', () => {

@@ -68,6 +68,7 @@ describe('Reading history', () => {
                 direction: 'incoming',
                 time: new Date(Date.UTC(2026, 9, 1, 10, 4 + i)).toISOString(),
                 body: `Message ${5 + i}`,
+                encryption: null,
                 reply_to: null,
                 edited: null,
                 retracted: null,

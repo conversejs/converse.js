@@ -85,6 +85,7 @@ describe('Inbox and conversations', () => {
             direction: 'incoming',
             time: expect.any(String),
             body: 'one',
+            encryption: null,
             reply_to: null,
             edited: null,
             retracted: null,

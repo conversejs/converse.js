@@ -82,6 +82,28 @@ export type ConversationDTO = {
     name: string | null; // The roster name for a contact, or the room's name for a room
 };
 
+// How a message was encrypted. Only OMEMO (XEP-0384) so far.
+export type Encryption = {
+    scheme: 'omemo';
+    status: 'decrypted' | 'undecryptable';
+    error: string | null; // Why it couldn't be decrypted, for the user to read
+};
+
+// One of a conversation's OMEMO devices, or one of the account's own.
+export type DeviceDTO = {
+    id: string;
+    this_device: boolean; // Whether this is the daemon's own device
+    active: boolean; // Whether messages are encrypted for it
+    trust: 'trusted' | 'untrusted' | 'undecided';
+    fingerprint: string | null; // Hex of its identity key, or null if its bundle couldn't be fetched
+};
+
+export type DeviceList = {
+    conversation: string; // Bare JID
+    encrypted: boolean; // Whether OMEMO is on for the conversation, so that sends are encrypted
+    devices: DeviceDTO[];
+};
+
 export type MessageDTO = {
     // The server's stanza-id (XEP-0359) if it assigned one, else the
     // origin-id, else the stanza's id attribute. Commands that target a
@@ -97,6 +119,9 @@ export type MessageDTO = {
     // Untrusted: written by whoever sent the message. A reply's quote of what
     // it answers, kept for clients that don't know replies, is left out.
     body: string | null;
+    // How the message was encrypted, or null if it wasn't. An undecryptable
+    // message has a null body, and its error says why.
+    encryption: Encryption | null;
     // The message this one replies to (XEP-0461): its id as above if we hold
     // it, else the id the reply gave.
     reply_to: string | null;

@@ -478,7 +478,10 @@ describe('The OMEMO module', function () {
             );
 
             expect(view.model.get('omemo_supported')).toBe(false);
-            expect(mock.composerText(view)).toBe('This message will be encrypted');
+            // The failed message holds the text, so the composer is cleared.
+            expect(mock.composerText(view)).toBe('');
+            const failed = view.model.messages.findWhere({ send_status: 'failed' });
+            expect(failed.get('plaintext')).toBe('This message will be encrypted');
         }),
     );
 

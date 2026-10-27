@@ -4,6 +4,7 @@
  */
 import { _converse, api, converse, log, u } from '@converse/headless';
 import { __ } from 'i18n';
+import { alertSendError } from 'plugins/omemo-views/utils.js';
 import { buildReactionFallbackBody } from './fallback.js';
 const { Strophe, sizzle, stx } = converse.env;
 
@@ -116,7 +117,8 @@ export async function sendReaction(message, emoji) {
         try {
             await sendEncryptedReaction(chatbox, message, msg_id, new_emojis);
         } catch (e) {
-            // api.omemo.send already alerted the user; undo the optimistic update.
+            alertSendError(/** @type {Error} */ (e));
+            // Undo the optimistic update.
             log.error(e);
             updateMessageReactions(message, previous_emojis);
         }

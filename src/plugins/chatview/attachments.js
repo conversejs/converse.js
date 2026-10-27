@@ -5,6 +5,7 @@
  */
 import { _converse, api, converse } from '@converse/headless';
 import { __ } from 'i18n';
+import { alertSendError } from 'plugins/omemo-views/utils.js';
 
 const { Strophe } = converse.env;
 
@@ -97,7 +98,9 @@ export async function shareLocation(model) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-                    model.sendMessage({ body: `geo:${latitude.toFixed(6)},${longitude.toFixed(6)}` });
+                    model
+                        .sendMessage({ body: `geo:${latitude.toFixed(6)},${longitude.toFixed(6)}` })
+                        .catch(alertSendError);
                     resolve();
                 },
                 (error) => {

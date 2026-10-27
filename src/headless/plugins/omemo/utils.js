@@ -313,40 +313,32 @@ export async function generateFingerprint(device) {
 }
 
 /**
- * Surface a user-facing alert for a failed encrypted send and re-throw, so the
- * send pipeline (the `createMessageStanza` handler) aborts. Always throws.
- * @param {Error|errors.IQError|errors.UserFacingError} e
+ * Attaches a stable error code to a failed encrypted send and re-throws it, so
+ * the send pipeline aborts and the caller gets a coded rejection. Headless holds
+ * no user-facing text: each client maps the code to its own words.
+ *
+ * A failed key fetch also marks the contact as not supporting OMEMO, so that the
+ * next send doesn't retry the same failure.
+ * @param {Error|errors.IQError|errors.CodedError} e
  * @param {import('../../shared/chatbox.js').default} chat
  * @returns {never}
  */
 export function handleMessageSendError(e, chat) {
-    const { __ } = _converse;
+    // A value that isn't an Error can't carry a code, so it's wrapped to get one.
+    if (!(e instanceof Error)) throw new errors.CodedError('omemo-encrypt-failed', String(e));
+    const coded = /** @type {Error & {code?: string}} */ (e);
     if (e instanceof errors.IQError) {
         chat.save('omemo_supported', false);
-
-        const err_msgs = [];
         if (sizzle(`presence-subscription-required[xmlns="${Strophe.NS.PUBSUB_ERROR}"]`, e.iq).length) {
-            err_msgs.push(
-                __(
-                    "Sorry, we're unable to send an encrypted message because %1$s " +
-                        'requires you to be subscribed to their presence in order to see their OMEMO information',
-                    e.iq.getAttribute('from'),
-                ),
-            );
+            coded.code = 'omemo-subscription-required';
         } else if (sizzle(`remote-server-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]`, e.iq).length) {
-            err_msgs.push(
-                __(
-                    "Sorry, we're unable to send an encrypted message because the remote server for %1$s could not be found",
-                    e.iq.getAttribute('from'),
-                ),
-            );
+            coded.code = 'omemo-remote-server-not-found';
         } else {
-            err_msgs.push(__('Unable to send an encrypted message due to an unexpected error.'));
-            err_msgs.push(e.iq.outerHTML);
+            coded.code = 'omemo-key-fetch-failed';
         }
-        api.alert('error', __('Error'), err_msgs);
-    } else if (e instanceof errors.UserFacingError) {
-        api.alert('error', __('Error'), [e.message]);
+    } else if (!(e instanceof errors.CodedError)) {
+        // Anything else is an unexpected encryption failure. A CodedError was classified where it was thrown.
+        coded.code = 'omemo-encrypt-failed';
     }
     throw e;
 }
@@ -466,7 +458,7 @@ function isOMEMOMUCEligible(chatroom) {
  * A bundle-fetch error is "actionable" when it tells the user something they
  * can fix and applies to the whole contact/server rather than a single stale
  * device: presence-subscription-required or remote-server-not-found. These must
- * abort the send and be surfaced; any other (benign) per-device failure is
+ * abort the send and carry their code; any other (benign) per-device failure is
  * dropped silently so it only loses that one device.
  * @param {unknown} e
  * @returns {boolean}
@@ -490,9 +482,6 @@ function isActionableBundleError(e) {
  * @returns {Promise<{legacy: import('./device.js').default[], v2: import('./device.js').default[]}>}
  */
 async function getBundlesAndBuildSessions(chatbox) {
-    const { __ } = _converse;
-    const no_devices_err = __('Sorry, no devices found to which we can send an OMEMO encrypted message.');
-
     let legacy_devices = [];
     let v2_devices = [];
 
@@ -500,8 +489,9 @@ async function getBundlesAndBuildSessions(chatbox) {
         // Defense-in-depth: OMEMO activation is already gated on this upstream
         // (checkOMEMOSupported), but a room can flip to anonymous mid-session.
         if (!isOMEMOMUCEligible(chatbox)) {
-            throw new errors.UserFacingError(
-                __('Cannot use OMEMO in this groupchat — it must be non-anonymous and members-only.'),
+            throw new errors.CodedError(
+                'omemo-groupchat-not-eligible',
+                'Cannot use OMEMO in this groupchat: it must be non-anonymous and members-only',
             );
         }
         // Restrict recipients to the member/admin/owner affiliation lists, per
@@ -545,7 +535,7 @@ async function getBundlesAndBuildSessions(chatbox) {
         ]);
 
         if (their_legacy.length === 0 && their_v2.length === 0) {
-            throw new errors.UserFacingError(no_devices_err);
+            throw new errors.CodedError('no-omemo-devices', 'No OMEMO devices found to encrypt for');
         }
 
         legacy_devices = [...(own_legacy_list?.devices.models ?? []), ...their_legacy.models];
@@ -606,7 +596,7 @@ async function getBundlesAndBuildSessions(chatbox) {
 
     if (legacy_devices.length === 0 && v2_devices.length === 0) {
         // Nothing reachable and no actionable server error to explain why.
-        throw new errors.UserFacingError(no_devices_err);
+        throw new errors.CodedError('no-omemo-devices', 'No OMEMO devices found to encrypt for');
     }
     return { legacy: legacy_devices, v2: v2_devices };
 }
@@ -1049,8 +1039,8 @@ export async function getEncryptedElements(chat, plaintext, extensions = []) {
  * Handler for the `createMessageStanza` hook: for an encrypted outgoing chat
  * message, attach the OMEMO `<encrypted>` element(s) (plus store + EME hints) to
  * the stanza that was built from the Message model. Non-encrypted messages pass
- * through untouched. A send failure is surfaced to the user via
- * {@link handleMessageSendError} (which re-throws to abort the send).
+ * through untouched. A send failure is classified by {@link handleMessageSendError},
+ * which re-throws the coded error to abort the send.
  *
  * @param {import('../../shared/chatbox').default} chat
  * @param {import('../../shared/types').MessageAndStanza} data
@@ -1076,7 +1066,7 @@ export async function createMessageStanzaHandler(chat, data) {
         stanza.cnode(stx`<encryption xmlns="${Strophe.NS.EME}" namespace="${eme_ns}"/>`).root();
         return { message, stanza };
     } catch (e) {
-        handleMessageSendError(e, chat); // surfaces a user-facing alert and re-throws
+        handleMessageSendError(e, chat); // attaches the error code and re-throws
     }
 }
 

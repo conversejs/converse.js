@@ -15,6 +15,7 @@ import tplRetraction from './templates/retraction.js';
 import tplSpinner from 'templates/spinner.js';
 import { ObservableElement } from 'shared/components/observable.js';
 import { __ } from 'i18n';
+import { alertSendError } from 'plugins/omemo-views/utils.js';
 
 const { Strophe } = converse.env;
 const { SUCCESS } = constants;
@@ -167,6 +168,32 @@ export default class Message extends ObservableElement {
                 'url_preview_transition': 'fade-in',
             });
         }
+    }
+
+    async onRetrySendClicked() {
+        try {
+            await this.model_with_messages.resendFailedMessage(this.model);
+        } catch (e) {
+            alertSendError(/** @type {Error} */ (e));
+        }
+    }
+
+    async onSendUnencryptedClicked() {
+        const confirmed = await api.confirm(__('Send without encryption?'), [
+            __(
+                'This message will be sent unencrypted. The server, and anyone else who can read the conversation, can read it.',
+            ),
+        ]);
+        if (!confirmed) return;
+        try {
+            await this.model_with_messages.resendFailedMessageUnencrypted(this.model);
+        } catch (e) {
+            alertSendError(/** @type {Error} */ (e));
+        }
+    }
+
+    onDiscardSendClicked() {
+        this.model_with_messages.discardFailedMessage(this.model);
     }
 
     async onRetryClicked() {

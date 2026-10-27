@@ -9,9 +9,9 @@ declare namespace _default {
          * recipients support, without persisting a Message model. This is the
          * encrypted counterpart of a raw `api.send`.
          *
-         * On failure (e.g. no reachable devices, or a presence/server error) a
-         * user-facing alert is shown and the error is re-thrown — the same way an
-         * encrypted chat-message send fails — so callers can roll back any
+         * On failure (e.g. no reachable devices, or a presence/server error) the
+         * promise rejects with an error that carries a `code`, the same way an
+         * encrypted chat-message send fails, so callers can roll back any
          * optimistic state. Awaits the encryption; resolves once the stanza is
          * handed to `api.send`.
          *

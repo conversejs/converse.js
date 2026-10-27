@@ -17,6 +17,7 @@ import tplMessageForm from './templates/message-form.js';
 import { parseMessageForCommands } from './utils.js';
 import { TypeaheadController } from 'shared/rich-composer/typeahead.js';
 import { EMOJI_SOURCE } from 'shared/rich-composer/emoji-source.js';
+import { alertSendError } from 'plugins/omemo-views/utils.js';
 
 import './styles/message-form.scss';
 import 'shared/rich-composer/styles/typeahead.scss';
@@ -353,8 +354,16 @@ export default class MessageForm extends CustomElement {
         /** @type {EmojiDropdown} */ (this.querySelector('converse-emoji-dropdown'))?.hide();
 
         const is_command = await parseMessageForCommands(this.model, message_text);
-        const message = is_command ? null : await this.model.sendMessage({ 'body': message_text, spoiler_hint });
-        if (is_command || message) {
+        let message = null;
+        let failed = false;
+        try {
+            message = is_command ? null : await this.model.sendMessage({ 'body': message_text, spoiler_hint });
+        } catch (e) {
+            // The failed message keeps the text in the conversation, where the user can retry or discard it.
+            failed = true;
+            alertSendError(/** @type {Error} */ (e));
+        }
+        if (is_command || message || failed) {
             hint_el.value = '';
             this.clearInput();
             this.model.save({ 'draft': '' });

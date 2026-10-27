@@ -1,11 +1,16 @@
 export class MethodNotImplementedError extends Error {
 }
-export class UserFacingError extends Error {
+/**
+ * An error with a stable `code`. Clients map the code to their own text, so the
+ * message is a developer aid only and nothing shows it to users.
+ */
+export class CodedError extends Error {
     /**
+     * @param {string} code
      * @param {string} message
      */
-    constructor(message: string);
-    user_facing: boolean;
+    constructor(code: string, message: string);
+    code: string;
 }
 export class IQError extends Error {
     /**

@@ -2,6 +2,20 @@ import { _converse, api, converse } from '@converse/headless';
 import { __ } from 'i18n';
 
 /**
+ * Tells the user that the server didn't return their bookmarks in time.
+ * @param {Error & {code?: string}} e
+ */
+export function alertBookmarksFetchError(e) {
+    if (e.code !== 'bookmarks-timeout') return;
+    api.alert('error', __('Timeout Error'), [
+        __(
+            'The server did not return your bookmarks within the allowed time. ' +
+                'You can reload the page to request them again.',
+        ),
+    ]);
+}
+
+/**
  * @param {Event} ev
  */
 export async function removeBookmarkViaEvent(ev) {

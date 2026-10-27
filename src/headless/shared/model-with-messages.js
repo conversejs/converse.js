@@ -424,11 +424,22 @@ export default function ModelWithMessages(BaseModel) {
 
         /**
          * Responsible for sending off a text message inside an ongoing chat conversation.
+         *
+         * If the send fails, the promise rejects with the error, which has a `code` that
+         * identifies the reason. The message is kept in the conversation with `send_status`
+         * set to `failed` and `send_error_code` set to that code. Nothing resends it on its
+         * own. Call {@link resendFailedMessage}, {@link resendFailedMessageUnencrypted} or
+         * {@link discardFailedMessage} to act on it.
          * @param {Object} [attrs] - A map of attributes to be saved on the message
          * @returns {Promise<BaseMessage>}
+         * @throws {Error} When the message could not be sent. Its `code` gives the reason.
          * @example
          *  const chat = api.chats.get('buddy1@example.org');
-         *  chat.sendMessage({'body': 'hello world'});
+         *  try {
+         *      await chat.sendMessage({'body': 'hello world'});
+         *  } catch (e) {
+         *      // e.code is set, for example 'no-omemo-devices'
+         *  }
          */
         async sendMessage(attrs) {
             await api.emojis.initialize();
@@ -466,14 +477,7 @@ export default function ModelWithMessages(BaseModel) {
                 message = await this.createMessage(attrs);
             }
 
-            try {
-                const stanza = await this.createMessageStanza(message);
-                api.send(stanza);
-            } catch (e) {
-                message.destroy();
-                log.error(e);
-                return;
-            }
+            await this.#sendStoredMessage(message);
 
             /**
              * Triggered when a message is being sent out
@@ -485,6 +489,84 @@ export default function ModelWithMessages(BaseModel) {
              */
             api.trigger('sendMessage', { chatbox: this, message });
             return message;
+        }
+
+        /**
+         * Builds and sends the stanza for a stored message. On failure the message
+         * is kept, marked as failed with the error's code, and the error is re-thrown.
+         * @param {BaseMessage} message
+         */
+        async #sendStoredMessage(message) {
+            try {
+                const stanza = await this.createMessageStanza(message);
+                api.send(stanza);
+            } catch (e) {
+                const { code, iq } = /** @type {{code?: string, iq?: Element}} */ (e);
+                // The sender of a failed IQ is the JID that the reason names.
+                message.save({
+                    send_status: 'failed',
+                    send_error_code: code ?? 'send-failed',
+                    send_error_from: iq?.getAttribute('from') ?? undefined,
+                });
+                log.error(e);
+                throw e;
+            }
+        }
+
+        /**
+         * Sends a failed message again, encrypted if the conversation is encrypted.
+         * Only a call from the client resends a message. Nothing resends on its own.
+         * @param {BaseMessage} message - A message whose `send_status` is `failed`.
+         * @returns {Promise<BaseMessage>}
+         */
+        async resendFailedMessage(message) {
+            this.#clearSendFailure(message);
+            await this.#sendStoredMessage(message);
+            return message;
+        }
+
+        /**
+         * Sends a failed encrypted message again in the clear. The client must only
+         * call this after the user has explicitly agreed to send it unencrypted.
+         * @param {BaseMessage} message - A failed message that was encrypted.
+         * @returns {Promise<BaseMessage>}
+         */
+        async resendFailedMessageUnencrypted(message) {
+            this.#clearSendFailure(message);
+            const encrypted = {
+                is_encrypted: message.get('is_encrypted'),
+                body: message.get('body'),
+                plaintext: message.get('plaintext'),
+            };
+            message.save({
+                is_encrypted: false,
+                body: message.get('plaintext') ?? message.get('body'),
+                plaintext: undefined,
+            });
+            try {
+                await this.#sendStoredMessage(message);
+            } catch (e) {
+                // A failed attempt stays encrypted, so that Retry doesn't send it in the clear.
+                message.save(encrypted);
+                throw e;
+            }
+            return message;
+        }
+
+        /**
+         * Removes a failed message from the history.
+         * @param {BaseMessage} message
+         */
+        discardFailedMessage(message) {
+            if (message.get('send_status') === 'failed') message.destroy();
+        }
+
+        /** @param {BaseMessage} message */
+        #clearSendFailure(message) {
+            if (message.get('send_status') !== 'failed') {
+                throw new Error('Only a failed message can be sent again');
+            }
+            message.save({ send_status: undefined, send_error_code: undefined, send_error_from: undefined });
         }
 
         /**
@@ -658,7 +740,8 @@ export default function ModelWithMessages(BaseModel) {
                     'spoiler_hint': message.get('spoiler_hint'),
                     'oob_url': message.get('oob_url'),
                 };
-                await this.sendMessage(attrs);
+                // A failed send stays in the history as a failed message, so the upload placeholder goes either way.
+                await this.sendMessage(attrs).catch((e) => log.error(e));
                 message.destroy();
             }
         }

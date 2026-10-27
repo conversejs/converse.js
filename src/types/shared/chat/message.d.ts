@@ -32,6 +32,9 @@ export default class Message extends ObservableElement {
     /** @param {MouseEvent} ev */
     onImgClick(ev: MouseEvent): void;
     onUnfurlAnimationEnd(): void;
+    onRetrySendClicked(): Promise<void>;
+    onSendUnencryptedClicked(): Promise<void>;
+    onDiscardSendClicked(): void;
     onRetryClicked(): Promise<void>;
     show_spinner: boolean;
     hasMentions(): any;

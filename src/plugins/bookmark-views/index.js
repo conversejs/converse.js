@@ -8,7 +8,7 @@ import './modals/bookmark-form.js';
 import BookmarkForm from './components/bookmark-form.js';
 import BookmarksView from './components/bookmarks-list.js';
 import { BookmarkableChatRoomView } from './mixins.js';
-import { removeBookmarkViaEvent } from './utils.js';
+import { alertBookmarksFetchError, removeBookmarkViaEvent } from './utils.js';
 
 import './styles/bookmarks.scss';
 
@@ -31,6 +31,8 @@ converse.plugins.add('converse-bookmark-views', {
         api.settings.extend({
             hide_open_bookmarks: true,
         });
+
+        api.listen.on('bookmarksFetchFailed', alertBookmarksFetchError);
 
         const exports = {
             removeBookmarkViaEvent,

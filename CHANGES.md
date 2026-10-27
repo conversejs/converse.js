@@ -2,14 +2,12 @@
 
 ## 15.0.0 (Unreleased)
 
-- feat(chatview): The panels above the message form, such as the reply preview and the off-hours warning, now share one look, with a close button in the top-right corner that Escape also triggers. Plugins can add a panel through the new `getComposerPanels` hook.
+- feat(chatview): The panels above the message form are consolidated into one component. Plugins can add a panel through the new `getComposerPanels` hook.
 - feat(chatview): The toolbar's file upload and location buttons are replaced by one paperclip, the
-  attachment button, which opens an attachment menu listing what can be attached in that chat: a
-  file, an image, your location and, with the `converse-voice-messages` plugin, a voice message.
-  Plugins add an entry through the new `getAttachmentMenuItems` hook. The `fileupload`, `location`
-  and `voice_message` keys of `visible_toolbar_buttons` now show or hide the matching entries. The
-  `converse-location-button` element and the toolbar's `show_fileupload_button` and
-  `show_location_button` properties are removed.
+  attachment button, which opens an attachment menu listing what can be attached in that chat.
+  Plugins add an entry through the new `getAttachmentMenuItems` hook.
+- feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
+- The unused `errors.UserFacingError` class is removed.
 - fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
 - #194: Full support for XEP-0115: Entity capabilities.
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
@@ -21,8 +19,7 @@
 - Full XEP-0172 User Nickname support.
 - feat: Record and send voice messages with the opt-in `converse-voice-messages` plugin. Adds the
   `max_voice_message_duration`, `voice_message_bitrate` and `voice_message_mime_type` settings,
-  and the `voice_message` key of `visible_toolbar_buttons`. The recorder is a composer panel, opened
-  from the attachment menu.
+  and the `voice_message` key of `visible_toolbar_buttons`.
 - feat: 1:1 audio calls over Jingle ([XEP-0167](https://xmpp.org/extensions/xep-0167.html)), set up with Jingle Message Initiation ([XEP-0353](https://xmpp.org/extensions/xep-0353.html)) and STUN/TURN discovery via [XEP-0215](https://xmpp.org/extensions/xep-0215.html). Adds the `call_ice_servers` setting, and the `call` key of `visible_toolbar_buttons` now shows the audio call button in 1:1 chats (on by default).
 - fix(chatview): The contact's name and status message in a chat header were painted the same
   colour as the header itself.
@@ -59,9 +56,7 @@
 - fix(vcard): Don't eagerly refetch cached vcards when a session resumes.
 - fix(vcard): Don't fetch a MUC's own vCard in response to an occupant presence.
 - refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its
-  `enableStreamManagement` connection option). The `converse-smacks` plugin is reduced to mapping
-  the existing `enable_smacks` and `smacks_max_unacked_stanzas` settings onto that option, and two
-  events: the existing `streamResumptionFailed` and the new `streamResumed`.
+  `enableStreamManagement` connection option).
 - feat(toolbar): Allow hiding the file upload button via the `fileupload` key of `visible_toolbar_buttons`
 - feat(settings): `api.settings.extend` accepts a `deep_merge` option so an object setting fills in
   defaults instead of being replaced wholesale.
@@ -73,6 +68,10 @@
 
 ### Breaking changes:
 
+`chat.sendMessage()` now rejects with an error whose `code` gives the failure reason.
+
+The `converse-location-button` element and the toolbar's `show_fileupload_button` and `show_location_button` properties are removed. See the `getAttachmentMenuItems` hook.
+ 
 The `time_format` setting has been removed. Message times are now shown relative to the present
 instead of as a configurable clock.
 

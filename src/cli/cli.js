@@ -24,6 +24,8 @@ import {
     formatMessage,
     MAX_BODY_LENGTH,
     parseSince,
+    formatDevice,
+    formatDeviceList,
 } from './format.js';
 
 /**
@@ -110,6 +112,12 @@ Commands:
                        a contact's name or JID, ignoring case
   whois <contact>      Show a contact's vCard, and each client they're connected with,
                        with the identities each client advertises
+  omemo devices <contact>  List the OMEMO devices of a contact, or of yours with your own
+                       JID: each one's trust, whether it's active, its fingerprint, and
+                       which one is this daemon. Shows whether encryption is on for them
+  omemo trust <contact> <device> <trusted|untrusted|undecided>
+                       Set how far a device is trusted. Full access only: a restricted
+                       client can read trust but never change it
   presence set <show> [message]
                        Set your availability: online, chat, away, xa or dnd, with an
                        optional status message. Restricted access needs
@@ -592,6 +600,29 @@ const COMMANDS = {
         /** @type {import('@converse/daemon/types').ContactDetails} */
         const details = await request(ctx, 'contacts.whois', { jid });
         out(options.json ? JSON.stringify(details) + '\n' : formatContactDetails(details));
+        return EXIT.OK;
+    },
+
+    async 'omemo devices'(ctx) {
+        const { options, out } = ctx;
+        const conversation = takeOne(ctx, 'contact');
+        /** @type {import('@converse/daemon/types').DeviceList} */
+        const list = await request(ctx, 'omemo.devices.list', { conversation });
+        if (options.json) {
+            out(JSON.stringify(list) + '\n');
+        } else {
+            out(formatDeviceList(list));
+        }
+        return EXIT.OK;
+    },
+
+    async 'omemo trust'(ctx) {
+        const { args, options, out } = ctx;
+        if (args.length !== 3) throw new UsageError('Expected a contact, a device id and a trust state.');
+        const [conversation, device, trust] = args;
+        /** @type {import('@converse/daemon/types').DeviceDTO} */
+        const dto = await request(ctx, 'omemo.devices.trust', { conversation, device, trust });
+        out(options.json ? JSON.stringify(dto) + '\n' : formatDevice(dto));
         return EXIT.OK;
     },
 

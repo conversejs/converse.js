@@ -4,6 +4,10 @@ export default ScheduledMessages;
  *
  * Delivery is injected so the collection stays useful to any headless client:
  * the web UI can send directly, while the daemon can reapply its policy first.
+ *
+ * A delivery handler may park a message instead of finishing it, by saving a
+ * `parked` attribute on it. A parked message is never retried and stays stored
+ * until it is cancelled.
  * @extends {Collection<ScheduledMessage>}
  */
 declare class ScheduledMessages extends Collection<ScheduledMessage> {

@@ -30,6 +30,9 @@ export const SHORT_ID_LENGTH = 8;
 export function formatMessage(message, { full = false, now = new Date(), conversation = false } = {}) {
     const time = new Date(message.time);
     const notes = [
+        message.encryption?.status === 'decrypted' && 'encrypted',
+        message.encryption?.status === 'undecryptable' &&
+            `could not be decrypted: ${message.encryption.error ?? 'no reason given'}`,
         message.reply_to && `reply to ${message.reply_to.slice(0, SHORT_ID_LENGTH)}`,
         message.edited && 'edited',
         message.retracted && 'retracted',
@@ -210,4 +213,29 @@ export function formatContactDetails(details) {
         );
     }
     return lines.join('\n') + '\n';
+}
+
+/**
+ * The devices of a conversation, one per line under a line saying whether encryption is on.
+ * @param {import('@converse/daemon/types').DeviceList} list
+ */
+export function formatDeviceList(list) {
+    const lines = [`${list.conversation}  encryption ${list.encrypted ? 'on' : 'off'}`];
+    if (!list.devices.length) lines.push('  no OMEMO devices');
+    for (const device of list.devices) lines.push('  ' + formatDevice(device).trimEnd());
+    return lines.join('\n') + '\n';
+}
+
+/**
+ * One device, on one line: its id, its trust, whether it's active, its fingerprint.
+ * @param {import('@converse/daemon/types').DeviceDTO} device
+ */
+export function formatDevice(device) {
+    const notes = [
+        device.this_device && 'this daemon',
+        !device.active && 'inactive',
+        device.fingerprint === null && 'no fingerprint yet',
+    ].filter(Boolean);
+    const fingerprint = device.fingerprint ? ` ${device.fingerprint}` : '';
+    return `${device.id}  ${device.trust}${fingerprint}${notes.length ? `  (${notes.join(', ')})` : ''}\n`;
 }

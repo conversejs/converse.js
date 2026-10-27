@@ -1,7 +1,12 @@
 import { Builder, Strophe } from 'strophe.js';
-import { Collection, Model } from '@converse/skeletor';
+import { Collection, FetchOrCreateOptions, Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
+import type { DebouncedFunc } from 'lodash';
 import BaseMessage from './message';
+import VCard from '../plugins/vcard/vcard';
+import RosterContact from '../plugins/roster/contact';
+import Profile from '../plugins/status/profile';
+import { MUCMessageAttributes } from '../plugins/muc/types';
 export type MessageAndStanza = {
     message: BaseMessage;
     stanza: Builder;
@@ -31,8 +36,101 @@ export type RSMResult = {
     first?: string;
     last?: string;
 };
-type Constructor<T = {}> = new (...args: any[]) => T;
+export type Constructor<T = {}> = new (...args: any[]) => T;
 export type ModelExtender = Constructor<Model>;
+export interface ColorAware {
+    setColor(): Promise<void>;
+    getIdentifier(): string;
+    getColor(): Promise<string>;
+    getAvatarStyle(append_style?: string): Promise<string>;
+}
+export interface VCardAware {
+    _vcard: VCard | null;
+    lazy_load_vcard: boolean;
+    readonly vcard: VCard | null;
+    getVCard(): Promise<VCard | null>;
+}
+export interface ContactAware {
+    contact: RosterContact | Profile | null;
+    rosterContactAdded: ReturnType<typeof getOpenPromise>;
+    onClosedChanged: () => Promise<void>;
+    updateContactUnreadCounter(): void;
+    setModelContact(jid: string, options?: {
+        create?: boolean;
+    }): Promise<void>;
+}
+export interface MessagesAware {
+    disable_mam: boolean;
+    notifications: Model;
+    ui: Model;
+    messages: any;
+    msg_chain: any;
+    chat_state_timeout: number;
+    debouncedPruneHistory: DebouncedFunc<() => void>;
+    initNotifications(): void;
+    initUI(): void;
+    getDisplayName(): string;
+    canPostMessages(): boolean;
+    createMessage(attrs: MessageAttributes | ErrorMessageAttributes | InfoMessageAttributes, options?: FetchOrCreateOptions): Promise<any>;
+    getMessagesCacheKey(): string;
+    getMessagesCollection(): any;
+    getNotificationsText(): any;
+    initMessages(): void;
+    fetchMessages(): any;
+    afterMessagesFetched(): void;
+    onMessage(attrs_or_error: MessageAttributes | Error): Promise<void>;
+    getUpdatedMessageAttributes(message: BaseMessage, attrs: MessageAttributes): Promise<object>;
+    updateMessage(message: BaseMessage, attrs: MessageAttributes): Promise<void>;
+    getCorrectedMessage(attrs: MessageAttributes | MUCMessageAttributes): BaseMessage | undefined;
+    handleCorrection(attrs: MessageAttributes | MUCMessageAttributes): Promise<BaseMessage | void>;
+    handleOriginalOfCorrection(attrs: MessageAttributes | MUCMessageAttributes): BaseMessage | undefined;
+    queueMessage(attrs: MessageAttributes): any;
+    getOutgoingMessageAttributes(attrs?: MessageAttributes): Promise<MessageAttributes>;
+    getReferencedMessage(reply_to_id: string): BaseMessage | undefined;
+    addReplyFallback(attrs: MessageAttributes): MessageAttributes;
+    sendMessage(attrs?: any): Promise<BaseMessage>;
+    retractOwnMessage(message: BaseMessage): void;
+    sendFiles(files: File[] | FileList): Promise<BaseMessage[]>;
+    setEditable(attrs: any, send_time: string): void;
+    setChatState(state: string, options?: object): any;
+    onMessageAdded(message: BaseMessage): void;
+    onMessageUploadChanged(message: BaseMessage): Promise<void>;
+    onMessageCorrecting(message: BaseMessage): void;
+    onScrolledChanged(): void;
+    pruneHistoryWhenScrolledDown(): void;
+    shouldShowErrorMessage(attrs: MessageAttributes): Promise<boolean>;
+    clearMessages(): Promise<void>;
+    editEarlierMessage(): void;
+    editLaterMessage(): any;
+    isChatMessage(message: BaseMessage): boolean;
+    getOldestMessage(): BaseMessage;
+    getMostRecentMessage(): BaseMessage;
+    getMessageReferencedByError(attrs: object): any;
+    findDanglingRetraction(attrs: object): BaseMessage | null;
+    getDuplicateMessage(attrs: object): Promise<BaseMessage | undefined>;
+    isCorrectionOf(attrs: object, message: BaseMessage): boolean;
+    getOriginIdQueryAttrs(attrs: object): {
+        origin_id: any;
+        from: any;
+    };
+    getStanzaIdQueryAttrs(attrs: object): {}[];
+    getMessageBodyQueryAttrs(attrs: object): {
+        from: any;
+        msgid: any;
+    };
+    sendMarkerForMessage(msg: BaseMessage, type?: MessageMarkerType, force?: boolean): Promise<void>;
+    handleUnreadMessage(message: BaseMessage): void;
+    getErrorAttributesForMessage(message: BaseMessage, attrs: MessageAttributes): Promise<any>;
+    handleErrorMessageStanza(stanza: Element): Promise<void>;
+    incrementUnreadMsgsCounter(message: BaseMessage): void;
+    clearUnreadMsgCounter(): void;
+    handleRetraction(attrs: MessageAttributes): Promise<boolean>;
+    handleReceipt(attrs: MessageAttributes): boolean;
+    createMessageStanza(message: BaseMessage): Promise<any>;
+    pruneHistory(): void;
+    isScrolledUp(): any;
+    isHidden(): boolean;
+}
 export type StropheConnectionConstructor = new (...args: ConstructorParameters<typeof Strophe.Connection>) => InstanceType<typeof Strophe.Connection>;
 type EncryptionPayloadAttrs = {
     key?: string;

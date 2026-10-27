@@ -8,6 +8,7 @@ import { PRIVATE_CHAT_TYPE } from './constants.js';
 /**
  * @template {import('./types').ModelExtender} T
  * @param {T} BaseModel
+ * @returns {T & import('./types').Constructor<import('./types').ContactAware>}
  */
 export default function ModelWithContact(BaseModel) {
     return class ModelWithContact extends BaseModel {

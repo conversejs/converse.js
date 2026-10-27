@@ -124,7 +124,10 @@ Formatting is set by `.prettierrc`. Naming conventions:
 
 Types are JSDoc annotations in `.js` files. `npm run types` regenerates the `.d.ts` files
 under `src/types/` and `src/headless/types/`, which are committed: include them in the
-commit when a change alters them.
+commit when a change alters them. Bare imports such as `shared/components/element.js`
+resolve through the catch-all `paths` entry of each `tsconfig.json`, not through
+`baseUrl`. Side-effect imports of stylesheets are covered by the ambient `*.scss`
+declaration in `src/shared/styles/scss.d.ts`.
 
 ## Commits
 

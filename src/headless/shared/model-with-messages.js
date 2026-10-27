@@ -47,6 +47,7 @@ function isFromSameSender(message, attrs) {
  *
  * @template {import('./types').ModelExtender} T
  * @param {T} BaseModel
+ * @returns {T & import('./types').Constructor<import('./types').MessagesAware>}
  */
 export default function ModelWithMessages(BaseModel) {
     /**

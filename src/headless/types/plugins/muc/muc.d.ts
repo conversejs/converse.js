@@ -1,332 +1,5 @@
 export default MUC;
-declare const MUC_base: {
-    new (...args: any[]): {
-        [x: string]: any;
-        _vcard: import("../vcard/vcard.js").default;
-        lazy_load_vcard: boolean;
-        initialize(): void;
-        get vcard(): import("../vcard/vcard.js").default;
-        getVCard(): Promise<import("../vcard/vcard.js").default | null>;
-        "__#private@#private": any;
-        _storage?: import("@converse/skeletor").PersistentStorage;
-        _changing: boolean;
-        _pending: boolean | import("@converse/skeletor").ModelOptions;
-        _previousAttributes?: import("@converse/skeletor").ModelAttributes;
-        _url: string;
-        _urlRoot: string;
-        attrs: import("@converse/skeletor").ModelAttributes;
-        attributes: import("@converse/skeletor").ModelAttributes;
-        changed: Partial<import("@converse/skeletor").ModelAttributes>;
-        cid: string;
-        collection?: import("@converse/skeletor").Collection;
-        id: string | number;
-        hydrated?: Promise<void>;
-        validationError: string | number | null;
-        get storage(): import("@converse/skeletor").PersistentStorage | undefined;
-        set storage(s: import("@converse/skeletor").PersistentStorage);
-        get browserStorage(): import("@converse/skeletor").PersistentStorage | undefined;
-        set browserStorage(s: import("@converse/skeletor").PersistentStorage);
-        get autoSync(): boolean;
-        get autoSyncDelay(): number;
-        get idAttribute(): string;
-        get cidPrefix(): string;
-        preinitialize(...args: any[]): void;
-        validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): string | number | null | void;
-        defaults(): Partial<import("@converse/skeletor").ModelAttributes>;
-        get computed(): import("@converse/skeletor").ComputedProperties</*elided*/ any>;
-        toJSON(): import("@converse/skeletor").ModelAttributes;
-        sync(method: import("@converse/skeletor").SyncOperation, model: Model<any>, options: import("@converse/skeletor").Options): any;
-        get<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
-        keys(): string[];
-        values(): any[];
-        pairs(): [string | number, any][];
-        entries(): [string | number, any][];
-        invert(): Record<string, string | number>;
-        pick<K extends string | number>(...args: K[]): Pick<import("@converse/skeletor").ModelAttributes, K>;
-        omit<K extends string | number>(...args: K[]): Omit<import("@converse/skeletor").ModelAttributes, K>;
-        isEmpty(): boolean;
-        has(attr: string | number): boolean;
-        matches(attrs: Partial<import("@converse/skeletor").ModelAttributes> | ((attrs: import("@converse/skeletor").ModelAttributes) => any)): boolean;
-        set(key: string | import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
-        unset(attr: string | number, options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
-        clear(options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
-        hasChanged(attr?: string | number): boolean;
-        changedAttributes(diff?: Partial<import("@converse/skeletor").ModelAttributes>): false | Partial<import("@converse/skeletor").ModelAttributes>;
-        previous<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
-        previousAttributes(): import("@converse/skeletor").ModelAttributes;
-        fetch(options?: import("@converse/skeletor").Options): any;
-        save(key?: string | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): any;
-        destroy(options?: import("@converse/skeletor").ModelOptions): any;
-        get urlRoot(): string;
-        set urlRoot(root: string);
-        get url(): string;
-        set url(url: string);
-        parse(resp: any, options?: import("@converse/skeletor").ModelOptions): void | Partial<import("@converse/skeletor").ModelAttributes>;
-        isNew(): boolean;
-        isValid(options?: import("@converse/skeletor").ModelOptions): boolean;
-        subscribe(event: string, callback: import("@converse/skeletor").EventCallback, context?: unknown): () => void;
-        subscribe(callback: (model: /*elided*/ any, changed: Partial<import("@converse/skeletor").ModelAttributes>) => void): () => void;
-        _validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): boolean;
-        _events?: import("@converse/skeletor").EventHandlersMap;
-        _listeners?: import("@converse/skeletor").EventListenerMap;
-        _listeningTo?: import("@converse/skeletor").EventListenerMap;
-        _listenId?: string;
-        on(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
-        listenTo(obj: import("@converse/skeletor").ObjectListenedTo, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
-        off(name?: string | import("@converse/skeletor").EventCallbackMap | null, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext | null, context?: import("@converse/skeletor").EventContext): any;
-        stopListening(obj?: any, name?: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
-        once(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
-        listenToOnce(obj: any, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
-        trigger(name: string, ...args: any[]): any;
-        constructor: Function;
-        toString(): string;
-        toLocaleString(): string;
-        valueOf(): Object;
-        hasOwnProperty(v: PropertyKey): boolean;
-        isPrototypeOf(v: Object): boolean;
-        propertyIsEnumerable(v: PropertyKey): boolean;
-    };
-} & {
-    new (...args: any[]): {
-        [x: string]: any;
-        disable_mam: boolean;
-        initialize(): void;
-        initNotifications(): void;
-        notifications: Model<import("@converse/skeletor").ModelAttributes>;
-        initUI(): void;
-        ui: Model<import("@converse/skeletor").ModelAttributes>;
-        getDisplayName(): string;
-        canPostMessages(): boolean;
-        createMessage(attrs: import("../../shared/types").MessageAttributes | import("../../shared/types").ErrorMessageAttributes | import("../../shared/types").InfoMessageAttributes, options?: import("@converse/skeletor").FetchOrCreateOptions): Promise<any>;
-        getMessagesCacheKey(): string;
-        getMessagesCollection(): any;
-        getNotificationsText(): any;
-        initMessages(): void;
-        messages: any;
-        fetchMessages(): any;
-        afterMessagesFetched(): void;
-        onMessage(_attrs_or_error: import("../../shared/types").MessageAttributes | Error): Promise<void>;
-        getUpdatedMessageAttributes(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<object>;
-        updateMessage(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<void>;
-        getCorrectedMessage(attrs: import("../../shared/types").MessageAttributes | import("./types").MUCMessageAttributes): import("../../index.js").BaseMessage | undefined;
-        handleCorrection(attrs: import("../../shared/types").MessageAttributes | import("./types").MUCMessageAttributes): Promise<import("../../index.js").BaseMessage | void>;
-        handleOriginalOfCorrection(attrs: import("../../shared/types").MessageAttributes | import("./types").MUCMessageAttributes): import("../../index.js").BaseMessage | undefined;
-        queueMessage(attrs: import("../../shared/types").MessageAttributes): any;
-        msg_chain: any;
-        getOutgoingMessageAttributes(_attrs?: import("../../shared/types").MessageAttributes): Promise<import("../../shared/types").MessageAttributes>;
-        getReferencedMessage(reply_to_id: string): import("../../index.js").BaseMessage | undefined;
-        addReplyFallback(attrs: import("../../shared/types").MessageAttributes): import("../../shared/types").MessageAttributes;
-        sendMessage(attrs?: any): Promise<import("../../index.js").BaseMessage>;
-        retractOwnMessage(message: import("../../index.js").BaseMessage): void;
-        sendFiles(files: File[] | FileList): Promise<import("../../index.js").BaseMessage[]>;
-        setEditable(attrs: any, send_time: string): void;
-        setChatState(state: string, options?: object): /*elided*/ any;
-        chat_state_timeout: number;
-        onMessageAdded(message: import("../../index.js").BaseMessage): void;
-        onMessageUploadChanged(message: import("../../index.js").BaseMessage): Promise<void>;
-        onMessageCorrecting(message: import("../../index.js").BaseMessage): void;
-        onScrolledChanged(): void;
-        pruneHistoryWhenScrolledDown(): void;
-        shouldShowErrorMessage(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
-        clearMessages(): Promise<void>;
-        editEarlierMessage(): void;
-        editLaterMessage(): any;
-        isChatMessage(_message: import("../../index.js").BaseMessage): boolean;
-        getOldestMessage(): import("../../index.js").BaseMessage;
-        getMostRecentMessage(): import("../../index.js").BaseMessage;
-        getMessageReferencedByError(attrs: object): any;
-        findDanglingRetraction(attrs: object): import("../../index.js").BaseMessage | null;
-        getDuplicateMessage(attrs: object): Promise<import("../../index.js").BaseMessage | undefined>;
-        isCorrectionOf(attrs: object, message: import("../../index.js").BaseMessage): boolean;
-        getOriginIdQueryAttrs(attrs: object): {
-            origin_id: any;
-            from: any;
-        };
-        getStanzaIdQueryAttrs(attrs: object): {}[];
-        getMessageBodyQueryAttrs(attrs: object): {
-            from: any;
-            msgid: any;
-        };
-        sendMarkerForMessage(msg: import("../../index.js").BaseMessage, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
-        handleUnreadMessage(message: import("../../index.js").BaseMessage): void;
-        getErrorAttributesForMessage(message: import("../../index.js").BaseMessage, attrs: import("../../shared/types").MessageAttributes): Promise<any>;
-        handleErrorMessageStanza(stanza: Element): Promise<void>;
-        incrementUnreadMsgsCounter(message: import("../../index.js").BaseMessage): void;
-        clearUnreadMsgCounter(): void;
-        handleRetraction(attrs: import("../../shared/types").MessageAttributes): Promise<boolean>;
-        handleReceipt(attrs: import("../../shared/types").MessageAttributes): boolean;
-        createMessageStanza(message: import("../../index.js").BaseMessage): Promise<any>;
-        pruneHistory(): void;
-        debouncedPruneHistory: import("lodash").DebouncedFunc<() => void>;
-        isScrolledUp(): any;
-        isHidden(): boolean;
-        "__#private@#private": any;
-        _storage?: import("@converse/skeletor").PersistentStorage;
-        _changing: boolean;
-        _pending: boolean | import("@converse/skeletor").ModelOptions;
-        _previousAttributes?: import("@converse/skeletor").ModelAttributes;
-        _url: string;
-        _urlRoot: string;
-        attrs: import("@converse/skeletor").ModelAttributes;
-        attributes: import("@converse/skeletor").ModelAttributes;
-        changed: Partial<import("@converse/skeletor").ModelAttributes>;
-        cid: string;
-        collection?: import("@converse/skeletor").Collection;
-        id: string | number;
-        hydrated?: Promise<void>;
-        validationError: string | number | null;
-        get storage(): import("@converse/skeletor").PersistentStorage | undefined;
-        set storage(s: import("@converse/skeletor").PersistentStorage);
-        get browserStorage(): import("@converse/skeletor").PersistentStorage | undefined;
-        set browserStorage(s: import("@converse/skeletor").PersistentStorage);
-        get autoSync(): boolean;
-        get autoSyncDelay(): number;
-        get idAttribute(): string;
-        get cidPrefix(): string;
-        preinitialize(...args: any[]): void;
-        validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): string | number | null | void;
-        defaults(): Partial<import("@converse/skeletor").ModelAttributes>;
-        get computed(): import("@converse/skeletor").ComputedProperties</*elided*/ any>;
-        toJSON(): import("@converse/skeletor").ModelAttributes;
-        sync(method: import("@converse/skeletor").SyncOperation, model: Model<any>, options: import("@converse/skeletor").Options): any;
-        get<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
-        keys(): string[];
-        values(): any[];
-        pairs(): [string | number, any][];
-        entries(): [string | number, any][];
-        invert(): Record<string, string | number>;
-        pick<K extends string | number>(...args: K[]): Pick<import("@converse/skeletor").ModelAttributes, K>;
-        omit<K extends string | number>(...args: K[]): Omit<import("@converse/skeletor").ModelAttributes, K>;
-        isEmpty(): boolean;
-        has(attr: string | number): boolean;
-        matches(attrs: Partial<import("@converse/skeletor").ModelAttributes> | ((attrs: import("@converse/skeletor").ModelAttributes) => any)): boolean;
-        set(key: string | import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
-        unset(attr: string | number, options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
-        clear(options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
-        hasChanged(attr?: string | number): boolean;
-        changedAttributes(diff?: Partial<import("@converse/skeletor").ModelAttributes>): false | Partial<import("@converse/skeletor").ModelAttributes>;
-        previous<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
-        previousAttributes(): import("@converse/skeletor").ModelAttributes;
-        fetch(options?: import("@converse/skeletor").Options): any;
-        save(key?: string | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): any;
-        destroy(options?: import("@converse/skeletor").ModelOptions): any;
-        get urlRoot(): string;
-        set urlRoot(root: string);
-        get url(): string;
-        set url(url: string);
-        parse(resp: any, options?: import("@converse/skeletor").ModelOptions): void | Partial<import("@converse/skeletor").ModelAttributes>;
-        isNew(): boolean;
-        isValid(options?: import("@converse/skeletor").ModelOptions): boolean;
-        subscribe(event: string, callback: import("@converse/skeletor").EventCallback, context?: unknown): () => void;
-        subscribe(callback: (model: /*elided*/ any, changed: Partial<import("@converse/skeletor").ModelAttributes>) => void): () => void;
-        _validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): boolean;
-        _events?: import("@converse/skeletor").EventHandlersMap;
-        _listeners?: import("@converse/skeletor").EventListenerMap;
-        _listeningTo?: import("@converse/skeletor").EventListenerMap;
-        _listenId?: string;
-        on(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
-        listenTo(obj: import("@converse/skeletor").ObjectListenedTo, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
-        off(name?: string | import("@converse/skeletor").EventCallbackMap | null, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext | null, context?: import("@converse/skeletor").EventContext): any;
-        stopListening(obj?: any, name?: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
-        once(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
-        listenToOnce(obj: any, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
-        trigger(name: string, ...args: any[]): any;
-        constructor: Function;
-        toString(): string;
-        toLocaleString(): string;
-        valueOf(): Object;
-        hasOwnProperty(v: PropertyKey): boolean;
-        isPrototypeOf(v: Object): boolean;
-        propertyIsEnumerable(v: PropertyKey): boolean;
-    };
-} & {
-    new (...args: any[]): {
-        [x: string]: any;
-        setColor(): Promise<void>;
-        getIdentifier(): any;
-        getColor(): Promise<string>;
-        getAvatarStyle(append_style?: string): Promise<string>;
-        "__#private@#private": any;
-        _storage?: import("@converse/skeletor").PersistentStorage;
-        _changing: boolean;
-        _pending: boolean | import("@converse/skeletor").ModelOptions;
-        _previousAttributes?: import("@converse/skeletor").ModelAttributes;
-        _url: string;
-        _urlRoot: string;
-        attrs: import("@converse/skeletor").ModelAttributes;
-        attributes: import("@converse/skeletor").ModelAttributes;
-        changed: Partial<import("@converse/skeletor").ModelAttributes>;
-        cid: string;
-        collection?: import("@converse/skeletor").Collection;
-        id: string | number;
-        hydrated?: Promise<void>;
-        validationError: string | number | null;
-        get storage(): import("@converse/skeletor").PersistentStorage | undefined;
-        set storage(s: import("@converse/skeletor").PersistentStorage);
-        get browserStorage(): import("@converse/skeletor").PersistentStorage | undefined;
-        set browserStorage(s: import("@converse/skeletor").PersistentStorage);
-        get autoSync(): boolean;
-        get autoSyncDelay(): number;
-        get idAttribute(): string;
-        get cidPrefix(): string;
-        preinitialize(...args: any[]): void;
-        initialize(attrs?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): void;
-        validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): string | number | null | void;
-        defaults(): Partial<import("@converse/skeletor").ModelAttributes>;
-        get computed(): import("@converse/skeletor").ComputedProperties</*elided*/ any>;
-        toJSON(): import("@converse/skeletor").ModelAttributes;
-        sync(method: import("@converse/skeletor").SyncOperation, model: Model<any>, options: import("@converse/skeletor").Options): any;
-        get<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
-        keys(): string[];
-        values(): any[];
-        pairs(): [string | number, any][];
-        entries(): [string | number, any][];
-        invert(): Record<string, string | number>;
-        pick<K extends string | number>(...args: K[]): Pick<import("@converse/skeletor").ModelAttributes, K>;
-        omit<K extends string | number>(...args: K[]): Omit<import("@converse/skeletor").ModelAttributes, K>;
-        isEmpty(): boolean;
-        has(attr: string | number): boolean;
-        matches(attrs: Partial<import("@converse/skeletor").ModelAttributes> | ((attrs: import("@converse/skeletor").ModelAttributes) => any)): boolean;
-        set(key: string | import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
-        unset(attr: string | number, options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
-        clear(options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
-        hasChanged(attr?: string | number): boolean;
-        changedAttributes(diff?: Partial<import("@converse/skeletor").ModelAttributes>): false | Partial<import("@converse/skeletor").ModelAttributes>;
-        previous<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
-        previousAttributes(): import("@converse/skeletor").ModelAttributes;
-        fetch(options?: import("@converse/skeletor").Options): any;
-        save(key?: string | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): any;
-        destroy(options?: import("@converse/skeletor").ModelOptions): any;
-        get urlRoot(): string;
-        set urlRoot(root: string);
-        get url(): string;
-        set url(url: string);
-        parse(resp: any, options?: import("@converse/skeletor").ModelOptions): void | Partial<import("@converse/skeletor").ModelAttributes>;
-        isNew(): boolean;
-        isValid(options?: import("@converse/skeletor").ModelOptions): boolean;
-        subscribe(event: string, callback: import("@converse/skeletor").EventCallback, context?: unknown): () => void;
-        subscribe(callback: (model: /*elided*/ any, changed: Partial<import("@converse/skeletor").ModelAttributes>) => void): () => void;
-        _validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): boolean;
-        _events?: import("@converse/skeletor").EventHandlersMap;
-        _listeners?: import("@converse/skeletor").EventListenerMap;
-        _listeningTo?: import("@converse/skeletor").EventListenerMap;
-        _listenId?: string;
-        on(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
-        listenTo(obj: import("@converse/skeletor").ObjectListenedTo, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
-        off(name?: string | import("@converse/skeletor").EventCallbackMap | null, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext | null, context?: import("@converse/skeletor").EventContext): any;
-        stopListening(obj?: any, name?: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
-        once(name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback | import("@converse/skeletor").EventContext, context?: import("@converse/skeletor").EventContext): any;
-        listenToOnce(obj: any, name: string | import("@converse/skeletor").EventCallbackMap, callback?: import("@converse/skeletor").EventCallback): any;
-        trigger(name: string, ...args: any[]): any;
-        constructor: Function;
-        toString(): string;
-        toLocaleString(): string;
-        valueOf(): Object;
-        hasOwnProperty(v: PropertyKey): boolean;
-        isPrototypeOf(v: Object): boolean;
-        propertyIsEnumerable(v: PropertyKey): boolean;
-    };
-} & typeof ChatBoxBase;
+declare const MUC_base: typeof ChatBoxBase & import("../../shared/types").Constructor<import("../../shared/types").ColorAware> & import("../../shared/types").Constructor<import("../../shared/types").MessagesAware> & import("../../shared/types").Constructor<import("../../shared/types").VCardAware>;
 /**
  * Represents a groupchat conversation.
  */
@@ -361,7 +34,6 @@ declare class MUC extends MUC_base {
         time_sent: string;
         type: string;
     };
-    initialize(): void;
     initialized: Promise<void>;
     setup(): Promise<void>;
     debouncedRejoin: import("lodash").DebouncedFunc<() => Promise<void>>;
@@ -396,15 +68,6 @@ declare class MUC extends MUC_base {
     constructJoinPresence(password: string, is_new: boolean): Promise<any>;
     clearOccupantsCache(): void;
     /**
-     * Given the passed in MUC message, send a XEP-0333 chat marker.
-     * @async
-     * @param {BaseMessage} msg
-     * @param {('received'|'displayed'|'acknowledged')} [type='displayed']
-     * @param {boolean} [force=false] - Whether a marker should be sent for the
-     *  message, even if it didn't include a `markable` element.
-     */
-    sendMarkerForMessage(msg: import("../../index.js").BaseMessage, type?: ("received" | "displayed" | "acknowledged"), force?: boolean): Promise<void>;
-    /**
      * Finds the last eligible message and then sends a XEP-0333 chat marker for it.
      * @param { ('received'|'displayed'|'acknowledged') } [type='displayed']
      * @param {Boolean} force - Whether a marker should be sent for the
@@ -437,7 +100,6 @@ declare class MUC extends MUC_base {
     onOccupantPresenceChanged(occupant: import("./occupant.js").default): void;
     onRoomEntered(): Promise<void>;
     onConnectionStatusChanged(): Promise<void>;
-    getMessagesCollection(): any;
     restoreSession(): Promise<any>;
     session: MUCSession;
     initDiscoModels(): void;
@@ -459,10 +121,6 @@ declare class MUC extends MUC_base {
      * @returns {void}
      */
     handleAffiliationChangedMessage(stanza: Element): void;
-    /**
-     * @param {Element} stanza
-     */
-    handleErrorMessageStanza(stanza: Element): Promise<void>;
     /**
      * Handles incoming message stanzas from the service that hosts this MUC
      * @param {Element} stanza
@@ -549,11 +207,6 @@ declare class MUC extends MUC_base {
         name: string;
     }): Promise<void>;
     canModerateMessages(): any;
-    canPostMessages(): boolean;
-    /**
-     * @param {import('../../shared/message').default} message
-     */
-    isChatMessage(message: import("../../shared/message").default): boolean;
     /**
      * Return an array of unique nicknames based on all occupants and messages in this MUC.
      * @returns {String[]}
@@ -578,10 +231,6 @@ declare class MUC extends MUC_base {
      * @param { String } text
      */
     parseTextForReferences(text: string): any[];
-    /**
-     * @param {MessageAttributes} [attrs] - A map of attributes to be saved on the message
-     */
-    getOutgoingMessageAttributes(attrs?: import("../../shared/types").MessageAttributes): Promise<import("../../shared/types").MessageAttributes>;
     /**
      * Utility method to construct the JID for the current user as occupant of the groupchat.
      * @returns {string} - The groupchat JID with the user's nickname added at the end.
@@ -883,7 +532,6 @@ declare class MUC extends MUC_base {
      *  whether a message was moderated or not.
      */
     handleModeration(attrs: object): Promise<boolean>;
-    getNotificationsText(): any;
     /**
      * @param { String } actor - The nickname of the actor that caused the notification
      * @param {String|Array<String>} states - The state or states representing the type of notificcation
@@ -1006,14 +654,10 @@ declare class MUC extends MUC_base {
      * @param {BaseMessage} message - The text message
      */
     isUserMentioned(message: import("../../index.js").BaseMessage): boolean;
-    /**
-     * @param {BaseMessage} message - The text message
-     */
-    incrementUnreadMsgsCounter(message: import("../../index.js").BaseMessage): void;
     clearUnreadMsgCounter(): Promise<void>;
 }
-import { Model } from '@converse/skeletor';
 import ChatBoxBase from '../../shared/chatbox.js';
 import MUCSession from './session.js';
+import { Model } from '@converse/skeletor';
 import { TimeoutError } from '../../shared/errors.js';
 //# sourceMappingURL=muc.d.ts.map

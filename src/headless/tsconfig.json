@@ -32,10 +32,10 @@
 
     "rootDir": "./",
     "outDir": "./types/",
-    "baseUrl": "./",
     "paths": {
       "@converse/log": ["../log/types/index.d.ts"],
-      "@converse/skeletor": ["../../node_modules/@converse/skeletor/dist/skeletor.d.ts"]
+      "@converse/skeletor": ["../../node_modules/@converse/skeletor/dist/skeletor.d.ts"],
+      "*": ["./*"]
     },
 
     "esModuleInterop": true,

@@ -4,6 +4,7 @@ import _converse from "./_converse.js";
 /**
  * @template {import('./types').ModelExtender} T
  * @param {T} BaseModel
+ * @returns {T & import('./types').Constructor<import('./types').VCardAware>}
  */
 export default function ModelWithVCard(BaseModel) {
     /**

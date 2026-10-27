@@ -7,7 +7,7 @@
 
     "types": ["@types/webappsec-credential-management"],
 
-    "lib": ["es2023", "dom", "dom.iterable"],
+    "lib": ["es2023", "dom"],
 
     "allowJs": true,
     "checkJs": true,
@@ -19,11 +19,13 @@
 
     "rootDir": "./src",
     "outDir": "./src/types/",
-    "baseUrl": "./src/",
+    // Bare imports such as `shared/components/element.js` resolve through the
+    // catch-all entry, which replaces the `baseUrl` that TypeScript 6 deprecates.
     "paths": {
-      "@converse/log": ["log/types/index.d.ts"],
-      "@converse/headless": ["headless/types/index.d.ts"],
-      "@converse/skeletor": ["../node_modules/@converse/skeletor/dist/skeletor.d.ts"]
+      "@converse/log": ["./src/log/types/index.d.ts"],
+      "@converse/headless": ["./src/headless/types/index.d.ts"],
+      "@converse/skeletor": ["./node_modules/@converse/skeletor/dist/skeletor.d.ts"],
+      "*": ["./src/*"]
     },
 
     "esModuleInterop": true,

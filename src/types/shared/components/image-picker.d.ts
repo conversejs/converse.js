@@ -13,7 +13,6 @@ export default class ImagePicker extends CustomElement {
     model: any;
     width: any;
     height: any;
-    nonce: string;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * Clears the selected image.

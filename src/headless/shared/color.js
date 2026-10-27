@@ -6,6 +6,7 @@ const { safeSave, colorize } = u;
 /**
  * @template {import('./types').ModelExtender} T
  * @param {T} BaseModel
+ * @returns {T & import('./types').Constructor<import('./types').ColorAware>}
  */
 export default function ColorAwareModel(BaseModel) {
 

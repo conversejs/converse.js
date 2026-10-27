@@ -19,7 +19,9 @@
 
     "rootDir": "./",
     "outDir": "./types/",
-    "baseUrl": "./",
+    "paths": {
+      "*": ["./*"]
+    },
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

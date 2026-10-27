@@ -135,7 +135,7 @@
     "sass-loader": "^17.0.0",
     "sirv": "^3.0.2",
     "style-loader": "^4.0.0",
-    "typescript": "5.9.3",
+    "typescript": "6.0.3",
     "vitest": "^4.1.9",
     "webpack-merge": "^6.0.1"
   },

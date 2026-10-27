@@ -5,7 +5,7 @@
  */
 import { _converse, api, converse } from '@converse/headless';
 import { __ } from 'i18n';
-import { alertSendError } from 'plugins/omemo-views/utils.js';
+import { alertSendError } from 'shared/chat/send-errors.js';
 
 const { Strophe } = converse.env;
 

@@ -1,6 +1,6 @@
 import { html } from 'lit';
 import { __ } from 'i18n';
-import { getSendErrorMessages } from 'plugins/omemo-views/utils.js';
+import { getSendErrorMessages } from 'shared/chat/send-errors.js';
 
 /**
  * Shows a message that could not be sent, with the reason and the actions that
@@ -20,7 +20,7 @@ export default (el) => {
             ${i18n_retry}
         </button>
         ${
-            el.model.get('is_encrypted')
+            el.model.get('send_can_send_unencrypted')
                 ? html`<button type="button" class="btn btn-sm btn-link p-0 ms-2" @click=${el.onSendUnencryptedClicked}>
                       ${i18n_send_unencrypted}
                   </button>`

@@ -17,7 +17,7 @@ import tplMessageForm from './templates/message-form.js';
 import { parseMessageForCommands } from './utils.js';
 import { TypeaheadController } from 'shared/rich-composer/typeahead.js';
 import { EMOJI_SOURCE } from 'shared/rich-composer/emoji-source.js';
-import { alertSendError } from 'plugins/omemo-views/utils.js';
+import { alertSendError } from 'shared/chat/send-errors.js';
 
 import './styles/message-form.scss';
 import 'shared/rich-composer/styles/typeahead.scss';

@@ -15,7 +15,7 @@ import tplRetraction from './templates/retraction.js';
 import tplSpinner from 'templates/spinner.js';
 import { ObservableElement } from 'shared/components/observable.js';
 import { __ } from 'i18n';
-import { alertSendError } from 'plugins/omemo-views/utils.js';
+import { alertSendError } from 'shared/chat/send-errors.js';
 
 const { Strophe } = converse.env;
 const { SUCCESS } = constants;
@@ -186,7 +186,13 @@ export default class Message extends ObservableElement {
         ]);
         if (!confirmed) return;
         try {
-            await this.model_with_messages.resendFailedMessageUnencrypted(this.model);
+            const { handled } = await api.hook('resendFailedMessageUnencrypted', this.model_with_messages, {
+                message: this.model,
+                handled: false,
+            });
+            if (!handled) {
+                api.alert('error', __('Error'), [__('This message could not be sent without encryption.')]);
+            }
         } catch (e) {
             alertSendError(/** @type {Error} */ (e));
         }

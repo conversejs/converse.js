@@ -35,7 +35,11 @@ describe('A failed encrypted send', function () {
             let fail = true;
             const createStanza = view.model.createMessageStanza.bind(view.model);
             spyOn(view.model, 'createMessageStanza').and.callFake((message) => {
-                if (fail) throw Object.assign(new Error('No OMEMO devices'), { code: 'no-omemo-devices' });
+                if (fail)
+                    throw Object.assign(new Error('No OMEMO devices'), {
+                        code: 'no-omemo-devices',
+                        can_send_unencrypted: true,
+                    });
                 return createStanza(message);
             });
 
@@ -94,7 +98,10 @@ describe('A failed encrypted send', function () {
             view.model.set('omemo_active', true);
             spyOn(api.connection.get(), 'send');
             spyOn(view.model, 'createMessageStanza').and.callFake(() => {
-                throw Object.assign(new Error('No OMEMO devices'), { code: 'no-omemo-devices' });
+                throw Object.assign(new Error('No OMEMO devices'), {
+                    code: 'no-omemo-devices',
+                    can_send_unencrypted: true,
+                });
             });
 
             await mock.setComposerText(view, 'Discard me');

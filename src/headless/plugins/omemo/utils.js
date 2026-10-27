@@ -8,7 +8,7 @@ import { initStorage } from '../../utils/storage.js';
 import api from '../../shared/api/index.js';
 import MUC from '../../plugins/muc/muc.js';
 import { getCrypto } from './crypto.js';
-import { KEY_ALGO, TAG_LENGTH, UNTRUSTED } from './constants.js';
+import { KEY_ALGO, SEND_ERROR, TAG_LENGTH, UNTRUSTED } from './constants.js';
 import DeviceLists from './devicelists.js';
 import { VersionedOMEMOStore } from './versioned-store.js';
 import { encryptSCE, decryptSCE } from './sce.js';
@@ -325,22 +325,43 @@ export async function generateFingerprint(device) {
  */
 export function handleMessageSendError(e, chat) {
     // A value that isn't an Error can't carry a code, so it's wrapped to get one.
-    if (!(e instanceof Error)) throw new errors.CodedError('omemo-encrypt-failed', String(e));
-    const coded = /** @type {Error & {code?: string}} */ (e);
+    const coded = /** @type {Error & {code?: string, can_send_unencrypted?: boolean}} */ (
+        e instanceof Error ? e : new errors.CodedError(SEND_ERROR.ENCRYPT_FAILED, String(e))
+    );
+    // The message was encrypted, so the client may offer to send it without encryption.
+    coded.can_send_unencrypted = true;
     if (e instanceof errors.IQError) {
         chat.save('omemo_supported', false);
         if (sizzle(`presence-subscription-required[xmlns="${Strophe.NS.PUBSUB_ERROR}"]`, e.iq).length) {
-            coded.code = 'omemo-subscription-required';
+            coded.code = SEND_ERROR.SUBSCRIPTION_REQUIRED;
         } else if (sizzle(`remote-server-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]`, e.iq).length) {
-            coded.code = 'omemo-remote-server-not-found';
+            coded.code = SEND_ERROR.REMOTE_SERVER_NOT_FOUND;
         } else {
-            coded.code = 'omemo-key-fetch-failed';
+            coded.code = SEND_ERROR.KEY_FETCH_FAILED;
         }
     } else if (!(e instanceof errors.CodedError)) {
         // Anything else is an unexpected encryption failure. A CodedError was classified where it was thrown.
-        coded.code = 'omemo-encrypt-failed';
+        coded.code = SEND_ERROR.ENCRYPT_FAILED;
     }
-    throw e;
+    throw coded;
+}
+
+/**
+ * Sends a failed encrypted message again in the clear. Listens for the
+ * `resendFailedMessageUnencrypted` hook, which the client calls only after the
+ * user has agreed to send the message unencrypted.
+ * @param {import('../../shared/chatbox.js').default} chat
+ * @param {{message: import('../../shared/message.js').default, handled: boolean}} data
+ */
+export async function resendFailedMessageUnencrypted(chat, data) {
+    const { message } = data;
+    if (!message.get('send_can_send_unencrypted')) return data;
+    await chat.resendFailedMessage(message, {
+        is_encrypted: false,
+        body: message.get('plaintext') ?? message.get('body'),
+        plaintext: undefined,
+    });
+    return { ...data, handled: true };
 }
 
 /**
@@ -490,7 +511,7 @@ async function getBundlesAndBuildSessions(chatbox) {
         // (checkOMEMOSupported), but a room can flip to anonymous mid-session.
         if (!isOMEMOMUCEligible(chatbox)) {
             throw new errors.CodedError(
-                'omemo-groupchat-not-eligible',
+                SEND_ERROR.GROUPCHAT_NOT_ELIGIBLE,
                 'Cannot use OMEMO in this groupchat: it must be non-anonymous and members-only',
             );
         }
@@ -535,7 +556,7 @@ async function getBundlesAndBuildSessions(chatbox) {
         ]);
 
         if (their_legacy.length === 0 && their_v2.length === 0) {
-            throw new errors.CodedError('no-omemo-devices', 'No OMEMO devices found to encrypt for');
+            throw new errors.CodedError(SEND_ERROR.NO_DEVICES, 'No OMEMO devices found to encrypt for');
         }
 
         legacy_devices = [...(own_legacy_list?.devices.models ?? []), ...their_legacy.models];
@@ -596,7 +617,7 @@ async function getBundlesAndBuildSessions(chatbox) {
 
     if (legacy_devices.length === 0 && v2_devices.length === 0) {
         // Nothing reachable and no actionable server error to explain why.
-        throw new errors.CodedError('no-omemo-devices', 'No OMEMO devices found to encrypt for');
+        throw new errors.CodedError(SEND_ERROR.NO_DEVICES, 'No OMEMO devices found to encrypt for');
     }
     return { legacy: legacy_devices, v2: v2_devices };
 }

@@ -7,8 +7,10 @@ import { _converse, api, converse, log } from '@converse/headless';
 import './fingerprints.js';
 import './profile.js';
 import 'shared/modals/user-details.js';
+import { addSendErrorMessages } from 'shared/chat/send-errors.js';
 import {
     generateFingerprints,
+    getOMEMOSendErrorMessages,
     getOMEMOToolbarButton,
     handleEncryptedFiles,
     onChatComponentInitialized,
@@ -31,6 +33,7 @@ converse.plugins.add('converse-omemo-views', {
         api.listen.on('chatRoomViewInitialized', onChatComponentInitialized);
         api.listen.on('getToolbarButtons', getOMEMOToolbarButton);
         api.listen.on('afterMessageBodyTransformed', handleEncryptedFiles);
+        addSendErrorMessages(getOMEMOSendErrorMessages);
 
         api.listen.on('userDetailsModalInitialized', (contact) => {
             const jid = contact.get('jid');

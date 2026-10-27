@@ -372,17 +372,18 @@ Object.assign(u, {
 });
 
 /**
- * Returns the text that explains a failed encrypted send. Headless gives each
- * failure a stable code and keeps its prose out, so the wording lives here.
+ * Returns the text that explains a failed encrypted send, for the codes that
+ * OMEMO fails with. Headless gives each failure a stable code and keeps its prose
+ * out, so the wording lives here. Any other code returns undefined.
  * @param {string} [code] - The `code` of the error that failed the send.
  * @param {Object} [details]
  * @param {string} [details.from] - The JID that the reason names, when the failure came from the server.
  * @param {Element} [details.iq] - The IQ that failed, when the failure came from the server.
- * @returns {string[]}
+ * @returns {string[]|undefined}
  */
-export function getSendErrorMessages(code, { from, iq } = {}) {
+export function getOMEMOSendErrorMessages(code, { from, iq } = {}) {
     switch (code) {
-        case 'omemo-subscription-required':
+        case constants.SEND_ERROR.SUBSCRIPTION_REQUIRED:
             return [
                 __(
                     "Sorry, we're unable to send an encrypted message because %1$s " +
@@ -390,33 +391,25 @@ export function getSendErrorMessages(code, { from, iq } = {}) {
                     from,
                 ),
             ];
-        case 'omemo-remote-server-not-found':
+        case constants.SEND_ERROR.REMOTE_SERVER_NOT_FOUND:
             return [
                 __(
                     "Sorry, we're unable to send an encrypted message because the remote server for %1$s could not be found",
                     from,
                 ),
             ];
-        case 'omemo-key-fetch-failed':
+        case constants.SEND_ERROR.KEY_FETCH_FAILED:
             return [
                 __('Unable to send an encrypted message due to an unexpected error.'),
                 ...(iq ? [iq.outerHTML] : []),
             ];
-        case 'omemo-encrypt-failed':
+        case constants.SEND_ERROR.ENCRYPT_FAILED:
             return [__('Unable to send an encrypted message due to an unexpected error.')];
-        case 'no-omemo-devices':
+        case constants.SEND_ERROR.NO_DEVICES:
             return [__('Sorry, no devices found to which we can send an OMEMO encrypted message.')];
-        case 'omemo-groupchat-not-eligible':
+        case constants.SEND_ERROR.GROUPCHAT_NOT_ELIGIBLE:
             return [__('Cannot use OMEMO in this groupchat — it must be non-anonymous and members-only.')];
         default:
-            return [__('Your message could not be sent.')];
+            return undefined;
     }
-}
-
-/**
- * Shows a failed send to the user in an alert. Call it once per failed send.
- * @param {Error & {code?: string, iq?: Element}} e
- */
-export function alertSendError(e) {
-    api.alert('error', __('Error'), getSendErrorMessages(e.code, { from: e.iq?.getAttribute('from'), iq: e.iq }));
 }

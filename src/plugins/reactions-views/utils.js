@@ -4,7 +4,7 @@
  */
 import { _converse, api, converse, log, u } from '@converse/headless';
 import { __ } from 'i18n';
-import { alertSendError } from 'plugins/omemo-views/utils.js';
+import { alertSendError } from 'shared/chat/send-errors.js';
 import { buildReactionFallbackBody } from './fallback.js';
 const { Strophe, sizzle, stx } = converse.env;
 

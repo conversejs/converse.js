@@ -58,16 +58,48 @@ describe('A failed chat send', function () {
             await mock.openChatBoxFor(_converse, contact_jid);
             const chat = _converse.chatboxes.get(contact_jid);
 
-            spyOn(chat, 'createMessageStanza').and.rejectWith(Object.assign(new Error('x'), { code: 'send-failed' }));
-            await expect(chat.sendMessage({ body: 'fallback' })).rejects.toMatchObject({ code: 'send-failed' });
+            // Only the encrypted attempt can offer a send without encryption, as in production.
+            spyOn(chat, 'createMessageStanza').and.callFake((message) => {
+                const e = Object.assign(new Error('x'), { code: 'send-failed' });
+                if (message.get('is_encrypted')) e.can_send_unencrypted = true;
+                throw e;
+            });
+            await expect(chat.sendMessage({ body: 'fallback', is_encrypted: true })).rejects.toMatchObject({
+                code: 'send-failed',
+            });
 
             const failed = chat.messages.findWhere({ send_status: 'failed' });
-            failed.save({ is_encrypted: true, plaintext: 'Secret' });
-            await expect(chat.resendFailedMessageUnencrypted(failed)).rejects.toMatchObject({ code: 'send-failed' });
+            failed.save({ plaintext: 'Secret' });
+            expect(failed.get('send_can_send_unencrypted')).toBe(true);
+            await expect(
+                _converse.api.hook('resendFailedMessageUnencrypted', chat, { message: failed, handled: false }),
+            ).rejects.toMatchObject({ code: 'send-failed' });
 
             expect(failed.get('is_encrypted')).toBe(true);
             expect(failed.get('body')).toBe('fallback');
             expect(failed.get('plaintext')).toBe('Secret');
+            expect(failed.get('send_status')).toBe('failed');
+            expect(failed.get('send_can_send_unencrypted')).toBe(true);
+        }),
+    );
+
+    it(
+        'is not handled when the message cannot be sent without encryption',
+        mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const chat = _converse.chatboxes.get(contact_jid);
+
+            spyOn(chat, 'createMessageStanza').and.rejectWith(Object.assign(new Error('x'), { code: 'send-failed' }));
+            await expect(chat.sendMessage({ body: 'No flag' })).rejects.toMatchObject({ code: 'send-failed' });
+
+            const failed = chat.messages.findWhere({ send_status: 'failed' });
+            const data = await _converse.api.hook('resendFailedMessageUnencrypted', chat, {
+                message: failed,
+                handled: false,
+            });
+            expect(data.handled).toBe(false);
             expect(failed.get('send_status')).toBe('failed');
         }),
     );

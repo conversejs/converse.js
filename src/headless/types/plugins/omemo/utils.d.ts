@@ -57,6 +57,20 @@ export function generateFingerprint(device: import("./device.js").default): Prom
  */
 export function handleMessageSendError(e: Error | errors.IQError | errors.CodedError, chat: import("../../shared/chatbox.js").default): never;
 /**
+ * Sends a failed encrypted message again in the clear. Listens for the
+ * `resendFailedMessageUnencrypted` hook, which the client calls only after the
+ * user has agreed to send the message unencrypted.
+ * @param {import('../../shared/chatbox.js').default} chat
+ * @param {{message: import('../../shared/message.js').default, handled: boolean}} data
+ */
+export function resendFailedMessageUnencrypted(chat: import("../../shared/chatbox.js").default, data: {
+    message: import("../../shared/message.js").default;
+    handled: boolean;
+}): Promise<{
+    message: import("../../shared/message.js").default;
+    handled: boolean;
+}>;
+/**
  * Returns the device collection for a contact and OMEMO version.
  * Doesn't throw on any failure, instead logs and returns an empty collection.
  * @param {string} jid

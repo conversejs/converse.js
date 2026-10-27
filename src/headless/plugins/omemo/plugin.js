@@ -15,6 +15,7 @@ import {
     initOMEMO,
     onChatInitialized,
     registerPEPPushHandler,
+    resendFailedMessageUnencrypted,
     sendOMEMO2Marker,
     setEncryptedFileURL,
 } from './utils.js';
@@ -57,6 +58,7 @@ converse.plugins.add('converse-omemo', {
         api.listen.on('chatRoomInitialized', onChatInitialized);
         api.listen.on('chatBoxInitialized', onChatInitialized);
         api.listen.on('getOutgoingMessageAttributes', getOutgoingMessageAttributes);
+        api.listen.on('resendFailedMessageUnencrypted', resendFailedMessageUnencrypted);
 
         api.listen.on('statusInitialized', initOMEMO);
         api.listen.on('addClientFeatures', () => {

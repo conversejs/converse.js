@@ -341,6 +341,10 @@ window.libomemo.OMEMOAddress.prototype.toString = function () {
 // decryption tests never trigger a heartbeat.
 window.libomemo.mock_ratchet = { counter: 0, key: new Uint8Array([5, 1, 2, 3]).buffer };
 
+// When set, the mocked decrypt methods throw this error instead of decrypting. Tests use it
+// to simulate libsignal rejecting a repeated message key (a `MessageCounterError`).
+window.libomemo.mock_decrypt_error = null;
+
 Object.assign(window.libomemo, {
     // Mock Ed25519 key conversion: just return the input as-is (real impl converts Curve25519 → Ed25519)
     'curvePubKeyToEd25519PubKey': async (curve_key) => new Uint8Array(curve_key).slice(0, 32).buffer,
@@ -360,6 +364,7 @@ Object.assign(window.libomemo, {
         // here, the same way libomemo does, so that store-interface regressions
         // are caught by tests.
         this.decryptPreKeyWhisperMessage = async (key_and_tag) => {
+            if (window.libomemo.mock_decrypt_error) throw window.libomemo.mock_decrypt_error;
             // Mirror libomemo's SessionBuilder.processV3 + initSession.
             const signed_prekey = await storage.loadSignedPreKey(0);
             if (signed_prekey === undefined) {
@@ -390,6 +395,7 @@ Object.assign(window.libomemo, {
             return { plaintext: key_and_tag, ratchet: { ...window.libomemo.mock_ratchet } };
         };
         this.decryptWhisperMessage = async (key_and_tag) => {
+            if (window.libomemo.mock_decrypt_error) throw window.libomemo.mock_decrypt_error;
             // Mirror libomemo's SessionCipher.doDecryptWhisperMessage, which
             // reads the identity keypair from the store.
             const identity_keypair = await storage.getIdentityKeyPair();

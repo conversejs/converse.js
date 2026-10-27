@@ -82,9 +82,11 @@ function getDecryptionErrorAttributes(e) {
  */
 function handleDecryptionError(attrs, e) {
     if (e?.name === 'MessageCounterError') {
-        // XEP-0384: a message we already decrypted. Ignore it silently.
+        // XEP-0384: a message we already decrypted. Ignore it silently. Without a body it
+        // isn't stored as a message of its own, which would have no text. The copy that
+        // decrypted, if there is one, is the message.
         log.debug(`Ignoring a duplicate OMEMO message: ${e.message}`);
-        return attrs;
+        return Object.assign(attrs, { body: undefined, message: undefined, is_only_key: true });
     }
     log.error(`OMEMO decryption failed: ${e.name} ${e.message}`);
     return Object.assign(attrs, getDecryptionErrorAttributes(e));

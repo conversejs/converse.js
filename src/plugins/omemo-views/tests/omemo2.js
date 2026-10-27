@@ -569,6 +569,55 @@ describe('OMEMO 2 message reception', function () {
     );
 });
 
+describe('OMEMO 2 duplicate messages', function () {
+    afterEach(() => (window.libomemo.mock_decrypt_error = null));
+
+    it(
+        'does not store a counter-repeated copy as a blank message',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.initializedOMEMO(_converse);
+            mock.deferV2DeviceList(contact_jid);
+            await mock.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+
+            const our_device_id = _converse.state.omemo_store.get('device_id');
+            const { key_and_tag, payload } = await u.omemo.encryptSCE('hi', { from_jid: contact_jid, to_jid: null });
+
+            // libsignal rejects the second copy of a message key, as it does when the live
+            // stanza and its MAM copy are decrypted concurrently.
+            window.libomemo.mock_decrypt_error = Object.assign(
+                new Error('Message key not found. The counter was repeated'),
+                { name: 'MessageCounterError' },
+            );
+
+            const conn = api.connection.get();
+            const stanza = stx`<message from="${contact_jid}"
+                    to="${conn.jid}"
+                    type="chat"
+                    id="${conn.getUniqueId()}"
+                    xmlns="jabber:client">
+                <body>This message is encrypted</body>
+                <encrypted xmlns="${Strophe.NS.OMEMO2}">
+                    <header sid="555">
+                        <keys jid="${_converse.bare_jid}">
+                            <key rid="${our_device_id}">${u.arrayBufferToBase64(key_and_tag)}</key>
+                        </keys>
+                    </header>
+                    <payload>${payload}</payload>
+                </encrypted>
+                <encryption xmlns="${Strophe.NS.EME}" namespace="${Strophe.NS.OMEMO2}"/>
+            </message>`;
+            conn._dataRecv(mock.createRequest(_converse, stanza));
+
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            expect(view.model.messages.length).toBe(0);
+        }),
+    );
+});
+
 describe('OMEMO 2 bundle parsing', function () {
     it(
         'parses an omemo:2 bundle element into the internal bundle format',

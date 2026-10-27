@@ -115,7 +115,8 @@ export function isMessage(model) {
     if (model instanceof MAMPlaceholderMessage) return false;
     // A retraction or reaction whose target hasn't arrived is held until it does. It's not a message.
     if (model.get('dangling_retraction') || model.get('dangling_reaction')) return false;
-    return !!model.get('body');
+    // A message that couldn't be decrypted has no body, but the user still needs to see that it arrived.
+    return !!model.get('body') || isUndecryptable(model);
 }
 
 /**
@@ -133,4 +134,12 @@ function fetchOlder(chat) {
         return u.mam.fetchArchivedMessages(chat, { mam: { end: oldest.get('time') }, rsm: { before: '' } });
     }
     return u.mam.fetchArchivedMessages(chat, { rsm: { before: '' } });
+}
+
+/**
+ * Whether a message arrived OMEMO-encrypted and couldn't be decrypted.
+ * @param {import('@converse/headless').Message} message
+ */
+export function isUndecryptable(message) {
+    return !!message.get('is_error') && message.get('error_type') === 'Decryption';
 }

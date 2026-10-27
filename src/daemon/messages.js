@@ -3,8 +3,8 @@
  * DTOs clients see.
  * @module @converse/daemon/messages
  */
-import { converse, log } from '@converse/headless';
-import { getPage, hasArchivedMessages, isMessage } from './history.js';
+import { converse, errors, log } from '@converse/headless';
+import { getPage, hasArchivedMessages, isMessage, isUndecryptable } from './history.js';
 import { draftNotice } from './notices.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
@@ -114,7 +114,8 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
             if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, `"limit" must be a whole number from 1 to ${MAX_LIMIT}.`);
             }
-            const jid = conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
+            const jid =
+                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
             const text = query.trim();
 
             const found = await searchServer(_converse, text, jid, limit);
@@ -464,20 +465,54 @@ export async function sendMessage(_converse, jid, body, targets = {}, attributes
     const room = await api.rooms.get(jid);
     if (room) {
         if (!room.isEntered()) throw notJoined(jid);
-        const message = await room.sendMessage({ body, ...attributes }, targets);
-        if (!message) {
-            throw new RPCError(ERRORS.INTERNAL_ERROR, "The message couldn't be built, so nothing was sent. Try again.");
-        }
+        const message = await sendThrough(_converse, room, { body, ...attributes }, targets);
         return toMessageDTO(message, jid, _converse.session.get('bare_jid'));
     }
     const chat = await api.chats.get(jid, {}, true);
     await chat.initialized;
-    const message = await chat.sendMessage({ body, ...attributes }, targets);
-    // Headless returns nothing when it can't build the stanza, and then nothing was sent.
-    if (!message) {
-        throw new RPCError(ERRORS.INTERNAL_ERROR, "The message couldn't be built, so nothing was sent. Try again.");
-    }
+    const message = await sendThrough(_converse, chat, { body, ...attributes }, targets);
     return toMessageDTO(message, jid, _converse.session.get('bare_jid'));
+}
+
+/**
+ * Sends through headless. When headless can't build the stanza it returns
+ * nothing, and says why in a `messageNotSent` event, so nothing was sent and
+ * the caller is told the reason.
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('@converse/headless').ChatBox|import('@converse/headless').MUC} chatbox
+ * @param {Object} attrs
+ * @param {Object} targets
+ * @returns {Promise<import('@converse/headless').Message>}
+ */
+async function sendThrough(_converse, chatbox, attrs, targets) {
+    // The failure heard during this send is this chat's: the event names the chat it's for.
+    let failure;
+    const onFailure = (data) => {
+        if (data.chatbox === chatbox) failure = data.error;
+    };
+    _converse.api.listen.on('messageNotSent', onFailure);
+    let message;
+    try {
+        message = await chatbox.sendMessage(attrs, targets);
+    } finally {
+        _converse.api.listen.not('messageNotSent', onFailure);
+    }
+    if (!message) {
+        throw new RPCError(ERRORS.INTERNAL_ERROR, `Nothing was sent: ${unsentReason(failure)}. Try again.`);
+    }
+    return message;
+}
+
+/**
+ * @param {unknown} error - What headless failed with, if it said
+ * @returns {string}
+ */
+function unsentReason(error) {
+    if (error instanceof errors.UserFacingError) return error.message;
+    if (error instanceof errors.IQError) {
+        return "the server couldn't supply the encryption keys of the recipient's devices";
+    }
+    return "the message couldn't be built";
 }
 
 function notConnected() {
@@ -565,12 +600,15 @@ export function toMessageDTO(message, conversation, own_jid) {
     const outgoing = message.get('sender') === 'me';
     const id = getIDs(message, own_jid)[0];
     const retracted = message.isRetracted();
+    const undecryptable = isUndecryptable(message);
     const rest = {
         direction: outgoing ? 'outgoing' : 'incoming',
         time: message.get('time'),
         // What was retracted was withdrawn by its sender, so it isn't passed on.
         // A reply quotes what it answers for clients that don't know replies. That's what reply_to is for.
-        body: retracted ? null : (message.stripReplyFallback(message.get('body')) ?? null),
+        // An encrypted message's text is its plaintext, and one that couldn't be decrypted has none.
+        body: retracted || undecryptable ? null : (message.stripReplyFallback(getText(message)) ?? null),
+        encryption: getEncryption(message),
         reply_to: getReplyTarget(message, own_jid),
         edited: message.get('edited') ?? null,
         retracted: retracted ? (message.get('retracted') ?? message.get('time')) : null,
@@ -583,6 +621,32 @@ export function toMessageDTO(message, conversation, own_jid) {
     }
     const from = outgoing ? own_jid : Strophe.getBareJidFromJid(message.get('from'));
     return { id, conversation, from, nick: null, ...rest };
+}
+
+/**
+ * The text a message says: its plaintext if it was encrypted, else its body.
+ * @param {import('@converse/headless').Message} message
+ * @returns {string|undefined}
+ */
+function getText(message) {
+    return message.get('is_encrypted') ? message.get('plaintext') : message.get('body');
+}
+
+/**
+ * How a message was encrypted, and whether it could be read. Null for a plain
+ * message. A message that couldn't be decrypted is kept, with its reason, so
+ * that it doesn't read as a gap in the conversation.
+ * @param {import('@converse/headless').Message} message
+ * @returns {import('./types').Encryption|null}
+ */
+function getEncryption(message) {
+    if (isUndecryptable(message)) {
+        return { scheme: 'omemo', status: 'undecryptable', error: message.get('error_text') ?? null };
+    }
+    if (message.get('is_encrypted')) {
+        return { scheme: 'omemo', status: 'decrypted', error: null };
+    }
+    return null;
 }
 
 /**

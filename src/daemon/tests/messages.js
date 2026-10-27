@@ -89,6 +89,7 @@ describe('Messages in a 1:1 chat', () => {
                     direction: 'outgoing',
                     time: expect.any(String),
                     body: 'But soft!',
+                    encryption: null,
                     reply_to: null,
                     edited: null,
                     retracted: null,
@@ -125,7 +126,7 @@ describe('Messages in a 1:1 chat', () => {
             try {
                 await expect(client.request('messages.send', { to: JULIET, body: 'x' })).rejects.toMatchObject({
                     code: ERRORS.INTERNAL_ERROR,
-                    message: "The message couldn't be built, so nothing was sent. Try again.",
+                    message: "Nothing was sent: the message couldn't be built. Try again.",
                 });
             } finally {
                 send.mockRestore();
@@ -166,6 +167,7 @@ describe('Messages in a 1:1 chat', () => {
                 direction: 'incoming',
                 time: '2026-10-20T10:00:00.000Z',
                 body: 'Only a msgid',
+                encryption: null,
                 reply_to: null,
                 edited: null,
                 retracted: null,

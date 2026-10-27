@@ -101,6 +101,7 @@ describe('converse-cli wait', () => {
             direction: 'incoming',
             time: expect.any(String),
             body: expect.stringMatching(/^Good morrow \d+$/),
+            encryption: null,
             reply_to: null,
             edited: null,
             retracted: null,

@@ -77,6 +77,7 @@ describe('converse-cli read and send', () => {
                 direction: 'incoming',
                 time: '2026-10-20T10:00:00.123Z',
                 body: 'Wherefore art thou?',
+                encryption: null,
                 reply_to: null,
                 edited: null,
                 retracted: null,

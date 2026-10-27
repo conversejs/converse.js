@@ -344,9 +344,10 @@ export function handleMessageSendError(e, chat) {
             err_msgs.push(__('Unable to send an encrypted message due to an unexpected error.'));
             err_msgs.push(e.iq.outerHTML);
         }
-        api.alert('error', __('Error'), err_msgs);
+        // Only a UI has an alert. A headless client (the daemon, for one) gets the error thrown instead.
+        api.alert?.('error', __('Error'), err_msgs);
     } else if (e instanceof errors.UserFacingError) {
-        api.alert('error', __('Error'), [e.message]);
+        api.alert?.('error', __('Error'), [e.message]);
     }
     throw e;
 }

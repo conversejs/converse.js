@@ -412,6 +412,16 @@ export default function ModelWithMessages(BaseModel) {
             } catch (e) {
                 message.destroy();
                 log.error(e);
+                /**
+                 * Triggered when a message couldn't be built, so that nothing was sent. Its
+                 * `error` says why, such as that it couldn't be encrypted.
+                 * @event _converse#messageNotSent
+                 * @type {Object}
+                 * @param {Object} data
+                 * @param {(ChatBox|MUC)} data.chatbox
+                 * @param {Error} data.error
+                 */
+                api.trigger('messageNotSent', { chatbox: this, error: e });
                 return;
             }
 

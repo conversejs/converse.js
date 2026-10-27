@@ -10,7 +10,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { parseErrorStanza } from '../../shared/parsers.js';
-import { StanzaError } from '../../shared/errors.js';
+import { CodedError, StanzaError } from '../../shared/errors.js';
 import log from '@converse/log';
 import { initStorage } from '../../utils/storage.js';
 import { isErrorStanza } from '../../utils/stanza.js';
@@ -77,7 +77,19 @@ class Bookmarks extends Collection {
 
         const bare_jid = _converse.session.get('bare_jid');
         this.#supports_pinning = await api.disco.supports(`${Strophe.NS.BOOKMARKS2}#compat`, bare_jid);
-        await this.fetchBookmarks();
+        try {
+            await this.fetchBookmarks();
+        } catch (e) {
+            /**
+             * Triggered when the bookmarks could not be fetched from the server.
+             * The error carries a `code`, which the client maps to its own text.
+             * @event _converse#bookmarksFetchFailed
+             * @type {Error}
+             * @example _converse.api.listen.on('bookmarksFetchFailed', (e) => { ... });
+             */
+            api.trigger('bookmarksFetchFailed', e);
+            return;
+        }
 
         /**
          * Triggered once the {@link Bookmarks} collection
@@ -384,15 +396,8 @@ class Bookmarks extends Collection {
      */
     async onBookmarksReceivedError(deferred, iq) {
         if (iq === null) {
-            const { __ } = _converse;
             log.error('Error: timeout while fetching bookmarks');
-            api.alert('error', __('Timeout Error'), [
-                __(
-                    'The server did not return your bookmarks within the allowed time. ' +
-                        'You can reload the page to request them again.',
-                ),
-            ]);
-            deferred?.reject(new Error('Could not fetch bookmarks'));
+            deferred?.reject(new CodedError('bookmarks-timeout', 'Timeout while fetching bookmarks'));
         } else {
             const { errors } = converse.env;
             const e = await parseErrorStanza(iq);

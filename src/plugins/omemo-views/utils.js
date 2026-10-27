@@ -370,3 +370,52 @@ Object.assign(u, {
         formatFingerprint,
     },
 });
+
+/**
+ * Returns the text that explains a failed encrypted send. Headless gives each
+ * failure a stable code and keeps its prose out, so the wording lives here.
+ * @param {string} [code] - The `code` of the error that failed the send.
+ * @param {Element} [iq] - The IQ that failed, when the failure came from the server.
+ * @returns {string[]}
+ */
+export function getSendErrorMessages(code, iq) {
+    const from = iq?.getAttribute('from');
+    switch (code) {
+        case 'omemo-subscription-required':
+            return [
+                __(
+                    "Sorry, we're unable to send an encrypted message because %1$s " +
+                        'requires you to be subscribed to their presence in order to see their OMEMO information',
+                    from,
+                ),
+            ];
+        case 'omemo-remote-server-not-found':
+            return [
+                __(
+                    "Sorry, we're unable to send an encrypted message because the remote server for %1$s could not be found",
+                    from,
+                ),
+            ];
+        case 'omemo-key-fetch-failed':
+            return [
+                __('Unable to send an encrypted message due to an unexpected error.'),
+                ...(iq ? [iq.outerHTML] : []),
+            ];
+        case 'omemo-encrypt-failed':
+            return [__('Unable to send an encrypted message due to an unexpected error.')];
+        case 'no-omemo-devices':
+            return [__('Sorry, no devices found to which we can send an OMEMO encrypted message.')];
+        case 'omemo-groupchat-not-eligible':
+            return [__('Cannot use OMEMO in this groupchat — it must be non-anonymous and members-only.')];
+        default:
+            return [__('Your message could not be sent.')];
+    }
+}
+
+/**
+ * Shows a failed send to the user in an alert. Call it once per failed send.
+ * @param {Error & {code?: string, iq?: Element}} e
+ */
+export function alertSendError(e) {
+    api.alert('error', __('Error'), getSendErrorMessages(e.code, e.iq));
+}

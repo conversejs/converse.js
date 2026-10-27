@@ -119,6 +119,33 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          */
         sendMessage(attrs?: any): Promise<import("./message").default>;
         /**
+         * Builds and sends the stanza for a stored message. On failure the message
+         * is kept, marked as failed with the error's code, and the error is re-thrown.
+         * @param {BaseMessage} message
+         */
+        "__#5@#sendStoredMessage"(message: import("./message").default): Promise<void>;
+        /**
+         * Sends a failed message again, encrypted if the conversation is encrypted.
+         * Only a call from the client resends a message. Nothing resends on its own.
+         * @param {BaseMessage} message - A message whose `send_status` is `failed`.
+         * @returns {Promise<BaseMessage>}
+         */
+        resendFailedMessage(message: import("./message").default): Promise<import("./message").default>;
+        /**
+         * Sends a failed encrypted message again in the clear. The client must only
+         * call this after the user has explicitly agreed to send it unencrypted.
+         * @param {BaseMessage} message - A failed message that was encrypted.
+         * @returns {Promise<BaseMessage>}
+         */
+        resendFailedMessageUnencrypted(message: import("./message").default): Promise<import("./message").default>;
+        /**
+         * Removes a failed message from the history.
+         * @param {BaseMessage} message
+         */
+        discardFailedMessage(message: import("./message").default): void;
+        /** @param {BaseMessage} message */
+        "__#5@#clearSendFailure"(message: import("./message").default): void;
+        /**
          * Retract one of your messages in this chat
          * @param {BaseMessage} message - The message which we're retracting.
          */

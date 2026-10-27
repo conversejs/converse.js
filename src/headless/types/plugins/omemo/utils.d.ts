@@ -45,13 +45,17 @@ export function getDeviceList(jid: string, create?: boolean, version?: import(".
  */
 export function generateFingerprint(device: import("./device.js").default): Promise<void>;
 /**
- * Surface a user-facing alert for a failed encrypted send and re-throw, so the
- * send pipeline (the `createMessageStanza` handler) aborts. Always throws.
- * @param {Error|errors.IQError|errors.UserFacingError} e
+ * Attaches a stable error code to a failed encrypted send and re-throws it, so
+ * the send pipeline aborts and the caller gets a coded rejection. Headless holds
+ * no user-facing text: each client maps the code to its own words.
+ *
+ * A failed key fetch also marks the contact as not supporting OMEMO, so that the
+ * next send doesn't retry the same failure.
+ * @param {Error|errors.IQError|errors.CodedError} e
  * @param {import('../../shared/chatbox.js').default} chat
  * @returns {never}
  */
-export function handleMessageSendError(e: Error | errors.IQError | errors.UserFacingError, chat: import("../../shared/chatbox.js").default): never;
+export function handleMessageSendError(e: Error | errors.IQError | errors.CodedError, chat: import("../../shared/chatbox.js").default): never;
 /**
  * Returns the device collection for a contact and OMEMO version.
  * Doesn't throw on any failure, instead logs and returns an empty collection.
@@ -127,8 +131,8 @@ export function getEncryptedElements(chat: import("../../shared/chatbox").defaul
  * Handler for the `createMessageStanza` hook: for an encrypted outgoing chat
  * message, attach the OMEMO `<encrypted>` element(s) (plus store + EME hints) to
  * the stanza that was built from the Message model. Non-encrypted messages pass
- * through untouched. A send failure is surfaced to the user via
- * {@link handleMessageSendError} (which re-throws to abort the send).
+ * through untouched. A send failure is classified by {@link handleMessageSendError},
+ * which re-throws the coded error to abort the send.
  *
  * @param {import('../../shared/chatbox').default} chat
  * @param {import('../../shared/types').MessageAndStanza} data

@@ -113,6 +113,11 @@ declare const MUCOccupant_base: {
         getReferencedMessage(reply_to_id: string): import("../../index.js").BaseMessage | undefined;
         addReplyFallback(attrs: import("../../shared/types").MessageAttributes): import("../../shared/types").MessageAttributes;
         sendMessage(attrs?: any): Promise<import("../../index.js").BaseMessage>;
+        "__#5@#sendStoredMessage"(message: import("../../index.js").BaseMessage): Promise<void>;
+        resendFailedMessage(message: import("../../index.js").BaseMessage): Promise<import("../../index.js").BaseMessage>;
+        resendFailedMessageUnencrypted(message: import("../../index.js").BaseMessage): Promise<import("../../index.js").BaseMessage>;
+        discardFailedMessage(message: import("../../index.js").BaseMessage): void;
+        "__#5@#clearSendFailure"(message: import("../../index.js").BaseMessage): void;
         retractOwnMessage(message: import("../../index.js").BaseMessage): void;
         sendFiles(files: File[] | FileList): Promise<import("../../index.js").BaseMessage[]>;
         setEditable(attrs: any, send_time: string): void;

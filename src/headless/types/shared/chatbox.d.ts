@@ -29,6 +29,11 @@ declare const ChatBoxBase_base: {
         getReferencedMessage(reply_to_id: string): import("./message.js").default | undefined;
         addReplyFallback(attrs: import("./types.js").MessageAttributes): import("./types.js").MessageAttributes;
         sendMessage(attrs?: any): Promise<import("./message.js").default>;
+        "__#5@#sendStoredMessage"(message: import("./message.js").default): Promise<void>;
+        resendFailedMessage(message: import("./message.js").default): Promise<import("./message.js").default>;
+        resendFailedMessageUnencrypted(message: import("./message.js").default): Promise<import("./message.js").default>;
+        discardFailedMessage(message: import("./message.js").default): void;
+        "__#5@#clearSendFailure"(message: import("./message.js").default): void;
         retractOwnMessage(message: import("./message.js").default): void;
         sendFiles(files: File[] | FileList): Promise<import("./message.js").default[]>;
         setEditable(attrs: any, send_time: string): void;

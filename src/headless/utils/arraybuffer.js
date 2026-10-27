@@ -1,3 +1,7 @@
+/**
+ * @param {ArrayBuffer} buffer1
+ * @param {ArrayBuffer} buffer2
+ */
 export function appendArrayBuffer (buffer1, buffer2) {
     const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
     tmp.set(new Uint8Array(buffer1), 0);
@@ -34,6 +38,7 @@ export function base64ToArrayBuffer (b64) {
     return bytes.buffer
 }
 
+/** @param {string} hex */
 export function hexToArrayBuffer (hex) {
     const typedArray = new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)))
     return typedArray.buffer

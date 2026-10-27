@@ -1,12 +1,12 @@
 export default class BookmarksView extends CustomElement {
     initialize(): Promise<void>;
     liveFilter: import("lodash").DebouncedFunc<(ev: any) => Model<{
-        [x: string]: any;
+        [x: string]: /*elided*/ any;
         id: string | number;
         text: string;
     }>>;
     model: Model<{
-        [x: string]: any;
+        [x: string]: /*elided*/ any;
         id: string | number;
         text: string;
     }>;

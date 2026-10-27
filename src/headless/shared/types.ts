@@ -1,4 +1,4 @@
-import { Builder } from 'strophe.js';
+import { Builder, Strophe } from 'strophe.js';
 import { Collection, Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
 import BaseMessage from './message';
@@ -51,6 +51,13 @@ export type RSMResult = {
 type Constructor<T = {}> = new (...args: any[]) => T;
 
 export type ModelExtender = Constructor<Model>;
+
+// strophe.js exports the `Strophe` object but not its classes, so the
+// declaration emitter can't name `Strophe.Connection` when a class extends it.
+// Casting the base class to this alias gives it a type that can be named.
+export type StropheConnectionConstructor = new (
+    ...args: ConstructorParameters<typeof Strophe.Connection>
+) => InstanceType<typeof Strophe.Connection>;
 
 type EncryptionPayloadAttrs = {
     key?: string;

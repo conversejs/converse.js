@@ -15,7 +15,7 @@ import { setLocalStorageItem } from '../../utils/environment.js';
  * agnostic concerning the underlying protocol (i.e. websocket, long-polling
  * via BOSH or websocket inside a shared worker).
  */
-export class Connection extends Strophe.Connection {
+export class Connection extends /** @type {import('../types').StropheConnectionConstructor} */ (Strophe.Connection) {
     /**
      * @param {string} service - The BOSH or WebSocket service URL.
      * @param {import('strophe.js').ConnectionOptions} options
@@ -529,6 +529,7 @@ export class MockConnection extends Connection {
         return super._dataRecv(elem, raw);
     }
 
+    /** @returns {InstanceType<typeof import('strophe.js').Strophe.SASLSHA256>} */
     // @ts-ignore
     get _sasl_mechanism() {
         return new Strophe.SASLSHA256();

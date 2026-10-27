@@ -114,13 +114,13 @@ declare const _default: {
     hasCredentialsAPI(): boolean;
     IS_BROWSER: boolean;
     colorize(s: string): Promise<string>;
-    appendArrayBuffer(buffer1: any, buffer2: any): ArrayBufferLike;
+    appendArrayBuffer(buffer1: ArrayBuffer, buffer2: ArrayBuffer): ArrayBuffer;
     arrayBufferToHex(ab: any): any;
     arrayBufferToString(ab: any): string;
-    stringToArrayBuffer(string: any): ArrayBufferLike;
+    stringToArrayBuffer(string: any): ArrayBuffer;
     arrayBufferToBase64(ab: any): string;
-    base64ToArrayBuffer(b64: any): ArrayBufferLike;
-    hexToArrayBuffer(hex: any): ArrayBufferLike;
+    base64ToArrayBuffer(b64: any): ArrayBuffer;
+    hexToArrayBuffer(hex: string): ArrayBuffer;
     unique<T extends unknown>(arr: Array<T>): Array<T>;
 } & import("./types").CommonUtils & import("./types").PluginUtils;
 export default _default;

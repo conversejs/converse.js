@@ -52,13 +52,13 @@ export default class SocialFollowing extends SocialFollowing_base {
      * signal here keeps it auto-tracked by `SignalWatcher`.
      * @returns {Array<{ jid: string, node: string, title: string, profile: import('@converse/headless').MicroblogProfile, label: string }>}
      */
-    get entries(): {
+    get entries(): Array<{
         jid: string;
         node: string;
         title: string;
         profile: import("@converse/headless").MicroblogProfile;
         label: string;
-    }[];
+    }>;
     render(): import("lit-html").TemplateResult<1>;
     /**
      * Open a followed feed: a person's microblog opens their profile; a community

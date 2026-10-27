@@ -8,7 +8,7 @@ declare class RosterContacts extends Collection<RosterContact> {
     data: any;
     initialize(): void;
     state: Model<{
-        [x: string]: any;
+        [x: string]: /*elided*/ any;
         id: string | number;
         collapsed_groups: string[];
     }>;

@@ -124,7 +124,7 @@ export const MICROBLOG_TYPE: "microblog";
  * (U+2665). Likes ride the per-post comments node as ♥-comments (XEP-0277
  * convention), so a single fetch of the node yields both comments and likes.
  */
-export const LIKE_MARKER: "♥";
+export const LIKE_MARKER: "\u2665";
 /**
  * How many per-post comment-summary fetches run concurrently (the greedy
  * on-visible fetch). Bounded so scrolling a long timeline doesn't flood the

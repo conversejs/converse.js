@@ -42,7 +42,7 @@ declare class PubSubMessage extends BaseMessage {
      * {@link setReposter}. Used only to put a name on the "… reposted" line.
      * @returns {import('../vcard/vcard').default|null}
      */
-    get reposterVCard(): import("../vcard/vcard").default;
+    get reposterVCard(): import("../vcard/vcard").default | null;
     /**
      * Resolve the reposter's vCard from the cache
      * No-op for non-reposts and for our own reposts (which are labeled "you").

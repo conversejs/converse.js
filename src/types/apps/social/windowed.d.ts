@@ -30,18 +30,18 @@ export class WindowedListElement extends WindowedListElement_base {
      * The full list of models the window slides over. Subclasses must implement this.
      * @returns {import('@converse/skeletor').Model[]}
      */
-    get virtualizedItems(): import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[];
+    get virtualizedItems(): import("@converse/skeletor").Model[];
     /**
      * The element whose children are the rendered item elements (used to find
      * the scroll anchor). Subclasses must implement this.
      * @returns {HTMLElement|null}
      */
-    get itemsContainer(): HTMLElement;
+    get itemsContainer(): HTMLElement | null;
     /**
      * The items currently within the rendered window.
      * @returns {import('@converse/skeletor').Model[]}
      */
-    get windowedItems(): import("@converse/skeletor").Model<import("@converse/skeletor").ModelAttributes>[];
+    get windowedItems(): import("@converse/skeletor").Model[];
     /**
      * Re-pin the window to the top. When the underlying list changes wholesale
      * (a filter or tab change), or when the user presses Home. Drops the scroll

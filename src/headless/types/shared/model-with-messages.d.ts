@@ -153,7 +153,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @param {string} state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
          * @param {object} [options]
          */
-        setChatState(state: string, options?: object): any;
+        setChatState(state: string, options?: object): /*elided*/ any;
         chat_state_timeout: number;
         /**
          * @param {BaseMessage} message
@@ -299,7 +299,7 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
          * @returns {boolean}
          */
         isHidden(): boolean;
-        "__#4@#private": any;
+        "__#private@#private": any;
         _storage?: import("@converse/skeletor").PersistentStorage;
         _changing: boolean;
         _pending: boolean | import("@converse/skeletor").ModelOptions;
@@ -314,16 +314,18 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         id: string | number;
         hydrated?: Promise<void>;
         validationError: string | number | null;
-        storage: import("@converse/skeletor").PersistentStorage;
-        browserStorage: import("@converse/skeletor").PersistentStorage;
-        readonly autoSync: boolean;
-        readonly autoSyncDelay: number;
-        readonly idAttribute: string;
-        readonly cidPrefix: string;
+        get storage(): import("@converse/skeletor").PersistentStorage | undefined;
+        set storage(s: import("@converse/skeletor").PersistentStorage);
+        get browserStorage(): import("@converse/skeletor").PersistentStorage | undefined;
+        set browserStorage(s: import("@converse/skeletor").PersistentStorage);
+        get autoSync(): boolean;
+        get autoSyncDelay(): number;
+        get idAttribute(): string;
+        get cidPrefix(): string;
         preinitialize(...args: any[]): void;
         validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): string | number | null | void;
         defaults(): Partial<import("@converse/skeletor").ModelAttributes>;
-        readonly computed: import("@converse/skeletor").ComputedProperties<any>;
+        get computed(): import("@converse/skeletor").ComputedProperties</*elided*/ any>;
         toJSON(): import("@converse/skeletor").ModelAttributes;
         sync(method: import("@converse/skeletor").SyncOperation, model: Model<any>, options: import("@converse/skeletor").Options): any;
         get<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
@@ -337,9 +339,9 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         isEmpty(): boolean;
         has(attr: string | number): boolean;
         matches(attrs: Partial<import("@converse/skeletor").ModelAttributes> | ((attrs: import("@converse/skeletor").ModelAttributes) => any)): boolean;
-        set(key: string | import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): any;
-        unset(attr: string | number, options?: import("@converse/skeletor").ModelOptions): any;
-        clear(options?: import("@converse/skeletor").ModelOptions): any;
+        set(key: string | import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
+        unset(attr: string | number, options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
+        clear(options?: import("@converse/skeletor").ModelOptions): /*elided*/ any;
         hasChanged(attr?: string | number): boolean;
         changedAttributes(diff?: Partial<import("@converse/skeletor").ModelAttributes>): false | Partial<import("@converse/skeletor").ModelAttributes>;
         previous<K extends string | number>(attr: K): import("@converse/skeletor").ModelAttributes[K];
@@ -347,13 +349,15 @@ export default function ModelWithMessages<T extends import("./types").ModelExten
         fetch(options?: import("@converse/skeletor").Options): any;
         save(key?: string | Partial<import("@converse/skeletor").ModelAttributes>, val?: any, options?: import("@converse/skeletor").ModelOptions): any;
         destroy(options?: import("@converse/skeletor").ModelOptions): any;
-        urlRoot: string;
-        url: string;
+        get urlRoot(): string;
+        set urlRoot(root: string);
+        get url(): string;
+        set url(url: string);
         parse(resp: any, options?: import("@converse/skeletor").ModelOptions): void | Partial<import("@converse/skeletor").ModelAttributes>;
         isNew(): boolean;
         isValid(options?: import("@converse/skeletor").ModelOptions): boolean;
         subscribe(event: string, callback: import("@converse/skeletor").EventCallback, context?: unknown): () => void;
-        subscribe(callback: (model: any, changed: Partial<import("@converse/skeletor").ModelAttributes>) => void): () => void;
+        subscribe(callback: (model: /*elided*/ any, changed: Partial<import("@converse/skeletor").ModelAttributes>) => void): () => void;
         _validate(attrs: import("@converse/skeletor").ObjectWithId | Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions): boolean;
         _events?: import("@converse/skeletor").EventHandlersMap;
         _listeners?: import("@converse/skeletor").EventListenerMap;

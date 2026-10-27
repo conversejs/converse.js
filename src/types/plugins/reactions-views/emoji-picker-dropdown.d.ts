@@ -9,11 +9,11 @@ export default class EmojiPickerDropdown extends DropdownBase {
     /**
      * @returns {ChatBoxOrMUC|undefined}
      */
-    get chatbox(): import("@converse/headless/types/shared/types").ChatBoxOrMUC;
+    get chatbox(): ChatBoxOrMUC | undefined;
     /**
      * @returns {string[]|undefined}
      */
-    get allowed_emojis(): string[];
+    get allowed_emojis(): string[] | undefined;
     /**
      * @returns {import('lit').TemplateResult}
      */

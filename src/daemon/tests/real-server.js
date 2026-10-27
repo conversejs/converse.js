@@ -45,8 +45,12 @@ export async function eventually(fn, { timeout = 10000, what = 'the condition' }
  * @param {string} [options.resource]
  * @param {string} [options.websocket_url] - To reach Prosody another way, e.g. through a {@link startProxy}
  * @param {Partial<import('../types').Policy>} [options.policy] - The send policy, from the config file
+ * @param {Record<string, unknown>} [options.settings] - More headless settings
  */
-export async function startDaemon(account, { resource = 'claude', websocket_url = WEBSOCKET_URL, policy } = {}) {
+export async function startDaemon(
+    account,
+    { resource = 'claude', websocket_url = WEBSOCKET_URL, policy, settings = {} } = {},
+) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-prosody-test-'));
     const env = {
         ...process.env,
@@ -63,7 +67,7 @@ export async function startDaemon(account, { resource = 'claude', websocket_url 
             password: account.password,
             websocket_url,
             resource,
-            settings: { discover_connection_methods: false, loglevel: 'info' },
+            settings: { discover_connection_methods: false, loglevel: 'info', ...settings },
             ...(policy ? { policy } : {}),
         }),
     );
@@ -152,8 +156,13 @@ export async function startProxy() {
     const target = new URL(WEBSOCKET_URL);
     /** @type {Set<net.Socket>} */
     const sockets = new Set();
+    /** What each connection's client sent to the server, as it went over the wire. One list per connection. */
+    const sent = [];
     const server = net.createServer((client) => {
         const upstream = net.connect(Number(target.port), target.hostname);
+        const wire = [];
+        sent.push(wire);
+        client.on('data', (chunk) => wire.push(chunk));
         for (const [a, b] of [
             [client, upstream],
             [upstream, client],
@@ -172,6 +181,8 @@ export async function startProxy() {
 
     return {
         websocket_url: `ws://127.0.0.1:${port}${target.pathname}`,
+        /** The bytes each connection's client sent to the server, masked as the WebSocket protocol sends them. */
+        sent: () => sent.map((chunks) => Buffer.concat(chunks)),
         /** Cuts every connection through the proxy, which keeps accepting new ones. */
         drop() {
             sockets.forEach((s) => s.resetAndDestroy());

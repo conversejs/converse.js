@@ -15,6 +15,7 @@ import { createEvents } from './events.js';
 import { fileMethods } from './files.js';
 import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
+import { omemoMethods } from './omemo.js';
 import { presenceMethods } from './presence.js';
 import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
 import { createPolicy } from './policy.js';
@@ -32,7 +33,7 @@ const SHUTDOWN_TIMEOUT = 5000;
  * reads and drafted sends. Stopping the daemon, and reviewing or dropping
  * drafts, are the user's to do.
  */
-const FULL_ACCESS_METHODS = ['daemon.stop', 'drafts.list', 'drafts.reject'];
+const FULL_ACCESS_METHODS = ['daemon.stop', 'drafts.list', 'drafts.reject', 'omemo.devices.trust'];
 
 /**
  * How the daemon's connection identifies itself to contacts, as a bot. This
@@ -100,6 +101,7 @@ async function serve(config) {
         ...inboxMethods(_converse, createCursors(paths.cursors)),
         ...contactMethods(_converse),
         ...presenceMethods(_converse, { config }),
+        ...omemoMethods(_converse),
         ...roomMethods(_converse, { config, policy, store: rooms }),
         ...events.methods,
         /** @returns {import('./types').Status} */

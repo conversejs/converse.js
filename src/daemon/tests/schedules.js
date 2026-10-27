@@ -1,5 +1,4 @@
-import fs from 'node:fs';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { converse } from '@converse/headless';
 import { start } from '../daemon.js';
 import { ERRORS } from '../protocol.js';
@@ -25,8 +24,8 @@ describe('Scheduled sends', () => {
             .sent_stanzas.filter((s) => s.nodeName === 'message' && s.getAttribute('to') === JULIET)
             .map((s) => s.querySelector('body')?.textContent);
 
-    async function request(method, params, access = 'restricted') {
-        const client = await daemon.connect({ access, consumer: 'scheduler-test' });
+    async function request(method, params, access = 'restricted', consumer = 'scheduler-test') {
+        const client = await daemon.connect({ access, consumer });
         try {
             return await client.request(method, params);
         } finally {
@@ -84,16 +83,31 @@ describe('Scheduled sends', () => {
         expect((await request('schedules.list')).schedules).toEqual([]);
     });
 
-    it('lists and cancels a persisted schedule', async () => {
+    it('lets a restricted consumer list and cancel only its own schedules', async () => {
+        daemon = await startDaemon({ roster: ROSTER, mode: 'bot', policy: { direct: [JULIET] } });
+        const { schedule } = await request('messages.send', { to: JULIET, body: 'Maybe', at: at(60_000) });
+
+        expect((await request('schedules.list', {}, 'restricted', 'someone-else')).schedules).toEqual([]);
+        await expect(
+            request('schedules.cancel', { id: schedule.id }, 'restricted', 'someone-else'),
+        ).rejects.toMatchObject({ code: ERRORS.NOT_FOUND });
+        expect((await request('schedules.list')).schedules).toEqual([schedule]);
+        expect(await request('schedules.cancel', { id: schedule.id })).toEqual({ schedule });
+        await expect(request('schedules.cancel', { id: schedule.id })).rejects.toMatchObject({
+            code: ERRORS.NOT_FOUND,
+        });
+    });
+
+    it('keeps full-access schedules out of reach of restricted connections', async () => {
         daemon = await startDaemon({ roster: ROSTER });
         const { schedule } = await request('messages.send', { to: JULIET, body: 'Maybe', at: at(60_000) }, 'full');
 
-        expect((await request('schedules.list')).schedules).toEqual([schedule]);
-        expect(await request('schedules.cancel', { id: schedule.id })).toEqual({ schedule });
         expect((await request('schedules.list')).schedules).toEqual([]);
         await expect(request('schedules.cancel', { id: schedule.id })).rejects.toMatchObject({
             code: ERRORS.NOT_FOUND,
         });
+        expect((await request('schedules.list', {}, 'full')).schedules).toEqual([schedule]);
+        expect(await request('schedules.cancel', { id: schedule.id }, 'full')).toEqual({ schedule });
     });
 
     it('sends an overdue persisted message when the daemon starts again', async () => {
@@ -109,17 +123,19 @@ describe('Scheduled sends', () => {
         expect((await request('schedules.list')).schedules).toEqual([]);
     });
 
-    it('rechecks changed policy when a restricted schedule becomes due', async () => {
+    it('parks a restricted schedule that policy refuses when it becomes due, and keeps it until cancelled', async () => {
         daemon = await startDaemon({ roster: ROSTER, mode: 'bot', policy: { direct: [JULIET] } });
-        await request('messages.send', { to: JULIET, body: 'Policy changed', at: at(100) });
+        const { schedule } = await request('messages.send', { to: JULIET, body: 'Policy changed', at: at(100) });
         daemon.config.policy.direct.length = 0;
 
-        await u.waitUntil(() => fs.existsSync(daemon.config.paths.audit));
-        await u.waitUntil(() => {
-            const entries = fs.readFileSync(daemon.config.paths.audit, 'utf8').trim().split('\n').map(JSON.parse);
-            return entries.some(({ outcome, rule }) => outcome === 'refused' && rule === 'allowlist');
+        await vi.waitFor(async () => {
+            const { schedules } = await request('schedules.list');
+            expect(schedules).toEqual([
+                { ...schedule, parked: expect.objectContaining({ rule: 'allowlist', at: expect.any(String) }) },
+            ]);
         });
         expect(sent()).toEqual([]);
+        expect(await request('schedules.cancel', { id: schedule.id })).toMatchObject({ schedule: { id: schedule.id } });
         expect((await request('schedules.list')).schedules).toEqual([]);
     });
 

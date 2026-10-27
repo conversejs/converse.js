@@ -11,6 +11,10 @@ const RETRY_DELAY = 30_000;
  *
  * Delivery is injected so the collection stays useful to any headless client:
  * the web UI can send directly, while the daemon can reapply its policy first.
+ *
+ * A delivery handler may park a message instead of finishing it, by saving a
+ * `parked` attribute on it. A parked message is never retried and stays stored
+ * until it is cancelled.
  * @extends {Collection<ScheduledMessage>}
  */
 class ScheduledMessages extends Collection {
@@ -76,8 +80,9 @@ class ScheduledMessages extends Collection {
 
     async #drain() {
         this.#clearTimer();
-        while (this.active && this.length) {
-            const scheduled = this.at(0);
+        while (this.active) {
+            const scheduled = this.#next();
+            if (!scheduled) return;
             const delay = Date.parse(scheduled.get('send_at')) - this.now();
             if (delay > 0) return this.#setTimer(delay);
             if (!(await this.#deliver(scheduled))) return;
@@ -87,7 +92,7 @@ class ScheduledMessages extends Collection {
     async #deliver(scheduled) {
         try {
             await this.on_due(scheduled);
-            await destroy(scheduled);
+            if (!scheduled.get('parked')) await destroy(scheduled);
             return true;
         } catch (e) {
             log.error(`Could not send scheduled message ${scheduled.id}: ${e.message}`);
@@ -96,10 +101,15 @@ class ScheduledMessages extends Collection {
         }
     }
 
+    /** The earliest message that is still due to be sent, skipping parked ones. */
+    #next() {
+        return this.models.find((scheduled) => !scheduled.get('parked'));
+    }
+
     #arm() {
         if (!this.active || this.dispatching) return;
         this.#clearTimer();
-        const next = this.at(0);
+        const next = this.#next();
         if (!next) return;
         const delay = Math.max(0, Date.parse(next.get('send_at')) - this.now());
         this.#setTimer(delay);

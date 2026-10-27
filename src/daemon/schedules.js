@@ -55,6 +55,11 @@ export function scheduleMethods(_converse, { routeSend, sendNow }) {
             notify: () => {},
         };
         const result = await sendNow({ to, body, reply_to: metadata.reply_to, correct: metadata.correct }, client);
+        if (result.outcome === 'refused') {
+            // Keep it so the owner can see why it was not sent, instead of dropping it silently.
+            const { rule, message } = result;
+            await scheduled.save({ parked: { rule, message, at: new Date().toISOString() } });
+        }
         return { ...state, handled: true, result };
     }
 
@@ -62,13 +67,20 @@ export function scheduleMethods(_converse, { routeSend, sendNow }) {
         onDue,
         methods: {
             'messages.send': send,
-            async 'schedules.list'() {
+            async 'schedules.list'(_params, client) {
                 const schedules = await api.scheduledMessages.get();
-                return { schedules: schedules.map(toScheduleDTO) };
+                return { schedules: schedules.filter((scheduled) => canManage(client, scheduled)).map(toScheduleDTO) };
             },
-            async 'schedules.cancel'({ id }) {
+            async 'schedules.cancel'({ id }, client) {
                 if (typeof id !== 'string' || !id) {
                     throw new RPCError(ERRORS.INVALID_PARAMS, '"id" must be a scheduled message id.');
+                }
+                const existing = await api.scheduledMessages.get(id);
+                if (!existing || !canManage(client, existing)) {
+                    throw new RPCError(
+                        ERRORS.NOT_FOUND,
+                        `No scheduled message with id "${id}". List them with "converse-cli schedules list".`,
+                    );
                 }
                 const scheduled = await api.scheduledMessages.cancel(id);
                 if (!scheduled) {
@@ -81,6 +93,17 @@ export function scheduleMethods(_converse, { routeSend, sendNow }) {
             },
         },
     };
+}
+
+/**
+ * Full access manages every schedule. A restricted connection manages only the
+ * restricted schedules its own consumer created, so it cannot see or cancel
+ * anything a full-access owner scheduled.
+ */
+function canManage(client, scheduled) {
+    if (client.access === 'full') return true;
+    const { metadata = {} } = scheduled.toJSON();
+    return metadata.access === 'restricted' && !!client.consumer && metadata.consumer === client.consumer;
 }
 
 function validateMessage(body, reply_to, correct) {
@@ -105,7 +128,7 @@ function futureTime(value) {
 
 /** @returns {import('./types').ScheduleDTO} */
 function toScheduleDTO(scheduled) {
-    const { id, to, body, send_at, created, metadata = {} } = scheduled.toJSON();
+    const { id, to, body, send_at, created, metadata = {}, parked = null } = scheduled.toJSON();
     return {
         id,
         to,
@@ -116,5 +139,6 @@ function toScheduleDTO(scheduled) {
         access: metadata.access ?? 'full',
         reply_to: metadata.reply_to ?? null,
         correct: metadata.correct ?? null,
+        parked,
     };
 }

@@ -60,6 +60,27 @@ describe('ScheduledMessages', () => {
         expect(on_due).not.toHaveBeenCalled();
     });
 
+    it('keeps a parked message stored without retrying it, and does not hold back later messages', async () => {
+        const on_due = vi.fn(async (scheduled) => {
+            if (scheduled.id === 'schedule-1') await scheduled.save({ parked: { rule: 'allowlist' } });
+        });
+        const schedules = new ScheduledMessages([], { storage, on_due });
+        await schedules.hydrated;
+        await schedules.schedule(attrs());
+        await schedules.schedule({
+            ...attrs(),
+            id: 'schedule-2',
+            send_at: new Date(LATER.getTime() + 60_000).toISOString(),
+        });
+
+        await schedules.resume();
+        await vi.advanceTimersByTimeAsync(LATER.getTime() - NOON.getTime() + 120_000);
+
+        expect(on_due.mock.calls.map(([scheduled]) => scheduled.id)).toEqual(['schedule-1', 'schedule-2']);
+        expect(schedules.models.map((scheduled) => scheduled.id)).toEqual(['schedule-1']);
+        expect(schedules.get('schedule-1').get('parked')).toEqual({ rule: 'allowlist' });
+    });
+
     it('rehydrates a message and dispatches it immediately when it became due while stopped', async () => {
         const first = new ScheduledMessages([], { storage, on_due: vi.fn() });
         await first.hydrated;

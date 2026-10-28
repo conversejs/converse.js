@@ -29,8 +29,10 @@ import {
     $getSelection,
     $isRangeSelection,
     $isTextNode,
+    COMMAND_PRIORITY_HIGH,
     createEditor,
     FORMAT_TEXT_COMMAND,
+    KEY_ESCAPE_COMMAND,
 } from 'lexical';
 import { registerRichText } from '@lexical/rich-text';
 import { createEmptyHistoryState, registerHistory } from '@lexical/history';
@@ -106,6 +108,15 @@ export function createRichEditor(
     editor.setRootElement(rootEl);
 
     const cleanup = mergeRegister(
+        // Rich text blurs the editor on Escape, which is how a keyboard user leaves it. While
+        // a dropdown is open, Escape should only close that dropdown, so the editor keeps focus.
+        // Returning true stops Lexical's handler without stopping the keydown, which still
+        // reaches the dropdown's own document listener.
+        editor.registerCommand(
+            KEY_ESCAPE_COMMAND,
+            () => !!document.querySelector('.dropdown-menu.show'),
+            COMMAND_PRIORITY_HIGH,
+        ),
         registerRichText(editor),
         registerHistory(editor, createEmptyHistoryState(), 1000),
         registerMarkdownShortcuts(editor, input_transformers ?? transformers),

@@ -336,6 +336,20 @@ describe('The attachment menu and the keyboard', function () {
     );
 
     it(
+        'leaves the message field on Escape when no menu is open',
+        initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
+            const view = await openChat(_converse);
+
+            // Clicking gives the editor a selection, which is what Escape acts on.
+            const editable = view.querySelector('.chat-textarea');
+            await userEvent.click(editable);
+            await userEvent.keyboard('{Escape}');
+
+            await u.waitUntil(() => document.activeElement !== editable);
+        }),
+    );
+
+    it(
         'is announced as a menu of labelled items opened by an "Add attachment" button',
         initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const view = await openChat(_converse);

@@ -11,6 +11,8 @@
 - fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
 - #194: Full support for XEP-0115: Entity capabilities.
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
+- Invitation links from other clients (xmpp.link, i.kaidan.im, invite.joinjabber.org and
+  conversations.im) open the chat or groupchat in Converse instead of the invitation page.
 - #1509: You can now chat with a bare-host JID.
 - #3560: Emoji shortnames are now matched case-sensitively
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds

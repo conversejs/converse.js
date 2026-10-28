@@ -200,9 +200,10 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
      * whether to claim the URI at all, which `clickXMPPURI` deliberately bypasses.
      * @param {any} _converse
      * @param {string} body
+     * @param {MouseEventInit} [click_init] - Extra click properties, such as modifier keys.
      * @returns {Promise<MouseEvent>} The dispatched click, for `defaultPrevented`.
      */
-    async function clickLinkifiedURI(_converse, body) {
+    async function clickLinkifiedURI(_converse, body, click_init = {}) {
         await mock.waitForRoster(_converse, 'current');
         const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);
@@ -218,7 +219,7 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
         </message>`);
 
         const link = await u.waitUntil(() => view.querySelector('.chat-msg__text a'));
-        const ev = new MouseEvent('click', { bubbles: true, cancelable: true });
+        const ev = new MouseEvent('click', { bubbles: true, cancelable: true, ...click_init });
         link.dispatchEvent(ev);
         return ev;
     }
@@ -229,12 +230,12 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
             // A query-less URI is what a "chat with me" link looks like in the
             // wild. It used to render as a plain anchor, so the click escaped to
             // the OS and opened whichever native client owned the xmpp: scheme.
-            const ev = await clickLinkifiedURI(_converse, 'xmpp:mercutio@montague.lit');
+            const ev = await clickLinkifiedURI(_converse, 'xmpp:tybalt@montague.lit');
 
             // preventDefault is the proof that the OS never sees the click.
             expect(ev.defaultPrevented).toBe(true);
-            await u.waitUntil(() => _converse.chatboxes.get('mercutio@montague.lit'));
-            expect(_converse.chatboxes.get('mercutio@montague.lit')).toBeDefined();
+            await u.waitUntil(() => _converse.chatboxes.get('tybalt@montague.lit'));
+            expect(_converse.chatboxes.get('tybalt@montague.lit')).toBeDefined();
         }),
     );
 
@@ -256,6 +257,46 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
             const ev = await clickLinkifiedURI(_converse, 'xmpp:montague.lit');
             expect(ev.defaultPrevented).toBe(false);
             expect(_converse.chatboxes.get('montague.lit')).toBeUndefined();
+        }),
+    );
+
+    it(
+        'handles an https invitation link in-app, as the xmpp: URI it wraps',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const ev = await clickLinkifiedURI(_converse, 'https://xmpp.link/#tybalt@montague.lit');
+            expect(ev.defaultPrevented).toBe(true);
+            await u.waitUntil(() => _converse.chatboxes.get('tybalt@montague.lit'));
+            expect(_converse.chatboxes.get('tybalt@montague.lit')).toBeDefined();
+        }),
+    );
+
+    it(
+        'leaves an invitation link it cannot act on to the browser',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            // A domain-only JID, which Converse can't open a chat with.
+            const ev = await clickLinkifiedURI(_converse, 'https://xmpp.link/#montague.lit');
+            expect(ev.defaultPrevented).toBe(false);
+        }),
+    );
+
+    it(
+        'leaves a modified click on an invitation link to the browser',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            // Ctrl/Cmd-click asks for a new tab, which here is the invitation page.
+            const ev = await clickLinkifiedURI(_converse, 'https://xmpp.link/#tybalt@montague.lit', {
+                ctrlKey: true,
+            });
+            expect(ev.defaultPrevented).toBe(false);
+            expect(_converse.chatboxes.get('tybalt@montague.lit')).toBeUndefined();
+        }),
+    );
+
+    it(
+        'leaves a modified click on an xmpp: link to the browser',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const ev = await clickLinkifiedURI(_converse, 'xmpp:tybalt@montague.lit', { metaKey: true });
+            expect(ev.defaultPrevented).toBe(false);
+            expect(_converse.chatboxes.get('tybalt@montague.lit')).toBeUndefined();
         }),
     );
 });

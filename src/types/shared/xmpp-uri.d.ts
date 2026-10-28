@@ -16,6 +16,13 @@ export function parseXMPPURI(href: string): {
     params: Record<string, string | string[]>;
 };
 /**
+ * The `xmpp:` URI an https invitation link stands for, or null when the link
+ * isn't one. Mirrors how Conversations reads the same links.
+ * @param {URL} url
+ * @returns {string|null}
+ */
+export function invitationToXMPPURI(url: URL): string | null;
+/**
  * Whether an `xmpp:` URI names an action the dispatcher handles (so the caller
  * attaches an in-app click handler instead of leaving it to the OS handler).
  *
@@ -43,4 +50,17 @@ export const HANDLED_ACTIONS: string[];
  * not disagree about what it does.
  */
 export const DEFAULT_ACTION: "message";
+/**
+ * Invitation pages (easy-xmpp-invitation) that carry an `xmpp:` URI, minus its
+ * scheme, in the fragment: `https://xmpp.link/#room@muc.example.org?join`.
+ * Other clients hand these out because an https link works where `xmpp:` isn't
+ * clickable, but a Converse user already has the client the page would send
+ * them off to install.
+ */
+export const INVITATION_FRAGMENT_HOSTS: string[];
+/**
+ * Conversations' older invitation format, with the JID as a path segment:
+ * `/i/<jid>` for a contact and `/j/<jid>` for a groupchat.
+ */
+export const INVITATION_PATH_HOST: "conversations.im";
 //# sourceMappingURL=xmpp-uri.d.ts.map

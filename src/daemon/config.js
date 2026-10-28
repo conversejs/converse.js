@@ -93,6 +93,11 @@ export function loadConfig(env = process.env) {
         throw new Error(`"owner" in ${config_path} must be a different account from "jid", the agent's own.`);
     }
 
+    const allow_unencrypted_resend = raw.allow_unencrypted_resend ?? false;
+    if (typeof allow_unencrypted_resend !== 'boolean') {
+        throw new Error(`"allow_unencrypted_resend" in ${config_path} must be true or false.`);
+    }
+
     return {
         jid,
         owner,
@@ -103,6 +108,7 @@ export function loadConfig(env = process.env) {
         // The access level the CLI connects at. Restricted unless the user says otherwise.
         access,
         mode,
+        allow_unencrypted_resend,
         policy: parsePolicy(raw.policy, config_path),
         settings: raw.settings ?? {},
         paths: getPaths(jid, env),

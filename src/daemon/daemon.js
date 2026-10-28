@@ -30,10 +30,17 @@ const SHUTDOWN_TIMEOUT = 5000;
 
 /**
  * Methods that restricted connections may not call. Restricted access covers
- * reads and drafted sends. Stopping the daemon, and reviewing or dropping
- * drafts, are the user's to do.
+ * reads and drafted sends. Stopping the daemon, reviewing or dropping drafts,
+ * and sending or discarding a failed send again, are the user's to do.
  */
-const FULL_ACCESS_METHODS = ['daemon.stop', 'drafts.list', 'drafts.reject', 'omemo.devices.trust'];
+const FULL_ACCESS_METHODS = [
+    'daemon.stop',
+    'drafts.list',
+    'drafts.reject',
+    'messages.discard',
+    'messages.resend',
+    'omemo.devices.trust',
+];
 
 /**
  * How the daemon's connection identifies itself to contacts, as a bot. This
@@ -90,7 +97,14 @@ async function serve(config) {
         api.disco.own.identities.clear();
         api.disco.own.identities.add(BOT_IDENTITY.category, BOT_IDENTITY.type, BOT_IDENTITY.name);
     });
-    const messages = messageMethods(_converse, { routeSend, audit, drafts, events, owner: config.owner });
+    const messages = messageMethods(_converse, {
+        routeSend,
+        audit,
+        drafts,
+        events,
+        owner: config.owner,
+        allow_unencrypted_resend: config.allow_unencrypted_resend,
+    });
     const schedules = scheduleMethods(_converse, { routeSend, sendNow: messages['messages.send'] });
     api.listen.on('scheduledMessageDue', schedules.onDue);
     const methods = {

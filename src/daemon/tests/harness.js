@@ -48,11 +48,13 @@ export async function startDaemon({
     mode,
     rooms,
     access,
+    allow_unencrypted_resend,
 } = {}) {
     const { env, remove } = await createAccount(settings, {
         ...(policy ? { policy } : {}),
         ...(mode ? { mode } : {}),
         ...(access ? { access } : {}),
+        ...(allow_unencrypted_resend !== undefined ? { allow_unencrypted_resend } : {}),
     });
     const config = loadConfig(env);
     if (rooms) {

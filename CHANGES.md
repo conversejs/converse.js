@@ -17,6 +17,8 @@
 - #3949: Allow pinning bookmarked conversations to the top (XEP-0469)
 - #3978: Add support for XEP-0202 Entity Time.
 - Full XEP-0172 User Nickname support.
+- feat: New `@converse/daemon` and `@converse/cli` packages, which let an LLM agent or person using a
+  terminal read and send XMPP messages through one long-lived session, subject to a send policy.
 - feat: Record and send voice messages with the opt-in `converse-voice-messages` plugin. Adds the
   `max_voice_message_duration`, `voice_message_bitrate` and `voice_message_mime_type` settings,
   and the `voice_message` key of `visible_toolbar_buttons`.

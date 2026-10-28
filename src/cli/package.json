@@ -12,7 +12,8 @@
   "files": [
     "*.js",
     "*.ts",
-    "bin/"
+    "bin/",
+    "skill/"
   ],
   "scripts": {
     "test": "cd ../.. && vitest run --project daemon"

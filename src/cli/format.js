@@ -10,13 +10,7 @@
 export const MAX_BODY_LENGTH = 280;
 
 /**
- * How many characters of a message id are shown. Commands accept a unique
- * prefix, so this is enough to address a message.
- */
-export const SHORT_ID_LENGTH = 8;
-
-/**
- * One message, on one line: short id, time (ISO and relative), sender, body.
+ * One message, on one line: id, time (ISO and relative), sender, body.
  *
  * The body is printed as a JSON string. Its quotes mark exactly where text
  * someone else wrote begins and ends, and escaping its newlines means a
@@ -33,7 +27,8 @@ export function formatMessage(message, { full = false, now = new Date(), convers
         message.encryption?.status === 'decrypted' && 'encrypted',
         message.encryption?.status === 'undecryptable' &&
             `could not be decrypted: ${message.encryption.error ?? 'no reason given'}`,
-        message.reply_to && `reply to ${message.reply_to.slice(0, SHORT_ID_LENGTH)}`,
+        message.status === 'failed' && `send failed: ${message.error_code ?? 'no reason given'}`,
+        message.reply_to && `reply to ${message.reply_to}`,
         message.edited && 'edited',
         message.retracted && 'retracted',
         Object.keys(message.reactions ?? {}).length &&
@@ -47,7 +42,7 @@ export function formatMessage(message, { full = false, now = new Date(), convers
         .join('');
     const place = conversation ? `in ${message.conversation}  ` : '';
     return (
-        `${message.id.slice(0, SHORT_ID_LENGTH)}  ${formatTime(time)} (${formatAgo(time, now)})  ${place}` +
+        `${message.id}  ${formatTime(time)} (${formatAgo(time, now)})  ${place}` +
         `${message.from}  ${notes}${formatBody(message.body, { full })}\n`
     );
 }

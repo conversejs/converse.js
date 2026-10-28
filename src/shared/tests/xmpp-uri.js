@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseXMPPURI, isHandledXMPPURI, DEFAULT_ACTION } from '../xmpp-uri.js';
+import { parseXMPPURI, isHandledXMPPURI, invitationToXMPPURI, DEFAULT_ACTION } from '../xmpp-uri.js';
 
 describe('XEP-0147 xmpp: URI parsing', function () {
     it('parses a bare JID with no query', function () {
@@ -87,5 +87,62 @@ describe('XEP-0147 xmpp: URI parsing', function () {
         expect(isHandledXMPPURI('xmpp:montague.lit')).toBe(false);
         // Not JID-shaped at all.
         expect(isHandledXMPPURI('xmpp:%')).toBe(false);
+    });
+});
+
+describe('https invitation links', function () {
+    const toURI = (/** @type {string} */ href) => invitationToXMPPURI(new URL(href));
+
+    it('reads the xmpp: URI from the fragment of an easy-xmpp-invitation page', function () {
+        expect(toURI('https://xmpp.link/#romeo@montague.lit')).toBe('xmpp:romeo@montague.lit');
+        expect(toURI('https://xmpp.link/#coven@chat.shakespeare.lit?join')).toBe(
+            'xmpp:coven@chat.shakespeare.lit?join',
+        );
+        expect(toURI('https://i.kaidan.im/#romeo@montague.lit')).toBe('xmpp:romeo@montague.lit');
+        expect(toURI('https://invite.joinjabber.org/#romeo@montague.lit')).toBe('xmpp:romeo@montague.lit');
+    });
+
+    it('percent-decodes a fragment that Conversations encoded as a whole', function () {
+        expect(toURI('https://xmpp.link/#coven%40chat.shakespeare.lit%3Fjoin')).toBe(
+            'xmpp:coven@chat.shakespeare.lit?join',
+        );
+        const uri = toURI('https://xmpp.link/#coven%40chat.shakespeare.lit%3Fjoin%3Bpassword%3Da%253Bb');
+        expect(uri).toBe('xmpp:coven@chat.shakespeare.lit?join;password=a%3Bb');
+        expect(parseXMPPURI(uri).params).toEqual({ password: 'a;b' });
+    });
+
+    it('leaves a fragment holding a literal query, as Kaidan writes it, for the parser to decode', function () {
+        const uri = toURI('https://i.kaidan.im/#coven@chat.shakespeare.lit?join;password=a%3Bb%2541');
+        expect(uri).toBe('xmpp:coven@chat.shakespeare.lit?join;password=a%3Bb%2541');
+        expect(parseXMPPURI(uri).params).toEqual({ password: 'a;b%41' });
+    });
+
+    it('reads a `+` as a space only in a fragment that Conversations encoded', function () {
+        const uri = toURI('https://xmpp.link/#romeo%40montague.lit%3Fmessage%3Bbody%3Dhi+there');
+        expect(parseXMPPURI(uri).params).toEqual({ body: 'hi there' });
+        expect(toURI('https://xmpp.link/#a%2Bb%40montague.lit')).toBe('xmpp:a+b@montague.lit');
+        expect(toURI('https://i.kaidan.im/#a+b@montague.lit')).toBe('xmpp:a+b@montague.lit');
+    });
+
+    it('does not double the scheme of a fragment that already carries it', function () {
+        expect(toURI('https://xmpp.link/#xmpp:romeo@montague.lit')).toBe('xmpp:romeo@montague.lit');
+        expect(toURI('https://xmpp.link/#xmpp%3Aromeo%40montague.lit%3Fjoin')).toBe('xmpp:romeo@montague.lit?join');
+    });
+
+    it("reads Conversations' /i/ (contact) and /j/ (groupchat) paths", function () {
+        expect(toURI('https://conversations.im/i/romeo@montague.lit')).toBe('xmpp:romeo@montague.lit');
+        expect(toURI('https://conversations.im/j/coven@chat.shakespeare.lit')).toBe(
+            'xmpp:coven@chat.shakespeare.lit?join',
+        );
+    });
+
+    it('ignores every other link', function () {
+        expect(toURI('https://xmpp.link/')).toBeNull();
+        expect(toURI('https://xmpp.link/faq#romeo@montague.lit')).toBeNull();
+        expect(toURI('http://xmpp.link/#romeo@montague.lit')).toBeNull();
+        expect(toURI('https://example.org/#romeo@montague.lit')).toBeNull();
+        expect(toURI('https://conversations.im/')).toBeNull();
+        expect(toURI('https://conversations.im/x/romeo@montague.lit')).toBeNull();
+        expect(toURI('https://conversations.im/i/romeo@montague.lit/extra')).toBeNull();
     });
 });

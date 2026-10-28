@@ -85,6 +85,54 @@ export function parseXMPPURI(href) {
 }
 
 /**
+ * Invitation pages (easy-xmpp-invitation) that carry an `xmpp:` URI, minus its
+ * scheme, in the fragment: `https://xmpp.link/#room@muc.example.org?join`.
+ * Other clients hand these out because an https link works where `xmpp:` isn't
+ * clickable, but a Converse user already has the client the page would send
+ * them off to install.
+ */
+export const INVITATION_FRAGMENT_HOSTS = ['xmpp.link', 'invite.joinjabber.org', 'i.kaidan.im'];
+
+/**
+ * Conversations' older invitation format, with the JID as a path segment:
+ * `/i/<jid>` for a contact and `/j/<jid>` for a groupchat.
+ */
+export const INVITATION_PATH_HOST = 'conversations.im';
+
+/**
+ * The `xmpp:` URI an https invitation link stands for, or null when the link
+ * isn't one. Mirrors how Conversations reads the same links.
+ * @param {URL} url
+ * @returns {string|null}
+ */
+export function invitationToXMPPURI(url) {
+    if (url.protocol !== 'https:') return null;
+
+    const host = url.hostname.toLowerCase();
+    if (INVITATION_FRAGMENT_HOSTS.includes(host)) {
+        if (url.pathname !== '/') return null;
+
+        // Conversations form-encodes the whole URI into the fragment (`@` as
+        // `%40`, a space as `+`), so its own escapes arrive doubled, while
+        // Kaidan pastes the URI in as is. A literal `@` or `?` can only be the
+        // latter, which must not be decoded here, or an escaped `;` in a value
+        // would become a separator and a `+` in a JID a space.
+        const fragment = url.hash.slice(1);
+        const is_encoded = !fragment.includes('@') && !fragment.includes('?');
+        const uri = (is_encoded ? decodeValue(fragment.replaceAll('+', ' ')) : fragment).replace(/^xmpp:/i, '');
+        return uri ? `xmpp:${uri}` : null;
+    }
+    if (host === INVITATION_PATH_HOST) {
+        const m = url.pathname.match(/^\/([ij])\/([^/]+)$/);
+        if (!m) return null;
+
+        const jid = decodeValue(m[2]);
+        return m[1] === 'j' ? `xmpp:${jid}?join` : `xmpp:${jid}`;
+    }
+    return null;
+}
+
+/**
  * Whether an `xmpp:` URI names an action the dispatcher handles (so the caller
  * attaches an in-app click handler instead of leaving it to the OS handler).
  *

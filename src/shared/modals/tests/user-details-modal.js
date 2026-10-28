@@ -273,4 +273,23 @@ describe('The User Details Modal', function () {
             await u.waitUntil(() => contact.unauthorize.calls.count());
         }),
     );
+
+    it(
+        "offers the contact's address for the clipboard",
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            await mock.openChatBoxFor(_converse, contact_jid);
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            view.querySelector('.show-msg-author-modal').click();
+            const modal = api.modal.get('converse-user-details-modal');
+            await u.waitUntil(() => u.isVisible(modal));
+
+            const button = await u.waitUntil(() => modal.querySelector('converse-copy-button'));
+            expect(button.text).toBe(contact_jid);
+            expect(modal.querySelector('a[href^="xmpp:"]')).toBeNull();
+        }),
+    );
 });

@@ -122,9 +122,8 @@ describe('Groupchats', () => {
                     expect(els[0].textContent).toBe('Name: A Dark Cave');
 
                     expect(els[1].querySelector('strong').textContent.trim()).toBe('XMPP address:');
-                    expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
-                        'xmpp:coven@chat.shakespeare.lit?join',
-                    );
+                    expect(els[1].querySelector('.text-break').textContent).toBe('coven@chat.shakespeare.lit');
+                    expect(els[1].querySelector('converse-copy-button').text).toBe('coven@chat.shakespeare.lit');
                     expect(els[2].querySelector('strong').textContent).toBe('Description:');
                     expect(els[2].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
 
@@ -158,9 +157,7 @@ describe('Groupchats', () => {
                     els = modal.querySelectorAll('p.room-info');
                     expect(els[0].textContent).toBe('Name: A Dark Cave');
                     expect(els[1].querySelector('strong').textContent.trim()).toBe('XMPP address:');
-                    expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
-                        'xmpp:coven@chat.shakespeare.lit?join',
-                    );
+                    expect(els[1].querySelector('.text-break').textContent).toBe('coven@chat.shakespeare.lit');
                     expect(els[2].querySelector('strong').textContent.trim()).toBe('Description:');
                     expect(els[2].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
                     expect(els[3].querySelector('strong').textContent.trim()).toBe('Topic:');

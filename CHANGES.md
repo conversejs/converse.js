@@ -13,6 +13,9 @@
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
 - Invitation links from other clients (xmpp.link, i.kaidan.im, invite.joinjabber.org and
   conversations.im) open the chat or groupchat in Converse instead of the invitation page.
+- The user details, profile and groupchat details modals show a button that copies the XMPP address.
+  In the user details modal the address is no longer a link, and the groupchat details modal shows the
+  room's address instead of an `xmpp:` join URI.
 - #1509: You can now chat with a bare-host JID.
 - #3560: Emoji shortnames are now matched case-sensitively
 - #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds

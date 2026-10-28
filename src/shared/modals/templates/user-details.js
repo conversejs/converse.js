@@ -3,6 +3,7 @@ import { until } from 'lit/directives/until.js';
 import { api, converse, _converse } from '@converse/headless';
 import { getGroupsAutoCompleteList } from 'plugins/rosterview/utils.js';
 import { __ } from 'i18n';
+import tplCopyableAddress from 'templates/copyable-address.js';
 
 const { Strophe } = converse.env;
 
@@ -255,7 +256,7 @@ export function tplUserDetailsModal(el) {
                     : ''}
                 <div class="row mb-2">
                     <div class="col-sm-4"><label>${i18n_address}:</label></div>
-                    <div class="col-sm-8"><a href="xmpp:${o.jid}">${o.jid}</a></div>
+                    <div class="col-sm-8">${tplCopyableAddress(o.jid)}</div>
                 </div>
 
                 ${contact

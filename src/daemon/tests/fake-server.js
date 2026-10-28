@@ -91,6 +91,7 @@ export function serve({
                     <query xmlns="${Strophe.NS.DISCO_INFO}">
                         <identity category="conference" type="text"/>
                         <feature var="${Strophe.NS.MUC}"/>
+                        <feature var="${Strophe.NS.OCCUPANTID}"/>
                     </query>
                 </iq>`;
         }

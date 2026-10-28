@@ -148,12 +148,13 @@ describe('Event subscriptions', () => {
         await daemon.enterRoom(GARDEN, 'Friar');
         await joined;
 
-        // The room shows Juliet's JID, but not Mercutio's.
+        // The room shows Juliet's JID, but not Mercutio's. The occupant id is what ties her messages to that JID.
         daemon.receive(stx`
             <presence xmlns="jabber:client" from="${GARDEN}/jules" to="${JID}">
                 <x xmlns="http://jabber.org/protocol/muc#user">
                     <item affiliation="member" role="participant" jid="${JULIET}/balcony"/>
                 </x>
+                <occupant-id xmlns="urn:xmpp:occupant-id:0" id="occupant-jules"/>
             </presence>`);
         const room = await daemon.api.rooms.get(GARDEN);
         await u.waitUntil(() => room.occupants.findWhere({ nick: 'jules' }));
@@ -162,16 +163,17 @@ describe('Event subscriptions', () => {
         const by_sender = (await client.request('events.subscribe', { from: JULIET })).subscription;
         const by_mention = (await client.request('events.subscribe', { mention: true })).subscription;
 
-        /** @param {string} nick @param {string} body */
-        const say = async (nick, body) => {
+        /** @param {string} nick @param {string} body @param {string} [occupant_id] */
+        const say = async (nick, body, occupant_id) => {
             daemon.receive(stx`
                 <message xmlns="jabber:client" from="${GARDEN}/${nick}" to="${JID}" type="groupchat"
                         id="${u.getUniqueId()}">
                     <body>${body}</body>
+                    ${occupant_id ? stx`<occupant-id xmlns="urn:xmpp:occupant-id:0" id="${occupant_id}"/>` : ''}
                 </message>`);
             await u.waitUntil(() => room.messages.findWhere({ body }));
         };
-        await say('jules', 'Good morrow');
+        await say('jules', 'Good morrow', 'occupant-jules');
         await say('mercu', 'A word, friar!');
         await say('mercu', 'Where is Romeo?');
         await say('mercu', 'Friars are plenty');

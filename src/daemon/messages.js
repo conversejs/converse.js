@@ -3,7 +3,7 @@
  * DTOs clients see.
  * @module @converse/daemon/messages
  */
-import { converse, errors, log } from '@converse/headless';
+import { converse, log } from '@converse/headless';
 import { getPage, hasArchivedMessages, isMessage, isUndecryptable } from './history.js';
 import { draftNotice } from './notices.js';
 import { ERRORS, RPCError } from './protocol.js';
@@ -465,55 +465,49 @@ export async function sendMessage(_converse, jid, body, targets = {}, attributes
     const room = await api.rooms.get(jid);
     if (room) {
         if (!room.isEntered()) throw notJoined(jid);
-        const message = await sendThrough(_converse, room, { body, ...attributes }, targets);
+        const message = await send(room, { body, ...attributes }, targets);
         return toMessageDTO(message, jid, _converse.session.get('bare_jid'));
     }
     const chat = await api.chats.get(jid, {}, true);
     await chat.initialized;
-    const message = await sendThrough(_converse, chat, { body, ...attributes }, targets);
+    const message = await send(chat, { body, ...attributes }, targets);
     return toMessageDTO(message, jid, _converse.session.get('bare_jid'));
 }
 
 /**
- * Sends through headless. When headless can't build the stanza it returns
- * nothing, and says why in a `messageNotSent` event, so nothing was sent and
- * the caller is told the reason.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * Sends through headless, which rejects with a coded error when a send fails,
+ * such as an OMEMO send that couldn't be encrypted. The code is kept for
+ * clients to act on. The words are the daemon's own, never headless's.
  * @param {import('@converse/headless').ChatBox|import('@converse/headless').MUC} chatbox
  * @param {Object} attrs
  * @param {Object} targets
  * @returns {Promise<import('@converse/headless').Message>}
  */
-async function sendThrough(_converse, chatbox, attrs, targets) {
-    // The failure heard during this send is this chat's: the event names the chat it's for.
-    let failure;
-    const onFailure = (data) => {
-        if (data.chatbox === chatbox) failure = data.error;
-    };
-    _converse.api.listen.on('messageNotSent', onFailure);
+async function send(chatbox, attrs, targets) {
     let message;
     try {
         message = await chatbox.sendMessage(attrs, targets);
-    } finally {
-        _converse.api.listen.not('messageNotSent', onFailure);
+    } catch (e) {
+        const code = /** @type {{code?: string}} */ (e)?.code;
+        throw new RPCError(ERRORS.INTERNAL_ERROR, UNSENT[code] ?? UNSENT.unexpected, { code: code ?? null });
     }
-    if (!message) {
-        throw new RPCError(ERRORS.INTERNAL_ERROR, `Nothing was sent: ${unsentReason(failure)}. Try again.`);
-    }
+    if (!message) throw new RPCError(ERRORS.INTERNAL_ERROR, UNSENT.unexpected, { code: null });
     return message;
 }
 
 /**
- * @param {unknown} error - What headless failed with, if it said
- * @returns {string}
+ * What the daemon tells a client about a send that didn't go out, by the code headless gave it.
+ * Scripts can branch on the `code` in the error's data instead of reading these words.
  */
-function unsentReason(error) {
-    if (error instanceof errors.UserFacingError) return error.message;
-    if (error instanceof errors.IQError) {
-        return "the server couldn't supply the encryption keys of the recipient's devices";
-    }
-    return "the message couldn't be built";
-}
+const UNSENT = {
+    'no-omemo-devices': 'Nothing was sent: there are no OMEMO devices to encrypt for.',
+    'omemo-key-fetch-failed': "Nothing was sent: the recipient's encryption keys couldn't be fetched. Try again.",
+    'omemo-subscription-required': "Nothing was sent: the recipient's encryption keys need a presence subscription.",
+    'omemo-remote-server-not-found': "Nothing was sent: the recipient's server couldn't be found.",
+    'omemo-encrypt-failed': 'Nothing was sent: the message could not be encrypted. Try again.',
+    'omemo-groupchat-not-eligible': 'Nothing was sent: not everyone in the room can receive encrypted messages.',
+    unexpected: 'Nothing was sent, for an unexpected reason. Try again.',
+};
 
 function notConnected() {
     return new RPCError(

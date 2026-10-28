@@ -202,7 +202,8 @@ describe('OMEMO', () => {
                 .catch((e) => e);
             expect(error).toMatchObject({
                 code: ERRORS.INTERNAL_ERROR,
-                message: expect.stringContaining('no devices found to which we can send an OMEMO encrypted message'),
+                message: 'Nothing was sent: there are no OMEMO devices to encrypt for.',
+                data: { code: 'no-omemo-devices' },
             });
 
             const plaintext = api.connection

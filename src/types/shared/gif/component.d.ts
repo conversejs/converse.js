@@ -23,6 +23,7 @@ export default class ConverseGIFElement extends CustomElement {
     progress_color: any;
     initGIF(): void;
     supergif: ConverseGif;
+    initOPtions(): Record<string, any>;
     render(): string | import("utils/html.js").TemplateResult;
     renderErrorFallback(): string | import("utils/html.js").TemplateResult;
     setHover(): void;

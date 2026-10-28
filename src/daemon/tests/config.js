@@ -53,6 +53,7 @@ describe('The account configuration', () => {
             consumer: 'claude',
             access: 'restricted',
             mode: 'owner_only',
+            allow_unencrypted_resend: false,
             policy: {
                 allow: [],
                 direct: [],
@@ -123,6 +124,17 @@ describe('The account configuration', () => {
         await writeConfig({ jid: 'romeo@montague.lit', mode: 'root' });
         expect(() => loadConfig(env)).toThrow(
             '"mode" in ' + path.join(dir, 'converse', 'daemon.json') + ' must be one of: owner_only, bot, as_user.',
+        );
+    });
+
+    it('leaves unencrypted resends off unless the config allows them, and refuses a value that is not true or false', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit' });
+        expect(loadConfig(env).allow_unencrypted_resend).toBe(false);
+        await writeConfig({ jid: 'romeo@montague.lit', allow_unencrypted_resend: true });
+        expect(loadConfig(env).allow_unencrypted_resend).toBe(true);
+        await writeConfig({ jid: 'romeo@montague.lit', allow_unencrypted_resend: 'yes' });
+        expect(() => loadConfig(env)).toThrow(
+            '"allow_unencrypted_resend" in ' + path.join(dir, 'converse', 'daemon.json') + ' must be true or false.',
         );
     });
 

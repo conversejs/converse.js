@@ -94,6 +94,8 @@ describe('Messages in a 1:1 chat', () => {
                     edited: null,
                     retracted: null,
                     reactions: {},
+                    status: 'sent',
+                    error_code: null,
                 },
             });
         });
@@ -187,6 +189,8 @@ describe('Messages in a 1:1 chat', () => {
                 edited: null,
                 retracted: null,
                 reactions: {},
+                status: 'received',
+                error_code: null,
             });
         });
 

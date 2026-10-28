@@ -4,7 +4,21 @@ import { loadConfig } from '@converse/daemon/client';
 import { createAccount, JID } from '../../daemon/tests/account.js';
 import { EXIT } from '../exit-codes.js';
 import pkg from '../package.json' with { type: 'json' };
+import { HELP } from '../help.js';
+import { main } from '../cli.js';
 import { run } from './run.js';
+
+/**
+ * Runs the CLI in this process, for what needs no daemon, such as help.
+ * @param {NodeJS.ProcessEnv} env
+ * @param {...string} args
+ */
+async function capture(env, ...args) {
+    let stdout = '';
+    let stderr = '';
+    const code = await main(args, { out: (t) => (stdout += t), err: (t) => (stderr += t), env });
+    return { code, stdout, stderr };
+}
 
 describe('converse-cli', () => {
     let account;
@@ -29,6 +43,52 @@ describe('converse-cli', () => {
         expect(code).toBe(EXIT.OK);
         expect(stdout).toMatch(/^Usage: converse-cli <command>/);
         expect(stdout).toContain(`${account.env.XDG_CONFIG_HOME}/converse/daemon.json`);
+    });
+
+    it("documents every command's arguments, options, exit codes and examples", async () => {
+        for (const name of Object.keys(HELP)) {
+            const words = name.split(' ');
+            const asked = await capture(account.env, 'help', ...words);
+            expect(asked.code, name).toBe(EXIT.OK);
+            expect(await capture(account.env, ...words, '--help'), name).toEqual(asked);
+
+            const { stdout } = asked;
+            expect(stdout.startsWith(`Usage: converse-cli ${name}`), name).toBe(true);
+            HELP[name].args?.forEach(([arg]) => expect(stdout, name).toContain(`\n  ${arg}`));
+            expect(stdout, name).toMatch(/\nOptions:\n {2}(--\w|-h)/);
+            expect(stdout, name).toMatch(/\nExit codes:\n {2}0 {3}ok\n/);
+            expect(stdout, name).toMatch(
+                new RegExp(`\\nExamples?:\\n {2}converse-cli ${name}|\\| converse-cli ${name}`),
+            );
+            // Nothing runs off the edge of a terminal, except an example, which must stay whole.
+            stdout
+                .split('\n')
+                .filter((line) => !line.includes('converse-cli '))
+                .forEach((line) => expect(line.length, `${name}: ${line}`).toBeLessThanOrEqual(80));
+        }
+    });
+
+    it('shows the help of each subcommand of a group, and says a group needs one', async () => {
+        const { code, stdout } = await capture(account.env, 'help', 'drafts');
+        expect(code).toBe(EXIT.OK);
+        expect(stdout).toContain('Usage: converse-cli drafts list');
+        expect(stdout).toContain('Usage: converse-cli drafts reject <id>');
+
+        expect(await capture(account.env, 'drafts')).toEqual({
+            code: EXIT.ERROR,
+            stdout: '',
+            stderr:
+                'converse-cli: "drafts" needs one of: list, reject. ' +
+                'Run "converse-cli help drafts" for each one\'s usage.\n',
+        });
+    });
+
+    it("refuses an option the command doesn't take, rather than ignoring it", async () => {
+        expect(await capture(account.env, 'send', 'juliet@capulet.lit', '--limit', '3', 'hi')).toEqual({
+            code: EXIT.ERROR,
+            stdout: '',
+            stderr: 'converse-cli: send doesn\'t take --limit. Run "converse-cli help send" for its options.\n',
+        });
     });
 
     it('fails on an unknown command, saying what to do next', async () => {

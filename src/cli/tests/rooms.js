@@ -56,9 +56,12 @@ describe('converse-cli rooms', () => {
         expect(stderr).toBe('conference.montague.lit lists no rooms.\n');
     });
 
-    it('needs a subcommand, which is reported as an unknown command', async () => {
+    it('needs a subcommand, and names them', async () => {
         const { code, stderr } = await run(daemon.env, 'rooms');
         expect(code).toBe(EXIT.ERROR);
-        expect(stderr).toContain('unknown command');
+        expect(stderr).toBe(
+            'converse-cli: "rooms" needs one of: join, leave, occupants, discover. ' +
+                'Run "converse-cli help rooms" for each one\'s usage.\n',
+        );
     });
 });

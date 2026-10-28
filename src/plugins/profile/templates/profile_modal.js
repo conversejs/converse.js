@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { _converse } from '@converse/headless';
 import { __ } from 'i18n';
 import 'shared/components/image-picker.js';
+import tplCopyableAddress from 'templates/copyable-address.js';
 import { shouldShowPasswordResetForm } from '../utils.js';
 import tplChatStatusForm from './chat-status-form.js';
 
@@ -151,7 +152,7 @@ export default (el) => {
                         <div class="col">
                             <div class="px-3 profile-property">
                                 <label class="col-form-label">${i18n_jid}:</label>
-                                <div class="profile-property__value">${o.jid}</div>
+                                <div class="profile-property__value">${tplCopyableAddress(o.jid)}</div>
                             </div>
                             ${server_version
                                 ? html`<div class="px-3 profile-property">

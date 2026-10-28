@@ -27,6 +27,7 @@ export default (el) => {
     const i18n_email = __('Email');
     const i18n_fullname = __('Full Name');
     const i18n_jid = __('XMPP Address');
+    const i18n_copy_jid = __('Copy address to clipboard');
     const i18n_server = __('Server');
     const i18n_nickname = __('Nickname');
     const i18n_role = __('Role');
@@ -151,7 +152,13 @@ export default (el) => {
                         <div class="col">
                             <div class="px-3 profile-property">
                                 <label class="col-form-label">${i18n_jid}:</label>
-                                <div class="profile-property__value">${o.jid}</div>
+                                <div class="profile-property__value d-flex align-items-center gap-1">
+                                    <span class="text-break">${o.jid}</span>
+                                    <converse-copy-button
+                                        .text=${o.jid}
+                                        label="${i18n_copy_jid}"
+                                    ></converse-copy-button>
+                                </div>
                             </div>
                             ${server_version
                                 ? html`<div class="px-3 profile-property">

@@ -356,11 +356,18 @@ export function handleMessageSendError(e, chat) {
 export async function resendFailedMessageUnencrypted(chat, data) {
     const { message } = data;
     if (!message.get('send_can_send_unencrypted')) return data;
-    await chat.resendFailedMessage(message, {
-        is_encrypted: false,
-        body: message.get('plaintext') ?? message.get('body'),
-        plaintext: undefined,
-    });
+    try {
+        await chat.resendFailedMessage(message, {
+            is_encrypted: false,
+            body: message.get('plaintext') ?? message.get('body'),
+            plaintext: undefined,
+        });
+    } catch (e) {
+        // This attempt didn't encrypt, so its failure says nothing about encryption.
+        // The message is encrypted again, and its encryption still fails.
+        message.save('send_can_send_unencrypted', true);
+        throw e;
+    }
     return { ...data, handled: true };
 }
 

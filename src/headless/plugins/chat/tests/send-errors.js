@@ -33,6 +33,16 @@ describe('A failed chat send', function () {
                 expect(api.send).not.toHaveBeenCalled();
                 expect(chat.get('num_unread')).toBe(0);
 
+                // A retry that fails too keeps its own reason, which is news to the user.
+                chat.createMessageStanza.and.callFake(() => {
+                    throw Object.assign(new Error('No keys'), { code: 'omemo-key-fetch-failed' });
+                });
+                await expect(chat.resendFailedMessage(failed)).rejects.toMatchObject({
+                    code: 'omemo-key-fetch-failed',
+                });
+                expect(failed.get('send_status')).toBe('failed');
+                expect(failed.get('send_error_code')).toBe('omemo-key-fetch-failed');
+
                 // Retrying is a call the client makes. Once it succeeds, the failure is cleared.
                 chat.createMessageStanza.and.resolveTo(stx`<message xmlns="jabber:client"/>`);
                 await chat.resendFailedMessage(failed);

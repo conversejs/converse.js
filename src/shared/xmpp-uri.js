@@ -66,7 +66,11 @@ export function parseXMPPURI(href) {
     if (!query) return { jid, action: null, params: {} };
 
     const parts = query.split(';');
-    const action = parts.shift() || null;
+    // RFC-5122 doesn't allow `=` in a querytype, so a first part holding one is
+    // already a key-value pair of an action-less query, like the OMEMO
+    // fingerprints in `xmpp:romeo@montague.lit?omemo-sid-123=abc` that
+    // Conversations shares.
+    const action = parts[0].includes('=') ? null : parts.shift() || null;
     /** @type {Record<string, string|string[]>} */
     const params = {};
     for (const pair of parts) {
@@ -82,6 +86,71 @@ export function parseXMPPURI(href) {
         }
     }
     return { jid, action, params };
+}
+
+/**
+ * Invitation pages (easy-xmpp-invitation) that carry an `xmpp:` URI, minus its
+ * scheme, in the fragment: `https://xmpp.link/#room@muc.example.org?join`.
+ * Other clients hand these out because an https link works where `xmpp:` isn't
+ * clickable, but a Converse user already has the client the page would send
+ * them off to install.
+ */
+export const INVITATION_FRAGMENT_HOSTS = ['xmpp.link', 'invite.joinjabber.org', 'i.kaidan.im'];
+
+/**
+ * Conversations' older invitation format, with the JID as a path segment:
+ * `/i/<jid>` for a contact and `/j/<jid>` for a groupchat.
+ */
+export const INVITATION_PATH_HOST = 'conversations.im';
+
+/**
+ * The `xmpp:` URI an https invitation link stands for, or null when the link
+ * isn't one. Mirrors how Conversations reads the same links.
+ * @param {URL} url
+ * @returns {string|null}
+ */
+export function invitationToXMPPURI(url) {
+    if (url.protocol !== 'https:') return null;
+
+    const host = url.hostname.toLowerCase();
+    if (INVITATION_FRAGMENT_HOSTS.includes(host)) {
+        if (url.pathname !== '/') return null;
+
+        // Conversations form-encodes the whole URI into the fragment (`@` as
+        // `%40`, a space as `+`), so its own escapes arrive doubled, while
+        // Kaidan pastes the URI in as is. A literal `@` or `?` can only be the
+        // latter, which must not be decoded here, or an escaped `;` in a value
+        // would become a separator and a `+` in a JID a space.
+        const fragment = url.hash.slice(1);
+        const is_encoded = !fragment.includes('@') && !fragment.includes('?');
+        const uri = (is_encoded ? decodeValue(fragment.replaceAll('+', ' ')) : fragment).replace(/^xmpp:/i, '');
+        return uri ? `xmpp:${uri}` : null;
+    }
+    if (host === INVITATION_PATH_HOST) {
+        const m = url.pathname.match(/^\/([ij])\/([^/]+)$/);
+        if (!m) return null;
+
+        // The path names a JID only, so a decoded `?` is part of it and is
+        // escaped again, rather than starting a query that picks the action.
+        const jid = decodeValue(m[2]).replace(/[%?]/g, encodeURIComponent);
+        return m[1] === 'j' ? `xmpp:${jid}?join` : `xmpp:${jid}`;
+    }
+    return null;
+}
+
+const DOMAINPART = /^(?:\[[\d.:a-f]+\]|(?:[\d.a-z-]|\P{ASCII})+)$/iu;
+
+/**
+ * Whether a JID's domainpart is one RFC 7622 § 3.2 allows: an IP literal, or a
+ * hostname whose ASCII characters are letters, digits, `-` and `.` (non-ASCII
+ * ones are left to IDNA). `u.isValidJID` only checks the `@` and `/` structure,
+ * so without this `romeo@montague.lit?remove` would pass.
+ * @param {string} jid
+ * @returns {boolean}
+ */
+function hasValidDomainpart(jid) {
+    const bare = jid.split('/')[0];
+    return DOMAINPART.test(bare.slice(bare.lastIndexOf('@') + 1));
 }
 
 /**
@@ -102,5 +171,5 @@ export function parseXMPPURI(href) {
  */
 export function isHandledXMPPURI(href) {
     const { jid, action } = parseXMPPURI(href);
-    return u.isValidJID(jid) && HANDLED_ACTIONS.includes(action ?? DEFAULT_ACTION);
+    return u.isValidJID(jid) && hasValidDomainpart(jid) && HANDLED_ACTIONS.includes(action ?? DEFAULT_ACTION);
 }

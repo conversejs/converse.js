@@ -90,6 +90,8 @@ describe('Inbox and conversations', () => {
             edited: null,
             retracted: null,
             reactions: {},
+            status: 'received',
+            error_code: null,
         });
 
         expect(await claude.request('inbox.read')).toEqual({ conversations: [] });

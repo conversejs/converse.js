@@ -23,8 +23,9 @@ const MAX_LIMIT = 1000;
  * @param {ReturnType<typeof import('./drafts.js').createDraftStore>} deps.drafts
  * @param {ReturnType<typeof import('./events.js').createEvents>} deps.events
  * @param {string} deps.owner - Bare JID of the user, to whom drafts are delivered
+ * @param {boolean} deps.allow_unencrypted_resend - Whether the owner may send a failed send in the clear
  */
-export function messageMethods(_converse, { routeSend, audit, drafts, events, owner }) {
+export function messageMethods(_converse, { routeSend, audit, drafts, events, owner, allow_unencrypted_resend }) {
     const { api } = _converse;
     const ownJID = () => _converse.session.get('bare_jid');
 
@@ -265,6 +266,68 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
                 ),
             });
         },
+
+        /**
+         * Sends a failed send again. Only the owner's full access connection may
+         * do it, and nothing resends a failed send on its own. It's sent encrypted,
+         * unless `unencrypted` asks otherwise, which the config must allow.
+         * @param {Object} params
+         * @param {string} params.id - The id of the failed send, as `messages.list` shows it
+         * @param {string} [params.conversation] - A JID, or a contact's name. Without it, the
+         *  message is looked for in every conversation.
+         * @param {boolean} [params.unencrypted] - Send it in the clear, if it was refused for encryption
+         * @param {import('./types').Client} client
+         * @returns {Promise<import('./types').SendResult>}
+         */
+        async 'messages.resend'({ id, conversation, unencrypted = false }, client) {
+            if (typeof unencrypted !== 'boolean') {
+                throw new RPCError(ERRORS.INVALID_PARAMS, '"unencrypted" must be true or false.');
+            }
+            if (unencrypted && !allow_unencrypted_resend) {
+                throw new RPCError(
+                    ERRORS.ACCESS_DENIED,
+                    'Sending a failed send in the clear is off. To allow it, set "allow_unencrypted_resend" ' +
+                        'to true in the daemon config.',
+                );
+            }
+            const jid =
+                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
+            const message = failedSendOf(await findTarget(_converse, id, jid), id, 'sent again');
+            if (!api.connection.connected()) throw notConnected();
+
+            const chatbox = message.collection.chatbox;
+            const to = chatbox.get('jid');
+            await attempt(() =>
+                unencrypted ? resendUnencrypted(_converse, chatbox, message) : chatbox.resendFailedMessage(message),
+            );
+            const dto = toMessageDTO(message, to, ownJID());
+            audit.record({
+                consumer: client.consumer,
+                to,
+                outcome: 'sent',
+                id: dto.id,
+                action: 'resend',
+                ...(unencrypted ? { unencrypted: true } : {}),
+            });
+            return { outcome: 'sent', message: dto };
+        },
+
+        /**
+         * Removes a failed send from the history. Only the owner's full access
+         * connection may do it.
+         * @param {Object} params
+         * @param {string} params.id - The id of the failed send, as `messages.list` shows it
+         * @param {string} [params.conversation] - A JID, or a contact's name. Without it, the
+         *  message is looked for in every conversation.
+         * @returns {Promise<{}>}
+         */
+        async 'messages.discard'({ id, conversation }) {
+            const jid =
+                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
+            const message = failedSendOf(await findTarget(_converse, id, jid), id, 'discarded');
+            message.collection.chatbox.discardFailedMessage(message);
+            return {};
+        },
     };
 
     /**
@@ -438,6 +501,60 @@ function ownedBy(message, id, verb) {
 }
 
 /**
+ * @param {import('@converse/headless').Message} message - Found by the id given
+ * @param {string} id
+ * @param {string} verb - What's to be done to it, for the error message
+ */
+function failedSendOf(message, id, verb) {
+    if (!isFailedSend(message)) {
+        throw new RPCError(ERRORS.INVALID_PARAMS, `Message "${id}" isn't a failed send, so it can't be ${verb}.`);
+    }
+    return message;
+}
+
+/**
+ * Runs a send that headless may refuse with a code, and turns a refusal into
+ * the daemon's own error. Only the code is passed on, never headless's words.
+ * @template T
+ * @param {() => Promise<T>} send
+ * @returns {Promise<T>}
+ */
+async function attempt(send) {
+    try {
+        return await send();
+    } catch (e) {
+        throw e instanceof RPCError ? e : unsent(e);
+    }
+}
+
+/**
+ * Sends a failed send again in the clear. Headless only does this for a message
+ * that was refused for encryption, and says so by not handling the request.
+ * @param {import('@converse/headless').ChatBox|import('@converse/headless').MUC} chatbox
+ * @param {import('@converse/headless').Message} message
+ */
+async function resendUnencrypted(_converse, chatbox, message) {
+    const { handled } = await _converse.api.hook('resendFailedMessageUnencrypted', chatbox, {
+        message,
+        handled: false,
+    });
+    if (!handled) {
+        throw new RPCError(
+            ERRORS.INVALID_PARAMS,
+            "This failed send wasn't refused for encryption, so it can only be sent encrypted.",
+        );
+    }
+}
+
+/**
+ * @param {unknown} e - What headless rejected a send with
+ */
+function unsent(e) {
+    const code = /** @type {{code?: string}} */ (e)?.code;
+    return new RPCError(ERRORS.INTERNAL_ERROR, UNSENT[code] ?? UNSENT.unexpected, { code: code ?? null });
+}
+
+/**
  * A draft can't correct, retract or remove a reaction, so where the policy
  * would make a restricted send a draft, these are refused instead.
  * @param {string} verb
@@ -488,13 +605,7 @@ export async function sendMessage(_converse, jid, body, targets = {}, attributes
  * @returns {Promise<import('@converse/headless').Message>}
  */
 async function send(chatbox, attrs, targets) {
-    let message;
-    try {
-        message = await chatbox.sendMessage(attrs, targets);
-    } catch (e) {
-        const code = /** @type {{code?: string}} */ (e)?.code;
-        throw new RPCError(ERRORS.INTERNAL_ERROR, UNSENT[code] ?? UNSENT.unexpected, { code: code ?? null });
-    }
+    const message = await attempt(() => chatbox.sendMessage(attrs, targets));
     if (!message) throw new RPCError(ERRORS.INTERNAL_ERROR, UNSENT.unexpected, { code: null });
     return message;
 }
@@ -600,6 +711,8 @@ export function toMessageDTO(message, conversation, own_jid) {
         edited: message.get('edited') ?? null,
         retracted: retracted ? (message.get('retracted') ?? message.get('time')) : null,
         reactions: getReactions(message),
+        status: getStatus(message),
+        error_code: isFailedSend(message) ? (message.get('send_error_code') ?? null) : null,
     };
     if (isRoomMessage(message)) {
         // The sender of a room message is its occupant, so the JID is the room's with the nickname.
@@ -608,6 +721,24 @@ export function toMessageDTO(message, conversation, own_jid) {
     }
     const from = outgoing ? own_jid : Strophe.getBareJidFromJid(message.get('from'));
     return { id, conversation, from, nick: null, ...rest };
+}
+
+/**
+ * @param {import('@converse/headless').Message} message
+ * @returns {import('./types').MessageDTO['status']}
+ */
+function getStatus(message) {
+    if (message.get('sender') !== 'me') return 'received';
+    return isFailedSend(message) ? 'failed' : 'sent';
+}
+
+/**
+ * A send that didn't go out. Headless keeps it, with the reason, so that it can
+ * be shown and sent again.
+ * @param {import('@converse/headless').Message} message
+ */
+export function isFailedSend(message) {
+    return message.get('send_status') === 'failed';
 }
 
 /**

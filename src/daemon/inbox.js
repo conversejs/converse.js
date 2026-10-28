@@ -7,7 +7,7 @@
  */
 import { isMessage } from './history.js';
 import { constants } from '@converse/headless';
-import { toConversationDTO, toMessageDTO, toRoomDTO } from './messages.js';
+import { isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './messages.js';
 import { ERRORS, RPCError } from './protocol.js';
 
 /** @param {import('@converse/headless').ChatBox} box - A chat or a room */
@@ -44,7 +44,10 @@ export function inboxMethods(_converse, cursors) {
         for (const chat of conversations) {
             await chat.messages.fetched;
             const jid = chat.get('jid');
-            const messages = chat.messages.models.filter(isMessage).map((m) => toMessageDTO(m, jid, ownJID()));
+            // A failed send never went out, so it isn't news, and it isn't the conversation's activity.
+            const messages = chat.messages.models
+                .filter((m) => isMessage(m) && !isFailedSend(m))
+                .map((m) => toMessageDTO(m, jid, ownJID()));
             if (messages.length) {
                 const conversation = isRoom(chat)
                     ? toRoomDTO(chat)

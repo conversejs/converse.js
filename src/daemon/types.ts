@@ -57,6 +57,8 @@ export type Config = {
     consumer: string; // The name a client identifies itself by unless told otherwise
     access: Access; // The level the CLI connects at
     mode: Mode; // How the account acts, see Mode
+    // Whether the owner may send a failed send again in the clear. Off unless the config says so.
+    allow_unencrypted_resend: boolean;
     policy: Policy;
     settings: Record<string, unknown>; // Passed through to converse.initialize
     paths: Paths;
@@ -135,6 +137,13 @@ export type MessageDTO = {
     // it. A reactor is named like `from`: a bare JID in a chat, an occupant JID
     // in a room, or the room's opaque occupant id if the occupant isn't known.
     reactions: Record<string, string[]>;
+    // "received" for a message from someone else, "sent" for one of ours that
+    // went out, and "failed" for one of ours that didn't. A failed send stays in
+    // the history, but it isn't counted in the inbox, unread counts or activity.
+    status: 'received' | 'sent' | 'failed';
+    // Why a failed send failed, as headless names it, such as "no-omemo-devices".
+    // Null for any other message.
+    error_code: string | null;
 };
 
 /**
@@ -230,10 +239,11 @@ export type AuditEntry = {
     id?: string; // The DTO id, for a send
     draft?: string; // The draft's id, for a draft or a rejection
     rule?: string; // For a refusal
-    action?: 'reply' | 'correct' | 'retract' | 'react' | 'upload';
+    action?: 'reply' | 'correct' | 'retract' | 'react' | 'upload' | 'resend';
     target?: string; // The id of the message acted on
     mode?: Mode; // For a restricted send, or a refusal of one
     route?: Route; // For a restricted send that was sent or drafted
+    unencrypted?: boolean; // For a resend of a failed send in the clear
 };
 
 export type Hello = {

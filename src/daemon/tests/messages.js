@@ -120,14 +120,29 @@ describe('Messages in a 1:1 chat', () => {
             });
         });
 
-        it("reports a send headless couldn't build as an error, not as sent", async () => {
+        it('reports a send headless rejects with its code, as an error that names the code and is not sent', async () => {
             const chat = await daemon.api.chats.get(JULIET, {}, true);
-            const send = vi.spyOn(chat, 'sendMessage').mockResolvedValue(undefined);
+            const send = vi
+                .spyOn(chat, 'sendMessage')
+                .mockRejectedValue(Object.assign(new Error('Headless words, not ours'), { code: 'no-omemo-devices' }));
             try {
                 await expect(client.request('messages.send', { to: JULIET, body: 'x' })).rejects.toMatchObject({
                     code: ERRORS.INTERNAL_ERROR,
-                    message: "Nothing was sent: the message couldn't be built. Try again.",
+                    message: 'Nothing was sent: there are no OMEMO devices to encrypt for.',
+                    data: { code: 'no-omemo-devices' },
                 });
+            } finally {
+                send.mockRestore();
+            }
+        });
+
+        it('never passes headless wording on, even for a failure without a code', async () => {
+            const chat = await daemon.api.chats.get(JULIET, {}, true);
+            const send = vi.spyOn(chat, 'sendMessage').mockRejectedValue(new Error('Internal detail'));
+            try {
+                const error = await client.request('messages.send', { to: JULIET, body: 'x' }).catch((e) => e);
+                expect(error).toMatchObject({ code: ERRORS.INTERNAL_ERROR, data: { code: null } });
+                expect(error.message).not.toContain('Internal detail');
             } finally {
                 send.mockRestore();
             }

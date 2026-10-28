@@ -18,23 +18,49 @@ Create a separate XMPP account for the agent, with its own password. Don't use
 your own account. In the `owner_only` and `bot` modes, the config refuses to
 start if `jid` and `owner` are the same.
 
-## 2. Keep your password away from the agent
+## 2. Keep the agent away from the daemon's files
 
-The agent runs as your OS user, so anything your user can read, the agent can
-read too. Choose one of:
+The send policy only binds an agent that has to go through the restricted
+socket. An agent that runs as the daemon's OS user, with the same files, can get
+round it:
 
-- **Run the daemon as a separate OS user**, for example `converse-agent`. Its
-  config file and keyring entries belong to that user and are unreadable by you
-  or the agent, and the socket directory is shared through a group.
-- **Don't store your password on the machine.** The daemon can't start without a
-  password, and you type it in when it does.
+- it can read the agent account's password from the config or the keyring, and
+  log in without the daemon;
+- it can connect to the full-access socket, which sits next to the restricted
+  one;
+- it can edit the audit log and the drafts.
 
-Your own password should never be in the daemon's config or keyring, under the
-agent's user or yours.
+The server still stops it from sending as you, since the account is the bot's.
+But the allowlist, the drafts, the rate limits and the audit log no longer hold.
+
+So run the agent in a sandbox (for example bubblewrap, a container, or your
+agent's own sandbox) that can reach the restricted socket and nothing else of
+the daemon's:
+
+- **Mount the restricted socket only**, at the same path:
+  `$XDG_RUNTIME_DIR/converse/<jid>.restricted.sock` (a hash of the JID, for a
+  long one). Don't mount the directory, which holds the full-access socket too.
+- **Give the agent a copy of `daemon.json` without the password**, at its config
+  path inside the sandbox. The CLI reads it to find the socket.
+- **Don't mount** the daemon's own config, its state directory
+  (`~/.local/state/converse/`), or the session D-Bus, through which the keyring
+  can be asked for the password.
+
+The mount is of the socket file, so when the daemon restarts and makes a new
+one, restart the sandbox too. Inside the sandbox, the CLI can't start the
+daemon, because it has no password: start it outside with
+`converse-cli daemon start`.
+
+Running the daemon as a separate OS user isn't supported yet: the daemon keeps
+its sockets private to its own user, so another user's CLI can't reach them.
+
+Your own password should never be in the daemon's config or keyring.
 
 ## 3. Write the config
 
-`daemon.json` in the daemon user's config directory:
+The config is `~/.config/converse/daemon.json` in the daemon user's home, or
+`$XDG_CONFIG_HOME/converse/daemon.json` when `XDG_CONFIG_HOME` is set.
+`converse-cli --help` prints the path it uses.
 
 ```json
 {
@@ -67,7 +93,32 @@ agent's user or yours.
   can always do it.
 - The agent's password goes in the keyring under the service `converse`, with
   the agent's JID as the account, or in `password` if the daemon user's config
-  is private to that user.
+  is private to that user (`chmod 600`). Only the daemon reads it; the CLI never
+  does. To store it in the keyring, as the daemon user:
+
+  ```sh
+  # Linux (libsecret)
+  secret-tool store --label=Converse service converse account agent@example.org
+  # macOS
+  security add-generic-password -s converse -a agent@example.org -w
+  ```
+
+## Where the daemon keeps its files
+
+Logs and state go in `~/.local/state/converse/` (or
+`$XDG_STATE_HOME/converse/`), with one set of files per account:
+
+- `<jid>.log` is what the daemon did, including why it failed to start. When
+  the daemon won't start, the CLI's error names this file.
+- `<jid>.audit.jsonl` has one line for every send, draft and refusal, with the
+  client that asked for it, the mode and the route. Read it to check what an
+  agent sent.
+- The inbox cursors, drafts and joined rooms are kept beside them, so they
+  survive a restart.
+
+The socket and pidfile go in `$XDG_RUNTIME_DIR/converse/`, or, without
+`XDG_RUNTIME_DIR`, in a `converse-<uid>` directory in the system's temporary
+directory. The directory is readable only by the daemon user.
 
 ## Modes
 
@@ -118,7 +169,6 @@ Nothing reaches Juliet unless you send it yourself.
   roster to people you're happy for it to hear from.
 - Anything that can read the daemon user's files can read the agent's password.
   Protect that user the same way you would protect your own password.
-- If the agent runs as your own OS user, it can reach the full socket and call
-  `drafts list` and `drafts reject`. Those can only hide or withdraw a draft, and
-  every withdrawal is reported to you. Running the daemon as a separate user, as
-  in step 2, closes this too.
+- If the agent runs outside a sandbox, as your own OS user, none of the policy
+  binds it: it can read the agent account's password and use the full-access
+  socket, as step 2 explains. The server still keeps it from sending as you.

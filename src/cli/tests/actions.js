@@ -51,21 +51,21 @@ describe('converse-cli acting on messages', () => {
 
     it('corrects a message with --correct, and read notes that it was edited', async () => {
         const id = await send(JULIET, 'Hree');
-        await send(JULIET, 'Here', '--correct', id.slice(0, 8));
+        await send(JULIET, 'Here', '--correct', id);
 
         expect(lastSent().querySelector('replace').getAttribute('id')).toBe(id);
         expect(await lastLine()).toMatch(/ {2}romeo@montague\.lit {2}\[edited\] {2}"Here"\n$/);
     });
 
     it('replies with --reply-to, which goes out at full access', async () => {
-        await send(JULIET, 'Here', '--reply-to', 'e5e5');
+        await send(JULIET, 'Here', '--reply-to', 'e5e5e5e5e5e5');
         expect(lastSent().querySelector('reply').getAttribute('id')).toBe('j1');
-        expect(await lastLine()).toMatch(/ {2}\[reply to e5e5e5e5\] {2}"Here"\n$/);
+        expect(await lastLine()).toMatch(/ {2}\[reply to e5e5e5e5e5e5\] {2}"Here"\n$/);
     });
 
-    it('retracts a message by its short id, and read notes that it was retracted', async () => {
+    it('retracts a message by its id, and read notes that it was retracted', async () => {
         const id = await send(JULIET, 'Never mind');
-        const { code, stdout } = await run(daemon.env, 'retract', id.slice(0, 8), '--conversation', JULIET);
+        const { code, stdout } = await run(daemon.env, 'retract', id, '--conversation', JULIET);
 
         expect({ code, stdout }).toEqual({ code: EXIT.OK, stdout: `Retracted ${id} in ${JULIET}.\n` });
         expect(lastSent().querySelector('retract').getAttribute('id')).toBe(id);
@@ -86,7 +86,7 @@ describe('converse-cli acting on messages', () => {
         expect(lastSent().querySelector('reactions').getAttribute('id')).toBe('j1');
 
         const { stdout } = await run(daemon.env, 'read', JULIET);
-        expect(stdout.split('\n')[0]).toMatch(/^e5e5e5e5 .* {2}\[reactions: 👍 1\] {2}"Wherefore art thou\?"$/);
+        expect(stdout.split('\n')[0]).toMatch(/^e5e5e5e5e5e5 .* {2}\[reactions: 👍 1\] {2}"Wherefore art thou\?"$/);
 
         result = await run(daemon.env, 'react', 'e5e5', '👍', '--remove');
         expect(result.stdout).toBe(`Withdrew that reaction to e5e5e5e5e5e5 in ${JULIET}.\n`);

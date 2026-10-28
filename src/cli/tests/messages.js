@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { converse } from '@converse/headless';
 import { JID, startDaemon } from '../../daemon/tests/harness.js';
 import { EXIT } from '../exit-codes.js';
+import { formatMessage } from '../format.js';
 import { run, runWithInput } from './run.js';
 
 const { Strophe, stx } = converse.env;
@@ -45,15 +46,17 @@ describe('converse-cli read and send', () => {
 
     afterAll(() => daemon?.stop());
 
-    it('prints one line per message: short id, time and age, sender and the body as a JSON string', async () => {
+    it('prints one line per message: id, time and age, sender and the body as a JSON string', async () => {
         const { code, stdout, stderr } = await run(daemon.env, 'read', JULIET, '--limit', '2');
         expect({ code, stderr }).toEqual({ code: EXIT.OK, stderr: '' });
         const lines = stdout.split('\n');
         expect(lines.pop()).toBe('');
         expect(lines).toHaveLength(2);
-        expect(lines[0]).toMatch(/^a1b2ffff {2}2026-10-21T10:00:00Z \(\d+d ago\) {2}juliet@capulet\.lit {2}/);
+        expect(lines[0]).toMatch(/^a1b2ffff0000 {2}2026-10-21T10:00:00Z \(\d+d ago\) {2}juliet@capulet\.lit {2}/);
         expect(lines[0]).toMatch(/ {2}"Line one\\nLine two \\"quoted\\""$/);
-        expect(lines[1]).toMatch(new RegExp(`^b0b0b0b0 .* {2}"${'x'.repeat(280)}" \\[\\+20 chars, --full to show\\]$`));
+        expect(lines[1]).toMatch(
+            new RegExp(`^b0b0b0b0b0b0 .* {2}"${'x'.repeat(280)}" \\[\\+20 chars, --full to show\\]$`),
+        );
     });
 
     it('shows long bodies whole with --full', async () => {
@@ -94,8 +97,8 @@ describe('converse-cli read and send', () => {
             stdout
                 .split('\n')
                 .filter(Boolean)
-                .map((l) => l.slice(0, 8)),
-        ).toEqual(['a1b2ffff', 'b0b0b0b0']);
+                .map((l) => l.split(' ')[0]),
+        ).toEqual(['a1b2ffff0000', 'b0b0b0b0b0b0']);
 
         ({ stdout } = await run(daemon.env, 'read', JULIET, '--since', '100000d'));
         expect(stdout.split('\n').filter(Boolean)).toHaveLength(3);
@@ -176,11 +179,11 @@ describe('converse-cli read and send', () => {
             </message>`);
         await promise;
         const { stdout } = await run(daemon.env, 'read', JULIET, '--limit', '1');
-        expect(stdout).toMatch(/^c0c0c0c0 .* {2}juliet@capulet\.lit {2}\[reply to a1b2c3d4\] {2}"Here"\n$/);
+        expect(stdout).toMatch(/^c0c0c0c0c0c0 .* {2}juliet@capulet\.lit {2}\[reply to a1b2c3d4e5f6\] {2}"Here"\n$/);
     });
 
-    it('drafts a reply to a message addressed by the short id read printed', async () => {
-        const { code } = await run(daemon.env, 'send', JULIET, 'Here', '--reply-to', 'a1b2c3d4');
+    it('drafts a reply to a message addressed by the id read printed', async () => {
+        const { code } = await run(daemon.env, 'send', JULIET, 'Here', '--reply-to', 'a1b2c3d4e5f6');
         expect(code).toBe(EXIT.DRAFT);
         expect(lastToOwner()).toContain(`as a reply to the message from ${JULIET}, "Wherefore art thou?"`);
 
@@ -209,5 +212,28 @@ describe('converse-cli read and send', () => {
         const result = await run(daemon.env, 'send', JULIET);
         expect(result.code).toBe(EXIT.ERROR);
         expect(result.stderr).toBe('converse-cli: There is nothing to send: "body" is empty.\n');
+    });
+});
+
+describe('converse-cli message output', () => {
+    it("marks one of our messages that didn't go out, with why", () => {
+        const message = {
+            id: 'm1',
+            conversation: JULIET,
+            from: JID.split('/')[0],
+            time: '2026-10-20T10:00:00.000Z',
+            body: 'Meet me at nine',
+            encryption: null,
+            reply_to: null,
+            edited: null,
+            retracted: null,
+            reactions: {},
+            status: 'failed',
+            error_code: 'no-omemo-devices',
+        };
+        const line = formatMessage(message, { now: new Date('2026-10-20T10:01:00.000Z') });
+        expect(line).toBe(
+            'm1  2026-10-20T10:00:00Z (1m ago)  romeo@montague.lit  [send failed: no-omemo-devices]  "Meet me at nine"\n',
+        );
     });
 });

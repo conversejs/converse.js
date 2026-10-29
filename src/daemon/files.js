@@ -8,7 +8,6 @@
  * @module @converse/daemon/files
  */
 import { getUploadService, uploadFile } from '@converse/headless';
-import { draftNotice } from './notices.js';
 import { sendMessage } from './messages.js';
 import { ERRORS, MAX_UPLOAD_SIZE, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
@@ -21,11 +20,9 @@ const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
  * @param {Object} deps
  * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
- * @param {ReturnType<typeof import('./drafts.js').createDraftStore>} deps.drafts
- * @param {ReturnType<typeof import('./events.js').createEvents>} deps.events
- * @param {string} deps.owner
+ * @param {ReturnType<typeof import('./drafts.js').createDrafter>} deps.queueDraft
  */
-export function fileMethods(_converse, { routeSend, audit, drafts, events, owner }) {
+export function fileMethods(_converse, { routeSend, audit, queueDraft }) {
     return {
         /**
          * @param {{ to: string, name: string, content: string }} params - `content` is base64
@@ -52,28 +49,7 @@ export function fileMethods(_converse, { routeSend, audit, drafts, events, owner
                 },
                 draft: async (routing) => {
                     const uploaded = await uploadContents(upload);
-                    const added = drafts.add({
-                        to: jid,
-                        consumer: client.consumer,
-                        action: 'send',
-                        body: uploaded.url,
-                    });
-                    try {
-                        await sendMessage(_converse, owner, draftNotice(added));
-                    } catch (e) {
-                        drafts.remove(added.id);
-                        throw e;
-                    }
-                    audit.record({
-                        consumer: client.consumer,
-                        to: jid,
-                        outcome: 'draft',
-                        draft: added.id,
-                        action: 'upload',
-                        ...routing,
-                    });
-                    events.publishDraft('queued', added);
-                    return { outcome: 'draft', draft_id: added.id };
+                    return queueDraft(client, { to: jid, action: 'upload', body: uploaded.url }, routing);
                 },
             });
         },

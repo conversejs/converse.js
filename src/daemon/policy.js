@@ -4,9 +4,10 @@
  * the user's own, so it isn't policed.
  *
  * A send goes one of three ways. Direct: the account sends it itself. Draft:
- * its text goes to the owner, who sends it or doesn't. Refused: the policy
- * doesn't let it through at all. The mode and the target decide which, and the
- * rate limits count direct sends and drafts alike.
+ * its text goes to the owner, who sends it or doesn't, or in "as_user" mode it's
+ * held until the user approves it. Refused: the policy doesn't let it through
+ * at all. The mode and the target decide which, and the rate limits count
+ * direct sends and drafts alike.
  *
  * A room is stricter than a contact. It has its own allowlist, which is empty
  * by default, and its own limit, since one message reaches everyone in the room.
@@ -63,7 +64,8 @@ export function createPolicy({ mode, owner, policy, paths }, { now = () => Date.
             }
             return { allowed: true, route: mode === 'bot' ? 'direct' : 'draft', kind: 'room' };
         }
-        if (jid === owner) return { allowed: true, route: 'direct', kind: 'contact' };
+        // Acting as the user, nothing goes out until the user approves it, so nothing is direct.
+        if (jid === owner && mode !== 'as_user') return { allowed: true, route: 'direct', kind: 'contact' };
         if (mode === 'bot' && direct.includes(jid)) return { allowed: true, route: 'direct', kind: 'contact' };
         if (allow.includes(jid)) return { allowed: true, route: 'draft', kind: 'contact' };
         return refused(

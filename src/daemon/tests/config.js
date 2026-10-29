@@ -116,8 +116,44 @@ describe('The account configuration', () => {
         expect(loadConfig(env).mode).toBe('owner_only');
         await writeConfig({ jid: 'romeo@montague.lit', mode: 'bot' });
         expect(loadConfig(env).mode).toBe('bot');
-        await writeConfig({ jid: 'romeo@montague.lit', mode: 'as_user' });
+        await writeConfig({ jid: 'romeo@montague.lit', owner: 'romeo@montague.lit', mode: 'as_user' });
         expect(loadConfig(env).mode).toBe('as_user');
+    });
+
+    describe('in as_user mode', () => {
+        it('takes the account itself as the owner, whether the config names it or leaves it out', async () => {
+            await writeConfig({ jid: 'Romeo@Montague.lit', owner: 'romeo@montague.lit', mode: 'as_user' });
+            expect(loadConfig(env)).toMatchObject({ jid: 'romeo@montague.lit', owner: 'romeo@montague.lit' });
+            await writeConfig({ jid: 'romeo@montague.lit', owner: undefined, mode: 'as_user' });
+            expect(loadConfig(env)).toMatchObject({ jid: 'romeo@montague.lit', owner: 'romeo@montague.lit' });
+        });
+
+        it('refuses an owner that is another account, since the agent acts as the owner', async () => {
+            await writeConfig({ jid: 'romeo@montague.lit', owner: 'benvolio@montague.lit', mode: 'as_user' });
+            expect(() => loadConfig(env)).toThrow(
+                `"owner" in ${path.join(dir, 'converse', 'daemon.json')} must be the same account as "jid" ` +
+                    'in "as_user" mode',
+            );
+        });
+
+        it('refuses a policy.direct list, since nothing goes out without approval', async () => {
+            await writeConfig({
+                jid: 'romeo@montague.lit',
+                owner: 'romeo@montague.lit',
+                mode: 'as_user',
+                policy: { direct: ['juliet@capulet.lit'] },
+            });
+            expect(() => loadConfig(env)).toThrow(
+                `"policy.direct" in ${path.join(dir, 'converse', 'daemon.json')} can't be used in "as_user" mode`,
+            );
+            await writeConfig({
+                jid: 'romeo@montague.lit',
+                owner: 'romeo@montague.lit',
+                mode: 'as_user',
+                policy: { direct: [], allow: ['juliet@capulet.lit'] },
+            });
+            expect(loadConfig(env).policy).toMatchObject({ direct: [], allow: ['juliet@capulet.lit'] });
+        });
     });
 
     it('refuses a mode it does not know, and names the ones it does', async () => {

@@ -17,8 +17,9 @@ const RATE_LIMITS = ['rate_conversation', 'rate_room', 'rate_overall'];
  * @param {Object} deps
  * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {(params: Object, client: import('./types').Client) => Promise<import('./types').SendResult>} deps.sendNow
+ * @param {import('./types').Mode} deps.mode
  */
-export function scheduleMethods(_converse, { routeSend, sendNow }) {
+export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
     const scheduler = createScheduler(_converse, onDue);
 
     /**
@@ -40,7 +41,9 @@ export function scheduleMethods(_converse, { routeSend, sendNow }) {
         const add = () => addSchedule({ to: jid, body, reply_to, correct, send_at }, client);
         return routeSend(client, jid, {
             direct: add,
-            draft: correct === undefined ? add : undefined,
+            // A due send is routed again, so where it would be drafted, it's drafted then.
+            // Only "as_user" mode drafts a correction.
+            draft: correct === undefined || mode === 'as_user' ? add : undefined,
             cannot_draft: ownMessagesOnly('schedule corrections to'),
             consume: false,
         });

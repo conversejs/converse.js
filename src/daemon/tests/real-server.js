@@ -45,11 +45,20 @@ export async function eventually(fn, { timeout = 10000, what = 'the condition' }
  * @param {string} [options.resource]
  * @param {string} [options.websocket_url] - To reach Prosody another way, e.g. through a {@link startProxy}
  * @param {Partial<import('../types').Policy>} [options.policy] - The send policy, from the config file
+ * @param {import('../types').Mode} [options.mode] - How the account acts, from the config file
+ * @param {string} [options.owner] - The owner's bare JID. Defaults to an account no test uses.
  * @param {Record<string, unknown>} [options.settings] - More headless settings
  */
 export async function startDaemon(
     account,
-    { resource = 'claude', websocket_url = WEBSOCKET_URL, policy, settings = {} } = {},
+    {
+        resource = 'claude',
+        websocket_url = WEBSOCKET_URL,
+        policy,
+        mode,
+        owner = 'benvolio@montague.lit',
+        settings = {},
+    } = {},
 ) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-prosody-test-'));
     const env = {
@@ -63,12 +72,13 @@ export async function startDaemon(
         path.join(env.XDG_CONFIG_HOME, 'converse', 'daemon.json'),
         JSON.stringify({
             jid: account.jid,
-            owner: 'benvolio@montague.lit',
+            owner,
             password: account.password,
             websocket_url,
             resource,
             settings: { discover_connection_methods: false, loglevel: 'info', ...settings },
             ...(policy ? { policy } : {}),
+            ...(mode ? { mode } : {}),
         }),
     );
     const log = path.join(env.XDG_STATE_HOME, 'converse', `${account.jid}.log`);

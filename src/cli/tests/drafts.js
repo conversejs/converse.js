@@ -59,7 +59,13 @@ describe('converse-cli drafts', () => {
         expect(stderr).toContain('No draft with id "d2". List the drafts with "converse-cli drafts list"');
     });
 
-    it('has no command that sends a draft or edits one', async () => {
+    it('refuses to send a draft, which the owner sends from their own client in this mode', async () => {
+        const { code, stdout, stderr } = await run(daemon.env, 'drafts', 'send', 'd1');
+        expect({ code, stdout }).toEqual({ code: EXIT.ERROR, stdout: '' });
+        expect(stderr).toContain('The daemon only sends drafts in "as_user" mode');
+    });
+
+    it('has no command that approves a draft or edits one', async () => {
         for (const command of ['approve', 'edit']) {
             const { code, stderr } = await run(daemon.env, 'drafts', command, 'd1');
             expect(code).toBe(EXIT.ERROR);

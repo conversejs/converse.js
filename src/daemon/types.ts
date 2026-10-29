@@ -7,7 +7,7 @@ export type Paths = {
     log: string; // Where an auto-spawned daemon writes its output
     cursors: string; // Each consumer's read cursors
     audit: string; // Every send, draft and refusal, one JSON line each
-    drafts: string; // Drafts awaiting the owner's decision, and the id each was given
+    drafts: string; // Drafts not yet sent or withdrawn, and the id each was given
     rooms: string; // The rooms the daemon is meant to be in, and the nickname it uses in each
 };
 
@@ -20,8 +20,8 @@ export type Access = 'full' | 'restricted';
 /**
  * How the account acts. "owner_only": restricted sends are drafts for the owner,
  * and direct only to the owner. "bot": restricted sends also go out directly to
- * the rooms and contacts the policy lists. "as_user": acting with the user's own
- * credentials, which the daemon doesn't implement yet.
+ * the rooms and contacts the policy lists. "as_user": the account is the user's
+ * own, and every restricted send is a draft, held until the user approves it.
  */
 export type Mode = 'owner_only' | 'bot' | 'as_user';
 
@@ -49,8 +49,8 @@ export type Policy = {
 };
 
 export type Config = {
-    jid: string; // Bare JID of the agent's account
-    owner: string; // Bare JID of the user, to whom drafts are delivered
+    jid: string; // Bare JID of the agent's account, which is the user's own in "as_user" mode
+    owner: string; // Bare JID of the user, to whom drafts are delivered. The same as jid in "as_user" mode
     password?: string; // Unset means: look in the system keyring
     websocket_url?: string;
     resource: string;
@@ -180,8 +180,11 @@ export type SearchResult = {
 };
 
 /**
- * A send the agent asked for that went to the owner as text, not to its
- * recipient. The owner sends it themselves, from their own client, or doesn't.
+ * A send the agent asked for that didn't go to its recipient. In "owner_only"
+ * and "bot" modes it went to the owner as text, and the owner sends it
+ * themselves, from their own client, or doesn't. In "as_user" mode it's held
+ * in the daemon until the user sends it with `drafts.send`, or withdraws it.
+ * Only "as_user" drafts corrections, retractions and withdrawn reactions.
  */
 export type Draft = {
     id: string; // Short, and unique for the account, e.g. "d17"
@@ -198,11 +201,15 @@ export type Draft = {
 export type DraftAction =
     | { action: 'send'; body: string } // A new message
     | { action: 'reply'; body: string; target: string }
-    | { action: 'react'; body: string; target: string }; // The body is the emoji
+    | { action: 'correct'; body: string; target: string } // The target is our message that it replaces
+    | { action: 'retract'; target: string } // The target is our message that it retracts
+    | { action: 'react'; body: string; target: string; remove: boolean } // The body is the emoji. Remove withdraws it
+    | { action: 'upload'; body: string }; // The body is the uploaded file's URL, shared as a file
 
 /**
  * What a send came to. A refused send says which rule refused it, and what to
- * do about it. A draft is never sent by the daemon: its text went to the owner.
+ * do about it. A draft was not sent: in "owner_only" and "bot" modes its text
+ * went to the owner, and in "as_user" mode it waits for the user's approval.
  */
 export type SendResult =
     | { outcome: 'sent'; message: MessageDTO }
@@ -237,12 +244,13 @@ export type AuditEntry = {
     to: string; // Bare JID
     outcome: 'sent' | 'refused' | 'draft' | 'rejected';
     id?: string; // The DTO id, for a send
-    draft?: string; // The draft's id, for a draft or a rejection
+    draft?: string; // The draft's id, for a draft, a rejection, or a draft sent on approval
+    approved_by?: Access; // For a draft sent on approval ("as_user" mode): the access level that approved it
     rule?: string; // For a refusal
     action?: 'reply' | 'correct' | 'retract' | 'react' | 'upload' | 'resend';
     target?: string; // The id of the message acted on
-    mode?: Mode; // For a restricted send, or a refusal of one
-    route?: Route; // For a restricted send that was sent or drafted
+    mode?: Mode; // For a restricted send, a refusal of one, or a draft's rejection or approval
+    route?: Route; // For a restricted send that was sent or drafted, and a draft's rejection or approval
     unencrypted?: boolean; // For a resend of a failed send in the clear
 };
 
@@ -290,7 +298,7 @@ export type Subscription = {
  * event is sent to subscribers of type "draft", whatever the draft's action.
  */
 export type Event = { subscription: number } & (
-    { type: 'message'; message: MessageDTO } | { type: 'draft'; action: 'queued' | 'rejected'; draft: Draft }
+    { type: 'message'; message: MessageDTO } | { type: 'draft'; action: 'queued' | 'sent' | 'rejected'; draft: Draft }
 );
 
 /**

@@ -22,6 +22,7 @@ import {
     formatSchedule,
     formatConversation,
     formatDraft,
+    formatDraftDetails,
     formatDuration,
     formatMessage,
     parseSince,
@@ -148,6 +149,17 @@ function reportError(e, io) {
 const accessFor = (env) => loadConfig(env).access;
 
 /**
+ * The access level to list and show drafts at: full, as drafts are the user's
+ * to decide on, except in "as_user" mode, where restricted access may see them.
+ * @param {NodeJS.ProcessEnv} env
+ * @returns {import('@converse/daemon/types').Access}
+ */
+function draftReadAccess(env) {
+    const { mode, access } = loadConfig(env);
+    return mode === 'as_user' ? access : 'full';
+}
+
+/**
  * Connects (starting the daemon if need be), makes one request and hangs up.
  * @param {import('./types').Context} ctx
  * @param {string} method
@@ -171,13 +183,17 @@ async function request({ env }, method, params, { spawn = true, access = accessF
  * @param {import('./types').Context} ctx
  * @returns {number} The exit code.
  */
-function reportSend(result, { options, out, err }) {
+function reportSend(result, { options, out, err, env }) {
     if (options.json) {
         out(JSON.stringify(result) + '\n');
     } else if (result.outcome === 'sent') {
         out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
     } else if (result.outcome === 'draft') {
-        out(`Drafted as ${result.draft_id}. Its text went to the owner, and nothing was sent.\n`);
+        out(
+            loadConfig(env).mode === 'as_user'
+                ? `Drafted as ${result.draft_id}. Nothing was sent: it waits for the user to approve it.\n`
+                : `Drafted as ${result.draft_id}. Its text went to the owner, and nothing was sent.\n`,
+        );
     } else if (result.outcome === 'scheduled') {
         const { schedule } = result;
         out(`Scheduled ${schedule.id} to ${schedule.to} for ${schedule.send_at}.\n`);
@@ -268,7 +284,7 @@ const COMMANDS = {
     },
 
     async send(ctx) {
-        const { args, options, out, err } = ctx;
+        const { args, options } = ctx;
         if (args.length === 0) throw new UsageError('Expected a JID to send to.');
         const [to, ...words] = args;
         const body = words.length ? words.join(' ') : await readStdin(ctx);
@@ -277,18 +293,18 @@ const COMMANDS = {
         const result = await (options.at === undefined
             ? request(ctx, 'messages.send', params)
             : request(ctx, 'schedules.create', { ...params, at: options.at }));
-        return reportSend(result, { options, out, err });
+        return reportSend(result, ctx);
     },
 
     async upload(ctx) {
-        const { args, options, out, err } = ctx;
+        const { args, options, out } = ctx;
         if (args.length !== 2) throw new UsageError('Expected a recipient and a local file path.');
         const [to, file_path] = args;
         const name = path.basename(file_path);
         const content = await readUpload(file_path);
         /** @type {import('@converse/daemon/types').SendResult} */
         const result = await request(ctx, 'files.upload', { to, name, content });
-        if (result.outcome !== 'sent' || options.json) return reportSend(result, { options, out, err });
+        if (result.outcome !== 'sent' || options.json) return reportSend(result, ctx);
 
         out(
             `Uploaded ${JSON.stringify(path.basename(file_path))} to ${result.message.conversation} ` +
@@ -345,7 +361,7 @@ const COMMANDS = {
     },
 
     async react(ctx) {
-        const { args, options, out, err } = ctx;
+        const { args, options, out } = ctx;
         if (args.length !== 2) throw new UsageError('Expected a message id and an emoji.');
         const [id, emoji] = args;
         /** @type {import('@converse/daemon/types').SendResult} */
@@ -355,7 +371,7 @@ const COMMANDS = {
             conversation: options.conversation,
             remove: !!options.remove,
         });
-        if (result.outcome !== 'sent' || options.json) return reportSend(result, { options, out, err });
+        if (result.outcome !== 'sent' || options.json) return reportSend(result, ctx);
 
         const { message } = result;
         out(
@@ -366,11 +382,12 @@ const COMMANDS = {
         return EXIT.OK;
     },
 
-    // Drafts are the user's to decide on, so these always ask for full access.
+    // Drafts are the user's to decide on, so these ask for full access, except
+    // that in "as_user" mode an agent may see which drafts are still waiting.
     async 'drafts list'(ctx) {
         const { options, out, err } = ctx;
         /** @type {{ drafts: import('@converse/daemon/types').Draft[] }} */
-        const { drafts } = await request(ctx, 'drafts.list', {}, { access: 'full' });
+        const { drafts } = await request(ctx, 'drafts.list', {}, { access: draftReadAccess(ctx.env) });
         if (options.json) {
             drafts.forEach((d) => out(JSON.stringify(d) + '\n'));
         } else if (drafts.length) {
@@ -380,6 +397,22 @@ const COMMANDS = {
             err('No drafts.\n');
         }
         return EXIT.OK;
+    },
+
+    async 'drafts show'(ctx) {
+        const { options, out } = ctx;
+        const id = takeOne(ctx, 'draft id');
+        /** @type {{ draft: import('@converse/daemon/types').Draft, target: import('@converse/daemon/types').MessageDTO|null }} */
+        const { draft, target } = await request(ctx, 'drafts.get', { id }, { access: draftReadAccess(ctx.env) });
+        out(options.json ? JSON.stringify(draft) + '\n' : formatDraftDetails(draft, target));
+        return EXIT.OK;
+    },
+
+    async 'drafts send'(ctx) {
+        const id = takeOne(ctx, 'draft id');
+        /** @type {import('@converse/daemon/types').SendResult} */
+        const result = await request(ctx, 'drafts.send', { id }, { access: 'full' });
+        return reportSend(result, ctx);
     },
 
     async 'drafts reject'(ctx) {

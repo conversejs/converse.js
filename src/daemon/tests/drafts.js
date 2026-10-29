@@ -201,7 +201,7 @@ describe('Drafts', () => {
                 `from ${JULIET}, "Noon or never?", with:\n"👍"`,
         );
         expect((await fullRequest('drafts.list')).drafts).toEqual([
-            expect.objectContaining({ action: 'react', body: '👍', target: 'sid-j1' }),
+            expect.objectContaining({ action: 'react', body: '👍', target: 'sid-j1', remove: false }),
         ]);
     });
 
@@ -273,6 +273,8 @@ describe('Drafts', () => {
             to: JULIET,
             outcome: 'rejected',
             draft: 'd1',
+            route: 'draft',
+            mode: 'owner_only',
         });
         await expect(fullRequest('drafts.reject', { id: 'd1' })).rejects.toMatchObject({ code: ERRORS.NOT_FOUND });
     });

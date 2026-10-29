@@ -5,7 +5,6 @@
  */
 import { converse, log } from '@converse/headless';
 import { getPage, hasArchivedMessages, isMessage, isUndecryptable } from './history.js';
-import { draftNotice } from './notices.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 import { notJoined } from './routing.js';
@@ -20,14 +19,18 @@ const MAX_LIMIT = 1000;
  * @param {Object} deps
  * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
- * @param {ReturnType<typeof import('./drafts.js').createDraftStore>} deps.drafts
- * @param {ReturnType<typeof import('./events.js').createEvents>} deps.events
- * @param {string} deps.owner - Bare JID of the user, to whom drafts are delivered
+ * @param {ReturnType<typeof import('./drafts.js').createDrafter>} deps.queueDraft
+ * @param {import('./types').Mode} deps.mode
  * @param {boolean} deps.allow_unencrypted_resend - Whether the owner may send a failed send in the clear
  */
-export function messageMethods(_converse, { routeSend, audit, drafts, events, owner, allow_unencrypted_resend }) {
+export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, allow_unencrypted_resend }) {
     const { api } = _converse;
     const ownJID = () => _converse.session.get('bare_jid');
+    // Acting as the user, a draft waits for the user's approval, and is then
+    // sent as it was asked for. So corrections, retractions and withdrawn
+    // reactions can be drafted too. Elsewhere the owner sends a draft by hand,
+    // which only works for a new message or a reaction.
+    const drafts_any_action = mode === 'as_user';
 
     return {
         /**
@@ -137,7 +140,7 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
          * @param {string} params.body
          * @param {string} [params.reply_to] - The id of a message in the conversation that this replies to
          * @param {string} [params.correct] - The id of one of our messages in the conversation, which
-         *  this replaces. A draft can't correct a message, so this is only sent directly.
+         *  this replaces. Only "as_user" mode drafts a correction. Elsewhere it's only sent directly.
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>}
          */
@@ -176,19 +179,28 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
                 });
                 return { outcome: 'sent', message: dto };
             };
+            const draft = async (routing) => {
+                const correcting =
+                    correct === undefined ? undefined : await findOwn(_converse, correct, jid, 'correct');
+                const target_model = replying_to ?? correcting;
+                const target = target_model ? toMessageDTO(target_model, jid, ownJID()) : null;
+                /** @type {import('./types').DraftAction} */
+                const action = target
+                    ? { action: replying_to ? 'reply' : 'correct', body, target: target.id }
+                    : { action: 'send', body };
+                return queueDraft(client, { to: jid, ...action }, routing, target);
+            };
             return routeSend(client, jid, {
                 direct: send,
-                draft:
-                    correct === undefined
-                        ? (routing) => draft(client, { to: jid, body, reply_to: replying_to }, routing)
-                        : undefined,
+                draft: correct === undefined || drafts_any_action ? draft : undefined,
                 cannot_draft: ownMessagesOnly('correct'),
             });
         },
 
         /**
          * Withdraws one of our messages (XEP-0424). Restricted access can only
-         * do it where the policy sends directly, since a draft can't retract.
+         * do it where the policy sends directly, since a draft can't retract,
+         * except in "as_user" mode, where it's drafted for the user to approve.
          * @param {Object} params
          * @param {string} params.id - The message's id
          * @param {string} [params.conversation] - A JID, or a contact's name. Without it, the
@@ -203,25 +215,21 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
             const to = found.collection.chatbox.get('jid');
             const retract = async (routing) => {
                 const message = ownedBy(found, id, 'retract');
-                if (message.isRetracted()) {
-                    throw new RPCError(ERRORS.INVALID_PARAMS, `Message "${id}" has already been retracted.`);
-                }
-                if (!api.connection.connected()) throw notConnected();
-
-                const chatbox = message.collection.chatbox;
                 const target = getIDs(message, ownJID())[0];
-                await chatbox.retractOwnMessage(message);
-                if (!message.get('retracted')) {
-                    // A room that doesn't answer in time has the retraction undone.
-                    throw new RPCError(
-                        ERRORS.INTERNAL_ERROR,
-                        `The room didn't confirm the retraction of "${id}", so it may not have happened. Try again.`,
-                    );
-                }
+                const dto = await retractMessage(_converse, message, id);
                 audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'retract', target, ...routing });
-                return { outcome: 'sent', message: toMessageDTO(message, to, ownJID()) };
+                return { outcome: 'sent', message: dto };
             };
-            return routeSend(client, to, { direct: retract, cannot_draft: ownMessagesOnly('retract') });
+            const draft = (routing) => {
+                const message = notRetracted(ownedBy(found, id, 'retract'), id);
+                const target = toMessageDTO(message, to, ownJID());
+                return queueDraft(client, { to, action: 'retract', target: target.id }, routing, target);
+            };
+            return routeSend(client, to, {
+                direct: retract,
+                draft: drafts_any_action ? draft : undefined,
+                cannot_draft: ownMessagesOnly('retract'),
+            });
         },
 
         /**
@@ -233,7 +241,7 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
          * @param {string} params.emoji - An emoji, or its shortname such as ":thumbsup:"
          * @param {string} [params.conversation] - A JID, or a contact's name. Without it, the
          *  message is looked for in every conversation.
-         * @param {boolean} [params.remove] - Withdraw this reaction instead. A draft can't withdraw one.
+         * @param {boolean} [params.remove] - Withdraw this reaction instead. Only "as_user" mode drafts a withdrawal.
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>} When sent, the message reacted to
          */
@@ -245,20 +253,23 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
             const chatbox = message.collection.chatbox;
             const to = chatbox.get('jid');
             const react = async (routing) => {
-                if (!api.connection.connected()) throw notConnected();
-
-                const mine = message.get('reactions')?.[u.reactions.getOwnReactionJID(chatbox)] ?? [];
-                const emojis = remove ? mine.filter((e) => e !== reaction) : [...new Set([...mine, reaction])];
-                await api.reactions.send(message, emojis);
+                const dto = await sendReaction(_converse, message, reaction, remove);
                 const target = getIDs(message, ownJID())[0];
                 audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'react', target, ...routing });
-                return { outcome: 'sent', message: toMessageDTO(message, to, ownJID()) };
+                return { outcome: 'sent', message: dto };
+            };
+            const draft = (routing) => {
+                const target = toMessageDTO(message, to, ownJID());
+                return queueDraft(
+                    client,
+                    { to, action: 'react', body: reaction, target: target.id, remove: !!remove },
+                    routing,
+                    target,
+                );
             };
             return routeSend(client, to, {
                 direct: react,
-                draft: remove
-                    ? undefined
-                    : (routing) => draft(client, { to, body: reaction, reaction_to: message }, routing),
+                draft: !remove || drafts_any_action ? draft : undefined,
                 cannot_draft: new RPCError(
                     ERRORS.ACCESS_DENIED,
                     "Restricted access can't remove reactions: its reactions are drafts, which the owner gives " +
@@ -331,38 +342,60 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
             return { message: dto };
         },
     };
+}
 
-    /**
-     * A restricted send that the policy routes to the owner: its text goes to
-     * the owner, who sends it or doesn't.
-     * @param {import('./types').Client} client
-     * @param {Object} send
-     * @param {string} send.to - Bare JID
-     * @param {string} send.body - For a reaction, the emoji
-     * @param {import('@converse/headless').Message} [send.reply_to]
-     * @param {import('@converse/headless').Message} [send.reaction_to]
-     * @param {import('./types').Routing} routing
-     * @returns {Promise<import('./types').SendResult>}
-     */
-    async function draft(client, { to, body, reply_to, reaction_to }, routing) {
-        const target_model = reply_to ?? reaction_to;
-        const target = target_model ? toMessageDTO(target_model, to, ownJID()) : null;
-        /** @type {import('./types').DraftAction} */
-        const action = target
-            ? { action: reaction_to ? 'react' : 'reply', body, target: target.id }
-            : { action: 'send', body };
-        const added = drafts.add({ to, consumer: client.consumer, ...action });
-        try {
-            await sendMessage(_converse, owner, draftNotice(added, target));
-        } catch (e) {
-            // Without the owner's copy, the draft would be one nobody can see, so it's dropped.
-            drafts.remove(added.id);
-            throw e;
-        }
-        audit.record({ consumer: client.consumer, to, outcome: 'draft', draft: added.id, ...routing });
-        events.publishDraft('queued', added);
-        return { outcome: 'draft', draft_id: added.id };
+/**
+ * Retracts one of our messages (XEP-0424).
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('@converse/headless').Message} message - One of ours
+ * @param {string} id - The id it was asked for by, for the error messages
+ * @returns {Promise<import('./types').MessageDTO>} The message, retracted
+ */
+export async function retractMessage(_converse, message, id) {
+    notRetracted(message, id);
+    if (!_converse.api.connection.connected()) throw notConnected();
+
+    const chatbox = message.collection.chatbox;
+    await chatbox.retractOwnMessage(message);
+    if (!message.get('retracted')) {
+        // A room that doesn't answer in time has the retraction undone.
+        throw new RPCError(
+            ERRORS.INTERNAL_ERROR,
+            `The room didn't confirm the retraction of "${id}", so it may not have happened. Try again.`,
+        );
     }
+    return toMessageDTO(message, chatbox.get('jid'), _converse.session.get('bare_jid'));
+}
+
+/**
+ * Gives a message a reaction (XEP-0444), or withdraws one, keeping the other
+ * reactions we gave it.
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('@converse/headless').Message} message
+ * @param {string} reaction - An emoji
+ * @param {boolean} remove - Whether to withdraw it
+ * @returns {Promise<import('./types').MessageDTO>} The message reacted to
+ */
+export async function sendReaction(_converse, message, reaction, remove) {
+    const { api } = _converse;
+    if (!api.connection.connected()) throw notConnected();
+
+    const chatbox = message.collection.chatbox;
+    const mine = message.get('reactions')?.[u.reactions.getOwnReactionJID(chatbox)] ?? [];
+    const emojis = remove ? mine.filter((e) => e !== reaction) : [...new Set([...mine, reaction])];
+    await api.reactions.send(message, emojis);
+    return toMessageDTO(message, chatbox.get('jid'), _converse.session.get('bare_jid'));
+}
+
+/**
+ * @param {import('@converse/headless').Message} message
+ * @param {string} id - The id it was asked for by
+ */
+function notRetracted(message, id) {
+    if (message.isRetracted()) {
+        throw new RPCError(ERRORS.INVALID_PARAMS, `Message "${id}" has already been retracted.`);
+    }
+    return message;
 }
 
 /**
@@ -561,8 +594,9 @@ function unsent(e) {
 }
 
 /**
- * A draft can't correct, retract or remove a reaction, so where the policy
- * would make a restricted send a draft, these are refused instead.
+ * A draft the owner sends by hand can't correct, retract or remove a reaction,
+ * so where the policy would make a restricted send a draft, these are refused
+ * instead. Only "as_user" mode, where the daemon sends approved drafts, drafts them.
  * @param {string} verb
  */
 export function ownMessagesOnly(verb) {

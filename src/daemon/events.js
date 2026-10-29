@@ -87,7 +87,7 @@ export function createEvents(_converse) {
          * Announces a draft to draft subscribers. A draft is an outgoing
          * message from us, so the filters read it as one: the conversation
          * filter is against whom it's addressed.
-         * @param {'queued'|'edited'|'approved'|'rejected'} action
+         * @param {'queued'|'sent'|'rejected'} action - "sent" only in "as_user" mode, where the user approves drafts
          * @param {import('./types').Draft} draft
          */
         publishDraft(action, draft) {
@@ -97,7 +97,7 @@ export function createEvents(_converse) {
                 from: ownJID(),
                 direction: 'outgoing',
                 time: draft.created,
-                body: draft.body,
+                body: 'body' in draft ? draft.body : null,
             };
             const sender = { sender: ownJID(), own_name: Strophe.getNodeFromJid(ownJID()) };
             notify('draft', as_message, { action, draft }, sender);

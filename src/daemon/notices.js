@@ -16,10 +16,12 @@ const QUOTE_LENGTH = 100;
  * @param {import('./types').MessageDTO|null} [target] - The message the draft replies or reacts to
  * @returns {string}
  */
-export function draftNotice({ id, to, body, consumer, action }, target) {
+export function draftNotice(draft, target) {
+    const { id, to, consumer } = draft;
     let how = 'To send it, copy the text into your client';
-    if (target && action === 'react') how = `To send it, react to ${describe(target)}, with`;
+    if (target && draft.action === 'react') how = `To send it, react to ${describe(target)}, with`;
     else if (target) how = `To send it as a reply to ${describe(target)}, copy the text into your client`;
+    const body = 'body' in draft ? draft.body : null;
     return `Draft ${id} for ${to}, from ${consumer ?? 'an agent'}. Nothing was sent. ${how}:\n${JSON.stringify(body)}`;
 }
 

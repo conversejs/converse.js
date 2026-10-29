@@ -12,6 +12,11 @@ you. You send it yourself, from your own client, or you don't.
 For that to hold, the agent must not be able to act as you. The code can't
 enforce that alone. The setup below is what makes it true.
 
+The steps below are for the `owner_only` and `bot` modes, where the agent has its
+own account. To let the agent use your own account instead, read
+[Acting as yourself](#acting-as-yourself-as_user) first: it changes step 1, and
+makes step 2 a requirement.
+
 ## 1. Create a bot account for the agent
 
 Create a separate XMPP account for the agent, with its own password. Don't use
@@ -58,7 +63,8 @@ daemon, because it has no password: start it outside with
 Running the daemon as a separate OS user isn't supported yet: the daemon keeps
 its sockets private to its own user, so another user's CLI can't reach them.
 
-Your own password should never be in the daemon's config or keyring.
+In the `owner_only` and `bot` modes, your own password should never be in the
+daemon's config or keyring. Only `as_user` mode uses it.
 
 ## 3. Write the config
 
@@ -83,15 +89,17 @@ The config is `~/.config/converse/daemon.json` in the daemon user's home, or
 ```
 
 - `owner` is the account drafts are delivered to, and direct sends to you go
-  to. It must be your account.
+  to. It must be your account. In `as_user` mode it's the same as `jid`, and can
+  be left out.
 - `mode` is how the agent acts. See "Modes" below. It defaults to `owner_only`.
 - `policy.allow` lists the people a draft may be for. A draft to anyone else is
   refused, and nothing is sent.
 - `policy.direct` lists the people the agent may message directly, in `bot`
-  mode. It is empty by default, and ignored in `owner_only` mode.
+  mode. It is empty by default, and ignored in `owner_only` mode. In `as_user`
+  mode the config refuses it.
 - `policy.rooms` lists the rooms the agent may join, leave and send to. In
-  `owner_only` mode a send to one of them is a draft. In `bot` mode it goes out
-  directly.
+  `owner_only` and `as_user` modes a send to one of them is a draft. In `bot`
+  mode it goes out directly.
 - `policy.presence` (default `false`) lets a restricted agent change your
   availability and status message with `converse-cli presence set`. Full access
   can always do it.
@@ -142,13 +150,99 @@ alike.
   contact on `policy.direct`, goes out directly, from the agent's account. The
   agent's messages then come from the bot account, and show it as a bot. A
   contact on `policy.allow` is still a draft.
-- **`as_user`**. Acting with your own credentials. Not implemented yet, and the
-  daemon refuses to start in it.
+- **`as_user`**. The agent uses your own account. Nothing it asks for is sent:
+  a send, reply, correction, retraction, reaction or upload to someone on
+  `policy.allow`, or to a room on `policy.rooms`, is a draft, held in the daemon
+  until you send it. Anything else is refused. See
+  [Acting as yourself](#acting-as-yourself-as_user).
+
+## Acting as yourself (`as_user`)
+
+In `as_user` mode the daemon logs in to your own account, as a separate client
+(under its `resource`). The agent reads what you can read: your whole roster,
+your rooms and your history. It drafts the messages you ask it to write, and you
+decide which of them go out. What you approve is sent as you, with nothing to
+mark it as the agent's, and your other clients see it as one of your messages.
+
+```json
+{
+    "jid": "you@example.org",
+    "websocket_url": "wss://example.org/xmpp-websocket",
+    "mode": "as_user",
+    "policy": {
+        "allow": ["juliet@example.org"],
+        "rooms": []
+    }
+}
+```
+
+- `owner` can be left out. If it's set, it must be `jid`.
+- `policy.direct` is refused: nothing goes out without your approval.
+- Your password goes in the keyring under your own JID, as step 3 shows. Only
+  the daemon reads it.
+
+### Using the same daemon yourself
+
+You and the agent share one daemon, which is the one session for your account.
+You don't start a second one. The mode applies to the whole daemon, but it only
+changes what happens on the restricted socket. Sends from the full-access socket
+are never routed: they go out directly, as they would from any of your clients.
+
+The CLI connects at the config's `access` level, which is `restricted` unless
+the config says otherwise. With that default, a `converse-cli send` from your
+own terminal would be drafted like the agent's. So set the level in your own
+config:
+
+```json
+"access": "full"
+```
+
+Leave it out of the copy of `daemon.json` you give the agent's sandbox. That
+sandbox can reach only the restricted socket anyway, so full access in its copy
+would just make its commands fail.
+
+### What it risks
+
+XMPP has no scoped tokens, so your server enforces nothing here. Every limit on
+the agent comes from the daemon's policy, and the policy only binds an agent
+that has to go through the restricted socket. An agent that can reach the
+full-access socket can send its own drafts, or anything else, as you. One that
+can read the daemon's config or keyring has your password.
+
+So for this mode, step 2 is a requirement, not advice: **run the agent in a
+sandbox that can reach the restricted socket and nothing else of the daemon's.**
+The daemon logs a warning when it starts in this mode, to say so.
+
+The agent also reads everything your account receives, so whatever anyone sends
+you reaches it. Treat that as you would any untrusted input to an agent.
+
+### Reviewing and sending drafts
+
+When the agent drafts something, the draft stays in the daemon. Nothing is
+delivered to anyone, you included. From your own terminal, which can reach the
+full-access socket:
+
+```sh
+converse-cli drafts list        # what's waiting
+converse-cli drafts show d17    # one draft in full: recipient, the message it answers, its text
+converse-cli drafts send d17    # send it as you
+converse-cli drafts reject d17  # or drop it
+```
+
+`drafts send` sends the draft as it was asked for. A reply is sent as a reply, a
+correction replaces your message, a retraction retracts it, and a reaction is
+given. If it can't be sent, for example while the daemon is offline, the draft
+is kept. Drafts survive a daemon restart.
+
+The agent can list and show drafts too, so it can tell you which are waiting.
+It can never send or withdraw one. The audit log records each draft, and each
+draft you send or reject, with `mode: "as_user"`. A sent draft also records
+`"approved_by": "full"`.
 
 ## What you will see
 
-When the agent asks to send to Juliet, you get a message from the agent's
-account like this:
+In the `owner_only` and `bot` modes, when the agent asks to send to Juliet, you
+get a message from the agent's account like this:
 
 ```
 Draft d1 for juliet@example.org, from agent. Nothing was sent. To send it, copy the text into your client:

@@ -215,6 +215,10 @@ describe('Drafts', () => {
                     created: expect.any(String),
                     reply_to: null,
                     reaction_to: null,
+                    correct: null,
+                    retract: null,
+                    remove: false,
+                    upload: false,
                 },
             ],
         });
@@ -270,6 +274,8 @@ describe('Drafts', () => {
             to: JULIET,
             outcome: 'rejected',
             draft: 'd1',
+            route: 'draft',
+            mode: 'owner_only',
         });
         await expect(fullRequest('drafts.reject', { id: 'd1' })).rejects.toMatchObject({ code: ERRORS.NOT_FOUND });
     });

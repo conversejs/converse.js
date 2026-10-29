@@ -9,7 +9,7 @@ import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
 import { getPassword } from './config.js';
 import { createCursors } from './cursors.js';
-import { createDraftStore, draftMethods } from './drafts.js';
+import { createDrafter, createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
 import { fileMethods } from './files.js';
 import { inboxMethods } from './inbox.js';
@@ -29,17 +29,26 @@ const SHUTDOWN_TIMEOUT = 5000;
 
 /**
  * Methods that restricted connections may not call. Restricted access covers
- * reads and drafted sends. Stopping the daemon, reviewing or dropping drafts,
- * and sending or discarding a failed send again, are the user's to do.
+ * reads and drafted sends. Stopping the daemon, reviewing, sending or dropping
+ * drafts, and sending or discarding a failed send again, are the user's to do.
  */
 const FULL_ACCESS_METHODS = [
     'daemon.stop',
+    'drafts.get',
     'drafts.list',
     'drafts.reject',
+    'drafts.send',
     'messages.discard',
     'messages.resend',
     'omemo.devices.trust',
 ];
+
+/**
+ * The full access methods restricted connections may call in "as_user" mode.
+ * There the drafts wait in the daemon, so the agent may see which are still
+ * waiting, but not send or drop them.
+ */
+const AS_USER_RESTRICTED_METHODS = ['drafts.get', 'drafts.list'];
 
 /**
  * How the daemon's connection identifies itself to contacts, as a bot. This
@@ -55,9 +64,10 @@ const BOT_IDENTITY = { category: 'client', type: 'bot', name: 'Converse daemon' 
 export async function start(config) {
     const { paths } = config;
     if (config.mode === 'as_user') {
-        throw new Error(
-            `"mode": "as_user" in ${paths.config} isn't implemented yet, so the daemon can't start in it. ` +
-                'Use "owner_only" or "bot".',
+        log.warn(
+            `The daemon acts as ${config.jid} itself ("mode": "as_user"). Restricted access is only as strong ` +
+                `as the agent's isolation from the full access socket, ${paths.socket}: an agent that can reach ` +
+                'it can approve its own drafts.',
         );
     }
     await fs.mkdir(paths.runtime_dir, { recursive: true, mode: 0o700 });
@@ -91,6 +101,7 @@ async function serve(config) {
     const drafts = createDraftStore(paths.drafts);
     const rooms = createRoomStore(paths.rooms);
     const routeSend = createSendRouter(_converse, { policy, audit, mode: config.mode });
+    const queueDraft = createDrafter(_converse, { drafts, audit, events, owner: config.owner, mode: config.mode });
     // Headless sets up its client identity on connect, so the bot identity has to be set after that.
     api.listen.on('addClientFeatures', () => {
         api.disco.own.identities.clear();
@@ -99,18 +110,21 @@ async function serve(config) {
     const messages = messageMethods(_converse, {
         routeSend,
         audit,
-        drafts,
-        events,
-        owner: config.owner,
+        queueDraft,
+        mode: config.mode,
         allow_unencrypted_resend: config.allow_unencrypted_resend,
     });
-    const schedules = scheduleMethods(_converse, { routeSend, sendNow: messages['messages.send'] });
+    const schedules = scheduleMethods(_converse, {
+        routeSend,
+        sendNow: messages['messages.send'],
+        mode: config.mode,
+    });
     api.listen.on('scheduledMessageDue', schedules.onDue);
     const methods = {
         ...messages,
         ...schedules.methods,
-        ...fileMethods(_converse, { routeSend, audit, drafts, events, owner: config.owner }),
-        ...draftMethods(_converse, { drafts, audit, events, owner: config.owner }),
+        ...fileMethods(_converse, { routeSend, audit, queueDraft }),
+        ...draftMethods(_converse, { drafts, audit, events, owner: config.owner, mode: config.mode }),
         ...inboxMethods(_converse, createCursors(paths.cursors)),
         ...contactMethods(_converse),
         ...presenceMethods(_converse, { config }),
@@ -270,7 +284,7 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
         if (!Object.hasOwn(methods, method)) {
             throw new RPCError(ERRORS.METHOD_NOT_FOUND, `Unknown method "${method}".`);
         }
-        if (FULL_ACCESS_METHODS.includes(method) && access !== 'full') {
+        if (access !== 'full' && FULL_ACCESS_METHODS.includes(method) && !restrictedMayCall(method, config.mode)) {
             throw new RPCError(
                 ERRORS.ACCESS_DENIED,
                 `"${method}" is only available at full access, and this connection is restricted.`,
@@ -315,6 +329,13 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
         }
     });
 }
+
+/**
+ * Whether a restricted connection may call one of the full access methods, in this mode.
+ * @param {string} method
+ * @param {import('./types').Mode} mode
+ */
+const restrictedMayCall = (method, mode) => mode === 'as_user' && AS_USER_RESTRICTED_METHODS.includes(method);
 
 /**
  * Calls `onLine` with each line `socket` sends, like `readline` does, but

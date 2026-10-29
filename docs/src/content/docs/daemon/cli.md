@@ -149,13 +149,14 @@ refused.
 - `--reply-to <id>`: reply to this message of the conversation.
 - `--correct <id>`: replace one of your messages with the new text. The message
   keeps its place in the conversation, and answers to its old id. A restricted
-  correction is only sent directly, and never drafted.
+  correction is only sent directly, and refused where a send would be drafted.
+  In `as_user` mode it's drafted instead.
 
 ### `upload <contact> <path>`
 
 Uploads a file with HTTP File Upload (XEP-0363) and shares its URL. It follows
 the same policy as `send`, with the same exit codes: a drafted upload sends the
-URL to the owner.
+URL to the owner, or in `as_user` mode holds it until you send the draft.
 
 The CLI reads the file and sends its contents to the daemon. The daemon never
 opens a path for the CLI, so the file has to be one the CLI can read, wherever
@@ -165,7 +166,8 @@ is sent.
 ### `retract <id>`
 
 Withdraws one of your messages. A restricted retraction is only sent directly,
-and never drafted.
+and refused where a send would be drafted. In `as_user` mode it's drafted
+instead.
 
 - `--conversation <contact|room>`: look for the message only in this conversation.
 
@@ -202,21 +204,43 @@ A restricted reaction follows the same policy as a send. It's sent directly or
 drafted, and a draft asks the owner to give the reaction.
 
 - `--conversation <contact|room>`: look for the message only in this conversation.
-- `--remove`: withdraw this reaction instead.
+- `--remove`: withdraw this reaction instead. A restricted withdrawal is only
+  sent directly, except in `as_user` mode, where it's drafted.
 
 ## Drafts
 
-Drafts are the owner's to decide on, so these commands always connect at full
-access. Restricted access is refused for them. Keep the agent off the full socket
-as the setup guide describes.
+Drafts are the owner's to decide on, so these commands connect at full access,
+and restricted access is refused for them. Keep the agent off the full socket
+as the setup guide describes. In `as_user` mode, where drafts wait in the daemon
+(see [Acting as yourself](/docs/daemon/setup/#acting-as-yourself-as_user)),
+`drafts list` and `drafts show` connect at the configured access instead, so
+that an agent can say which of its drafts are waiting. It still can't send or
+withdraw them.
 
 ### `drafts list`
 
-Lists the drafts that haven't been withdrawn.
+Lists the drafts that haven't been sent or withdrawn, one per line, with a note
+saying what each acts on, such as `[replies to <id>]`.
+
+### `drafts show <id>`
+
+Shows one draft in full, to review it before sending it: who it's for, who made
+it and when, the message it replies to, corrects, retracts or reacts to, and its
+text as written, over as many lines as it has. The text comes last, and was
+written by the agent that made the draft.
+
+### `drafts send <id>`
+
+Sends a draft as you, as it was asked for: a message, a reply, a correction, a
+retraction or a reaction. The outcome is reported as `send` reports it. If it
+can't be sent, for example while the daemon is offline, the draft is kept. This
+is `as_user` mode only. In the other modes the text of a draft was delivered to
+you, and you send it from your own client, so `drafts send` fails and says so.
 
 ### `drafts reject <id>`
 
-Withdraws a draft. The owner is told that it was withdrawn.
+Withdraws a draft. Nothing is sent. Where drafts are delivered to the owner, the
+owner is told that it was withdrawn.
 
 ## Contacts and presence
 
@@ -340,5 +364,5 @@ Scripts and agents can branch on these. A code never changes its meaning.
 | 3 | Not found: no such contact, conversation or message |
 | 4 | Ambiguous: more than one match. The candidates are listed |
 | 5 | Refused by the send policy |
-| 6 | Drafted: the text went to the owner, and nothing was sent |
+| 6 | Drafted: nothing was sent. The text went to the owner, or in `as_user` mode waits for approval |
 | 7 | The daemon isn't running, and couldn't be started |

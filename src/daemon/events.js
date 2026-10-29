@@ -87,7 +87,7 @@ export function createEvents(_converse) {
          * Announces a draft to draft subscribers. A draft is an outgoing
          * message from us, so the filters read it as one: the conversation
          * filter is against whom it's addressed.
-         * @param {'queued'|'edited'|'approved'|'rejected'} action
+         * @param {'queued'|'sent'|'rejected'} action - "sent" only in "as_user" mode, where the user approves drafts
          * @param {import('./types').Draft} draft
          */
         publishDraft(action, draft) {

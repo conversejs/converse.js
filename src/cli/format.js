@@ -56,10 +56,60 @@ export function formatMessage(message, { full = false, now = new Date(), convers
  */
 export function formatDraft(draft, { full = false, now = new Date() } = {}) {
     const time = new Date(draft.created);
+    const [label, id] = draftTarget(draft) ?? [];
+    const notes = [label && `${label.toLowerCase()} ${id}`, draft.upload && 'file']
+        .filter(Boolean)
+        .map((note) => `[${note}]  `)
+        .join('');
     return (
         `${draft.id}  ${formatTime(time)} (${formatAgo(time, now)})  to ${draft.to}  ` +
-        `${formatBody(draft.body, { full })}\n`
+        `${notes}${formatBody(draft.body, { full })}\n`
     );
+}
+
+/**
+ * One draft in full, for the user to review before sending it: who it's for,
+ * who made it and when, the message it acts on, and its text as written, over
+ * as many lines as it has. The text comes last, so that nothing it says can be
+ * mistaken for the lines above it.
+ * @param {import('@converse/daemon/types').Draft} draft
+ * @param {import('@converse/daemon/types').MessageDTO|null} target - The message it acts on, if held
+ * @param {Object} [options]
+ * @param {Date} [options.now]
+ */
+export function formatDraftDetails(draft, target, { now = new Date() } = {}) {
+    const time = new Date(draft.created);
+    const lines = [
+        `Draft ${draft.id}, made by ${draft.consumer ?? 'an unnamed client'} ${formatTime(time)} (${formatAgo(time, now)})`,
+        `To: ${draft.to}`,
+    ];
+    const [label, id] = draftTarget(draft) ?? [];
+    if (label) {
+        lines.push(`${label}: ${target ? formatMessage(target, { now }).trimEnd() : `${id} (no longer held here)`}`);
+    }
+    if (draft.retract) return lines.join('\n') + '\n';
+
+    if (draft.reaction_to) {
+        lines.push(`Emoji: ${draft.body}`);
+    } else if (draft.upload) {
+        lines.push(`File: ${draft.body}`);
+    } else {
+        lines.push('Text:', draft.body ?? '');
+    }
+    return lines.join('\n') + '\n';
+}
+
+/**
+ * What a draft acts on, if anything: how to say it, and the message's id.
+ * @param {import('@converse/daemon/types').Draft} draft
+ * @returns {[string, string]|null}
+ */
+function draftTarget({ reply_to, correct, retract, reaction_to, remove }) {
+    if (reply_to) return ['Replies to', reply_to];
+    if (correct) return ['Corrects', correct];
+    if (retract) return ['Retracts', retract];
+    if (reaction_to) return [remove ? 'Withdraws a reaction from' : 'Reacts to', reaction_to];
+    return null;
 }
 
 /** One scheduled message, on one line: id, delivery time, recipient and body. */

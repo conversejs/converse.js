@@ -172,20 +172,23 @@ describe('A failed send', () => {
 
         it('is removed from the history by the owner, when discarded', async () => {
             const failed = await failedWith('Not wanted');
-            await full.request('messages.discard', { id: failed.id });
+            const { message } = await full.request('messages.discard', { id: failed.id });
+            expect(message).toMatchObject({ id: failed.id, body: 'Not wanted', status: 'failed' });
             const { messages } = await client.request('messages.list', { conversation: JULIET, limit: 50 });
             expect(messages.map((m) => m.id)).not.toContain(failed.id);
         });
 
-        it('refuses to resend or discard anything that is not a failed send', async () => {
+        it('finds no failed send to resend or discard in a message that is not one', async () => {
             const { messages } = await client.request('messages.list', { conversation: BENVOLIO, limit: 50 });
             const sent = messages.find((m) => m.status === 'sent');
             await expect(full.request('messages.resend', { id: sent.id })).rejects.toMatchObject({
-                code: ERRORS.INVALID_PARAMS,
-                message: `Message "${sent.id}" isn't a failed send, so it can't be sent again.`,
+                code: ERRORS.NOT_FOUND,
+                message:
+                    `Message "${sent.id}" isn't a failed send, so it can't be sent again. "converse-cli read" ` +
+                    'marks a failed send with [send failed: <reason>].',
             });
             await expect(full.request('messages.discard', { id: sent.id })).rejects.toMatchObject({
-                code: ERRORS.INVALID_PARAMS,
+                code: ERRORS.NOT_FOUND,
             });
         });
 

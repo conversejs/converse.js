@@ -4,7 +4,6 @@
  */
 import fs from 'node:fs/promises';
 import net from 'node:net';
-import readline from 'node:readline';
 import { _converse, api, converse, log } from '@converse/headless';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
@@ -19,7 +18,7 @@ import { omemoMethods } from './omemo.js';
 import { presenceMethods } from './presence.js';
 import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
 import { createPolicy } from './policy.js';
-import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
+import { ERRORS, MAX_LINE_LENGTH, PROTOCOL_VERSION, RPCError } from './protocol.js';
 import { createSendRouter } from './routing.js';
 import { scheduleMethods } from './schedules.js';
 import { TIMED_OUT, withTimeout } from './timeout.js';
@@ -48,6 +47,22 @@ const FULL_ACCESS_METHODS = [
  * is a label for other clients to show, not a permission: it's self-declared.
  */
 const BOT_IDENTITY = { category: 'client', type: 'bot', name: 'Converse daemon' };
+
+/**
+ * A line counts against {@link MAX_BUFFERED} only past this length, so that
+ * ordinary requests are never held up by uploads.
+ */
+const SMALL_LINE_LENGTH = 1024 * 1024;
+
+/**
+ * How many bytes of large lines the daemon holds at once, across every
+ * connection, from the first byte read until the request has been handled.
+ * Without it, a client could open many connections and send each one a line
+ * just under {@link MAX_LINE_LENGTH}.
+ */
+const MAX_BUFFERED = 2 * MAX_LINE_LENGTH;
+
+let buffered = 0;
 
 /**
  * Starts the daemon for the configured account: claims its pidfile, logs in,
@@ -282,7 +297,17 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
         return methods[method](params ?? {}, client);
     };
 
-    readline.createInterface({ input: socket, crlfDelay: Infinity }).on('line', async (line) => {
+    const onRefused = (code) => {
+        const message =
+            code === ERRORS.BUSY
+                ? 'The daemon is reading other large requests, so this one was refused and the connection ' +
+                  'closed. Try again once they are done.'
+                : `The request is longer than the ${MAX_LINE_LENGTH} bytes the daemon accepts, so it was ` +
+                  'refused and the connection closed.';
+        socket.end(JSON.stringify({ jsonrpc: '2.0', id: null, error: { code, message } }) + '\n');
+    };
+
+    readLines(socket, onRefused, async (line) => {
         let request;
         try {
             request = JSON.parse(line);
@@ -303,6 +328,73 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
             if (id !== null) send({ id, error: { code, message, data } });
             if (code === ERRORS.PROTOCOL_MISMATCH) socket.end();
         }
+    });
+}
+
+/**
+ * Calls `onLine` with each line `socket` sends, like `readline` does, but
+ * without buffering a line past {@link MAX_LINE_LENGTH} bytes, or past what
+ * {@link MAX_BUFFERED} has left: a client could otherwise make the daemon hold
+ * as much as it cares to send. Then it calls `onRefused` with the error code
+ * instead, and drops whatever else comes.
+ * @param {net.Socket} socket
+ * @param {(code: number) => void} onRefused
+ * @param {(line: string) => Promise<void>} onLine
+ */
+function readLines(socket, onRefused, onLine) {
+    /** @type {Buffer[]} */
+    let chunks = [];
+    let length = 0;
+    // What the line read so far counts against MAX_BUFFERED
+    let charged = 0;
+    let refused = false;
+
+    const refuse = (code) => {
+        refused = true;
+        chunks = [];
+        buffered -= charged;
+        charged = 0;
+        onRefused(code);
+    };
+
+    const emit = () => {
+        const line = Buffer.concat(chunks).toString('utf8');
+        const held = charged;
+        chunks = [];
+        length = 0;
+        charged = 0;
+        onLine(line.endsWith('\r') ? line.slice(0, -1) : line).finally(() => (buffered -= held));
+    };
+
+    socket.on('data', (/** @type {Buffer} */ data) => {
+        if (refused) return;
+
+        let start = 0;
+        for (;;) {
+            const end = data.indexOf(0x0a, start);
+            const piece = data.subarray(start, end === -1 ? data.length : end);
+            length += piece.length;
+            if (length > MAX_LINE_LENGTH) return refuse(ERRORS.INVALID_REQUEST);
+
+            const charge = Math.max(0, length - SMALL_LINE_LENGTH) - charged;
+            if (charge > 0) {
+                if (buffered + charge > MAX_BUFFERED) return refuse(ERRORS.BUSY);
+
+                buffered += charge;
+                charged += charge;
+            }
+            if (piece.length) chunks.push(piece);
+            if (end === -1) return;
+
+            emit();
+            start = end + 1;
+        }
+    });
+    socket.on('end', () => !refused && length && emit());
+    // A line cut off by the connection closing
+    socket.on('close', () => {
+        buffered -= charged;
+        charged = 0;
     });
 }
 

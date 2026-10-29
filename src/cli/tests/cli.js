@@ -78,7 +78,7 @@ describe('converse-cli', () => {
             code: EXIT.ERROR,
             stdout: '',
             stderr:
-                'converse-cli: "drafts" needs one of: list, reject. ' +
+                'converse-cli: "drafts" needs one of: list, show, send, reject. ' +
                 'Run "converse-cli help drafts" for each one\'s usage.\n',
         });
     });

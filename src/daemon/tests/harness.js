@@ -33,6 +33,7 @@ export { JID };
  * @param {Parameters<typeof serve>[0]['upload_service']} [options.upload_service] - An XEP-0363 service
  * @param {Partial<import('../types').Policy>} [options.policy] - The send policy, from the config file
  * @param {import('../types').Mode} [options.mode] - How the account acts, from the config file
+ * @param {string} [options.owner] - The owner's bare JID, from the config file. Defaults to Benvolio.
  * @param {{ jid: string, nick: string }[]} [options.rooms] - The rooms stored from an earlier run, to rejoin
  * @param {import('../types').Access} [options.access] - The level the CLI connects at
  */
@@ -46,6 +47,7 @@ export async function startDaemon({
     upload_service,
     policy,
     mode,
+    owner,
     rooms,
     access,
     allow_unencrypted_resend,
@@ -53,6 +55,7 @@ export async function startDaemon({
     const { env, remove } = await createAccount(settings, {
         ...(policy ? { policy } : {}),
         ...(mode ? { mode } : {}),
+        ...(owner ? { owner } : {}),
         ...(access ? { access } : {}),
         ...(allow_unencrypted_resend !== undefined ? { allow_unencrypted_resend } : {}),
     });

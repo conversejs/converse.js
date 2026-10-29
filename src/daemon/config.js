@@ -82,14 +82,21 @@ export function loadConfig(env = process.env) {
         throw new Error(`"mode" in ${config_path} must be one of: ${MODES.join(', ')}.`);
     }
 
-    // Drafts are delivered here, and direct sends to the owner go here, so the
-    // agent's own account must never be the owner. The rule doesn't apply to
-    // "as_user", which the daemon refuses to run anyway.
-    const owner = typeof raw.owner === 'string' ? raw.owner.trim().toLowerCase() : '';
+    // In "owner_only" and "bot", drafts are delivered to the owner, and direct
+    // sends to the owner go there, so the agent's own account must never be
+    // the owner. In "as_user" the account is the user's own, so it's the owner
+    // too, and that's the only owner it can have.
+    const owner = typeof raw.owner === 'string' ? raw.owner.trim().toLowerCase() : mode === 'as_user' ? jid : '';
     if (!BARE_JID.test(owner)) {
         throw new Error(`"owner" in ${config_path} must be your bare JID, such as "you@example.org".`);
     }
-    if (owner === jid && mode !== 'as_user') {
+    if (mode === 'as_user' && owner !== jid) {
+        throw new Error(
+            `"owner" in ${config_path} must be the same account as "jid" in "as_user" mode, where the agent ` +
+                'acts as you. Leave "owner" out, or set it to your own JID.',
+        );
+    }
+    if (mode !== 'as_user' && owner === jid) {
         throw new Error(`"owner" in ${config_path} must be a different account from "jid", the agent's own.`);
     }
 
@@ -109,7 +116,7 @@ export function loadConfig(env = process.env) {
         access,
         mode,
         allow_unencrypted_resend,
-        policy: parsePolicy(raw.policy, config_path),
+        policy: parsePolicy(raw.policy, config_path, mode),
         settings: raw.settings ?? {},
         paths: getPaths(jid, env),
     };
@@ -118,9 +125,10 @@ export function loadConfig(env = process.env) {
 /**
  * @param {unknown} raw - The "policy" object from the config file, if any
  * @param {string} config_path
+ * @param {import('./types').Mode} mode
  * @returns {import('./types').Policy}
  */
-function parsePolicy(raw, config_path) {
+function parsePolicy(raw, config_path, mode) {
     const allow = raw?.allow ?? DEFAULT_POLICY.allow;
     const direct = raw?.direct ?? DEFAULT_POLICY.direct;
     const rooms = raw?.rooms ?? DEFAULT_POLICY.rooms;
@@ -130,6 +138,14 @@ function parsePolicy(raw, config_path) {
     }
     if (!Array.isArray(direct) || !direct.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
         throw new Error(`"policy.direct" in ${config_path} must be a list of bare JIDs.`);
+    }
+    // Acting as the user, nothing goes out without the user's approval, so
+    // there's nobody the agent may message directly.
+    if (mode === 'as_user' && direct.length) {
+        throw new Error(
+            `"policy.direct" in ${config_path} can't be used in "as_user" mode, where every restricted send ` +
+                'is a draft for you to approve. Remove it, or list those contacts in "policy.allow".',
+        );
     }
     if (!Array.isArray(rooms) || !rooms.every((jid) => typeof jid === 'string' && BARE_JID.test(jid.trim()))) {
         throw new Error(`"policy.rooms" in ${config_path} must be a list of room JIDs.`);

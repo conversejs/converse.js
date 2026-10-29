@@ -201,7 +201,7 @@ describe('Drafts', () => {
                 `from ${JULIET}, "Noon or never?", with:\n"👍"`,
         );
         expect((await fullRequest('drafts.list')).drafts).toEqual([
-            expect.objectContaining({ action: 'react', body: '👍', target: 'sid-j1' }),
+            expect.objectContaining({ action: 'react', body: '👍', target: 'sid-j1', remove: false }),
         ]);
     });
 
@@ -273,6 +273,8 @@ describe('Drafts', () => {
             to: JULIET,
             outcome: 'rejected',
             draft: 'd1',
+            route: 'draft',
+            mode: 'owner_only',
         });
         await expect(fullRequest('drafts.reject', { id: 'd1' })).rejects.toMatchObject({ code: ERRORS.NOT_FOUND });
     });
@@ -356,5 +358,19 @@ describe('Drafts', () => {
         client.close();
 
         expect(drafted.map(({ draft }) => draft.to)).toEqual([MERCUTIO]);
+    });
+
+    it("doesn't announce drafts at restricted access, which may not list them", async () => {
+        await begin({ allow: [JULIET] });
+        const client = await daemon.connect({ access: 'restricted' });
+        await expect(client.request('events.subscribe', { type: 'draft' })).rejects.toMatchObject({
+            code: ERRORS.ACCESS_DENIED,
+            message:
+                'Draft events are only available where "drafts.list" is: at full access, or at restricted ' +
+                'access in "as_user" mode.',
+        });
+        // Its messages are its to follow.
+        await expect(client.request('events.subscribe', {})).resolves.toEqual({ subscription: expect.any(Number) });
+        client.close();
     });
 });

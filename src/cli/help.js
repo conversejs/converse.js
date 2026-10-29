@@ -22,7 +22,7 @@ const EXIT_MEANINGS = {
     [EXIT.NOT_FOUND]: 'no such contact, conversation or message',
     [EXIT.AMBIGUOUS]: 'more than one match; the candidates are listed',
     [EXIT.REFUSED]: 'refused by send policy; nothing was sent',
-    [EXIT.DRAFT]: 'drafted: the text went to the owner, and nothing was sent',
+    [EXIT.DRAFT]: 'drafted: nothing was sent. The text went to the owner, or in as_user waits for approval',
     [EXIT.DAEMON_UNAVAILABLE]: "daemon not running, or it couldn't be started",
 };
 
@@ -40,6 +40,7 @@ const TARGET = ['<contact|room>', 'A JID or roster name, or the JID of a room yo
 const ROOM = ['<room>', "The room's JID, such as lobby@conference.example.org"];
 const MESSAGE_ID = ['<id>', 'A message id, as read, inbox, search or wait printed it'];
 const FULL = ['--full', `Don't truncate bodies longer than ${MAX_BODY_LENGTH} characters`];
+const DRAFT_ID = ['<id>', 'The draft id, as drafts list or the send that made it printed it'];
 const IN_CONVERSATION = ['--conversation <contact|room>', 'Look for the message only in this conversation'];
 
 /** Options every command takes. */
@@ -146,12 +147,15 @@ export const HELP = {
             'Send a message. Without <text>, it is read from stdin, which suits long or multi-line ' +
             'text. Text that starts with a dash needs "--" before it, so it isn\'t read as an ' +
             'option.\n\n' +
-            'At restricted access, the default, a send to the owner goes out directly. Other sends ' +
-            'follow the config\'s "mode". In owner_only, a contact listed in "policy.allow" gets a ' +
-            'draft: the text goes to the owner, who sends it from their own client. In bot, a room ' +
-            'in "policy.rooms" or a contact in "policy.direct" is sent to directly. Anything else is ' +
-            'refused. The exit code says which happened: 0 sent, 6 drafted, 5 refused. A draft or a ' +
-            "refusal means nothing reached the recipient: don't send it again another way.",
+            'At restricted access, the default, sends follow the config\'s "mode". In owner_only ' +
+            'and bot, a send to the owner goes out directly. In owner_only, a contact listed in ' +
+            '"policy.allow" gets a draft: the text goes to the owner, who sends it from their own ' +
+            'client. In bot, a room in "policy.rooms" or a contact in "policy.direct" is sent to ' +
+            "directly. In as_user, the account is the user's own, and nothing is sent directly: a " +
+            'contact in "policy.allow" or a room in "policy.rooms" gets a draft, which waits in the ' +
+            'daemon until the user sends it with drafts send. Anything else is refused. The exit ' +
+            'code says which happened: 0 sent, 6 drafted, 5 refused. A draft or a refusal means ' +
+            "nothing reached the recipient: don't send it again another way.",
         args: [TARGET, ['[text]', 'The message. Without it, the text is read from stdin']],
         options: [
             [
@@ -160,7 +164,7 @@ export const HELP = {
             ],
             [
                 '--correct <id>',
-                'Replace one of your messages with <text> (XEP-0308). The message keeps its place, and answers to its old id. A restricted correction is only sent directly, never drafted',
+                'Replace one of your messages with <text> (XEP-0308). The message keeps its place, and answers to its old id. A restricted correction is only sent directly, and refused where a send would be drafted, except in as_user, where it is drafted too',
             ],
             [
                 '--at <time>',
@@ -181,7 +185,8 @@ export const HELP = {
             'Upload a local file with XEP-0363 and share its URL. The CLI reads the file and sends ' +
             'its contents to the daemon, so the file must be readable by the CLI, not the daemon. ' +
             'It follows the same send policy as send: a direct route shares the URL with the ' +
-            'contact or room; a draft route sends the URL to the owner, who may share it.',
+            'contact or room; a draft route sends the URL to the owner, who may share it, or in ' +
+            'as_user holds it until the user sends it with drafts send.',
         args: [TARGET, ['<path>', 'The local file']],
         exits: SEND_EXITS,
         examples: ['converse-cli upload juliet@capulet.lit ./report.pdf'],
@@ -190,11 +195,11 @@ export const HELP = {
         summary: 'Withdraw one of your messages',
         description:
             'Withdraw one of your messages (XEP-0424). Its recipients see that it was retracted. A ' +
-            'restricted retraction is only sent directly, never drafted, so where policy would draft ' +
-            'a send, a retraction is refused.',
+            'restricted retraction is only sent directly, so where policy would draft a send, a ' +
+            'retraction is refused. In as_user it is drafted instead, for the user to send.',
         args: [MESSAGE_ID],
         options: [IN_CONVERSATION],
-        exits: [...LOOKUP_EXITS, EXIT.REFUSED],
+        exits: SEND_EXITS,
         examples: ['converse-cli retract 01a183d1-2cc2-74f2-8de3-fd8a38834143'],
     },
     resend: {
@@ -236,23 +241,57 @@ export const HELP = {
             'earlier reactions to it stay. A restricted reaction follows the same policy as a send, ' +
             'and a drafted one asks the owner to give it.',
         args: [MESSAGE_ID, ['<emoji>', 'An emoji, or its shortname']],
-        options: [IN_CONVERSATION, ['--remove', 'Withdraw this reaction instead (full access only)']],
+        options: [
+            IN_CONVERSATION,
+            [
+                '--remove',
+                'Withdraw this reaction instead. Restricted access can only do it where policy sends directly, or in as_user, where it is drafted',
+            ],
+        ],
         exits: SEND_EXITS,
         examples: ['converse-cli react 01a183d1-2cc2-74f2-8de3-fd8a38834143 :thumbsup:'],
     },
     'drafts list': {
-        summary: 'List the drafts not yet withdrawn (full access)',
+        summary: 'List the drafts not yet sent or withdrawn',
         description:
-            'List the drafts not yet withdrawn: id, when it was made, who it is for, and its text. ' +
-            "Drafts are the owner's to decide on, so this always connects at full access, and fails " +
-            'for a client that only has restricted access.',
+            'List the drafts not yet sent or withdrawn: id, when it was made, who it is for, what ' +
+            "it acts on, and its text. Drafts are the owner's to decide on, so this connects at " +
+            'full access, and fails for a client that only has restricted access. In as_user, ' +
+            'where drafts wait in the daemon, it connects at the configured access, so that an ' +
+            'agent can say which of its drafts are still waiting.',
         options: [FULL],
         examples: ['converse-cli drafts list'],
     },
+    'drafts show': {
+        summary: 'Show one draft in full, to review it',
+        description:
+            'Show one draft in full: who it is for, who made it and when, the message it replies ' +
+            'to, corrects, retracts or reacts to, and its text as written, over as many lines as ' +
+            'it has. The text is last, and was written by the agent that made the draft. Available ' +
+            'wherever drafts list is.',
+        args: [DRAFT_ID],
+        exits: [EXIT.NOT_FOUND],
+        examples: ['converse-cli drafts show d17'],
+    },
+    'drafts send': {
+        summary: 'Send a draft as the user (as_user, full access)',
+        description:
+            'Send a draft as the user, as it was asked for: a message, a reply, a correction, a ' +
+            'retraction or a reaction. The draft is then gone. The outcome is reported as send ' +
+            'reports it. If it could not be sent, the draft is kept. Only in as_user mode, and ' +
+            'only at full access: this is how the user approves a draft, so an agent never can. ' +
+            'In the other modes the text of a draft went to the owner, who sends it from their ' +
+            'own client, so this fails.',
+        args: [DRAFT_ID],
+        exits: [EXIT.NOT_FOUND],
+        examples: ['converse-cli drafts send d17'],
+    },
     'drafts reject': {
-        summary: 'Withdraw a draft; the owner is told (full access)',
-        description: 'Withdraw a draft. Nothing is sent, and the owner is told. Full access only, as for drafts list.',
-        args: [['<id>', 'The draft id, as drafts list or the send that made it printed it']],
+        summary: 'Withdraw a draft (full access)',
+        description:
+            'Withdraw a draft. Nothing is sent. Where drafts are delivered to the owner, the owner ' +
+            'is told. Full access only.',
+        args: [DRAFT_ID],
         exits: [EXIT.NOT_FOUND],
         examples: ['converse-cli drafts reject d17'],
     },

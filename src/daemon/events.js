@@ -16,8 +16,10 @@ const DIRECTIONS = ['incoming', 'outgoing'];
 
 /**
  * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {Object} options
+ * @param {import('./types').Mode} options.mode - Which decides who may see drafts
  */
-export function createEvents(_converse) {
+export function createEvents(_converse, { mode }) {
     const { api } = _converse;
     const ownJID = () => _converse.session.get('bare_jid');
 
@@ -87,7 +89,7 @@ export function createEvents(_converse) {
          * Announces a draft to draft subscribers. A draft is an outgoing
          * message from us, so the filters read it as one: the conversation
          * filter is against whom it's addressed.
-         * @param {'queued'|'edited'|'approved'|'rejected'} action
+         * @param {'queued'|'sent'|'rejected'} action - "sent" only in "as_user" mode, where the user approves drafts
          * @param {import('./types').Draft} draft
          */
         publishDraft(action, draft) {
@@ -97,7 +99,7 @@ export function createEvents(_converse) {
                 from: ownJID(),
                 direction: 'outgoing',
                 time: draft.created,
-                body: draft.body,
+                body: 'body' in draft ? draft.body : null,
             };
             const sender = { sender: ownJID(), own_name: Strophe.getNodeFromJid(ownJID()) };
             notify('draft', as_message, { action, draft }, sender);
@@ -106,7 +108,8 @@ export function createEvents(_converse) {
         methods: {
             /**
              * @param {Object} params
-             * @param {string} [params.type] - "message" (the default) or "draft"
+             * @param {string} [params.type] - "message" (the default), or "draft" where the
+             *  connection may list drafts
              * @param {string} [params.conversation] - A JID, or a contact's name
              * @param {string} [params.from] - A JID, or a contact's name. In a room, this matches only
              *  the occupants whose JID the room reveals.
@@ -119,6 +122,14 @@ export function createEvents(_converse) {
              */
             async 'events.subscribe'(params, client) {
                 const { type, filter, once } = await parseSubscription(_converse, params);
+                // A draft event carries the whole draft, so it's for those who may see the drafts.
+                if (type === 'draft' && client.access !== 'full' && mode !== 'as_user') {
+                    throw new RPCError(
+                        ERRORS.ACCESS_DENIED,
+                        'Draft events are only available where "drafts.list" is: at full access, or at ' +
+                            'restricted access in "as_user" mode.',
+                    );
+                }
                 const subscription = next_id++;
                 subscriptions.set(subscription, { client, type, filter, once });
                 return { subscription };

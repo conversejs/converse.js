@@ -1,13 +1,10 @@
 import fs from 'node:fs/promises';
 import net from 'node:net';
-import path from 'node:path';
 import readline from 'node:readline';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { converse } from '@converse/headless';
 import { ERRORS, PROTOCOL_VERSION } from '../protocol.js';
-import { loadConfig } from '../config.js';
 import { start } from '../daemon.js';
-import { createAccount } from './account.js';
 import { JID, startDaemon } from './harness.js';
 
 const { Strophe, stx, u } = converse.env;
@@ -49,18 +46,6 @@ describe('The daemon', () => {
         expect((await fs.stat(paths.socket)).mode & 0o777).toBe(0o600);
         expect((await fs.stat(paths.runtime_dir)).mode & 0o777).toBe(0o700);
         expect((await fs.readFile(paths.pidfile, 'utf8')).trim()).toBe(String(process.pid));
-    });
-
-    it('refuses to start in as_user mode, which is not implemented yet', async () => {
-        const { env, remove } = await createAccount({}, { mode: 'as_user' });
-        try {
-            await expect(start(loadConfig(env))).rejects.toThrow(
-                `"mode": "as_user" in ${path.join(env.XDG_CONFIG_HOME, 'converse', 'daemon.json')} ` +
-                    "isn't implemented yet, so the daemon can't start in it.",
-            );
-        } finally {
-            await remove();
-        }
     });
 
     it('refuses to start a second time for the same account', async () => {

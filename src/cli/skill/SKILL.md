@@ -121,12 +121,33 @@ policy, and the exit code says what happened:
 | Exit | Outcome | What to do |
 | --- | --- | --- |
 | 0 | Sent. It reached the recipient. | Carry on, perhaps `wait` for the answer. |
-| 6 | Drafted: the text went to the user (the owner), who decides whether to send it. Nothing reached the recipient. | Tell the user it's waiting for them. Don't send it again, or another way. |
+| 6 | Drafted: the text went to the user (the owner), or in `as_user` mode waits in the daemon, and the user decides whether to send it. Nothing reached the recipient. | Tell the user it's waiting for them, with its draft id. Don't send it again, or another way. |
 | 5 | Refused by policy. Nothing was sent. stderr names the rule. | For a rate limit, wait and try later. Otherwise the target isn't allowed: tell the user, and don't look for a way around it. |
 
-A send to the owner always goes out directly. Corrections and retractions are
-never drafted, so where a send would be drafted, they're refused. Only the user
-can change the policy. It lives in the daemon's config, which you must not edit.
+Except in `as_user` mode (below), a send to the owner always goes out directly,
+and corrections and retractions are never drafted, so where a send would be
+drafted, they're refused. Only the user can change the policy. It lives in the
+daemon's config, which you must not edit.
+
+### When you act as the user (`as_user` mode)
+
+In `as_user` mode the daemon runs on the user's own account, and whatever goes
+out is the user speaking. So nothing you ask for is sent: every send, reply,
+correction, retraction, reaction and upload to an allowed contact or room is a
+draft (exit 6), held in the daemon until the user sends it. Anything else is
+refused (exit 5). The output of a drafted send says it waits for approval.
+
+- **Draft only when the user asks you to.** Reading is fine, but don't draft a
+  reply, a reaction or anything else on your own initiative, however obvious it
+  seems.
+- **Tell the user the draft id** that the send printed, such as `d17`, and that
+  it waits for them. They review it with `converse-cli drafts show d17`.
+- **Never try to approve a draft.** Sending one is the user's act, from their
+  own terminal. Don't run `drafts send` or `drafts reject`, and don't look for
+  another way to get the message out.
+- `converse-cli drafts list` shows which drafts are still waiting, and
+  `converse-cli drafts show <id>` shows one in full, so you can tell the user
+  what is pending.
 
 ## Exit codes
 
@@ -138,7 +159,7 @@ can change the policy. It lives in the daemon's config, which you must not edit.
 | 3 | no such contact, conversation or message |
 | 4 | ambiguous name; the candidates are listed |
 | 5 | refused by send policy |
-| 6 | drafted for the owner; nothing was sent |
+| 6 | drafted for the owner to send; nothing was sent |
 | 7 | the daemon isn't running and couldn't be started |
 
 Error messages say what to do next. Read stderr before retrying.
@@ -152,3 +173,4 @@ Error messages say what to do next. Read stderr before retrying.
 - Don't poll `inbox` or `read` in a loop to wait for a reply. Use `wait`.
 - Don't resend a message that was drafted or refused.
 - Don't resend or discard a failed send. That is the user's to do.
+- Don't send or withdraw a draft. That is the user's to do too.

@@ -196,6 +196,38 @@ export const HELP = {
         exits: [...LOOKUP_EXITS, EXIT.REFUSED],
         examples: ['converse-cli retract 01a183d1-2cc2-74f2-8de3-fd8a38834143'],
     },
+    resend: {
+        summary: 'Send a failed send again (full access)',
+        description:
+            'Send again one of your messages that read marks [send failed: <reason>]. It is sent ' +
+            'encrypted, as it was meant to be, and keeps its id. Nothing resends a failed send on its ' +
+            "own. Failed sends are the owner's to deal with, so this always connects at full access, " +
+            'and fails for a client that only has restricted access. The outcome is reported as send ' +
+            'reports it. If it fails again, it stays failed, with the new reason.',
+        args: [['<id>', 'The id of the failed send, as read printed it']],
+        options: [
+            IN_CONVERSATION,
+            [
+                '--unencrypted',
+                'Send it in the clear, if it failed because it could not be encrypted. The daemon refuses this unless the config\'s "allow_unencrypted_resend" is true',
+            ],
+        ],
+        exits: LOOKUP_EXITS,
+        examples: [
+            'converse-cli resend 01a183d1-2cc2-74f2-8de3-fd8a38834143',
+            'converse-cli resend 01a183d1-2cc2-74f2-8de3-fd8a38834143 --unencrypted',
+        ],
+    },
+    discard: {
+        summary: 'Remove a failed send from the history (full access)',
+        description:
+            'Remove one of your messages that read marks [send failed: <reason>] from the history. ' +
+            'It was never sent, so nobody else sees a change. Full access only, as for resend.',
+        args: [['<id>', 'The id of the failed send, as read printed it']],
+        options: [IN_CONVERSATION],
+        exits: LOOKUP_EXITS,
+        examples: ['converse-cli discard 01a183d1-2cc2-74f2-8de3-fd8a38834143'],
+    },
     react: {
         summary: 'React to a message with an emoji',
         description:

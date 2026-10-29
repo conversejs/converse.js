@@ -151,6 +151,17 @@ refused.
   keeps its place in the conversation, and answers to its old id. A restricted
   correction is only sent directly, and never drafted.
 
+### `upload <contact> <path>`
+
+Uploads a file with HTTP File Upload (XEP-0363) and shares its URL. It follows
+the same policy as `send`, with the same exit codes: a drafted upload sends the
+URL to the owner.
+
+The CLI reads the file and sends its contents to the daemon. The daemon never
+opens a path for the CLI, so the file has to be one the CLI can read, wherever
+it runs. A file larger than the server's upload limit is refused, and nothing
+is sent.
+
 ### `retract <id>`
 
 Withdraws one of your messages. A restricted retraction is only sent directly,

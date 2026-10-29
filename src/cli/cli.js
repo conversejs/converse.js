@@ -7,9 +7,11 @@
  * history and agent transcripts. The account comes from the config file.
  */
 import { parseArgs } from 'node:util';
+import fsSync from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { connect, DaemonUnavailableError, getConfigPath, loadConfig, stopDaemon } from '@converse/daemon/client';
-import { ERRORS, RPCError } from '@converse/daemon/protocol';
+import { ERRORS, MAX_UPLOAD_SIZE, RPCError } from '@converse/daemon/protocol';
 import pkg from './package.json' with { type: 'json' };
 import { EXIT } from './exit-codes.js';
 import { commandHelp, HELP, overview, PARSE_OPTIONS, unexpectedOptions } from './help.js';
@@ -283,8 +285,10 @@ const COMMANDS = {
         const { args, options, out, err } = ctx;
         if (args.length !== 2) throw new UsageError('Expected a recipient and a local file path.');
         const [to, file_path] = args;
+        const name = path.basename(file_path);
+        const content = await readUpload(file_path);
         /** @type {import('@converse/daemon/types').SendResult} */
-        const result = await request(ctx, 'files.upload', { to, path: path.resolve(file_path) });
+        const result = await request(ctx, 'files.upload', { to, name, content });
         if (result.outcome !== 'sent' || options.json) return reportSend(result, { options, out, err });
 
         out(
@@ -666,4 +670,61 @@ async function readStdin({ stdin }) {
     let text = '';
     for await (const chunk of stdin) text += chunk;
     return text.replace(/\n$/, '');
+}
+
+/** How much of a file to upload is read at a time. */
+const UPLOAD_CHUNK_SIZE = 1024 * 1024;
+
+/**
+ * Reads a file to upload, base64-encoded for `files.upload`. The daemon never
+ * opens a path, so a file the CLI can't read fails here, before the daemon is
+ * asked for anything.
+ *
+ * The checks and the read go through one open handle, so that what's read is
+ * the file that was checked, even if the path is changed in between.
+ * @param {string} file_path
+ */
+async function readUpload(file_path) {
+    /** @param {string} what - What the file did, e.g. "is 40000000 bytes, which exceeds" */
+    const tooLarge = (what) =>
+        new Error(
+            `${JSON.stringify(path.basename(file_path))} ${what} the daemon's ` +
+                `${MAX_UPLOAD_SIZE}-byte upload limit. Choose a smaller file.`,
+        );
+
+    let handle;
+    try {
+        // Non-blocking, so that opening a FIFO doesn't wait for a writer
+        // before it can be turned away as not a regular file.
+        const { O_RDONLY, O_NONBLOCK = 0 } = fsSync.constants;
+        handle = await fs.open(file_path, O_RDONLY | O_NONBLOCK);
+        const metadata = await handle.stat();
+        if (!metadata.isFile()) throw Object.assign(new Error('not a regular file'), { code: 'not a regular file' });
+        if (metadata.size > MAX_UPLOAD_SIZE) throw tooLarge(`is ${metadata.size} bytes, which exceeds`);
+
+        // The file can still grow after the stat, so never read more than
+        // one byte past the limit.
+        const chunks = [];
+        let length = 0;
+        while (length <= MAX_UPLOAD_SIZE) {
+            const room = Math.min(UPLOAD_CHUNK_SIZE, MAX_UPLOAD_SIZE + 1 - length);
+            const { bytesRead, buffer } = await handle.read({ buffer: Buffer.alloc(room) });
+            if (bytesRead === 0) break;
+
+            chunks.push(buffer.subarray(0, bytesRead));
+            length += bytesRead;
+        }
+        if (length > MAX_UPLOAD_SIZE) throw tooLarge('grew, while it was being read, past');
+
+        return Buffer.concat(chunks, length).toString('base64');
+    } catch (e) {
+        if (!e.code) throw e;
+        throw new Error(
+            `The file at ${JSON.stringify(file_path)} could not be read (${e.code}). ` +
+                'Check that the path names a readable file, then try again.',
+            { cause: e },
+        );
+    } finally {
+        await handle?.close();
+    }
 }

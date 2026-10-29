@@ -158,6 +158,30 @@ and never drafted.
 
 - `--conversation <contact|room>`: look for the message only in this conversation.
 
+### `resend <id>`
+
+Sends again one of your messages that `read` marks `send failed: <reason>`. It's
+sent encrypted, as it was meant to be, and keeps its id. The outcome is reported
+as `send` reports it, with the same exit codes. If it fails again, it stays
+failed, with the new reason. Nothing resends a failed send on its own.
+
+- `--conversation <contact|room>`: look for the message only in this conversation.
+- `--unencrypted`: send it in the clear, if it failed because it couldn't be
+  encrypted. The daemon refuses this unless the config sets
+  `"allow_unencrypted_resend": true`, and says so.
+
+### `discard <id>`
+
+Removes one of your messages that `read` marks `send failed: <reason>` from the
+history. It was never sent, so nobody else sees a change.
+
+- `--conversation <contact|room>`: look for the message only in this conversation.
+
+Failed sends are the owner's to deal with, so `resend` and `discard` always
+connect at full access, as the `drafts` commands do. A client that can reach only
+the restricted socket gets an error saying so. An id that isn't a failed send
+exits with code 3, not found.
+
 ### `react <id> <emoji>`
 
 Reacts to a message with an emoji, or its shortname, such as `:thumbsup:`. Your

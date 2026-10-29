@@ -309,6 +309,38 @@ const COMMANDS = {
         return EXIT.OK;
     },
 
+    // Failed sends are the user's to deal with, so these always ask for full access.
+    async resend(ctx) {
+        const { options } = ctx;
+        const id = takeOne(ctx, 'message id');
+        /** @type {import('@converse/daemon/types').SendResult} */
+        const result = await request(
+            ctx,
+            'messages.resend',
+            { id, conversation: options.conversation, unencrypted: !!options.unencrypted },
+            { access: 'full' },
+        );
+        return reportSend(result, ctx);
+    },
+
+    async discard(ctx) {
+        const { options, out } = ctx;
+        const id = takeOne(ctx, 'message id');
+        /** @type {{ message: import('@converse/daemon/types').MessageDTO }} */
+        const { message } = await request(
+            ctx,
+            'messages.discard',
+            { id, conversation: options.conversation },
+            { access: 'full' },
+        );
+        if (options.json) {
+            out(JSON.stringify(message) + '\n');
+        } else {
+            out(`Discarded ${message.id} from ${message.conversation}. It was never sent.\n`);
+        }
+        return EXIT.OK;
+    },
+
     async react(ctx) {
         const { args, options, out, err } = ctx;
         if (args.length !== 2) throw new UsageError('Expected a message id and an emoji.');

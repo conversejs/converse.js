@@ -79,7 +79,9 @@ each note. Two matter most:
 - `[send failed: <reason>]`: one of your own messages never went out. Don't
   assume it was read. Tell the user. `converse-cli omemo devices <contact>`
   shows the encryption state, which explains failures such as
-  `no-omemo-devices`.
+  `no-omemo-devices`. Sending it again (`converse-cli resend <id>`) or
+  removing it (`converse-cli discard <id>`) is the user's decision, not yours:
+  don't try either, and don't send the text again with `send`.
 
 Long bodies are cut at 280 characters with a `[+N chars, --full to show]`
 marker. Run the command again with `--full` when you need the rest. Add `--json`
@@ -149,3 +151,4 @@ Error messages say what to do next. Read stderr before retrying.
   logs the account out for every client sharing it.
 - Don't poll `inbox` or `read` in a loop to wait for a reply. Use `wait`.
 - Don't resend a message that was drafted or refused.
+- Don't resend or discard a failed send. That is the user's to do.

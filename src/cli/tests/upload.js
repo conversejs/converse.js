@@ -58,6 +58,32 @@ describe('converse-cli upload', () => {
         });
     });
 
+    it('sends the file under its name only, not its path', async () => {
+        const before = daemon.connection.IQ_stanzas.length;
+        const { code } = await run(daemon.env, 'upload', JULIET, file);
+        expect(code).toBe(EXIT.OK);
+        const request = daemon.connection.IQ_stanzas.slice(before).find((iq) => iq.querySelector('request'));
+        expect(request.querySelector('request').getAttribute('filename')).toBe('balcony.txt');
+    });
+
+    it('fails on a file it cannot read, before asking the daemon for anything', async () => {
+        const before = daemon.connection.IQ_stanzas.length;
+        const missing = path.join(dir, 'missing.txt');
+        const { code, stdout, stderr } = await run(daemon.env, 'upload', JULIET, missing);
+        expect({ code, stdout }).toEqual({ code: EXIT.ERROR, stdout: '' });
+        expect(stderr).toBe(
+            `converse-cli: The file at ${JSON.stringify(missing)} could not be read (ENOENT). ` +
+                'Check that the path names a readable file, then try again.\n',
+        );
+        expect(daemon.connection.IQ_stanzas).toHaveLength(before);
+    });
+
+    it('fails on a directory', async () => {
+        const { code, stderr } = await run(daemon.env, 'upload', JULIET, dir);
+        expect(code).toBe(EXIT.ERROR);
+        expect(stderr).toContain('could not be read (not a regular file)');
+    });
+
     it('requires one recipient and one path', async () => {
         const { code, stderr } = await run(daemon.env, 'upload', JULIET);
         expect(code).toBe(EXIT.ERROR);

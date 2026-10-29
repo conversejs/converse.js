@@ -7,9 +7,10 @@
  * history and agent transcripts. The account comes from the config file.
  */
 import { parseArgs } from 'node:util';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { connect, DaemonUnavailableError, getConfigPath, loadConfig, stopDaemon } from '@converse/daemon/client';
-import { ERRORS, RPCError } from '@converse/daemon/protocol';
+import { ERRORS, MAX_UPLOAD_SIZE, RPCError } from '@converse/daemon/protocol';
 import pkg from './package.json' with { type: 'json' };
 import { EXIT } from './exit-codes.js';
 import { commandHelp, HELP, overview, PARSE_OPTIONS, unexpectedOptions } from './help.js';
@@ -286,8 +287,10 @@ const COMMANDS = {
         const { args, options, out, err } = ctx;
         if (args.length !== 2) throw new UsageError('Expected a recipient and a local file path.');
         const [to, file_path] = args;
+        const name = path.basename(file_path);
+        const content = await readUpload(file_path);
         /** @type {import('@converse/daemon/types').SendResult} */
-        const result = await request(ctx, 'files.upload', { to, path: path.resolve(file_path) });
+        const result = await request(ctx, 'files.upload', { to, name, content });
         if (result.outcome !== 'sent' || options.json) return reportSend(result, { options, out, err });
 
         out(
@@ -669,4 +672,31 @@ async function readStdin({ stdin }) {
     let text = '';
     for await (const chunk of stdin) text += chunk;
     return text.replace(/\n$/, '');
+}
+
+/**
+ * Reads a file to upload, base64-encoded for `files.upload`. The daemon never
+ * opens a path, so a file the CLI can't read fails here, before the daemon is
+ * asked for anything.
+ * @param {string} file_path
+ */
+async function readUpload(file_path) {
+    try {
+        const metadata = await fs.stat(file_path);
+        if (!metadata.isFile()) throw Object.assign(new Error('not a regular file'), { code: 'not a regular file' });
+        if (metadata.size > MAX_UPLOAD_SIZE) {
+            throw new Error(
+                `${JSON.stringify(path.basename(file_path))} is ${metadata.size} bytes, which exceeds the daemon's ` +
+                    `${MAX_UPLOAD_SIZE}-byte upload limit. Choose a smaller file.`,
+            );
+        }
+        return (await fs.readFile(file_path)).toString('base64');
+    } catch (e) {
+        if (!e.code) throw e;
+        throw new Error(
+            `The file at ${JSON.stringify(file_path)} could not be read (${e.code}). ` +
+                'Check that the path names a readable file, then try again.',
+            { cause: e },
+        );
+    }
 }

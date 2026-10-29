@@ -182,6 +182,12 @@ export class Client {
         if (message.method === 'event') {
             return this.#listeners.forEach((listener) => listener(message.params));
         }
+        if (message.id === null && message.error) {
+            // A request the daemon couldn't read far enough to know its id.
+            const { code, message: text, data } = message.error;
+            this.#pending.forEach(({ reject }) => reject(new RPCError(code, text, data)));
+            return this.#pending.clear();
+        }
         const pending = this.#pending.get(message.id);
         if (!pending) return;
 

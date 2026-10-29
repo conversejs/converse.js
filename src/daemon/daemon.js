@@ -4,7 +4,6 @@
  */
 import fs from 'node:fs/promises';
 import net from 'node:net';
-import readline from 'node:readline';
 import { _converse, api, converse, log } from '@converse/headless';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
@@ -19,7 +18,7 @@ import { omemoMethods } from './omemo.js';
 import { presenceMethods } from './presence.js';
 import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
 import { createPolicy } from './policy.js';
-import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
+import { ERRORS, MAX_LINE_LENGTH, PROTOCOL_VERSION, RPCError } from './protocol.js';
 import { createSendRouter } from './routing.js';
 import { scheduleMethods } from './schedules.js';
 
@@ -280,7 +279,20 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
         return methods[method](params ?? {}, client);
     };
 
-    readline.createInterface({ input: socket, crlfDelay: Infinity }).on('line', async (line) => {
+    const onTooLong = () => {
+        const message = {
+            id: null,
+            error: {
+                code: ERRORS.INVALID_REQUEST,
+                message:
+                    `The request is longer than the ${MAX_LINE_LENGTH} bytes the daemon accepts, so it was ` +
+                    'refused and the connection closed.',
+            },
+        };
+        socket.end(JSON.stringify({ jsonrpc: '2.0', ...message }) + '\n');
+    };
+
+    readLines(socket, onTooLong, async (line) => {
         let request;
         try {
             request = JSON.parse(line);
@@ -302,6 +314,49 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
             if (code === ERRORS.PROTOCOL_MISMATCH) socket.end();
         }
     });
+}
+
+/**
+ * Calls `onLine` with each line `socket` sends, like `readline` does, but
+ * without buffering a line past {@link MAX_LINE_LENGTH} bytes: a client could
+ * otherwise make the daemon hold as much as it cares to send. At that length
+ * it calls `onTooLong` instead and drops whatever else comes.
+ * @param {net.Socket} socket
+ * @param {() => void} onTooLong
+ * @param {(line: string) => void} onLine
+ */
+function readLines(socket, onTooLong, onLine) {
+    /** @type {Buffer[]} */
+    let chunks = [];
+    let length = 0;
+    let too_long = false;
+
+    const emit = () => {
+        const line = Buffer.concat(chunks).toString('utf8');
+        chunks = [];
+        length = 0;
+        onLine(line.endsWith('\r') ? line.slice(0, -1) : line);
+    };
+
+    socket.on('data', (/** @type {Buffer} */ data) => {
+        let start = 0;
+        while (!too_long) {
+            const end = data.indexOf(0x0a, start);
+            const piece = data.subarray(start, end === -1 ? data.length : end);
+            length += piece.length;
+            if (length > MAX_LINE_LENGTH) {
+                too_long = true;
+                chunks = [];
+                return onTooLong();
+            }
+            if (piece.length) chunks.push(piece);
+            if (end === -1) return;
+
+            emit();
+            start = end + 1;
+        }
+    });
+    socket.on('end', () => !too_long && length && emit());
 }
 
 /**

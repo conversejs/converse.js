@@ -1,17 +1,20 @@
 /**
- * Uploads local files with headless's XEP-0363 helper, then shares their public
- * URL under the same routing policy as any other send.
+ * Uploads files with headless's XEP-0363 helper, then shares their public URL
+ * under the same routing policy as any other send.
+ *
+ * The client sends the file's contents. The daemon never opens a path a client
+ * names: it can read its own config, credentials and audit log, which a
+ * restricted client must not be able to have uploaded.
  * @module @converse/daemon/files
  */
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import { getUploadService, uploadFile } from '@converse/headless';
 import { draftNotice } from './notices.js';
 import { sendMessage } from './messages.js';
-import { ERRORS, RPCError } from './protocol.js';
+import { ERRORS, MAX_UPLOAD_SIZE, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 
 const CONTENT_TYPE = 'application/octet-stream';
+const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
 
 /**
  * @param {import('@converse/headless').ConversePrivateGlobal} _converse
@@ -25,16 +28,17 @@ const CONTENT_TYPE = 'application/octet-stream';
 export function fileMethods(_converse, { routeSend, audit, drafts, events, owner }) {
     return {
         /**
-         * @param {{ to: string, path: string }} params
+         * @param {{ to: string, name: string, content: string }} params - `content` is base64
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>}
          */
-        async 'files.upload'({ to, path: file_path }, client) {
-            const jid = await resolveJID(_converse, to, 'to');
+        async 'files.upload'(params, client) {
+            const upload = checkUpload(params);
+            const jid = await resolveJID(_converse, params.to, 'to');
             return routeSend(client, jid, {
                 action: 'upload',
                 direct: async (routing) => {
-                    const uploaded = await uploadLocalFile(file_path);
+                    const uploaded = await uploadContents(upload);
                     const message = await sendMessage(_converse, jid, uploaded.url, {}, { oob_url: uploaded.url });
                     audit.record({
                         consumer: client.consumer,
@@ -47,7 +51,7 @@ export function fileMethods(_converse, { routeSend, audit, drafts, events, owner
                     return { outcome: 'sent', message };
                 },
                 draft: async (routing) => {
-                    const uploaded = await uploadLocalFile(file_path);
+                    const uploaded = await uploadContents(upload);
                     const added = drafts.add({
                         to: jid,
                         body: uploaded.url,
@@ -76,22 +80,40 @@ export function fileMethods(_converse, { routeSend, audit, drafts, events, owner
 }
 
 /**
- * @param {unknown} file_path
+ * Checks an upload's params without decoding its contents, so that a malformed
+ * request is turned down before policy or the upload service sees it.
+ * @param {Record<string, unknown>} params
+ * @returns {{ name: string, content: string, size: number }}
+ */
+function checkUpload(params) {
+    if (Object.hasOwn(params, 'path')) {
+        throw new RPCError(
+            ERRORS.INVALID_PARAMS,
+            `"files.upload" takes the file's "name" and base64 "content", not a "path": ` +
+                `the daemon doesn't read files for its clients.`,
+        );
+    }
+    const { content } = params;
+    if (typeof content !== 'string' || content.length % 4 !== 0 || !BASE64.test(content)) {
+        throw new RPCError(ERRORS.INVALID_PARAMS, `"content" must be the file's contents, base64-encoded.`);
+    }
+    // The name is only what the upload is called. Any directory part goes,
+    // whichever separator it uses.
+    const name = typeof params.name === 'string' ? params.name.split(/[\\/]/).pop().trim() : '';
+    if (!name || name === '.' || name === '..') {
+        throw new RPCError(ERRORS.INVALID_PARAMS, '"name" must be a file name, such as "report.pdf".');
+    }
+    const size = Buffer.byteLength(content, 'base64');
+    if (size > MAX_UPLOAD_SIZE) throw tooLarge(name, size, MAX_UPLOAD_SIZE, "the daemon's");
+
+    return { name, content, size };
+}
+
+/**
+ * @param {{ name: string, content: string, size: number }} upload
  * @returns {ReturnType<typeof uploadFile>}
  */
-async function uploadLocalFile(file_path) {
-    if (typeof file_path !== 'string' || !file_path.trim()) {
-        throw new RPCError(ERRORS.INVALID_PARAMS, '"path" must name a readable local file.');
-    }
-
-    let metadata;
-    try {
-        metadata = await fs.stat(file_path);
-        if (!metadata.isFile()) throw Object.assign(new Error('not a regular file'), { code: 'not-file' });
-    } catch (e) {
-        throw unreadable(file_path, e);
-    }
-
+async function uploadContents({ name, content, size }) {
     const service = await getUploadService();
     if (!service) {
         throw new RPCError(
@@ -100,22 +122,9 @@ async function uploadLocalFile(file_path) {
                 'Ask the server administrator to enable XEP-0363, or share the file another way.',
         );
     }
-    if (metadata.size > service.max_file_size) {
-        throw new RPCError(
-            ERRORS.INVALID_PARAMS,
-            `${JSON.stringify(path.basename(file_path))} is ${metadata.size} bytes, which exceeds the server's ` +
-                `${service.max_file_size}-byte upload limit. Choose a smaller file.`,
-        );
-    }
+    if (size > service.max_file_size) throw tooLarge(name, size, service.max_file_size, "the server's");
 
-    let contents;
-    try {
-        contents = await fs.readFile(file_path);
-    } catch (e) {
-        throw unreadable(file_path, e);
-    }
-
-    const file = new File([contents], path.basename(file_path), { type: CONTENT_TYPE });
+    const file = new File([Buffer.from(content, 'base64')], name, { type: CONTENT_TYPE });
     try {
         return await uploadFile(file);
     } catch (e) {
@@ -128,13 +137,15 @@ async function uploadLocalFile(file_path) {
 }
 
 /**
- * @param {string} file_path
- * @param {Error & { code?: string }} error
+ * @param {string} name
+ * @param {number} size
+ * @param {number} limit
+ * @param {string} whose
  */
-function unreadable(file_path, error) {
+function tooLarge(name, size, limit, whose) {
     return new RPCError(
         ERRORS.INVALID_PARAMS,
-        `The file at ${JSON.stringify(file_path)} could not be read (${error.code ?? error.message}). ` +
-            'Check that the path names a file the daemon may read, then try again.',
+        `${JSON.stringify(name)} is ${size} bytes, which exceeds ${whose} ${limit}-byte upload limit. ` +
+            'Choose a smaller file.',
     );
 }

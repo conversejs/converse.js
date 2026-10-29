@@ -46,6 +46,15 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
     try {
         socket = await openSocket(socket_path);
     } catch (e) {
+        if (access === 'full' && (await answers(config.paths.restricted_socket))) {
+            // The daemon is running, and this client can't reach its full access
+            // socket, such as an agent in a sandbox given only the restricted one.
+            throw new Error(
+                'This needs full access, and this client can only reach the restricted socket. ' +
+                    "It is the owner's to do, from a client with full access.",
+                { cause: e },
+            );
+        }
         if (!may_spawn) {
             throw new DaemonUnavailableError(
                 `The daemon for ${config.jid} isn't running. Start it with "converse-cli daemon start".`,
@@ -199,6 +208,19 @@ function openSocket(socket_path) {
         });
         socket.once('error', reject);
     });
+}
+
+/**
+ * @param {string} socket_path
+ * @returns {Promise<boolean>} Whether a daemon accepts connections on it
+ */
+async function answers(socket_path) {
+    try {
+        (await openSocket(socket_path)).end();
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 /**

@@ -91,6 +91,10 @@ The config is `~/.config/converse/daemon.json` in the daemon user's home, or
 - `policy.presence` (default `false`) lets a restricted agent change your
   availability and status message with `converse-cli presence set`. Full access
   can always do it.
+- `allow_unencrypted_resend` (default `false`) lets you send a failed send in
+  the clear, with `converse-cli resend --unencrypted`, when it failed because it
+  couldn't be encrypted. It applies to full access only: an agent can never
+  resend.
 - The agent's password goes in the keyring under the service `converse`, with
   the agent's JID as the account, or in `password` if the daemon user's config
   is private to that user (`chmod 600`). Only the daemon reads it; the CLI never

@@ -319,14 +319,16 @@ export function messageMethods(_converse, { routeSend, audit, drafts, events, ow
          * @param {string} params.id - The id of the failed send, as `messages.list` shows it
          * @param {string} [params.conversation] - A JID, or a contact's name. Without it, the
          *  message is looked for in every conversation.
-         * @returns {Promise<{}>}
+         * @returns {Promise<{ message: import('./types').MessageDTO }>} The message as it was
          */
         async 'messages.discard'({ id, conversation }) {
             const jid =
                 conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
             const message = failedSendOf(await findTarget(_converse, id, jid), id, 'discarded');
-            message.collection.chatbox.discardFailedMessage(message);
-            return {};
+            const chatbox = message.collection.chatbox;
+            const dto = toMessageDTO(message, chatbox.get('jid'), ownJID());
+            chatbox.discardFailedMessage(message);
+            return { message: dto };
         },
     };
 
@@ -507,7 +509,11 @@ function ownedBy(message, id, verb) {
  */
 function failedSendOf(message, id, verb) {
     if (!isFailedSend(message)) {
-        throw new RPCError(ERRORS.INVALID_PARAMS, `Message "${id}" isn't a failed send, so it can't be ${verb}.`);
+        throw new RPCError(
+            ERRORS.NOT_FOUND,
+            `Message "${id}" isn't a failed send, so it can't be ${verb}. "converse-cli read" marks a failed ` +
+                'send with [send failed: <reason>].',
+        );
     }
     return message;
 }

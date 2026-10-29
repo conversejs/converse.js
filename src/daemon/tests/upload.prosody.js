@@ -1,18 +1,12 @@
-import fs from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { eventually, registerAccount, startDaemon } from './real-server.js';
 
 describe('File upload on a real Prosody', () => {
     const daemons = [];
-    let dir, file, contents, romeo, juliet;
+    const contents = Buffer.from('But soft, what light through yonder window breaks?\n');
+    let romeo, juliet;
 
     beforeAll(async () => {
-        dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-prosody-upload-'));
-        file = path.join(dir, 'balcony.txt');
-        contents = Buffer.from('But soft, what light through yonder window breaks?\n');
-        await fs.writeFile(file, contents);
         [romeo, juliet] = await Promise.all([
             registerAccount('upload-romeo').then(startDaemon),
             registerAccount('upload-juliet').then(startDaemon),
@@ -22,11 +16,14 @@ describe('File upload on a real Prosody', () => {
 
     afterAll(async () => {
         await Promise.all(daemons.map((daemon) => daemon.stop()));
-        await fs.rm(dir, { recursive: true, force: true });
     });
 
     it('delivers a URL whose download is byte-for-byte the uploaded file', async () => {
-        const result = await romeo.requestFull('files.upload', { to: juliet.jid, path: file });
+        const result = await romeo.requestFull('files.upload', {
+            to: juliet.jid,
+            name: 'balcony.txt',
+            content: contents.toString('base64'),
+        });
         expect(result).toMatchObject({ outcome: 'sent', message: { body: expect.stringMatching(/^http:\/\//) } });
 
         const received = await eventually(

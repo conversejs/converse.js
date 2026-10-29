@@ -13,7 +13,22 @@
  * shape of the DTOs in `types.ts`: a field may be added within a version, but
  * never renamed, removed or given a new meaning.
  */
-export const PROTOCOL_VERSION = 1;
+export const PROTOCOL_VERSION = 2;
+
+/**
+ * The largest file `files.upload` takes, before any server's own limit. It's
+ * above Prosody's default of 10 MiB, and kept low because the daemon holds a
+ * few copies of an upload while it handles it.
+ */
+export const MAX_UPLOAD_SIZE = 32 * 1024 * 1024;
+
+/**
+ * The longest line, in bytes, the daemon reads from a client: room for an
+ * upload of {@link MAX_UPLOAD_SIZE} as base64, and the request around it. A
+ * longer line is refused before it's buffered in full, and the connection
+ * closed.
+ */
+export const MAX_LINE_LENGTH = Math.ceil(MAX_UPLOAD_SIZE / 3) * 4 + 64 * 1024;
 
 /**
  * JSON-RPC error codes. Those below -32000 are the spec's own; the daemon's
@@ -21,7 +36,7 @@ export const PROTOCOL_VERSION = 1;
  */
 export const ERRORS = {
     PARSE_ERROR: -32700,
-    INVALID_REQUEST: -32600,
+    INVALID_REQUEST: -32600, // Also a line longer than MAX_LINE_LENGTH, sent with a null id
     METHOD_NOT_FOUND: -32601,
     INVALID_PARAMS: -32602,
     INTERNAL_ERROR: -32603,
@@ -33,6 +48,7 @@ export const ERRORS = {
     ACCESS_DENIED: -32005, // The method needs full access, and this connection is restricted
     CONFLICT: -32006, // The request clashes with what's happening now, such as approving a draft already being sent
     JOIN_REFUSED: -32007, // The room turned the join down: banned, nickname taken, or a password is needed
+    BUSY: -32008, // The daemon is reading too many large requests already; sent with a null id
 };
 
 /**

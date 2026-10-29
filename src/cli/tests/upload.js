@@ -1,8 +1,10 @@
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { MAX_UPLOAD_SIZE } from '../../daemon/protocol.js';
 import { startDaemon } from '../../daemon/tests/harness.js';
 import { EXIT } from '../exit-codes.js';
 import { run } from './run.js';
@@ -56,6 +58,57 @@ describe('converse-cli upload', () => {
                 body: `http://127.0.0.1:${server.address().port}/get/balcony.txt`,
             },
         });
+    });
+
+    it('sends the file under its name only, not its path', async () => {
+        const before = daemon.connection.IQ_stanzas.length;
+        const { code } = await run(daemon.env, 'upload', JULIET, file);
+        expect(code).toBe(EXIT.OK);
+        const request = daemon.connection.IQ_stanzas.slice(before).find((iq) => iq.querySelector('request'));
+        expect(request.querySelector('request').getAttribute('filename')).toBe('balcony.txt');
+    });
+
+    it('fails on a file it cannot read, before asking the daemon for anything', async () => {
+        const before = daemon.connection.IQ_stanzas.length;
+        const missing = path.join(dir, 'missing.txt');
+        const { code, stdout, stderr } = await run(daemon.env, 'upload', JULIET, missing);
+        expect({ code, stdout }).toEqual({ code: EXIT.ERROR, stdout: '' });
+        expect(stderr).toBe(
+            `converse-cli: The file at ${JSON.stringify(missing)} could not be read (ENOENT). ` +
+                'Check that the path names a readable file, then try again.\n',
+        );
+        expect(daemon.connection.IQ_stanzas).toHaveLength(before);
+    });
+
+    it('fails on a directory', async () => {
+        const { code, stderr } = await run(daemon.env, 'upload', JULIET, dir);
+        expect(code).toBe(EXIT.ERROR);
+        expect(stderr).toContain('could not be read (not a regular file)');
+    });
+
+    it.skipIf(process.platform === 'win32')('fails on a FIFO without waiting for a writer', async () => {
+        const fifo = path.join(dir, 'fifo');
+        execFileSync('mkfifo', [fifo]);
+        const before = daemon.connection.IQ_stanzas.length;
+        const { code, stderr } = await run(daemon.env, 'upload', JULIET, fifo);
+        expect(code).toBe(EXIT.ERROR);
+        expect(stderr).toContain('could not be read (not a regular file)');
+        expect(daemon.connection.IQ_stanzas).toHaveLength(before);
+    });
+
+    it('fails on a file over the upload limit, before asking the daemon for anything', async () => {
+        const large = path.join(dir, 'large.bin');
+        // Sparse, so the test doesn't write the bytes out.
+        await fs.writeFile(large, '');
+        await fs.truncate(large, MAX_UPLOAD_SIZE + 1);
+        const before = daemon.connection.IQ_stanzas.length;
+        const { code, stdout, stderr } = await run(daemon.env, 'upload', JULIET, large);
+        expect({ code, stdout }).toEqual({ code: EXIT.ERROR, stdout: '' });
+        expect(stderr).toBe(
+            `converse-cli: "large.bin" is ${MAX_UPLOAD_SIZE + 1} bytes, which exceeds the daemon's ` +
+                `${MAX_UPLOAD_SIZE}-byte upload limit. Choose a smaller file.\n`,
+        );
+        expect(daemon.connection.IQ_stanzas).toHaveLength(before);
     });
 
     it('requires one recipient and one path', async () => {

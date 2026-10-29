@@ -182,6 +182,25 @@ describe('The daemon', () => {
         );
     });
 
+    it('answers a last request sent without a newline as the client ends, then closes', async () => {
+        daemon = await startDaemon();
+        const socket = net.createConnection(daemon.config.paths.socket);
+        const lines = [];
+        readline.createInterface({ input: socket }).on('line', (line) => lines.push(JSON.parse(line)));
+        const closed = new Promise((resolve) => socket.once('close', resolve));
+
+        const hello = { jsonrpc: '2.0', id: 1, method: 'hello', params: { protocol: PROTOCOL_VERSION } };
+        const status = { jsonrpc: '2.0', id: 2, method: 'daemon.status' };
+        // As `printf '...' | nc -U` sends it: the last line unterminated, then the end of the input.
+        socket.end(`${JSON.stringify(hello)}\n${JSON.stringify(status)}`);
+        await closed;
+
+        expect(lines.map((l) => [l.id, Object.keys(l.result ?? {}).includes('connected')])).toEqual([
+            [1, false],
+            [2, true],
+        ]);
+    });
+
     it('fails a request made on a connection that has closed, rather than leaving it waiting', async () => {
         daemon = await startDaemon();
         const unavailable = { name: 'DaemonUnavailableError', message: 'The connection to the daemon is closed.' };

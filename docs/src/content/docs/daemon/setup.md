@@ -46,6 +46,10 @@ the daemon's:
   (`~/.local/state/converse/`), or the session D-Bus, through which the keyring
   can be asked for the password.
 
+The daemon never reads a file on a client's behalf. To upload a file, the CLI
+reads it inside the sandbox and sends its contents, so the agent can only share
+files the sandbox lets it read. Mount only what you're happy for it to share.
+
 The mount is of the socket file, so when the daemon restarts and makes a new
 one, restart the sandbox too. Inside the sandbox, the CLI can't start the
 daemon, because it has no password: start it outside with

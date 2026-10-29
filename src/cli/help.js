@@ -178,9 +178,10 @@ export const HELP = {
     upload: {
         summary: 'Upload a local file and share its URL',
         description:
-            'Upload a local file with XEP-0363 and share its URL. It follows the same send policy as ' +
-            'send: a direct route shares the URL with the contact or room; a draft route sends the ' +
-            'URL to the owner, who may share it.',
+            'Upload a local file with XEP-0363 and share its URL. The CLI reads the file and sends ' +
+            'its contents to the daemon, so the file must be readable by the CLI, not the daemon. ' +
+            'It follows the same send policy as send: a direct route shares the URL with the ' +
+            'contact or room; a draft route sends the URL to the owner, who may share it.',
         args: [TARGET, ['<path>', 'The local file']],
         exits: SEND_EXITS,
         examples: ['converse-cli upload juliet@capulet.lit ./report.pdf'],

@@ -10,10 +10,18 @@ import net from 'node:net';
 import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
-import { getSocketFromEnv, loadConfig } from './config.js';
+import { findDaemon, getSocketFromEnv, loadConfig } from './config.js';
 import { PROTOCOL_VERSION, RPCError } from './protocol.js';
 
-export { getConfigPath, getSocketFromEnv, loadConfig } from './config.js';
+export {
+    AccountError,
+    getConfigDir,
+    getConfigPath,
+    getSocketFromEnv,
+    listAccounts,
+    listDaemons,
+    loadConfig,
+} from './config.js';
 
 const DAEMON_BIN = fileURLToPath(new URL('./bin/converse-daemon.js', import.meta.url));
 
@@ -61,12 +69,14 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
     }
 
     const config = loadConfig(env);
-    const socket_path = access === 'restricted' ? config.paths.restricted_socket : config.paths.socket;
+    // A running daemon is found by its account's name, in case the config's JID changed since it started.
+    const sockets = findDaemon(config) ?? config.paths;
+    const socket_path = access === 'restricted' ? sockets.restricted_socket : sockets.socket;
     let socket;
     try {
         socket = await openSocket(socket_path);
     } catch (e) {
-        if (access === 'full' && (await answers(config.paths.restricted_socket))) {
+        if (access === 'full' && (await answers(sockets.restricted_socket))) {
             // The daemon is running, and this client can't reach its full access
             // socket, such as an agent in a sandbox given only the restricted one.
             throw new Error(
@@ -122,9 +132,10 @@ export async function stopDaemon({ env = process.env } = {}) {
     // The pidfile is the daemon's, out of reach of a client given only a socket.
     if (getSocketFromEnv(env)) return true;
 
-    const { paths } = loadConfig(env);
+    const config = loadConfig(env);
+    const { paths } = config;
     const deadline = Date.now() + SPAWN_TIMEOUT;
-    while (fs.existsSync(paths.pidfile)) {
+    while (findDaemon(config) || fs.existsSync(paths.pidfile)) {
         if (Date.now() > deadline) {
             throw new Error(`The daemon didn't stop within ${SPAWN_TIMEOUT / 1000}s. See ${paths.log}.`);
         }
@@ -273,7 +284,8 @@ async function spawnDaemon(config, socket_path, env) {
     const child = spawn(process.execPath, [DAEMON_BIN], {
         detached: true,
         stdio: ['ignore', log_fd, log_fd],
-        env,
+        // Named, so that the daemon picks the same account even if which is the default changes.
+        env: { ...env, CONVERSE_ACCOUNT: config.account },
     });
     fs.closeSync(log_fd);
 

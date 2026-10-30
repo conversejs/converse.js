@@ -12,6 +12,12 @@ one request, prints the result and exits. A command starts the daemon if it isn'
 running. There are no options for credentials, so they never end up in a shell
 history or a transcript. The account comes from the config file.
 
+With several accounts (see
+[Several accounts](/docs/daemon/setup/#several-accounts)), `--account <name>`
+picks one, or `CONVERSE_ACCOUNT=<name>` does, the option winning over the
+variable. Each account has a daemon of its own. Without either, the CLI uses the
+default account.
+
 Commands connect at restricted access unless the config's `access` says
 otherwise. Restricted access is what an agent gets, and the policy applies to it.
 
@@ -323,12 +329,23 @@ Starts the daemon if it isn't running, and shows its status.
 Shows whether the daemon is connected, which JID it uses, and for how long it has
 been running.
 
+With `--all`, lists every running daemon instead, one line per account: its
+name, the JID it was started as, its pid and for how long it has been running.
+
 ### `daemon stop`
 
 Logs out and stops the daemon.
 
+## Accounts
+
+### `accounts`
+
+Lists the configured accounts, with each one's JID, and marks the default one.
+
 ## Options for every command
 
+- `--account <name>`: uses this account instead of the default one.
+  `CONVERSE_ACCOUNT=<name>` does the same.
 - `--json`: prints the daemon's JSON instead of text. Lists print one object per line.
 - `-h`, `--help`: shows the command's help, or the overview without a command,
   and exits.
@@ -367,8 +384,8 @@ Scripts and agents can branch on these. A code never changes its meaning.
 | 0 | OK |
 | 1 | Error, including bad usage |
 | 2 | Timed out: a `wait` ended without a match |
-| 3 | Not found: no such contact, conversation or message |
-| 4 | Ambiguous: more than one match. The candidates are listed |
+| 3 | Not found: no such account, contact, conversation or message |
+| 4 | Ambiguous: more than one match, or several accounts and no default. The candidates are listed |
 | 5 | Refused by the send policy |
 | 6 | Drafted: nothing was sent. The text went to the owner, or in `as_user` mode waits for approval |
 | 7 | The daemon isn't running, and couldn't be started |

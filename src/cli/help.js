@@ -416,8 +416,10 @@ export const HELP = {
     'daemon status': {
         summary: 'Show whether the daemon is connected, as which JID',
         description:
-            'Show whether the daemon is connected, as which JID, its pid and for how long it has ' +
-            "been running. The JID is who you are to others. This doesn't start the daemon.\n\n" +
+            'Show whether the daemon is connected, as which JID, its pid, for how long it has ' +
+            'been running, and the socket it was reached on, which tells a daemon on another host, ' +
+            "through a tunnel, from a local one. The JID is who you are to others. This doesn't " +
+            'start the daemon.\n\n' +
             'With --all, list every running daemon instead, one line per account: its name, the JID ' +
             'it was started as, its pid and for how long it has been running.',
         options: [['--all', "List every account's running daemon"]],
@@ -425,7 +427,10 @@ export const HELP = {
     },
     'daemon stop': {
         summary: 'Log out and stop the daemon',
-        description: 'Log out and stop the daemon. Your contacts see you go offline, and rooms see you leave.',
+        description:
+            'Log out and stop the daemon. Your contacts see you go offline, and rooms see you leave. ' +
+            'A daemon reached through a socket the config names may be on another host, so for that ' +
+            'one this returns once the daemon has closed the connection, and says it was asked to stop.',
         examples: ['converse-cli daemon stop'],
     },
 };

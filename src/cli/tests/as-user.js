@@ -4,6 +4,9 @@
  * sends from full access. What the daemon does with each is covered at the
  * protocol seam; this pins the commands, output and exit codes.
  */
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { converse } from '@converse/headless';
 import { JID, startDaemon } from '../../daemon/tests/harness.js';
@@ -78,6 +81,29 @@ describe('converse-cli drafts, in as_user mode', () => {
             ),
             expect.stringMatching(/^d2 .* {2}\[retracts \S+\] {2}""$/),
         ]);
+    });
+
+    it("lists the drafts at restricted access by the daemon's mode, when this client's config says another", async () => {
+        // A client on another host, which reaches the restricted socket alone.
+        const home = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-cli-as-user-test-'));
+        try {
+            const env = { ...process.env, XDG_CONFIG_HOME: home, XDG_RUNTIME_DIR: home, XDG_STATE_HOME: home };
+            await fs.mkdir(path.join(home, 'converse', 'accounts'), { recursive: true });
+            await fs.writeFile(
+                path.join(home, 'converse', 'accounts', 'default.json'),
+                JSON.stringify({
+                    jid: ME,
+                    owner: 'benvolio@montague.lit',
+                    access: 'restricted',
+                    restricted_socket: daemon.config.paths.restricted_socket,
+                }),
+            );
+            const { code, stdout } = await run(env, 'drafts', 'list');
+            expect(code).toBe(EXIT.OK);
+            expect(stdout).toMatch(/^d1 /);
+        } finally {
+            await fs.rm(home, { recursive: true, force: true });
+        }
     });
 
     it('shows one draft in full, with the message it answers and its text over several lines', async () => {

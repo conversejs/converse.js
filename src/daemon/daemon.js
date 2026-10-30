@@ -81,6 +81,13 @@ let buffered = 0;
  */
 export async function start(config) {
     const { paths } = config;
+    if (config.sockets) {
+        // Such a config is a client's copy, for reaching a daemon that runs on another host.
+        throw new Error(
+            `${paths.config} names the sockets of a daemon elsewhere ("socket" or "restricted_socket"), ` +
+                'so a daemon for it runs on that host, not here. Remove them to run the daemon on this host.',
+        );
+    }
     if (config.mode === 'as_user') {
         log.warn(
             `The daemon acts as ${config.jid} itself ("mode": "as_user"). Restricted access is only as strong ` +

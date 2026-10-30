@@ -217,6 +217,8 @@ export function loadConfig(env = process.env) {
         throw new Error(`"restricted_dir" in ${config_path} must be an absolute path.`);
     }
 
+    const sockets = parseSockets(raw, config_path);
+
     const allow_unencrypted_resend = raw.allow_unencrypted_resend ?? false;
     if (typeof allow_unencrypted_resend !== 'boolean') {
         throw new Error(`"allow_unencrypted_resend" in ${config_path} must be true or false.`);
@@ -235,10 +237,28 @@ export function loadConfig(env = process.env) {
         mode,
         allow_unencrypted_resend,
         socket_group: socket_group?.trim() ?? null,
+        sockets,
         policy: parsePolicy(raw.policy, config_path, mode),
         settings: raw.settings ?? {},
         paths: getPaths(account, jid, env, restricted_dir),
     };
+}
+
+/**
+ * The sockets the config names, which replace the derived ones for a client:
+ * where to reach a daemon on another host, through an SSH socket forward.
+ * @param {Record<string, unknown>} raw - The config file's contents
+ * @param {string} config_path
+ * @returns {import('./types').Sockets|null} Null if the config names neither
+ */
+function parseSockets(raw, config_path) {
+    const sockets = { socket: raw.socket ?? null, restricted_socket: raw.restricted_socket ?? null };
+    for (const [key, value] of Object.entries(sockets)) {
+        if (value !== null && !(typeof value === 'string' && path.isAbsolute(value))) {
+            throw new Error(`"${key}" in ${config_path} must be an absolute path.`);
+        }
+    }
+    return sockets.socket === null && sockets.restricted_socket === null ? null : sockets;
 }
 
 /**

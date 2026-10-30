@@ -1,4 +1,5 @@
 import { Collection } from '@converse/skeletor';
+import _converse from '../../shared/_converse.js';
 import Resource from './resource.js';
 import { initStorage } from '../../utils/storage.js';
 
@@ -21,7 +22,8 @@ class Resources extends Collection {
     initialize(_models, options) {
         this.model = Resource;
         // Storage is set here before skeletor's autoSync hydration check.
-        initStorage(this, `converse.resources-${options?.jid}`, 'session');
+        const bare_jid = _converse.session.get('bare_jid');
+        initStorage(this, `converse.resources-${bare_jid}-${options?.jid}`, 'session');
     }
 }
 

@@ -56,6 +56,7 @@ describe('The account configuration', () => {
             mode: 'owner_only',
             allow_unencrypted_resend: false,
             socket_group: null,
+            sockets: null,
             policy: {
                 allow: [],
                 direct: [],
@@ -196,6 +197,20 @@ describe('The account configuration', () => {
         });
         await writeConfig({ jid: 'romeo@montague.lit', restricted_dir: 'converse-agent' });
         expect(() => loadConfig(env)).toThrow('"restricted_dir" in');
+    });
+
+    it('reads the sockets the config names, either or both, and refuses a relative one', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', socket: '/tmp/tunnel/full.sock' });
+        expect(loadConfig(env).sockets).toEqual({ socket: '/tmp/tunnel/full.sock', restricted_socket: null });
+        await writeConfig({ jid: 'romeo@montague.lit', restricted_socket: '/tmp/tunnel/agent.sock' });
+        expect(loadConfig(env).sockets).toEqual({ socket: null, restricted_socket: '/tmp/tunnel/agent.sock' });
+        // The derived paths, which the daemon listens on, stay as they are.
+        expect(loadConfig(env).paths.socket).toBe(path.join(dir, 'run', 'converse', 'romeo@montague.lit.sock'));
+        const load = () => loadConfig(env);
+        for (const key of ['socket', 'restricted_socket']) {
+            await writeConfig({ jid: 'romeo@montague.lit', [key]: 'tunnel.sock' });
+            expect(load).toThrow(`"${key}" in`);
+        }
     });
 
     it('reads the socket group, by name or number, and refuses anything else', async () => {

@@ -27,6 +27,13 @@ sandbox, or running as another OS user, reaches the daemon (see
 [Keep the agent away from the daemon's files](/docs/daemon/setup/#2-keep-the-agent-away-from-the-daemons-files)).
 It never starts the daemon: if none answers, a command fails with exit code 7.
 
+When the config names `socket` or `restricted_socket`, the CLI connects to that
+path instead of the one it would derive, such as a socket forwarded over SSH
+from the daemon's host (see
+[From another machine](/docs/daemon/setup/#from-another-machine)). It never
+starts a daemon then either: one that doesn't answer fails with exit code 7,
+naming the path.
+
 ## Help
 
 `converse-cli --help` gives an overview of every command, how to name people,
@@ -326,8 +333,9 @@ Starts the daemon if it isn't running, and shows its status.
 
 ### `daemon status`
 
-Shows whether the daemon is connected, which JID it uses, and for how long it has
-been running.
+Shows whether the daemon is connected, which JID it uses, for how long it has
+been running, and the socket it was reached on. The socket tells a daemon on
+another machine, reached through a tunnel, from a local one.
 
 With `--all`, lists every running daemon instead, one line per account: its
 name, the JID it was started as, its pid and for how long it has been running.
@@ -335,6 +343,10 @@ name, the JID it was started as, its pid and for how long it has been running.
 ### `daemon stop`
 
 Logs out and stops the daemon.
+
+Through a socket the config names, the daemon may be on another machine, where
+its pidfile is out of reach. The command then returns once the daemon has closed
+the connection, and says it was asked to stop.
 
 ## Accounts
 

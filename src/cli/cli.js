@@ -188,7 +188,8 @@ function draftReadAccess(env) {
 
 /**
  * Connects (starting the daemon if need be), makes one request and hangs up.
- * Keeps the daemon's `hello` in `ctx`, for what the output depends on.
+ * Keeps the daemon's `hello`, and the socket it was reached on, in `ctx`, for
+ * what the output depends on.
  * @param {import('./types').Context} ctx
  * @param {string} method
  * @param {Object} [params]
@@ -199,6 +200,7 @@ function draftReadAccess(env) {
 async function request(ctx, method, params, { spawn = true, access = accessFor(ctx.env) } = {}) {
     const client = await connect({ spawn, env: ctx.env, access });
     ctx.hello = client.hello;
+    ctx.socket_path = client.socket_path;
     try {
         return await client.request(method, params);
     } finally {
@@ -691,11 +693,14 @@ const COMMANDS = {
     'daemon start': (ctx) => printStatus(ctx, true),
     'daemon status': (ctx) => (ctx.options.all ? printAllStatuses(ctx) : printStatus(ctx, false)),
     'daemon stop': async ({ options, out, env }) => {
-        const was_running = await stopDaemon({ env });
+        const stopped = await stopDaemon({ env });
         if (options.json) {
-            out(JSON.stringify({ stopped: was_running }) + '\n');
+            out(JSON.stringify({ stopped: stopped !== false }) + '\n');
+        } else if (stopped === 'asked') {
+            // Its pidfile may be on another host, so the closed connection is all there is to go by.
+            out('Asked the daemon to stop. It has closed the connection.\n');
         } else {
-            out(was_running ? 'Stopped.\n' : "The daemon wasn't running.\n");
+            out(stopped ? 'Stopped.\n' : "The daemon wasn't running.\n");
         }
         return EXIT.OK;
     },
@@ -730,11 +735,12 @@ async function waitForMessage(client, filter, seconds) {
 async function printStatus(ctx, spawn) {
     /** @type {import('@converse/daemon/types').Status} */
     const status = await request(ctx, 'daemon.status', {}, { spawn });
+    // Which socket was reached tells a daemon through a tunnel from a local one.
     if (ctx.options.json) {
-        ctx.out(JSON.stringify(status) + '\n');
+        ctx.out(JSON.stringify({ ...status, socket: ctx.socket_path }) + '\n');
     } else {
         const state = status.connected ? `connected as ${status.jid}` : 'disconnected';
-        ctx.out(`${state}, pid ${status.pid}, up ${formatDuration(status.uptime)}\n`);
+        ctx.out(`${state}, pid ${status.pid}, up ${formatDuration(status.uptime)}, on ${ctx.socket_path}\n`);
     }
     return EXIT.OK;
 }

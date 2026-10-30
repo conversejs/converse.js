@@ -132,12 +132,16 @@ describe('converse-cli', () => {
 
         result = await run(env, 'daemon', 'start');
         expect(result.code).toBe(EXIT.OK);
-        expect(result.stdout).toMatch(new RegExp(`^connected as ${JID}, pid \\d+, up \\d+s\\n$`));
+        // The CLI connects at restricted access, unless the config says otherwise.
+        const socket = loadConfig(env).paths.restricted_socket;
+        expect(result.stdout.replace(/pid \d+, up \d+s/, 'pid <pid>, up <n>s')).toBe(
+            `connected as ${JID}, pid <pid>, up <n>s, on ${socket}\n`,
+        );
 
         result = await run(env, 'daemon', 'status', '--json');
         expect(result.code).toBe(EXIT.OK);
         const status = JSON.parse(result.stdout);
-        expect(status).toMatchObject({ connected: true, jid: JID });
+        expect(status).toMatchObject({ connected: true, jid: JID, socket });
         // The daemon outlives the CLI process that started it.
         expect(status.pid).not.toBe(process.pid);
         expect(() => process.kill(status.pid, 0)).not.toThrow();

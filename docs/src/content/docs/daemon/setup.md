@@ -229,6 +229,122 @@ The CLI finds a running daemon by its account's name. So if you change an
 account's `jid` while its daemon runs, `converse-cli --account <name> daemon
 stop` still stops it, and the next command starts a daemon with the new JID.
 
+## From another machine
+
+The CLI can use a daemon that runs on another machine, through an OpenSSH unix
+socket forward. The daemon still listens only on its local unix sockets: SSH
+authenticates you and encrypts the connection, and nothing on the daemon's host
+listens on the network.
+
+Forward the full access socket to use your own daemon from a laptop. Forward
+only the restricted socket to give an agent on another machine restricted
+access and nothing more.
+
+On the daemon's host, `converse-cli daemon status` ends with the socket it
+reached. The full access socket is `$XDG_RUNTIME_DIR/converse/<jid>.sock`, and
+the restricted one is `sock` in the directory `<jid>.restricted/` beside it, or
+in `restricted_dir` if the config names one (see
+[Where the daemon keeps its files](#where-the-daemon-keeps-its-files)).
+
+On the client machine, make a directory for the forwarded sockets that only you
+can enter, since anyone who can open a forwarded socket gets the access it
+grants:
+
+```sh
+mkdir -m 700 -p "$XDG_RUNTIME_DIR/converse-tunnel"
+```
+
+Then start the tunnel. `-N` runs no remote command, and
+`StreamLocalBindUnlink=yes` replaces a socket file left behind by an earlier
+tunnel, which would otherwise make SSH refuse to listen:
+
+```sh
+ssh -N -o StreamLocalBindUnlink=yes \
+    -L "$XDG_RUNTIME_DIR/converse-tunnel/full.sock:/run/user/1000/converse/agent@example.org.sock" \
+    -L "$XDG_RUNTIME_DIR/converse-tunnel/restricted.sock:/run/user/1000/converse/agent@example.org.restricted/sock" \
+    daemon-host.example.org
+```
+
+On the client machine, the account's config names the forwarded sockets with
+`socket` and `restricted_socket`, absolute paths that replace the ones the CLI
+would derive. It needs `jid` and `owner`, and no password: the daemon on the
+other host logs in, and its config's policy is the one that applies. With
+`"access": "full"`, the CLI uses the full access socket; leave it out to connect
+at restricted access.
+
+```json
+{
+    "jid": "agent@example.org",
+    "owner": "you@example.org",
+    "access": "full",
+    "socket": "/run/user/1000/converse-tunnel/full.sock",
+    "restricted_socket": "/run/user/1000/converse-tunnel/restricted.sock"
+}
+```
+
+When the config names a socket, the CLI never starts a daemon: there is none to
+start on this machine. A socket that is missing, or a tunnel that's up with no
+daemon behind it, fails with exit code 7, naming the path. `daemon status` says
+which socket it reached, so you can tell a tunnelled daemon from a local one,
+and `daemon stop` asks the daemon on the other host to stop, and returns once it
+has closed the connection. A daemon refuses to start from a config that names
+these sockets, since such a config is for reaching a daemon elsewhere.
+
+### For an agent on another machine
+
+Forward the restricted socket alone, and give the agent a config that names only
+`restricted_socket`:
+
+```sh
+ssh -N -o StreamLocalBindUnlink=yes \
+    -L "$XDG_RUNTIME_DIR/converse-tunnel/restricted.sock:/run/user/1000/converse/agent@example.org.restricted/sock" \
+    daemon-host.example.org
+```
+
+```json
+{
+    "jid": "agent@example.org",
+    "owner": "you@example.org",
+    "restricted_socket": "/run/user/1000/converse-tunnel/restricted.sock"
+}
+```
+
+Anything that needs full access then fails, saying that this client can only
+reach the restricted socket. An agent in a sandbox on that machine can be given
+the forwarded socket with `CONVERSE_SOCKET` instead, as in
+[In a sandbox](#in-a-sandbox). Bind-mount the tunnel's directory, not the
+socket file: SSH makes a new one each time the tunnel starts.
+
+### Keeping the tunnel up
+
+The tunnel ends when SSH does: when the network drops, the laptop sleeps, or the
+daemon's host restarts. Until it's started again, commands fail with exit code
+7. SSH opens the daemon's socket afresh for each connection it forwards, so a
+tunnel that stays up keeps working after the daemon restarts and makes a new
+socket file. If a command still fails after a restart, start the tunnel again.
+
+To restart it on its own, use `autossh`, or a systemd user unit such as
+`~/.config/systemd/user/converse-tunnel.service`:
+
+```ini
+[Unit]
+Description=Tunnel to the Converse daemon on daemon-host
+
+[Service]
+ExecStartPre=/usr/bin/mkdir -m 700 -p %t/converse-tunnel
+ExecStart=/usr/bin/ssh -N -o StreamLocalBindUnlink=yes -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes \
+    -L %t/converse-tunnel/full.sock:/run/user/1000/converse/agent@example.org.sock \
+    daemon-host.example.org
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+```
+
+`%t` is `$XDG_RUNTIME_DIR`. Enable it with
+`systemctl --user enable --now converse-tunnel`.
+
 ## Where the daemon keeps its files
 
 Logs and state go in `~/.local/state/converse/` (or

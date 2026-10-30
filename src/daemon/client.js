@@ -43,7 +43,9 @@ export class DaemonUnavailableError extends Error {
  * `spawn` is false.
  *
  * With `CONVERSE_SOCKET` set, the client connects to that socket instead, and
- * doesn't read the account's config: `access` and `spawn` are then moot.
+ * doesn't read the account's config: `access` and `spawn` are then moot. When
+ * the config names the sockets, the client connects to those, and never starts
+ * a daemon: it runs on another host.
  * @param {Object} [options]
  * @param {string} [options.consumer] - Who is connecting; defaults to the configured consumer.
  * @param {import('./types').Access} [options.access='full'] - Which socket to connect to
@@ -65,10 +67,12 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
                 { cause: e },
             );
         }
-        return handshake(socket, consumer);
+        return handshake(socket, socket_from_env, consumer);
     }
 
     const config = loadConfig(env);
+    if (config.sockets) return connectConfigured(config, access, consumer);
+
     // A running daemon is found by its account's name, in case the config's JID changed since it started.
     const sockets = findDaemon(config) ?? config.paths;
     const socket_path = access === 'restricted' ? sockets.restricted_socket : sockets.socket;
@@ -77,13 +81,7 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
         socket = await openSocket(socket_path);
     } catch (e) {
         if (access === 'full' && (await answers(sockets.restricted_socket))) {
-            // The daemon is running, and this client can't reach its full access
-            // socket, such as an agent in a sandbox given only the restricted one.
-            throw new Error(
-                'This needs full access, and this client can only reach the restricted socket. ' +
-                    "It is the owner's to do, from a client with full access.",
-                { cause: e },
-            );
+            throw new FullAccessUnreachableError(e);
         }
         if (!may_spawn) {
             throw new DaemonUnavailableError(
@@ -93,16 +91,76 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
         }
         socket = await spawnDaemon(config, socket_path, env);
     }
-    return handshake(socket, consumer ?? config.consumer);
+    return handshake(socket, socket_path, consumer ?? config.consumer);
+}
+
+/**
+ * The daemon is running, and this client can't reach its full access socket,
+ * such as an agent in a sandbox given only the restricted one, or a tunnel
+ * that forwards only that one.
+ */
+class FullAccessUnreachableError extends Error {
+    /**
+     * @param {Error} [cause]
+     */
+    constructor(cause) {
+        super(
+            'This needs full access, and this client can only reach the restricted socket. ' +
+                "It is the owner's to do, from a client with full access.",
+            { cause },
+        );
+    }
+}
+
+/**
+ * Connects to a socket the config names, a daemon's on another host that is
+ * forwarded here. A daemon is never started for it: there's none to start on
+ * this host.
+ * @param {import('./types').Config} config
+ * @param {import('./types').Access} access
+ * @param {string} [consumer]
+ * @returns {Promise<Client>}
+ */
+async function connectConfigured(config, access, consumer) {
+    const { socket, restricted_socket } = config.sockets;
+    const [key, socket_path] = access === 'restricted' ? ['restricted_socket', restricted_socket] : ['socket', socket];
+    const restricted_answers = async () =>
+        access === 'full' && restricted_socket !== null && (await answers(restricted_socket));
+    if (!socket_path) {
+        if (await restricted_answers()) throw new FullAccessUnreachableError();
+
+        throw new DaemonUnavailableError(
+            `${config.paths.config} names no "${key}", for ${access} access, and this client doesn't start a ` +
+                `daemon when the config names a socket. Add the path of the forwarded socket as "${key}", ` +
+                'or remove "socket" and "restricted_socket" to use a daemon on this host.',
+        );
+    }
+    try {
+        return await handshake(await openSocket(socket_path), socket_path, consumer ?? config.consumer);
+    } catch (e) {
+        if (e instanceof RPCError) throw e;
+
+        if (await restricted_answers()) throw new FullAccessUnreachableError(e);
+
+        // A tunnel that's up accepts the connection, and closes it when nothing answers on the other host.
+        const reason = e instanceof DaemonUnavailableError ? 'the connection was closed' : e.code;
+        throw new DaemonUnavailableError(
+            `No daemon answers on ${socket_path}, the "${key}" that ${config.paths.config} names (${reason}). ` +
+                "Check that the tunnel to the daemon's host is up, and that the daemon runs on that host. " +
+                "This client doesn't start a daemon when the config names a socket.",
+            { cause: e },
+        );
+    }
 }
 
 /**
  * @param {net.Socket} socket
+ * @param {string} socket_path - Where the socket was reached
  * @param {string} [consumer] - Unset leaves it to the daemon's config
  * @returns {Promise<Client>}
  */
-async function handshake(socket, consumer) {
-    const client = new Client(socket);
+async function handshake(socket, socket_path, consumer) {
+    const client = new Client(socket, socket_path);
     try {
         client.hello = await client.request('hello', { protocol: PROTOCOL_VERSION, consumer });
     } catch (e) {
@@ -114,10 +172,13 @@ async function handshake(socket, consumer) {
 
 /**
  * Asks the daemon for the configured account to stop, and waits until it has
- * logged out and released its pidfile.
+ * logged out and released its pidfile. A daemon reached through a socket that
+ * `CONVERSE_SOCKET` or the config names may run on another host, where its
+ * pidfile is out of reach: for that one, this waits until the daemon has
+ * closed the connection.
  * @param {Object} [options]
  * @param {NodeJS.ProcessEnv} [options.env]
- * @returns {Promise<boolean>} False if no daemon was running.
+ * @returns {Promise<'stopped'|'asked'|false>} Whether it stopped, was asked to, or wasn't running.
  */
 export async function stopDaemon({ env = process.env } = {}) {
     let client;
@@ -128,11 +189,26 @@ export async function stopDaemon({ env = process.env } = {}) {
         throw e;
     }
     await client.request('daemon.stop');
+    const config = getSocketFromEnv(env) ? null : loadConfig(env);
+    if (!config || config.sockets) {
+        // It closes every connection on its way out.
+        let timer;
+        const timeout = new Promise((_, reject) => {
+            timer = setTimeout(
+                () => reject(new Error(`The daemon didn't close the connection within ${SPAWN_TIMEOUT / 1000}s.`)),
+                SPAWN_TIMEOUT,
+            );
+        });
+        try {
+            await Promise.race([client.closed.catch(() => {}), timeout]);
+        } finally {
+            clearTimeout(timer);
+            client.close();
+        }
+        return 'asked';
+    }
     client.close();
-    // The pidfile is the daemon's, out of reach of a client given only a socket.
-    if (getSocketFromEnv(env)) return true;
 
-    const config = loadConfig(env);
     const { paths } = config;
     const deadline = Date.now() + SPAWN_TIMEOUT;
     while (findDaemon(config) || fs.existsSync(paths.pidfile)) {
@@ -141,7 +217,7 @@ export async function stopDaemon({ env = process.env } = {}) {
         }
         await new Promise((resolve) => setTimeout(resolve, 50));
     }
-    return true;
+    return 'stopped';
 }
 
 export class Client {
@@ -157,10 +233,16 @@ export class Client {
 
     /**
      * @param {net.Socket} socket
+     * @param {string} socket_path - Where it was reached, which may be a forward of another host's socket
      */
-    constructor(socket) {
+    constructor(socket, socket_path) {
         this.socket = socket;
-        readline.createInterface({ input: socket, crlfDelay: Infinity }).on('line', (line) => this.#onLine(line));
+        this.socket_path = socket_path;
+        readline
+            .createInterface({ input: socket, crlfDelay: Infinity })
+            .on('line', (line) => this.#onLine(line))
+            // readline passes the socket's errors on, such as writing to a tunnel the other end closed.
+            .on('error', () => {});
         socket.on('close', () => {
             const error = new DaemonUnavailableError('The daemon closed the connection.');
             this.#pending.forEach(({ reject }) => reject(error));
@@ -260,11 +342,12 @@ function openSocket(socket_path) {
  * @returns {Promise<boolean>} Whether a daemon accepts connections on it
  */
 async function answers(socket_path) {
+    // Through a tunnel, the connection is accepted even when nothing answers on the other host.
     try {
-        (await openSocket(socket_path)).end();
+        (await handshake(await openSocket(socket_path), socket_path)).close();
         return true;
-    } catch {
-        return false;
+    } catch (e) {
+        return e instanceof RPCError;
     }
 }
 

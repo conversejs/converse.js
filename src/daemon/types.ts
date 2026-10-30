@@ -1,7 +1,8 @@
 export type Paths = {
     config: string; // The account configuration file
-    runtime_dir: string; // Owner-only directory holding the sockets and pidfile
+    runtime_dir: string; // Owner-only directory holding the full access socket and the pidfile
     socket: string; // Full access
+    restricted_dir: string; // The restricted socket's own directory, so a sandbox can be given it alone
     restricted_socket: string; // Restricted access
     pidfile: string;
     log: string; // Where an auto-spawned daemon writes its output
@@ -59,6 +60,8 @@ export type Config = {
     mode: Mode; // How the account acts, see Mode
     // Whether the owner may send a failed send again in the clear. Off unless the config says so.
     allow_unencrypted_resend: boolean;
+    // The group, by name or number, that may reach the restricted socket. Unset keeps it owner-only.
+    socket_group: string | null;
     policy: Policy;
     settings: Record<string, unknown>; // Passed through to converse.initialize
     paths: Paths;
@@ -251,6 +254,7 @@ export type Hello = {
     protocol: number;
     consumer: string;
     access: Access;
+    mode: Mode; // How the account acts, for a client without the config
     jid: string | null;
 };
 

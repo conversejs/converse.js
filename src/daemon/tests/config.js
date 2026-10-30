@@ -54,6 +54,7 @@ describe('The account configuration', () => {
             access: 'restricted',
             mode: 'owner_only',
             allow_unencrypted_resend: false,
+            socket_group: null,
             policy: {
                 allow: [],
                 direct: [],
@@ -66,7 +67,8 @@ describe('The account configuration', () => {
                 config: path.join(dir, 'converse', 'daemon.json'),
                 runtime_dir: path.join(dir, 'run', 'converse'),
                 socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.sock'),
-                restricted_socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.restricted.sock'),
+                restricted_dir: path.join(dir, 'run', 'converse', 'romeo@montague.lit.restricted'),
+                restricted_socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.restricted', 'sock'),
                 pidfile: path.join(dir, 'run', 'converse', 'romeo@montague.lit.pid'),
                 log: expect.stringMatching(/\/converse\/romeo@montague\.lit\.log$/),
                 cursors: expect.stringMatching(/\/converse\/romeo@montague\.lit\.cursors\.json$/),
@@ -181,6 +183,29 @@ describe('The account configuration', () => {
         expect(() => loadConfig(env)).toThrow('"policy.direct" in');
     });
 
+    it('puts the restricted socket in the directory "restricted_dir" names, and refuses a relative one', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', restricted_dir: '/srv/converse-agent' });
+        expect(loadConfig(env).paths).toMatchObject({
+            restricted_dir: '/srv/converse-agent',
+            restricted_socket: '/srv/converse-agent/sock',
+            socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.sock'),
+        });
+        await writeConfig({ jid: 'romeo@montague.lit', restricted_dir: 'converse-agent' });
+        expect(() => loadConfig(env)).toThrow('"restricted_dir" in');
+    });
+
+    it('reads the socket group, by name or number, and refuses anything else', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', socket_group: ' agents ' });
+        expect(loadConfig(env).socket_group).toBe('agents');
+        await writeConfig({ jid: 'romeo@montague.lit', socket_group: 1000 });
+        expect(loadConfig(env).socket_group).toBe('1000');
+        const load = () => loadConfig(env);
+        for (const socket_group of ['', 1.5, true]) {
+            await writeConfig({ jid: 'romeo@montague.lit', socket_group });
+            expect(load).toThrow('"socket_group" in');
+        }
+    });
+
     it('refuses an access level it does not know', async () => {
         await writeConfig({ jid: 'romeo@montague.lit', access: 'root' });
         expect(() => loadConfig(env)).toThrow('"access" in');
@@ -197,10 +222,11 @@ describe('The account configuration', () => {
     it('names the socket after a hash of the JID when the JID would make its path too long', async () => {
         const jid = `${'r'.repeat(60)}@montague.lit`;
         await writeConfig({ jid });
-        const { socket, pidfile } = loadConfig(env).paths;
+        const { socket, restricted_socket, pidfile } = loadConfig(env).paths;
         expect(path.basename(socket)).toMatch(/^[0-9a-f]{16}\.sock$/);
         expect(path.basename(pidfile)).toBe(path.basename(socket).replace('.sock', '.pid'));
         expect(Buffer.byteLength(socket)).toBeLessThanOrEqual(103);
+        expect(Buffer.byteLength(restricted_socket)).toBeLessThanOrEqual(103);
     });
 
     it('wants a bare JID', async () => {

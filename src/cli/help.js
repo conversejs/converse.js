@@ -500,8 +500,9 @@ function exitTable(codes) {
 /**
  * The overview, for `converse-cli --help`.
  * @param {string} config_path - Where the account is configured.
+ * @param {string|null} [socket_path] - The socket `CONVERSE_SOCKET` names, if it's set
  */
-export function overview(config_path) {
+export function overview(config_path, socket_path = null) {
     const commands = Object.entries(HELP).map(([name, { args = [], summary }]) => [
         [name, ...args.map(([arg]) => arg)].join(' '),
         summary,
@@ -550,7 +551,12 @@ export function overview(config_path) {
                 2,
             ),
         `Options:\n${table([...GLOBAL_OPTIONS, ['-v, --version', 'Show the version and exit']])}`,
-        `The account is configured in ${config_path}.`,
+        socket_path
+            ? paragraphs(
+                  `CONVERSE_SOCKET points this client at the daemon's socket ${socket_path}, so it reads ` +
+                      "no account config, and can't start the daemon: the user does.",
+              )
+            : `The account is configured in ${config_path}.`,
         `Exit codes:\n${exitTable(Object.values(EXIT))}`,
     ];
     return sections.join('\n\n') + '\n';

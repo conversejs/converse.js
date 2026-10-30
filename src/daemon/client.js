@@ -10,10 +10,10 @@ import net from 'node:net';
 import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
-import { loadConfig } from './config.js';
+import { getSocketFromEnv, loadConfig } from './config.js';
 import { PROTOCOL_VERSION, RPCError } from './protocol.js';
 
-export { getConfigPath, loadConfig } from './config.js';
+export { getConfigPath, getSocketFromEnv, loadConfig } from './config.js';
 
 const DAEMON_BIN = fileURLToPath(new URL('./bin/converse-daemon.js', import.meta.url));
 
@@ -33,6 +33,9 @@ export class DaemonUnavailableError extends Error {
  * Connects to the daemon for the configured account and completes the
  * handshake. If no daemon is running, one is started first, unless
  * `spawn` is false.
+ *
+ * With `CONVERSE_SOCKET` set, the client connects to that socket instead, and
+ * doesn't read the account's config: `access` and `spawn` are then moot.
  * @param {Object} [options]
  * @param {string} [options.consumer] - Who is connecting; defaults to the configured consumer.
  * @param {import('./types').Access} [options.access='full'] - Which socket to connect to
@@ -40,6 +43,23 @@ export class DaemonUnavailableError extends Error {
  * @param {NodeJS.ProcessEnv} [options.env]
  */
 export async function connect({ consumer, access = 'full', spawn: may_spawn = true, env = process.env } = {}) {
+    const socket_from_env = getSocketFromEnv(env);
+    if (socket_from_env) {
+        let socket;
+        try {
+            socket = await openSocket(socket_from_env);
+        } catch (e) {
+            // Without the account's config there's no password to start a daemon with.
+            throw new DaemonUnavailableError(
+                `No daemon answers on ${socket_from_env}, the socket CONVERSE_SOCKET names (${e.code}). ` +
+                    'This client has no account config to start one with: ask the user to start the daemon, ' +
+                    'and check that this path is its restricted socket.',
+                { cause: e },
+            );
+        }
+        return handshake(socket, consumer);
+    }
+
     const config = loadConfig(env);
     const socket_path = access === 'restricted' ? config.paths.restricted_socket : config.paths.socket;
     let socket;
@@ -63,12 +83,18 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
         }
         socket = await spawnDaemon(config, socket_path, env);
     }
+    return handshake(socket, consumer ?? config.consumer);
+}
+
+/**
+ * @param {net.Socket} socket
+ * @param {string} [consumer] - Unset leaves it to the daemon's config
+ * @returns {Promise<Client>}
+ */
+async function handshake(socket, consumer) {
     const client = new Client(socket);
     try {
-        client.hello = await client.request('hello', {
-            protocol: PROTOCOL_VERSION,
-            consumer: consumer ?? config.consumer,
-        });
+        client.hello = await client.request('hello', { protocol: PROTOCOL_VERSION, consumer });
     } catch (e) {
         client.close();
         throw e;
@@ -93,6 +119,8 @@ export async function stopDaemon({ env = process.env } = {}) {
     }
     await client.request('daemon.stop');
     client.close();
+    // The pidfile is the daemon's, out of reach of a client given only a socket.
+    if (getSocketFromEnv(env)) return true;
 
     const { paths } = loadConfig(env);
     const deadline = Date.now() + SPAWN_TIMEOUT;

@@ -6,6 +6,7 @@
  * @module @converse/daemon/pidfile
  */
 import fs from 'node:fs/promises';
+import { isRunning } from './config.js';
 
 /** How often a claim is tried again after a stale pidfile was cleared, before giving up. */
 const MAX_ATTEMPTS = 3;
@@ -93,19 +94,6 @@ async function removeStale(pidfile, stale, pid) {
         });
     }
     await fs.rm(aside, { force: true });
-}
-
-/**
- * @param {number} pid
- */
-function isRunning(pid) {
-    if (!pid) return false;
-    try {
-        process.kill(pid, 0);
-        return true;
-    } catch (e) {
-        return e.code === 'EPERM';
-    }
 }
 
 /**

@@ -131,6 +131,6 @@ describe('converse-cli resend and discard', () => {
         expect(help).toContain('Usage: converse-cli resend <id> [options]');
         expect(help).toContain('--unencrypted');
         expect(help).toContain('--conversation <contact|room>');
-        expect(help).toMatch(/Exit codes:\n(.*\n)*\s+3\s+no such contact, conversation or message\n/);
+        expect(help).toMatch(/Exit codes:\n(.*\n)*\s+3\s+no such account, contact, conversation or message\n/);
     });
 });

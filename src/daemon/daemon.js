@@ -8,7 +8,7 @@ import path from 'node:path';
 import { _converse, api, converse, log } from '@converse/headless';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
-import { getGroupId, getPassword } from './config.js';
+import { findDaemon, getGroupId, getPassword } from './config.js';
 import { createCursors } from './cursors.js';
 import { createDrafter, createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
@@ -94,9 +94,11 @@ export async function start(config) {
     await fs.chmod(paths.runtime_dir, 0o700);
     await claimPidfile(paths.pidfile, { jid: config.jid });
     try {
+        await writeRecord(config);
         const gid = await prepareRestrictedDir(config);
         return await serve(config, gid);
     } catch (e) {
+        await removeRecord(config);
         await fs.rm(paths.pidfile, { force: true });
         throw e;
     }
@@ -154,6 +156,7 @@ async function serve(config, gid) {
 
     await converse.initialize({
         websocket_url: config.websocket_url,
+        storage_path: paths.storage,
         ...config.settings,
     });
 
@@ -248,6 +251,7 @@ async function serve(config, gid) {
             } finally {
                 await fs.rm(paths.socket, { force: true });
                 await fs.rm(paths.restricted_socket, { force: true });
+                await removeRecord(config);
                 await fs.rm(paths.pidfile, { force: true });
                 resolveStopped(undefined);
             }
@@ -521,4 +525,45 @@ function readLines(socket, onRefused, onLine) {
         buffered -= charged;
         charged = 0;
     });
+}
+
+/**
+ * Leaves a record of this daemon under its account's name, so that clients
+ * find it by name: a daemon outlives a change to its config's JID. Another
+ * daemon still running for the account, under another JID, is refused.
+ * @param {import('./types').Config} config
+ */
+async function writeRecord(config) {
+    const { account, jid, paths } = config;
+    const running = findDaemon(config);
+    if (running && running.pid !== process.pid) {
+        throw new Error(
+            `A daemon for the account "${account}" is already running, as ${running.jid} (pid ${running.pid}). ` +
+                'Stop it with "converse-cli daemon stop".',
+        );
+    }
+    /** @type {import('./types').DaemonRecord} */
+    const record = {
+        account,
+        jid,
+        pid: process.pid,
+        started: new Date().toISOString(),
+        socket: paths.socket,
+        restricted_socket: paths.restricted_socket,
+        pidfile: paths.pidfile,
+        log: paths.log,
+    };
+    await fs.mkdir(path.dirname(paths.record), { recursive: true, mode: 0o700 });
+    // Written whole, then renamed, so that a client never reads half of it.
+    const tmp = `${paths.record}.${process.pid}`;
+    await fs.writeFile(tmp, JSON.stringify(record) + '\n', { mode: 0o600 });
+    await fs.rename(tmp, paths.record);
+}
+
+/**
+ * Removes this daemon's record, and leaves another daemon's alone.
+ * @param {import('./types').Config} config
+ */
+async function removeRecord(config) {
+    if (findDaemon(config)?.pid === process.pid) await fs.rm(config.paths.record, { force: true });
 }

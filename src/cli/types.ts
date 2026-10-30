@@ -15,6 +15,8 @@ export type Options = {
     conversation?: string;
     mention?: boolean;
     timeout?: string; // Seconds
+    account?: string; // The account's name, which picks its daemon
+    all?: boolean; // Every account's, for "daemon status"
 };
 
 export type Context = IO & {

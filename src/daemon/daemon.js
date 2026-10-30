@@ -4,10 +4,11 @@
  */
 import fs from 'node:fs/promises';
 import net from 'node:net';
+import path from 'node:path';
 import { _converse, api, converse, log } from '@converse/headless';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
-import { getPassword } from './config.js';
+import { getGroupId, getPassword } from './config.js';
 import { createCursors } from './cursors.js';
 import { createDrafter, createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
@@ -92,7 +93,8 @@ export async function start(config) {
     await fs.chmod(paths.runtime_dir, 0o700);
     await claimPidfile(config);
     try {
-        return await serve(config);
+        const gid = await prepareRestrictedDir(config);
+        return await serve(config, gid);
     } catch (e) {
         await fs.rm(paths.pidfile, { force: true });
         throw e;
@@ -100,9 +102,51 @@ export async function start(config) {
 }
 
 /**
+ * Makes the restricted socket's directory, or takes the one the config names,
+ * and opens it to the configured group, if there is one. A directory that
+ * isn't ours, such as one another user made first in a shared place like
+ * `/tmp`, is refused rather than used.
  * @param {import('./types').Config} config
+ * @returns {Promise<number|null>} The id of the group the restricted socket is for, if any
  */
-async function serve(config) {
+async function prepareRestrictedDir({ paths, socket_group }) {
+    const dir = paths.restricted_dir;
+    await fs.mkdir(dir, { recursive: true, mode: 0o700 });
+    const stat = await fs.lstat(dir);
+    if (!stat.isDirectory() || stat.uid !== process.getuid()) {
+        throw new Error(
+            `${dir}, the restricted socket's directory, isn't a directory of the daemon's own user. ` +
+                'Remove it, or set "restricted_dir" to another path.',
+        );
+    }
+    if (socket_group === null) {
+        await fs.chmod(dir, 0o700);
+        return null;
+    }
+    const gid = await getGroupId(socket_group);
+    if (!process.getgroups().includes(gid)) {
+        throw new Error(
+            `The daemon's user isn't in the group "${socket_group}" that "socket_group" names. ` +
+                'Add it to the group (and log in again), or name another group.',
+        );
+    }
+    if (dir.startsWith(paths.runtime_dir + path.sep)) {
+        log.warn(
+            `The restricted socket's directory is inside ${paths.runtime_dir}, which only the daemon's user ` +
+                `can enter, so another user in "${socket_group}" can't reach it. Set "restricted_dir" ` +
+                'to a directory outside it.',
+        );
+    }
+    await fs.chown(dir, -1, gid);
+    await fs.chmod(dir, 0o750);
+    return gid;
+}
+
+/**
+ * @param {import('./types').Config} config
+ * @param {number|null} gid - The group the restricted socket is for, if any
+ */
+async function serve(config, gid) {
     const { paths } = config;
     const password = await getPassword(config);
     const started = new Date();
@@ -177,7 +221,7 @@ async function serve(config) {
     // Each access level has its own socket, so the level belongs to the connection.
     const servers = [
         await listen(paths.socket, onConnection('full')),
-        await listen(paths.restricted_socket, onConnection('restricted')),
+        await listen(paths.restricted_socket, onConnection('restricted'), gid),
     ];
 
     await api.user.login(`${config.jid}/${config.resource}`, password);
@@ -219,12 +263,14 @@ async function serve(config) {
 }
 
 /**
- * Listens on a unix socket, readable and writable by its owner only.
+ * Listens on a unix socket, readable and writable by its owner only, or also
+ * by the group `gid` if one is given.
  * @param {string} socket_path
  * @param {(socket: net.Socket) => void} onConnection
+ * @param {number|null} [gid]
  * @returns {Promise<net.Server>}
  */
-async function listen(socket_path, onConnection) {
+async function listen(socket_path, onConnection, gid = null) {
     const server = net.createServer(onConnection);
     // A socket file left behind by a daemon that died isn't in use: the pidfile
     // we hold says no other daemon is running.
@@ -235,7 +281,7 @@ async function listen(socket_path, onConnection) {
                 e.code === 'EINVAL'
                     ? new Error(
                           `Can't listen on ${socket_path}: the path is too long for a unix socket. ` +
-                              'Point XDG_RUNTIME_DIR at a shorter directory.',
+                              'Point XDG_RUNTIME_DIR, or "restricted_dir", at a shorter directory.',
                           { cause: e },
                       )
                     : e,
@@ -243,7 +289,12 @@ async function listen(socket_path, onConnection) {
         );
         server.listen(socket_path, () => resolve(undefined));
     });
-    await fs.chmod(socket_path, 0o600);
+    if (gid === null) {
+        await fs.chmod(socket_path, 0o600);
+    } else {
+        await fs.chown(socket_path, -1, gid);
+        await fs.chmod(socket_path, 0o660);
+    }
     return server;
 }
 
@@ -291,6 +342,7 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
                 protocol: PROTOCOL_VERSION,
                 consumer: typeof params.consumer === 'string' && params.consumer ? params.consumer : config.consumer,
                 access,
+                mode: config.mode,
                 jid: getJID(),
             };
             client.consumer = hello.consumer;

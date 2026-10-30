@@ -15,6 +15,12 @@ history or a transcript. The account comes from the config file.
 Commands connect at restricted access unless the config's `access` says
 otherwise. Restricted access is what an agent gets, and the policy applies to it.
 
+With `CONVERSE_SOCKET` set to the path of the daemon's restricted socket, the
+CLI connects to that socket, and reads no config. That is how an agent in a
+sandbox, or running as another OS user, reaches the daemon (see
+[Keep the agent away from the daemon's files](/docs/daemon/setup/#2-keep-the-agent-away-from-the-daemons-files)).
+It never starts the daemon: if none answers, a command fails with exit code 7.
+
 ## Help
 
 `converse-cli --help` gives an overview of every command, how to name people,

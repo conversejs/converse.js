@@ -38,30 +38,104 @@ round it:
 The server still stops it from sending as you, since the account is the bot's.
 But the allowlist, the drafts, the rate limits and the audit log no longer hold.
 
-So run the agent in a sandbox (for example bubblewrap, a container, or your
-agent's own sandbox) that can reach the restricted socket and nothing else of
-the daemon's:
+So give the agent the restricted socket and nothing else of the daemon's. There
+are two ways: run it in a sandbox, or run it as another OS user. Either way, the
+agent's CLI finds the socket through the `CONVERSE_SOCKET` environment variable,
+and reads no config. It can't start the daemon, because it has no password, so
+start the daemon yourself with `converse-cli daemon start`. If the daemon isn't
+running, the agent's commands fail with exit code 7, saying so.
 
-- **Mount the restricted socket only**, at the same path:
-  `$XDG_RUNTIME_DIR/converse/<jid>.restricted.sock` (a hash of the JID, for a
-  long one). Don't mount the directory, which holds the full-access socket too.
-- **Give the agent a copy of `daemon.json` without the password**, at its config
-  path inside the sandbox. The CLI reads it to find the socket.
-- **Don't mount** the daemon's own config, its state directory
-  (`~/.local/state/converse/`), or the session D-Bus, through which the keyring
-  can be asked for the password.
+The restricted socket is the file `sock` in a directory of its own, so that a
+sandbox can be given that directory alone. By default the directory is
+`$XDG_RUNTIME_DIR/converse/<jid>.restricted/` (a hash of the JID, for a long
+one). `"restricted_dir"` in the config puts it elsewhere. When the daemon
+restarts, it makes a new socket file in the same directory, so a sandbox bound
+to the directory, or another user, can carry on without being restarted. Give
+each account a directory of its own.
+
+### In a sandbox
+
+The agent runs as your OS user, inside a sandbox (for example bubblewrap, a
+container, or your agent's own sandbox) that can't see the daemon's files:
+
+- **Mount the restricted socket's directory only.** Don't mount
+  `$XDG_RUNTIME_DIR/converse/` itself, which holds the full access socket too.
+  The daemon makes the directory when it first starts, so start it once
+  before the sandbox.
+- **Set `CONVERSE_SOCKET`** to the socket's path inside the sandbox.
+- **Don't mount** the daemon's config (`~/.config/converse/`), its state
+  directory (`~/.local/state/converse/`), or the session D-Bus, through which
+  the keyring can be asked for the password.
+
+With bubblewrap, for example (the agent's own files and tools need mounting too):
+
+```sh
+restricted="$XDG_RUNTIME_DIR/converse/agent@example.org.restricted"
+bwrap \
+    --ro-bind /usr /usr --symlink usr/bin /bin --symlink usr/lib /lib \
+    --proc /proc --dev /dev --tmpfs /tmp \
+    --bind "$HOME/work" "$HOME/work" \
+    --bind "$restricted" /run/converse \
+    --setenv CONVERSE_SOCKET /run/converse/sock \
+    --unshare-all --share-net \
+    claude
+```
+
+Other options include a container (Docker or Podman, run as your own uid), or
+your agent's own built-in sandbox. Prefer one where you list what the agent
+may see, over one that starts from everything and hides what you list: a
+hidden socket file doesn't stay hidden once the daemon restarts and makes a
+new one.
+
+### As another OS user
+
+The daemon runs as one user, and the agent as another, which can't read the
+daemon user's files at all. The restricted socket is opened to a group that
+both users are in, and nothing else is:
+
+1. Create the group, and add both users to it. Each must log in again to be in
+   it.
+
+   ```sh
+   sudo groupadd converse-agents
+   sudo usermod -aG converse-agents daemonuser
+   sudo usermod -aG converse-agents agentuser
+   ```
+
+2. In the daemon user's config, name the group, and put the restricted socket
+   outside `$XDG_RUNTIME_DIR`, which only its owner can enter:
+
+   ```json
+   "socket_group": "converse-agents",
+   "restricted_dir": "/srv/converse/agent@example.org"
+   ```
+
+   The parent directory must let the agent user through. For example, make it
+   owned by the daemon user, with mode `755`:
+
+   ```sh
+   sudo install -d -o daemonuser -m 755 /srv/converse
+   ```
+
+   The daemon
+   makes `restricted_dir` itself, or takes the one there if the daemon user owns
+   it, and refuses to start on a directory it doesn't own. It makes the
+   directory `750` and the socket `660`, in the group. The full access socket,
+   the pidfile, the config and the state stay readable by the daemon user only.
+
+3. In the agent user's environment, set:
+
+   ```sh
+   export CONVERSE_SOCKET=/srv/converse/agent@example.org/sock
+   ```
+
+`socket_group` takes a group name or number. The daemon refuses to start if the
+group doesn't exist, or if its user isn't in it. Without `socket_group`, the
+restricted socket stays readable by the daemon user only.
 
 The daemon never reads a file on a client's behalf. To upload a file, the CLI
-reads it inside the sandbox and sends its contents, so the agent can only share
-files the sandbox lets it read. Mount only what you're happy for it to share.
-
-The mount is of the socket file, so when the daemon restarts and makes a new
-one, restart the sandbox too. Inside the sandbox, the CLI can't start the
-daemon, because it has no password: start it outside with
-`converse-cli daemon start`.
-
-Running the daemon as a separate OS user isn't supported yet: the daemon keeps
-its sockets private to its own user, so another user's CLI can't reach them.
+reads it and sends its contents, so the agent can only share files it can read
+itself. In a sandbox, mount only what you're happy for it to share.
 
 In the `owner_only` and `bot` modes, your own password should never be in the
 daemon's config or keyring. Only `as_user` mode uses it.
@@ -132,9 +206,11 @@ Logs and state go in `~/.local/state/converse/` (or
 - The inbox cursors, drafts and joined rooms are kept beside them, so they
   survive a restart.
 
-The socket and pidfile go in `$XDG_RUNTIME_DIR/converse/`, or, without
-`XDG_RUNTIME_DIR`, in a `converse-<uid>` directory in the system's temporary
-directory. The directory is readable only by the daemon user.
+The full access socket and the pidfile go in `$XDG_RUNTIME_DIR/converse/`, or,
+without `XDG_RUNTIME_DIR`, in a `converse-<uid>` directory in the system's
+temporary directory. The directory is readable only by the daemon user. The
+restricted socket is in a directory of its own, `<jid>.restricted/` inside it,
+unless `restricted_dir` puts it elsewhere (see step 2).
 
 ## Modes
 
@@ -197,9 +273,9 @@ config:
 "access": "full"
 ```
 
-Leave it out of the copy of `daemon.json` you give the agent's sandbox. That
-sandbox can reach only the restricted socket anyway, so full access in its copy
-would just make its commands fail.
+The agent doesn't read your config: its CLI connects to the socket that
+`CONVERSE_SOCKET` names, which is the restricted one, so it gets restricted
+access whatever your config says.
 
 ### What it risks
 

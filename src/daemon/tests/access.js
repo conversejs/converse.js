@@ -53,11 +53,18 @@ describe('Access levels', () => {
         daemon = await startDaemon();
         const full = await daemon.connect();
         const restricted = await daemon.connect({ access: 'restricted' });
-        expect(full.hello).toEqual({ protocol: PROTOCOL_VERSION, consumer: 'claude', access: 'full', jid: JID });
+        expect(full.hello).toEqual({
+            protocol: PROTOCOL_VERSION,
+            consumer: 'claude',
+            access: 'full',
+            mode: 'owner_only',
+            jid: JID,
+        });
         expect(restricted.hello).toEqual({
             protocol: PROTOCOL_VERSION,
             consumer: 'claude',
             access: 'restricted',
+            mode: 'owner_only',
             jid: JID,
         });
         full.close();

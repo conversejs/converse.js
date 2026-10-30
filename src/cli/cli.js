@@ -9,7 +9,14 @@
 import { parseArgs } from 'node:util';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { connect, DaemonUnavailableError, getConfigPath, loadConfig, stopDaemon } from '@converse/daemon/client';
+import {
+    connect,
+    DaemonUnavailableError,
+    getConfigPath,
+    getSocketFromEnv,
+    loadConfig,
+    stopDaemon,
+} from '@converse/daemon/client';
 import { ERRORS, MAX_UPLOAD_SIZE, RPCError } from '@converse/daemon/protocol';
 import pkg from './package.json' with { type: 'json' };
 import { EXIT } from './exit-codes.js';
@@ -73,7 +80,11 @@ export async function main(argv, io) {
         return EXIT.OK;
     }
     if (positionals.length === 0 || (positionals[0] === 'help' && positionals.length === 1)) {
-        io.out(overview(getConfigPath(io.env)));
+        try {
+            io.out(overview(getConfigPath(io.env), getSocketFromEnv(io.env)));
+        } catch (e) {
+            return reportError(e, io);
+        }
         return EXIT.OK;
     }
 
@@ -143,10 +154,13 @@ function reportError(e, io) {
 }
 
 /**
- * The access level the CLI connects at: restricted, unless the config says otherwise.
+ * The access level the CLI connects at: restricted, unless the config says
+ * otherwise. Given only a socket, with `CONVERSE_SOCKET`, the CLI has no
+ * config, and the level is the socket's.
  * @param {NodeJS.ProcessEnv} env
+ * @returns {import('@converse/daemon/types').Access}
  */
-const accessFor = (env) => loadConfig(env).access;
+const accessFor = (env) => (getSocketFromEnv(env) ? 'restricted' : loadConfig(env).access);
 
 /**
  * The access level to list and show drafts at: full, as drafts are the user's
@@ -155,12 +169,15 @@ const accessFor = (env) => loadConfig(env).access;
  * @returns {import('@converse/daemon/types').Access}
  */
 function draftReadAccess(env) {
+    if (getSocketFromEnv(env)) return 'restricted';
+
     const { mode, access } = loadConfig(env);
     return mode === 'as_user' ? access : 'full';
 }
 
 /**
  * Connects (starting the daemon if need be), makes one request and hangs up.
+ * Keeps the daemon's `hello` in `ctx`, for what the output depends on.
  * @param {import('./types').Context} ctx
  * @param {string} method
  * @param {Object} [params]
@@ -168,8 +185,9 @@ function draftReadAccess(env) {
  * @param {boolean} [options.spawn]
  * @param {import('@converse/daemon/types').Access} [options.access] - Defaults to the configured level
  */
-async function request({ env }, method, params, { spawn = true, access = accessFor(env) } = {}) {
-    const client = await connect({ spawn, env, access });
+async function request(ctx, method, params, { spawn = true, access = accessFor(ctx.env) } = {}) {
+    const client = await connect({ spawn, env: ctx.env, access });
+    ctx.hello = client.hello;
     try {
         return await client.request(method, params);
     } finally {
@@ -183,14 +201,14 @@ async function request({ env }, method, params, { spawn = true, access = accessF
  * @param {import('./types').Context} ctx
  * @returns {number} The exit code.
  */
-function reportSend(result, { options, out, err, env }) {
+function reportSend(result, { options, out, err, hello }) {
     if (options.json) {
         out(JSON.stringify(result) + '\n');
     } else if (result.outcome === 'sent') {
         out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
     } else if (result.outcome === 'draft') {
         out(
-            loadConfig(env).mode === 'as_user'
+            hello.mode === 'as_user'
                 ? `Drafted as ${result.draft_id}. Nothing was sent: it waits for the user to approve it.\n`
                 : `Drafted as ${result.draft_id}. Its text went to the owner, and nothing was sent.\n`,
         );

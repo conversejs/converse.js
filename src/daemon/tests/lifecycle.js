@@ -72,7 +72,13 @@ describe('The daemon', () => {
     it('completes the handshake, naming the protocol, consumer, access level and JID', async () => {
         daemon = await startDaemon();
         const client = await daemon.connect({ consumer: 'tester' });
-        expect(client.hello).toEqual({ protocol: PROTOCOL_VERSION, consumer: 'tester', access: 'full', jid: JID });
+        expect(client.hello).toEqual({
+            protocol: PROTOCOL_VERSION,
+            consumer: 'tester',
+            access: 'full',
+            mode: 'owner_only',
+            jid: JID,
+        });
         client.close();
 
         const default_client = await daemon.connect();

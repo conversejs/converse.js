@@ -84,9 +84,21 @@ export type Config = {
     allow_unencrypted_resend: boolean;
     // The group, by name or number, that may reach the restricted socket. Unset keeps it owner-only.
     socket_group: string | null;
+    // The sockets a client reaches the daemon on, when the config names them. Null for the derived ones.
+    sockets: Sockets | null;
     policy: Policy;
     settings: Record<string, unknown>; // Passed through to converse.initialize
     paths: Paths;
+};
+
+/**
+ * Sockets the config names, for a client that reaches a daemon running on
+ * another host, such as through an SSH socket forward. The daemon never
+ * listens on them, and a client never starts a daemon for them.
+ */
+export type Sockets = {
+    socket: string | null; // Full access, null if the config names only the restricted socket
+    restricted_socket: string | null; // Restricted access, null if the config names only the full one
 };
 
 export type Status = {

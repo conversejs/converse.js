@@ -59,6 +59,17 @@ describe('The daemon', () => {
         await expect(fs.stat(daemon.config.paths.pidfile)).resolves.toBeTruthy();
     });
 
+    it("refuses to start from a config that names another host's sockets", async () => {
+        daemon = await startDaemon();
+        const config = { ...daemon.config, sockets: { socket: '/tmp/tunnel/full.sock', restricted_socket: null } };
+        await expect(start(config)).rejects.toThrow(
+            `${config.paths.config} names the sockets of a daemon elsewhere ("socket" or "restricted_socket"), ` +
+                'so a daemon for it runs on that host, not here.',
+        );
+        // The refused start left the running daemon's files alone.
+        await expect(fs.stat(daemon.config.paths.pidfile)).resolves.toBeTruthy();
+    });
+
     it('replaces a stale pidfile', async () => {
         daemon = await startDaemon();
         const { config } = daemon;

@@ -5,11 +5,32 @@ export type Paths = {
     restricted_dir: string; // The restricted socket's own directory, so a sandbox can be given it alone
     restricted_socket: string; // Restricted access
     pidfile: string;
+    record: string; // The running daemon's record, under the account's name: see DaemonRecord
+    storage: string; // The headless database's directory
     log: string; // Where an auto-spawned daemon writes its output
     cursors: string; // Each consumer's read cursors
     audit: string; // Every send, draft and refusal, one JSON line each
     drafts: string; // Drafts not yet sent or withdrawn, and the id each was given
     rooms: string; // The rooms the daemon is meant to be in, and the nickname it uses in each
+};
+
+// A configured account: a file in the accounts directory.
+export type Account = {
+    name: string; // The file's name without ".json"
+    config: string; // The config file
+    default: boolean; // Whether it's used when no account is named
+};
+
+// What a running daemon leaves in the runtime directory, so that clients find it by its account's name.
+export type DaemonRecord = {
+    account: string;
+    jid: string; // The bare JID it was started with, which the config may since have changed
+    pid: number;
+    started: string; // ISO 8601
+    socket: string;
+    restricted_socket: string;
+    pidfile: string;
+    log: string;
 };
 
 /**
@@ -50,6 +71,7 @@ export type Policy = {
 };
 
 export type Config = {
+    account: string; // The account's name
     jid: string; // Bare JID of the agent's account, which is the user's own in "as_user" mode
     owner: string; // Bare JID of the user, to whom drafts are delivered. The same as jid in "as_user" mode
     password?: string; // Unset means: look in the system keyring

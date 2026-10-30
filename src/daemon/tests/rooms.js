@@ -185,7 +185,7 @@ describe('The room send policy', () => {
     const policyWith = (policy) =>
         createPolicy(
             {
-                paths: { config: 'daemon.json' },
+                paths: { config: 'default.json' },
                 policy: {
                     allow: [],
                     rooms: [GARDEN],

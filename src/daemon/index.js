@@ -16,5 +16,5 @@
  * @module @converse/daemon
  */
 export { start } from './daemon.js';
-export { getConfigPath, loadConfig } from './config.js';
+export { getConfigDir, getConfigPath, listAccounts, listDaemons, loadConfig } from './config.js';
 export { PROTOCOL_VERSION } from './protocol.js';

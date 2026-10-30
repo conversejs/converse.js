@@ -19,8 +19,8 @@ const EXIT_MEANINGS = {
     [EXIT.OK]: 'ok',
     [EXIT.ERROR]: 'error, including bad usage and access the daemon refused',
     [EXIT.TIMEOUT]: 'timed out',
-    [EXIT.NOT_FOUND]: 'no such contact, conversation or message',
-    [EXIT.AMBIGUOUS]: 'more than one match; the candidates are listed',
+    [EXIT.NOT_FOUND]: 'no such account, contact, conversation or message',
+    [EXIT.AMBIGUOUS]: 'more than one match, or several accounts and no default; the candidates are listed',
     [EXIT.REFUSED]: 'refused by send policy; nothing was sent',
     [EXIT.DRAFT]: 'drafted: nothing was sent. The text went to the owner, or in as_user waits for approval',
     [EXIT.DAEMON_UNAVAILABLE]: "daemon not running, or it couldn't be started",
@@ -45,6 +45,7 @@ const IN_CONVERSATION = ['--conversation <contact|room>', 'Look for the message 
 
 /** Options every command takes. */
 const GLOBAL_OPTIONS = [
+    ['--account <name>', 'Use this account, not the default one. CONVERSE_ACCOUNT=<name> does the same'],
     ['--json', 'Print the JSON the daemon returned instead of text: one object per line for lists'],
     ['-h, --help', 'Show this help and exit'],
 ];
@@ -396,6 +397,15 @@ export const HELP = {
         args: [['<service>', 'The MUC service, such as conference.example.org']],
         examples: ['converse-cli rooms discover conference.example.org'],
     },
+    accounts: {
+        summary: 'List the configured accounts, and which is the default',
+        description:
+            'List the configured accounts, one line per account: its name and JID, and "(default)" ' +
+            'for the one used when no account is named. Each file accounts/<name>.json is the ' +
+            'account <name>. The account "default" is the default, or without it the only account, ' +
+            'and with several there is none.',
+        examples: ['converse-cli accounts'],
+    },
     'daemon start': {
         summary: "Start the daemon if it isn't running, and show its status",
         description:
@@ -407,8 +417,11 @@ export const HELP = {
         summary: 'Show whether the daemon is connected, as which JID',
         description:
             'Show whether the daemon is connected, as which JID, its pid and for how long it has ' +
-            "been running. The JID is who you are to others. This doesn't start the daemon.",
-        examples: ['converse-cli daemon status'],
+            "been running. The JID is who you are to others. This doesn't start the daemon.\n\n" +
+            'With --all, list every running daemon instead, one line per account: its name, the JID ' +
+            'it was started as, its pid and for how long it has been running.',
+        options: [['--all', "List every account's running daemon"]],
+        examples: ['converse-cli daemon status', 'converse-cli daemon status --all'],
     },
     'daemon stop': {
         summary: 'Log out and stop the daemon',
@@ -499,10 +512,10 @@ function exitTable(codes) {
 
 /**
  * The overview, for `converse-cli --help`.
- * @param {string} config_path - Where the account is configured.
+ * @param {string} config_dir - Where the accounts are configured.
  * @param {string|null} [socket_path] - The socket `CONVERSE_SOCKET` names, if it's set
  */
-export function overview(config_path, socket_path = null) {
+export function overview(config_dir, socket_path = null) {
     const commands = Object.entries(HELP).map(([name, { args = [], summary }]) => [
         [name, ...args.map(([arg]) => arg)].join(' '),
         summary,
@@ -556,7 +569,15 @@ export function overview(config_path, socket_path = null) {
                   `CONVERSE_SOCKET points this client at the daemon's socket ${socket_path}, so it reads ` +
                       "no account config, and can't start the daemon: the user does.",
               )
-            : `The account is configured in ${config_path}.`,
+            : 'Accounts:\n' +
+              paragraphs(
+                  `The account <name> is configured in ${config_dir}/accounts/<name>.json, and the ` +
+                      `default one in ${config_dir}/accounts/default.json. Each account has a daemon of its own. ` +
+                      'Use --account <name>, or CONVERSE_ACCOUNT=<name>, to pick one, and "converse-cli ' +
+                      'accounts" to list them. An agent uses the account it was given, and never ' +
+                      'switches to another.',
+                  2,
+              ),
         `Exit codes:\n${exitTable(Object.values(EXIT))}`,
     ];
     return sections.join('\n\n') + '\n';
@@ -593,6 +614,7 @@ export const PARSE_OPTIONS = {
             options.map(([flag]) => [optionName(flag), { type: flag.includes('<') ? 'string' : 'boolean' }]),
         ),
     ),
+    account: { type: 'string' },
     json: { type: 'boolean' },
     help: { type: 'boolean', short: 'h' },
     version: { type: 'boolean', short: 'v' },
@@ -605,6 +627,6 @@ export const PARSE_OPTIONS = {
  * @returns {string[]}
  */
 export function unexpectedOptions(name, values) {
-    const taken = new Set([...(HELP[name].options ?? []).map(([flag]) => optionName(flag)), 'json', 'help']);
+    const taken = new Set([...(HELP[name].options ?? []), ...GLOBAL_OPTIONS].map(([flag]) => optionName(flag)));
     return Object.keys(values).filter((option) => !taken.has(option));
 }

@@ -4,16 +4,21 @@
  * it isn't running), makes its request, prints the result and exits.
  *
  * There are deliberately no options for credentials: they'd end up in shell
- * history and agent transcripts. The account comes from the config file.
+ * history and agent transcripts. The account comes from its config file,
+ * picked by name with `--account` or `CONVERSE_ACCOUNT`.
  */
 import { parseArgs } from 'node:util';
+import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {
+    AccountError,
     connect,
     DaemonUnavailableError,
-    getConfigPath,
+    getConfigDir,
     getSocketFromEnv,
+    listAccounts,
+    listDaemons,
     loadConfig,
     stopDaemon,
 } from '@converse/daemon/client';
@@ -74,6 +79,8 @@ export async function main(argv, io) {
         return EXIT.ERROR;
     }
     const { values, positionals } = parsed;
+    // The account goes to the daemon this starts, too.
+    if (values.account !== undefined) io = { ...io, env: { ...io.env, CONVERSE_ACCOUNT: values.account } };
 
     if (values.version) {
         io.out(`${pkg.version}\n`);
@@ -81,7 +88,7 @@ export async function main(argv, io) {
     }
     if (positionals.length === 0 || (positionals[0] === 'help' && positionals.length === 1)) {
         try {
-            io.out(overview(getConfigPath(io.env), getSocketFromEnv(io.env)));
+            io.out(overview(getConfigDir(io.env), getSocketFromEnv(io.env)));
         } catch (e) {
             return reportError(e, io);
         }
@@ -144,6 +151,10 @@ function reportError(e, io) {
         return EXIT.ERROR;
     }
     io.err(`converse-cli: ${e.message}\n`);
+    if (e instanceof AccountError) {
+        e.candidates.forEach((c) => io.err(`  ${c}\n`));
+        return e.reason === 'ambiguous' ? EXIT.AMBIGUOUS : EXIT.NOT_FOUND;
+    }
     if (e instanceof RPCError) {
         /** @type {string[]} */
         const candidates = e.data?.candidates ?? [];
@@ -661,8 +672,21 @@ const COMMANDS = {
         return EXIT.OK;
     },
 
+    accounts: ({ options, out, err, env }) => {
+        const accounts = listAccounts(env).map((account) => ({ ...account, jid: readJID(account.config) }));
+        if (options.json) {
+            accounts.forEach((a) => out(JSON.stringify(a) + '\n'));
+        } else if (accounts.length) {
+            accounts.forEach((a) =>
+                out(`${a.name}  ${a.jid ?? '(no valid "jid")'}${a.default ? '  (default)' : ''}\n`),
+            );
+        } else {
+            err(`No account is configured in ${getConfigDir(env)}.\n`);
+        }
+        return EXIT.OK;
+    },
     'daemon start': (ctx) => printStatus(ctx, true),
-    'daemon status': (ctx) => printStatus(ctx, false),
+    'daemon status': (ctx) => (ctx.options.all ? printAllStatuses(ctx) : printStatus(ctx, false)),
     'daemon stop': async ({ options, out, env }) => {
         const was_running = await stopDaemon({ env });
         if (options.json) {
@@ -710,6 +734,43 @@ async function printStatus(ctx, spawn) {
         ctx.out(`${state}, pid ${status.pid}, up ${formatDuration(status.uptime)}\n`);
     }
     return EXIT.OK;
+}
+
+/**
+ * Lists the running daemons, of every account, from the records they leave.
+ * @param {import('./types').Context} ctx
+ */
+function printAllStatuses({ options, out, err, env }) {
+    const daemons = listDaemons(env).map(({ account, jid, pid, started }) => ({
+        account,
+        jid,
+        pid,
+        started,
+        uptime: Math.floor((Date.now() - Date.parse(started)) / 1000),
+    }));
+    if (options.json) {
+        daemons.forEach((d) => out(JSON.stringify(d) + '\n'));
+    } else if (daemons.length) {
+        daemons.forEach((d) => out(`${d.account}  ${d.jid}  pid ${d.pid}  up ${formatDuration(d.uptime)}\n`));
+    } else {
+        err('No daemon is running.\n');
+    }
+    return EXIT.OK;
+}
+
+/**
+ * The JID an account's config file names, for listing it. Null if the file
+ * can't be read or names none.
+ * @param {string} config_path
+ * @returns {string|null}
+ */
+function readJID(config_path) {
+    try {
+        const { jid } = JSON.parse(fsSync.readFileSync(config_path, 'utf8'));
+        return typeof jid === 'string' ? jid.trim().toLowerCase() : null;
+    } catch {
+        return null;
+    }
 }
 
 /**

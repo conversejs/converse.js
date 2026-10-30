@@ -67,9 +67,9 @@ export async function startDaemon(
         XDG_RUNTIME_DIR: path.join(dir, 'run'),
         XDG_STATE_HOME: path.join(dir, 'state'),
     };
-    await fs.mkdir(path.join(env.XDG_CONFIG_HOME, 'converse'), { recursive: true });
+    await fs.mkdir(path.join(env.XDG_CONFIG_HOME, 'converse', 'accounts'), { recursive: true });
     await fs.writeFile(
-        path.join(env.XDG_CONFIG_HOME, 'converse', 'daemon.json'),
+        path.join(env.XDG_CONFIG_HOME, 'converse', 'accounts', 'default.json'),
         JSON.stringify({
             jid: account.jid,
             owner,

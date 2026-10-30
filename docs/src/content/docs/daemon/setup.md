@@ -142,9 +142,11 @@ daemon's config or keyring. Only `as_user` mode uses it.
 
 ## 3. Write the config
 
-The config is `~/.config/converse/daemon.json` in the daemon user's home, or
-`$XDG_CONFIG_HOME/converse/daemon.json` when `XDG_CONFIG_HOME` is set.
-`converse-cli --help` prints the path it uses.
+The config is `~/.config/converse/accounts/default.json` in the daemon user's
+home, or `$XDG_CONFIG_HOME/converse/accounts/default.json` when
+`XDG_CONFIG_HOME` is set.
+`converse-cli --help` prints the path it uses. To configure more than one
+account, see [Several accounts](#several-accounts).
 
 ```json
 {
@@ -193,6 +195,40 @@ The config is `~/.config/converse/daemon.json` in the daemon user's home, or
   security add-generic-password -s converse -a agent@example.org -w
   ```
 
+## Several accounts
+
+Each account has a config file and a daemon of its own. An account is a file in
+the `accounts` directory, in the same format, named after the account:
+
+```
+~/.config/converse/accounts/default.json   the account "default"
+~/.config/converse/accounts/juliet.json    the account "juliet"
+~/.config/converse/accounts/nurse.json     the account "nurse"
+```
+
+Pick an account with `--account <name>`, or by setting `CONVERSE_ACCOUNT=<name>`.
+The option wins over the variable. Without either, the CLI uses the default
+account: `default` if it exists, otherwise the only account there is. With
+several accounts and no `default`, there is no default, and the CLI lists the
+accounts and asks you to pick one. A name that isn't configured fails with exit
+code 3, listing the accounts there are.
+
+```sh
+converse-cli accounts                         # the accounts, and which is the default
+converse-cli --account juliet inbox           # Juliet's inbox, from her daemon
+CONVERSE_ACCOUNT=nurse converse-cli inbox     # the same, for the nurse
+converse-cli daemon status --all              # every running daemon
+```
+
+This is how several agents run side by side, each with its own JID, so that they
+can message one another directly or meet in a room: give each agent its own
+account, and set `CONVERSE_ACCOUNT` in its environment. An agent given only a
+socket, with `CONVERSE_SOCKET`, needs no account name.
+
+The CLI finds a running daemon by its account's name. So if you change an
+account's `jid` while its daemon runs, `converse-cli --account <name> daemon
+stop` still stops it, and the next command starts a daemon with the new JID.
+
 ## Where the daemon keeps its files
 
 Logs and state go in `~/.local/state/converse/` (or
@@ -205,6 +241,9 @@ Logs and state go in `~/.local/state/converse/` (or
   agent sent.
 - The inbox cursors, drafts and joined rooms are kept beside them, so they
   survive a restart.
+- The account's database (its roster, message history and OMEMO keys) is in
+  `accounts/<name>/`, so that daemons running side by side never share one. The settings'
+  `storage_path` puts it elsewhere.
 
 The full access socket and the pidfile go in `$XDG_RUNTIME_DIR/converse/`, or,
 without `XDG_RUNTIME_DIR`, in a `converse-<uid>` directory in the system's

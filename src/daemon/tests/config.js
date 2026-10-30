@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { getPassword, loadConfig } from '../config.js';
+import { AccountError, getPassword, listAccounts, loadConfig } from '../config.js';
 
 describe('The account configuration', () => {
     let dir, env;
@@ -14,7 +14,7 @@ describe('The account configuration', () => {
      */
     const writeConfig = (config) =>
         fs.writeFile(
-            path.join(dir, 'converse', 'daemon.json'),
+            path.join(dir, 'converse', 'accounts', 'default.json'),
             JSON.stringify({ owner: 'benvolio@montague.lit', ...config }),
         );
 
@@ -36,7 +36,7 @@ describe('The account configuration', () => {
 
     beforeEach(async () => {
         dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-config-test-'));
-        await fs.mkdir(path.join(dir, 'converse'));
+        await fs.mkdir(path.join(dir, 'converse', 'accounts'), { recursive: true });
         env = { XDG_CONFIG_HOME: dir, XDG_RUNTIME_DIR: path.join(dir, 'run'), PATH: '' };
     });
 
@@ -45,6 +45,7 @@ describe('The account configuration', () => {
     it('fills in defaults and derives the per-account paths', async () => {
         await writeConfig({ jid: ' Romeo@Montague.lit ', websocket_url: 'wss://montague.lit/ws' });
         expect(loadConfig(env)).toEqual({
+            account: 'default',
             jid: 'romeo@montague.lit',
             owner: 'benvolio@montague.lit',
             password: undefined,
@@ -64,12 +65,14 @@ describe('The account configuration', () => {
             },
             settings: {},
             paths: {
-                config: path.join(dir, 'converse', 'daemon.json'),
+                config: path.join(dir, 'converse', 'accounts', 'default.json'),
                 runtime_dir: path.join(dir, 'run', 'converse'),
                 socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.sock'),
                 restricted_dir: path.join(dir, 'run', 'converse', 'romeo@montague.lit.restricted'),
                 restricted_socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.restricted', 'sock'),
                 pidfile: path.join(dir, 'run', 'converse', 'romeo@montague.lit.pid'),
+                record: path.join(dir, 'run', 'converse', 'accounts', 'default.json'),
+                storage: expect.stringMatching(/\/converse\/accounts\/default$/),
                 log: expect.stringMatching(/\/converse\/romeo@montague\.lit\.log$/),
                 cursors: expect.stringMatching(/\/converse\/romeo@montague\.lit\.cursors\.json$/),
                 audit: expect.stringMatching(/\/converse\/romeo@montague\.lit\.audit\.jsonl$/),
@@ -133,7 +136,7 @@ describe('The account configuration', () => {
         it('refuses an owner that is another account, since the agent acts as the owner', async () => {
             await writeConfig({ jid: 'romeo@montague.lit', owner: 'benvolio@montague.lit', mode: 'as_user' });
             expect(() => loadConfig(env)).toThrow(
-                `"owner" in ${path.join(dir, 'converse', 'daemon.json')} must be the same account as "jid" ` +
+                `"owner" in ${path.join(dir, 'converse', 'accounts', 'default.json')} must be the same account as "jid" ` +
                     'in "as_user" mode',
             );
         });
@@ -146,7 +149,7 @@ describe('The account configuration', () => {
                 policy: { direct: ['juliet@capulet.lit'] },
             });
             expect(() => loadConfig(env)).toThrow(
-                `"policy.direct" in ${path.join(dir, 'converse', 'daemon.json')} can't be used in "as_user" mode`,
+                `"policy.direct" in ${path.join(dir, 'converse', 'accounts', 'default.json')} can't be used in "as_user" mode`,
             );
             await writeConfig({
                 jid: 'romeo@montague.lit',
@@ -161,7 +164,9 @@ describe('The account configuration', () => {
     it('refuses a mode it does not know, and names the ones it does', async () => {
         await writeConfig({ jid: 'romeo@montague.lit', mode: 'root' });
         expect(() => loadConfig(env)).toThrow(
-            '"mode" in ' + path.join(dir, 'converse', 'daemon.json') + ' must be one of: owner_only, bot, as_user.',
+            '"mode" in ' +
+                path.join(dir, 'converse', 'accounts', 'default.json') +
+                ' must be one of: owner_only, bot, as_user.',
         );
     });
 
@@ -172,7 +177,9 @@ describe('The account configuration', () => {
         expect(loadConfig(env).allow_unencrypted_resend).toBe(true);
         await writeConfig({ jid: 'romeo@montague.lit', allow_unencrypted_resend: 'yes' });
         expect(() => loadConfig(env)).toThrow(
-            '"allow_unencrypted_resend" in ' + path.join(dir, 'converse', 'daemon.json') + ' must be true or false.',
+            '"allow_unencrypted_resend" in ' +
+                path.join(dir, 'converse', 'accounts', 'default.json') +
+                ' must be true or false.',
         );
     });
 
@@ -253,5 +260,97 @@ describe('The account configuration', () => {
         await expect(getPassword(loadConfig(env), env)).rejects.toThrow(
             /^No password for romeo@montague\.lit\. Store one in the system keyring with "(secret-tool|security) /,
         );
+    });
+});
+
+describe('Account selection', () => {
+    let dir, env;
+
+    /**
+     * Writes an account's config, accounts/<name>.json.
+     * @param {string} name
+     * @param {string} jid
+     */
+    async function writeAccount(name, jid) {
+        const file = path.join(dir, 'converse', 'accounts', `${name}.json`);
+        await fs.mkdir(path.dirname(file), { recursive: true });
+        await fs.writeFile(file, JSON.stringify({ jid, owner: 'benvolio@montague.lit' }));
+    }
+
+    /**
+     * @param {() => unknown} fn
+     * @returns {any} What `fn` threw
+     */
+    function thrown(fn) {
+        try {
+            fn();
+        } catch (e) {
+            return e;
+        }
+        throw new Error('Nothing was thrown');
+    }
+
+    beforeEach(async () => {
+        dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-accounts-test-'));
+        env = {
+            XDG_CONFIG_HOME: dir,
+            XDG_RUNTIME_DIR: path.join(dir, 'run'),
+            XDG_STATE_HOME: path.join(dir, 'state'),
+        };
+    });
+
+    afterEach(() => fs.rm(dir, { recursive: true, force: true }));
+
+    it('uses the account "default" when none is named, beside the named ones', async () => {
+        await writeAccount('default', 'romeo@montague.lit');
+        await writeAccount('juliet', 'juliet@capulet.lit');
+        expect(listAccounts(env)).toEqual([
+            { name: 'default', config: path.join(dir, 'converse', 'accounts', 'default.json'), default: true },
+            { name: 'juliet', config: path.join(dir, 'converse', 'accounts', 'juliet.json'), default: false },
+        ]);
+        expect(loadConfig(env)).toMatchObject({ account: 'default', jid: 'romeo@montague.lit' });
+        expect(loadConfig({ ...env, CONVERSE_ACCOUNT: 'juliet' })).toMatchObject({
+            account: 'juliet',
+            jid: 'juliet@capulet.lit',
+        });
+        expect(loadConfig({ ...env, CONVERSE_ACCOUNT: 'default' }).account).toBe('default');
+    });
+
+    it('uses the only account as the default when there is no account "default"', async () => {
+        await writeAccount('juliet', 'juliet@capulet.lit');
+        expect(listAccounts(env)).toEqual([expect.objectContaining({ name: 'juliet', default: true })]);
+        expect(loadConfig(env).jid).toBe('juliet@capulet.lit');
+    });
+
+    it('lists the accounts when there are several and none is the default', async () => {
+        await writeAccount('juliet', 'juliet@capulet.lit');
+        await writeAccount('nurse', 'nurse@capulet.lit');
+        expect(listAccounts(env).some((a) => a.default)).toBe(false);
+        const error = thrown(() => loadConfig(env));
+        expect(error).toBeInstanceOf(AccountError);
+        expect(error.message).toBe(
+            'Several accounts are configured, and none is the default. Pick one of these with ' +
+                '--account <name>, or CONVERSE_ACCOUNT=<name>.',
+        );
+        expect(error.reason).toBe('ambiguous');
+        expect(error.candidates).toEqual(['juliet', 'nurse']);
+    });
+
+    it('fails on an account that is not configured, listing those that are', async () => {
+        await writeAccount('default', 'romeo@montague.lit');
+        await writeAccount('juliet', 'juliet@capulet.lit');
+        const error = thrown(() => loadConfig({ ...env, CONVERSE_ACCOUNT: 'tybalt' }));
+        expect(error).toBeInstanceOf(AccountError);
+        expect(error.message).toMatch(/^No account is called "tybalt"\. /);
+        expect(error.reason).toBe('not_found');
+        expect(error.candidates).toEqual(['default', 'juliet']);
+    });
+
+    it("keeps each account's database in a directory of its own", async () => {
+        await writeAccount('default', 'romeo@montague.lit');
+        await writeAccount('juliet', 'juliet@capulet.lit');
+        const storage = (name) => loadConfig({ ...env, CONVERSE_ACCOUNT: name }).paths.storage;
+        expect(storage('default')).toBe(path.join(dir, 'state', 'converse', 'accounts', 'default'));
+        expect(storage('juliet')).toBe(path.join(dir, 'state', 'converse', 'accounts', 'juliet'));
     });
 });

@@ -280,3 +280,80 @@ describe('A received presence stanza', function () {
         }),
     );
 });
+
+describe("A contact's cached presence", function () {
+    it(
+        'goes offline on an unavailable presence when none of its resources were cached',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current');
+
+            const [lost_jid, kept_jid] = [mock.cur_names[0], mock.cur_names[1]].map(
+                (name) => name.replace(/ /g, '.').toLowerCase() + '@montague.lit',
+            );
+
+            // One contact is cached as online without any resources, as
+            // when the resources' store was lost. The other really is online.
+            const lost = await api.contacts.get(lost_jid);
+            await lost.presence.save({ presence: 'online', show: 'dnd' }, { promise: true });
+
+            api.connection
+                .get()
+                ._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${kept_jid}/phone"/>`,
+                    ),
+                );
+            const kept = await api.contacts.get(kept_jid);
+            const resource = await u.waitUntil(() => kept.presence.resources.get('phone'));
+            await resource.save(null, { promise: true });
+            await kept.presence.save(null, { promise: true });
+
+            // The page reloads.
+            const vcard_get = api.vcard.get;
+            await converse.initialize({
+                auto_login: false,
+                bosh_service_url: 'montague.lit/http-bind',
+                discover_connection_methods: false,
+                enable_smacks: false,
+                i18n: 'en',
+                loglevel: 'error',
+                no_trimming: true,
+                persistent_store: 'localStorage',
+            });
+            api.vcard.get = vcard_get;
+            await api.user.login('romeo@montague.lit/orchard', 'secret');
+            await api.waitUntil('rosterContactsFetched');
+
+            // Without any presence telling us otherwise, the cached status stands.
+            const reloaded_lost = await api.contacts.get(lost_jid);
+            expect(reloaded_lost).not.toBe(lost);
+            await reloaded_lost.presence.resources.hydrated;
+            expect(reloaded_lost.presence.resources.length).toBe(0);
+            expect(reloaded_lost.getStatus()).toBe('dnd');
+
+            const reloaded_kept = await api.contacts.get(kept_jid);
+            await reloaded_kept.presence.resources.hydrated;
+            expect(reloaded_kept.presence.resources.get('phone')).toBeDefined();
+            expect(reloaded_kept.getStatus()).toBe('online');
+
+            // An unknown resource goes offline. The contact without any
+            // resources goes offline with it, the one with a known
+            // resource stays online.
+            for (const jid of [lost_jid, kept_jid]) {
+                api.connection
+                    .get()
+                    ._dataRecv(
+                        mock.createRequest(
+                            _converse,
+                            stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard"
+                                    from="${jid}/laptop" type="unavailable"/>`,
+                        ),
+                    );
+            }
+            await u.waitUntil(() => reloaded_lost.getStatus() === 'offline');
+            expect(reloaded_kept.getStatus()).toBe('online');
+        }),
+    );
+});

@@ -73,7 +73,15 @@ class Presence extends Model {
      */
     removeResource({ resource: name }) {
         const resource = this.resources.get(name);
-        resource?.destroy();
+        if (resource) {
+            resource.destroy();
+        } else {
+            // A cached status can outlive the resources that backed it, for
+            // example when their store was lost, so have it recomputed as
+            // if a resource had been removed.
+            const changes = { added: [], merged: [], removed: [] };
+            this.resources.trigger('update', this.resources, { changes });
+        }
     }
 }
 

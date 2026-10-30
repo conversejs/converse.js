@@ -20,6 +20,7 @@ export type Options = {
 export type Context = IO & {
     args: string[]; // The positionals after the command's name
     options: Options;
+    hello?: import('@converse/daemon/types').Hello; // The daemon's, once a request has connected
 };
 
 // How the help describes a command.

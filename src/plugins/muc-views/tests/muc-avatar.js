@@ -125,6 +125,9 @@ describe('Groupchats', () => {
                     expect(els[1].querySelector('converse-texture').textContent.trim()).toBe(
                         'xmpp:coven@chat.shakespeare.lit?join',
                     );
+                    expect(els[1].querySelector('converse-copy-button').text).toBe(
+                        'xmpp:coven@chat.shakespeare.lit?join',
+                    );
                     expect(els[2].querySelector('strong').textContent).toBe('Description:');
                     expect(els[2].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
 

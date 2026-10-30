@@ -26,6 +26,8 @@ export default (model) => {
     const num_occupants = model.occupants.filter((o) => o.get('show') !== 'offline').length;
 
     const i18n_address =  __('XMPP address');
+    const i18n_copy_address = __('Copy address to clipboard');
+    const join_uri = `xmpp:${model.get('jid')}?join`;
     const i18n_archiving = __('Message archiving');
     const i18n_archiving_help = __('Messages are archived on the server');
     const i18n_desc = __('Description');
@@ -66,7 +68,8 @@ export default (model) => {
                 height="72" width="72"></converse-avatar>
 
             <p class="room-info"><strong>${i18n_name}:</strong> ${model.get('name')}</p>
-            <p class="room-info"><strong>${i18n_address}:</strong> <converse-texture text="xmpp:${model.get('jid')}?join"></converse-texture></p>
+            <p class="room-info"><strong>${i18n_address}:</strong> <converse-texture text="${join_uri}"></converse-texture>
+                <converse-copy-button .text=${join_uri} label="${i18n_copy_address}"></converse-copy-button></p>
             <br/>
             <p class="room-info"><strong>${i18n_desc}:</strong> <converse-texture text="${config.description}" render_styling></converse-texture></p>
             ${ (model.get('subject')) ? subject(model) : '' }

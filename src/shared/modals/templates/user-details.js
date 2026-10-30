@@ -160,6 +160,7 @@ export function tplUserDetailsModal(el) {
     );
 
     const i18n_address = __('XMPP Address');
+    const i18n_copy_address = __('Copy address to clipboard');
     const i18n_email = __('Email');
     const i18n_full_name = __('Full Name');
     const i18n_nickname = __('Nickname');
@@ -255,7 +256,10 @@ export function tplUserDetailsModal(el) {
                     : ''}
                 <div class="row mb-2">
                     <div class="col-sm-4"><label>${i18n_address}:</label></div>
-                    <div class="col-sm-8"><a href="xmpp:${o.jid}">${o.jid}</a></div>
+                    <div class="col-sm-8 d-flex align-items-center gap-1">
+                        <span class="text-break">${o.jid}</span>
+                        <converse-copy-button .text=${o.jid} label="${i18n_copy_address}"></converse-copy-button>
+                    </div>
                 </div>
 
                 ${contact

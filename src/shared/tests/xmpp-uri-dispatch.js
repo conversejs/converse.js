@@ -258,4 +258,23 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
             expect(_converse.chatboxes.get('montague.lit')).toBeUndefined();
         }),
     );
+
+    it(
+        'handles an https invitation link in-app, as the xmpp: URI it wraps',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const ev = await clickLinkifiedURI(_converse, 'https://xmpp.link/#mercutio@montague.lit');
+            expect(ev.defaultPrevented).toBe(true);
+            await u.waitUntil(() => _converse.chatboxes.get('mercutio@montague.lit'));
+            expect(_converse.chatboxes.get('mercutio@montague.lit')).toBeDefined();
+        }),
+    );
+
+    it(
+        'leaves an invitation link it cannot act on to the browser',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            // A domain-only JID, which Converse can't open a chat with.
+            const ev = await clickLinkifiedURI(_converse, 'https://xmpp.link/#montague.lit');
+            expect(ev.defaultPrevented).toBe(false);
+        }),
+    );
 });

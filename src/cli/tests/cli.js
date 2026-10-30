@@ -42,7 +42,7 @@ describe('converse-cli', () => {
         const { code, stdout } = await run(account.env);
         expect(code).toBe(EXIT.OK);
         expect(stdout).toMatch(/^Usage: converse-cli <command>/);
-        expect(stdout).toContain(`${account.env.XDG_CONFIG_HOME}/converse/daemon.json`);
+        expect(stdout).toContain(`${account.env.XDG_CONFIG_HOME}/converse/accounts/default.json`);
     });
 
     it("documents every command's arguments, options, exit codes and examples", async () => {
@@ -117,7 +117,7 @@ describe('converse-cli', () => {
         const env = { ...account.env, XDG_CONFIG_HOME: `${account.env.XDG_CONFIG_HOME}/nowhere` };
         const { code, stderr } = await run(env, 'daemon', 'start');
         expect(code).toBe(EXIT.ERROR);
-        expect(stderr).toContain(`No account configured. Create ${env.XDG_CONFIG_HOME}/converse/daemon.json`);
+        expect(stderr).toContain(`No account configured. Create ${env.XDG_CONFIG_HOME}/converse/accounts/default.json`);
     });
 
     it('starts the daemon on demand, reports its status and stops it', async () => {

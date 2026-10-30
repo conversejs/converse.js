@@ -264,7 +264,7 @@ describe('A received presence stanza', function () {
             expect(resource.get('caps')).toEqual(caps);
             // ...from a store distinct from the disco entity's identities store,
             // which would otherwise collide on the contact's bare JID.
-            expect(contact.presence.resources.storage.name).toBe(`converse.resources-${contact_jid}`);
+            expect(contact.presence.resources.storage.name).toBe(`converse.resources-romeo@montague.lit-${contact_jid}`);
         }),
     );
 });

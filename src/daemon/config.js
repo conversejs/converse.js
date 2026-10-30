@@ -15,6 +15,7 @@ const DEFAULT_CONSUMER = 'claude';
 const ACCESS_LEVELS = ['restricted', 'full'];
 const MODES = ['owner_only', 'bot', 'as_user'];
 const BARE_JID = /^[^@/\s]+@[^@/\s]+$/;
+const GROUP_ID = /^\s*\d+\s*$/;
 
 /**
  * Agents get restricted access and may send to nobody until the user lists
@@ -100,6 +101,16 @@ export function loadConfig(env = process.env) {
         throw new Error(`"owner" in ${config_path} must be a different account from "jid", the agent's own.`);
     }
 
+    // A group id may be given as a number or a string of digits.
+    const socket_group = Number.isInteger(raw.socket_group) ? String(raw.socket_group) : (raw.socket_group ?? null);
+    if (socket_group !== null && !(typeof socket_group === 'string' && socket_group.trim())) {
+        throw new Error(`"socket_group" in ${config_path} must be the name or number of a group you're in.`);
+    }
+    const restricted_dir = raw.restricted_dir ?? null;
+    if (restricted_dir !== null && !(typeof restricted_dir === 'string' && path.isAbsolute(restricted_dir))) {
+        throw new Error(`"restricted_dir" in ${config_path} must be an absolute path.`);
+    }
+
     const allow_unencrypted_resend = raw.allow_unencrypted_resend ?? false;
     if (typeof allow_unencrypted_resend !== 'boolean') {
         throw new Error(`"allow_unencrypted_resend" in ${config_path} must be true or false.`);
@@ -116,9 +127,10 @@ export function loadConfig(env = process.env) {
         access,
         mode,
         allow_unencrypted_resend,
+        socket_group: socket_group?.trim() ?? null,
         policy: parsePolicy(raw.policy, config_path, mode),
         settings: raw.settings ?? {},
-        paths: getPaths(jid, env),
+        paths: getPaths(jid, env, restricted_dir),
     };
 }
 
@@ -169,27 +181,32 @@ function parsePolicy(raw, config_path, mode) {
 }
 
 /**
- * The runtime directory holds the socket and pidfile, one pair per account.
- * It's created owner-only, which is what keeps other local users off the
- * socket.
+ * The runtime directory holds the full access socket and the pidfile, one pair
+ * per account. It's created owner-only, which is what keeps other local users
+ * off the full access socket. The restricted socket is in a directory of its
+ * own, inside the runtime directory unless the config puts it elsewhere, so
+ * that a sandbox can be given that directory alone.
  * @param {string} jid
  * @param {NodeJS.ProcessEnv} env
+ * @param {string|null} restricted_dir - The directory the config names for the restricted socket, if any
  * @returns {import('./types').Paths}
  */
-function getPaths(jid, env) {
+function getPaths(jid, env, restricted_dir) {
     const runtime_dir = env.XDG_RUNTIME_DIR
         ? path.join(env.XDG_RUNTIME_DIR, 'converse')
         : path.join(os.tmpdir(), `converse-${process.getuid()}`);
     const state_home = env.XDG_STATE_HOME || path.join(os.homedir(), '.local', 'state');
     // A unix socket's path can't be longer than about 104 bytes (108 on Linux,
     // less the terminator), so a long JID gets a hash of it instead.
-    const fits = Buffer.byteLength(path.join(runtime_dir, `${jid}.restricted.sock`)) <= MAX_SOCKET_PATH;
+    const fits = Buffer.byteLength(path.join(runtime_dir, `${jid}.restricted`, 'sock')) <= MAX_SOCKET_PATH;
     const name = fits ? jid : crypto.createHash('sha256').update(jid).digest('hex').slice(0, 16);
+    restricted_dir ??= path.join(runtime_dir, `${name}.restricted`);
     return {
         config: getConfigPath(env),
         runtime_dir,
         socket: path.join(runtime_dir, `${name}.sock`),
-        restricted_socket: path.join(runtime_dir, `${name}.restricted.sock`),
+        restricted_dir,
+        restricted_socket: path.join(restricted_dir, 'sock'),
         pidfile: path.join(runtime_dir, `${name}.pid`),
         log: path.join(state_home, 'converse', `${jid}.log`),
         cursors: path.join(state_home, 'converse', `${name}.cursors.json`),
@@ -197,6 +214,52 @@ function getPaths(jid, env) {
         drafts: path.join(state_home, 'converse', `${name}.drafts.json`),
         rooms: path.join(state_home, 'converse', `${name}.rooms.json`),
     };
+}
+
+/**
+ * The restricted socket a client was pointed at with `CONVERSE_SOCKET`, for a
+ * client without the account's config, such as an agent in a sandbox or
+ * running as another OS user.
+ * @param {NodeJS.ProcessEnv} [env]
+ * @returns {string|null}
+ */
+export function getSocketFromEnv(env = process.env) {
+    const socket = env.CONVERSE_SOCKET;
+    if (!socket) return null;
+
+    if (!path.isAbsolute(socket)) {
+        throw new Error(
+            `CONVERSE_SOCKET must be the absolute path of the daemon's restricted socket, not "${socket}".`,
+        );
+    }
+    return socket;
+}
+
+/**
+ * The id of the group the config's `socket_group` names: a number as is, a
+ * name looked up in the system's group database.
+ * @param {string} group
+ * @returns {Promise<number>}
+ */
+export async function getGroupId(group) {
+    if (GROUP_ID.test(group)) return Number(group);
+
+    const [cmd, args] =
+        process.platform === 'darwin'
+            ? ['dscl', ['.', '-read', `/Groups/${group}`, 'PrimaryGroupID']]
+            : ['getent', ['group', group]];
+    let stdout = '';
+    try {
+        ({ stdout } = await promisify(execFile)(cmd, args));
+    } catch {
+        // No such group: the error below.
+    }
+    // getent prints "name:x:gid:members", dscl "PrimaryGroupID: gid".
+    const gid = process.platform === 'darwin' ? stdout.split(':')[1] : stdout.split(':')[2];
+    if (!GROUP_ID.test(gid ?? '')) {
+        throw new Error(`"socket_group" names the group "${group}", which doesn't exist.`);
+    }
+    return Number(gid);
 }
 
 /**

@@ -36,6 +36,8 @@ export { JID };
  * @param {string} [options.owner] - The owner's bare JID, from the config file. Defaults to Benvolio.
  * @param {{ jid: string, nick: string }[]} [options.rooms] - The rooms stored from an earlier run, to rejoin
  * @param {import('../types').Access} [options.access] - The level the CLI connects at
+ * @param {string} [options.socket_group] - The group that may reach the restricted socket, from the config file
+ * @param {string} [options.restricted_dir] - Where the restricted socket goes, from the config file
  */
 export async function startDaemon({
     roster = [],
@@ -51,6 +53,8 @@ export async function startDaemon({
     rooms,
     access,
     allow_unencrypted_resend,
+    socket_group,
+    restricted_dir,
 } = {}) {
     const { env, remove } = await createAccount(settings, {
         ...(policy ? { policy } : {}),
@@ -58,6 +62,8 @@ export async function startDaemon({
         ...(owner ? { owner } : {}),
         ...(access ? { access } : {}),
         ...(allow_unencrypted_resend !== undefined ? { allow_unencrypted_resend } : {}),
+        ...(socket_group ? { socket_group } : {}),
+        ...(restricted_dir ? { restricted_dir } : {}),
     });
     const config = loadConfig(env);
     if (rooms) {

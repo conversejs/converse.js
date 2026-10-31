@@ -11,6 +11,8 @@
 - fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
 - #194: Full support for XEP-0115: Entity capabilities.
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
+- With `enable_url_routing` on, an `xmpp:` link handed over by the browser now opens its chat or
+  groupchat, also when it arrives before login.
 - Invitation links from other clients (xmpp.link, i.kaidan.im, invite.joinjabber.org and
   conversations.im) open the chat or groupchat in Converse instead of the invitation page.
 - Opening a groupchat from an `xmpp:` or invitation link asks for confirmation first.

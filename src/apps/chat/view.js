@@ -165,11 +165,11 @@ class ChatApp extends CustomElement {
         if (!this.router.enabled || api.settings.get('view_mode') !== 'fullscreen') return;
         if (this._applying_route) return;
 
-        // Never clobber another app's route (e.g. `#converse/social` during the
-        // boot window before the app-switcher makes the Chat app inactive and
-        // unmounts us). Only own an empty/root hash or an existing chat/room one.
-        const owner = appOfHash(location.hash);
-        if (owner && owner !== 'chat') return;
+        // Only own an empty hash or an existing chat/room one. Anything else is
+        // someone else's: another app's route (e.g. `#converse/social` during
+        // the boot window before the app-switcher unmounts us), or an `xmpp:`
+        // action or shareable link still waiting for login to be handled.
+        if (location.hash && appOfHash(location.hash) !== 'chat') return;
 
         const hash = buildChatRoute(this.currentForegroundRoute());
         if (!hash || hash === location.hash) return;

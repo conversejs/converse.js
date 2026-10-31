@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import net from 'node:net';
 import readline from 'node:readline';
 import { afterEach, describe, expect, it } from 'vitest';
+import { checkMethodAccess, mayCall } from '../access.js';
 import { ERRORS, PROTOCOL_VERSION } from '../protocol.js';
 import { JID, startDaemon } from './harness.js';
 
@@ -114,5 +115,25 @@ describe('Access levels', () => {
         const byId = Object.fromEntries(responses.map((r) => [r.id, r]));
         expect(byId[2]).toMatchObject({ error: { code: ERRORS.ACCESS_DENIED } });
         expect(byId[3]).toMatchObject({ result: { connected: true } });
+    });
+
+    it('refuses to start serving a method that has no access level listed', () => {
+        expect(() => checkMethodAccess(['contacts.list', 'contacts.remove', 'rooms.destroy'])).toThrow(
+            'No access level is listed for contacts.remove, rooms.destroy.',
+        );
+        expect(() => checkMethodAccess(['contacts.list', 'daemon.stop'])).not.toThrow();
+    });
+
+    it('lets restricted access call only what is listed for it, and nothing that is not listed', () => {
+        for (const mode of ['owner_only', 'bot', 'as_user']) {
+            expect(mayCall('messages.send', 'restricted', mode)).toBe(true);
+            expect(mayCall('drafts.send', 'restricted', mode)).toBe(false);
+            expect(mayCall('drafts.send', 'full', mode)).toBe(true);
+            expect(mayCall('contacts.remove', 'restricted', mode)).toBe(false);
+            expect(mayCall('contacts.remove', 'full', mode)).toBe(false);
+            expect(mayCall('toString', 'restricted', mode)).toBe(false);
+        }
+        expect(mayCall('drafts.list', 'restricted', 'owner_only')).toBe(false);
+        expect(mayCall('drafts.list', 'restricted', 'as_user')).toBe(true);
     });
 });

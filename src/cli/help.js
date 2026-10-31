@@ -557,7 +557,8 @@ export function overview(config_dir, socket_path = null) {
             paragraphs(
                 'read, inbox, search and wait print one line per message:\n\n' +
                     '    <id>  <time> (<age>)  <sender>  [<notes>]  <body>\n\n' +
-                    "<id> is the message's id. <notes> appear only when there are any: " +
+                    "<id> is the message's id. An id, sender or emoji with spaces, quotes or " +
+                    'brackets in it is printed as a JSON string. <notes> appear only when there are any: ' +
                     '"reply to <id>" names the message this one answers, "edited" that it was ' +
                     'corrected and shows the corrected text, "retracted" that its sender withdrew ' +
                     'it, so it has no body, "reactions:" each emoji it got with how many reacted ' +

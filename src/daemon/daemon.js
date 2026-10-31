@@ -6,6 +6,7 @@ import fs from 'node:fs/promises';
 import net from 'node:net';
 import path from 'node:path';
 import { _converse, api, converse, log } from '@converse/headless';
+import { checkMethodAccess, mayCall } from './access.js';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
 import { checkRuntimeDir, findDaemon, getGroupId, getPassword, isRunning } from './config.js';
@@ -27,29 +28,6 @@ import { scheduleMethods } from './schedules.js';
  * How long shutdown waits for the server to see us leave before giving up.
  */
 const SHUTDOWN_TIMEOUT = 5000;
-
-/**
- * Methods that restricted connections may not call. Restricted access covers
- * reads and drafted sends. Stopping the daemon, reviewing, sending or dropping
- * drafts, and sending or discarding a failed send again, are the user's to do.
- */
-const FULL_ACCESS_METHODS = [
-    'daemon.stop',
-    'drafts.get',
-    'drafts.list',
-    'drafts.reject',
-    'drafts.send',
-    'messages.discard',
-    'messages.resend',
-    'omemo.devices.trust',
-];
-
-/**
- * The full access methods restricted connections may call in "as_user" mode.
- * There the drafts wait in the daemon, so the agent may see which are still
- * waiting, but not send or drop them.
- */
-const AS_USER_RESTRICTED_METHODS = ['drafts.get', 'drafts.list'];
 
 /**
  * How the daemon's connection identifies itself to contacts, as a bot. This
@@ -202,6 +180,8 @@ async function serve(config, gid) {
         },
     };
 
+    checkMethodAccess(Object.keys(methods));
+
     const getJID = () => (api.connection.connected() ? _converse.session.get('jid') : null);
 
     /** @type {Set<net.Socket>} */
@@ -348,7 +328,7 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
         if (!Object.hasOwn(methods, method)) {
             throw new RPCError(ERRORS.METHOD_NOT_FOUND, `Unknown method "${method}".`);
         }
-        if (access !== 'full' && FULL_ACCESS_METHODS.includes(method) && !restrictedMayCall(method, config.mode)) {
+        if (!mayCall(method, access, config.mode)) {
             throw new RPCError(
                 ERRORS.ACCESS_DENIED,
                 `"${method}" is only available at full access, and this connection is restricted.`,
@@ -393,13 +373,6 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
         }
     });
 }
-
-/**
- * Whether a restricted connection may call one of the full access methods, in this mode.
- * @param {string} method
- * @param {import('./types').Mode} mode
- */
-const restrictedMayCall = (method, mode) => mode === 'as_user' && AS_USER_RESTRICTED_METHODS.includes(method);
 
 /**
  * Calls `onLine` with each line `socket` sends, like `readline` does, but

@@ -4,6 +4,8 @@ import { api, converse, _converse } from '@converse/headless';
 import { getGroupsAutoCompleteList } from 'plugins/rosterview/utils.js';
 import { __ } from 'i18n';
 import tplCopyableAddress from 'templates/copyable-address.js';
+import tplShareableLink from 'templates/shareable-link.js';
+import { getShareableLink } from 'shared/xmpp-uri.js';
 
 const { Strophe } = converse.env;
 
@@ -134,6 +136,7 @@ export function tplUserDetailsModal(el) {
     const vcard = el.model?.vcard;
     const vcard_json = vcard ? vcard.toJSON() : {};
     const o = { ...el.model.toJSON(), ...vcard_json };
+    const share_link = o.jid ? getShareableLink(o.jid) : null;
 
     const contact = el.getContact();
     const is_roster_contact = contact && !contact.isUnsaved();
@@ -258,6 +261,12 @@ export function tplUserDetailsModal(el) {
                     <div class="col-sm-4"><label>${i18n_address}:</label></div>
                     <div class="col-sm-8">${tplCopyableAddress(o.jid)}</div>
                 </div>
+                ${share_link
+                    ? html`<div class="row mb-2">
+                          <div class="col-sm-4"><label>${__('Shareable link')}:</label></div>
+                          <div class="col-sm-8">${tplShareableLink(share_link)}</div>
+                      </div>`
+                    : ''}
 
                 ${contact
                     ? html` <div class="row mb-2">

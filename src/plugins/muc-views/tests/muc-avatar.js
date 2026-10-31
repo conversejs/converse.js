@@ -124,10 +124,14 @@ describe('Groupchats', () => {
                     expect(els[1].querySelector('strong').textContent.trim()).toBe('XMPP address:');
                     expect(els[1].querySelector('.text-break').textContent).toBe('coven@chat.shakespeare.lit');
                     expect(els[1].querySelector('converse-copy-button').text).toBe('coven@chat.shakespeare.lit');
-                    expect(els[2].querySelector('strong').textContent).toBe('Description:');
-                    expect(els[2].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
+                    expect(els[2].querySelector('strong').textContent.trim()).toBe('Shareable link:');
+                    expect(els[2].querySelector('converse-copy-button').text).toBe(
+                        'https://chat.conversejs.org/#coven@chat.shakespeare.lit?join',
+                    );
+                    expect(els[3].querySelector('strong').textContent).toBe('Description:');
+                    expect(els[3].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
 
-                    expect(els[3].textContent).toBe('Online users: 1');
+                    expect(els[4].textContent).toBe('Online users: 1');
                     const features_list = modal.querySelector('.features-list');
                     expect(features_list.textContent.replace(/(\n|\s{2,})/g, '').trim()).toBe(
                         'Password protected - This groupchat requires a password before entry' +
@@ -149,23 +153,24 @@ describe('Groupchats', () => {
                     await u.waitUntil(() => view.model.occupants.length === 2);
 
                     els = modal.querySelectorAll('p.room-info');
-                    expect(els[3].textContent).toBe('Online users: 2');
+                    expect(els[4].textContent).toBe('Online users: 2');
 
                     view.model.set({ 'subject': { 'author': 'someone', 'text': 'Hatching dark plots' } });
-                    await u.waitUntil(() => modal.querySelectorAll('p.room-info').length === 7);
+                    await u.waitUntil(() => modal.querySelectorAll('p.room-info').length === 8);
 
                     els = modal.querySelectorAll('p.room-info');
                     expect(els[0].textContent).toBe('Name: A Dark Cave');
                     expect(els[1].querySelector('strong').textContent.trim()).toBe('XMPP address:');
                     expect(els[1].querySelector('.text-break').textContent).toBe('coven@chat.shakespeare.lit');
-                    expect(els[2].querySelector('strong').textContent.trim()).toBe('Description:');
-                    expect(els[2].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
-                    expect(els[3].querySelector('strong').textContent.trim()).toBe('Topic:');
+                    expect(els[2].querySelector('strong').textContent.trim()).toBe('Shareable link:');
+                    expect(els[3].querySelector('strong').textContent.trim()).toBe('Description:');
+                    expect(els[3].querySelector('converse-texture').textContent.trim()).toBe('This is the description');
+                    expect(els[4].querySelector('strong').textContent.trim()).toBe('Topic:');
                     await u.waitUntil(
-                        () => els[3].querySelector('converse-texture').textContent === 'Hatching dark plots',
+                        () => els[4].querySelector('converse-texture').textContent === 'Hatching dark plots',
                     );
-                    expect(els[4].textContent).toBe('Topic author: someone');
-                    expect(els[5].textContent).toBe('Online users: 2');
+                    expect(els[5].textContent).toBe('Topic author: someone');
+                    expect(els[6].textContent).toBe('Online users: 2');
                 },
             ),
         );

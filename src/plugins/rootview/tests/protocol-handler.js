@@ -292,3 +292,84 @@ describe('The xmpp: protocol handler', function () {
         }),
     );
 });
+
+describe('A shareable link opened on the page it points at', function () {
+    /** Shareable links point at the page the specs run on. */
+    const settings = () => ({ shareable_link_url: `${location.origin}${location.pathname}` });
+
+    it(
+        'opens a chat with the JID in the fragment',
+        mock.initConverse(converse, [], settings(), async function (_converse) {
+            const { state } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            clearHash();
+            const jid = 'mercutio@montague.lit';
+
+            location.hash = `#${jid}`;
+            await u.waitUntil(() => state.chatboxes.get(jid)?.get('hidden') === false);
+            await u.waitUntil(() => location.hash === '');
+        }),
+    );
+
+    it(
+        'asks before joining the groupchat in the fragment',
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { ...settings(), allow_bookmarks: false },
+            async function (_converse) {
+                const { api, state } = _converse;
+                await mock.waitForRoster(_converse, 'current', 1);
+                clearHash();
+                spyOn(api, 'confirm').and.returnValue(Promise.resolve(false));
+
+                location.hash = '#coven@chat.shakespeare.lit?join';
+                await u.waitUntil(() => api.confirm.calls.any());
+                expect(api.confirm.calls.mostRecent().args[1]).toBe('Join the groupchat coven@chat.shakespeare.lit?');
+                await u.waitUntil(() => location.hash === '');
+                expect(state.chatboxes.get('coven@chat.shakespeare.lit')).toBeUndefined();
+            },
+        ),
+    );
+
+    it('is acted on once logged in, when the page was opened with it', async function () {
+        // Set without a `hashchange`, as on a page load, which the previous
+        // spec's still connected session would otherwise act on.
+        history.replaceState(null, '', `${location.pathname}${location.search}#mercutio@montague.lit`);
+        await mock.initConverse(converse, [], settings(), async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            await u.waitUntil(() => _converse.state.chatboxes.get('mercutio@montague.lit')?.get('hidden') === false);
+            await u.waitUntil(() => location.hash === '');
+        })();
+    });
+
+    it(
+        "leaves the fragment of any other page alone, since it may be the embedding page's own",
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            const { state } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            clearHash();
+
+            location.hash = '#mercutio@montague.lit';
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(location.hash).toBe('#mercutio@montague.lit');
+            expect(state.chatboxes.get('mercutio@montague.lit')).toBeUndefined();
+            clearHash();
+        }),
+    );
+
+    it(
+        "leaves Converse's own routes, and fragments naming nothing it can act on, alone",
+        mock.initConverse(converse, [], settings(), async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            clearHash();
+
+            for (const hash of ['#converse/chat', '#montague.lit', '#section-2']) {
+                location.hash = hash;
+                await new Promise((resolve) => setTimeout(resolve, 50));
+                expect(location.hash).toBe(hash);
+            }
+            clearHash();
+        }),
+    );
+});

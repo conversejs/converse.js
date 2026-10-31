@@ -18,10 +18,14 @@
  *    live there and this module is only the transport. The legacy
  *    `#converse/chat?jid=` and `#converse/room?jid=` deep links take the same
  *    path, read as the `xmpp:` URI they stand for.
+ *
+ * A shareable invitation link (`<shareable_link_url>#romeo@montague.lit`)
+ * opened on the page it points at arrives the same way, with the bare
+ * `xmpp:` URI in the fragment, and is handled alike.
  */
 import { api, log } from '@converse/headless';
 import { dispatchXMPPURI } from 'shared/xmpp-uri-dispatch.js';
-import { decodeValue, isHandledXMPPURI, jidSegmentToXMPPURI } from 'shared/xmpp-uri.js';
+import { decodeValue, invitationToXMPPURI, isHandledXMPPURI, jidSegmentToXMPPURI } from 'shared/xmpp-uri.js';
 
 /**
  * The hash the protocol handler hands the URI back on. Must stay in sync with
@@ -94,7 +98,16 @@ function legacyHashToXMPPURI(hash) {
  * @returns {string|null}
  */
 function getURIFromHash() {
-    if (!location.hash.startsWith(ACTION_HASH_PREFIX)) return legacyHashToXMPPURI(location.hash);
+    if (!location.hash.startsWith(ACTION_HASH_PREFIX)) {
+        const legacy = legacyHashToXMPPURI(location.hash);
+        if (legacy) return legacy;
+
+        // A shareable link to this very page. Only a fragment naming something
+        // we can act on counts, so the hash of a page that embeds Converse is
+        // never cleared out from under it.
+        const uri = invitationToXMPPURI(new URL(location.href));
+        return uri && isHandledXMPPURI(uri) ? uri : null;
+    }
 
     const escaped = location.hash.slice(ACTION_HASH_PREFIX.length);
     return escaped ? decodeValue(escaped) : null;

@@ -2,6 +2,8 @@
 import { __ } from 'i18n';
 import { html } from "lit";
 import tplCopyableAddress from "templates/copyable-address.js";
+import tplShareableLink from "templates/shareable-link.js";
+import { getShareableLink } from "shared/xmpp-uri.js";
 
 
 /**
@@ -38,6 +40,8 @@ export default (model) => {
     const i18n_moderated = __('Moderated');
     const i18n_moderated_help = __('Participants entering this groupchat need to request permission to write');
     const i18n_name = __('Name');
+    const i18n_share_link = __('Shareable link');
+    const share_link = getShareableLink(model.get('jid'), { join: true });
     const i18n_no_pass_help = __('This groupchat does not require a password upon entry');
     const i18n_no_password_required = __('No password required');
     const i18n_not_anonymous = __('Not anonymous');
@@ -68,6 +72,7 @@ export default (model) => {
 
             <p class="room-info"><strong>${i18n_name}:</strong> ${model.get('name')}</p>
             <p class="room-info"><strong>${i18n_address}:</strong> ${tplCopyableAddress(model.get('jid'))}</p>
+            ${ share_link ? html`<p class="room-info"><strong>${i18n_share_link}:</strong> ${tplShareableLink(share_link)}</p>` : '' }
             <br/>
             <p class="room-info"><strong>${i18n_desc}:</strong> <converse-texture text="${config.description}" render_styling></converse-texture></p>
             ${ (model.get('subject')) ? subject(model) : '' }

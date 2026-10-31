@@ -66,7 +66,7 @@ export function checkFileTypes(types, url) {
  * @returns {boolean}
  */
 export function isURLWithImageExtension(url) {
-    return checkFileTypes([".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg"], url);
+    return checkFileTypes([".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp"], url);
 }
 
 /**
@@ -100,9 +100,13 @@ export function isVideoURL(url, headers) {
 
 /**
  * @param {string|URL} url
+ * @param {Headers} [headers]
  * @returns {boolean}
  */
-export function isWebPURL(url) {
+export function isWebPURL(url, headers) {
+    if (headers?.get("content-type")?.startsWith("image/webp")) {
+        return true;
+    }
     return checkFileTypes([".webp"], url);
 }
 
@@ -221,7 +225,7 @@ export async function getMetadataForURL(o) {
         is_audio: isAudioURL(o.url, headers),
         is_image: isImageURL(o.url, headers),
         is_video: isVideoURL(o.url, headers),
-        is_webp: isWebPURL(o.url),
+        is_webp: isWebPURL(o.url, headers),
         is_encrypted: isEncryptedFileURL(o.url),
     };
 }

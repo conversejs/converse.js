@@ -47,11 +47,17 @@ function clearSession() {
     api.promises.add('scheduledMessagesInitialized');
 }
 
-/** Let a caller handle policy or other product concerns, then send by default. */
+/**
+ * Let a caller handle policy or other product concerns, then send by default.
+ * A listener that handles the message may also say it's to be parked or
+ * retried, by setting `park` or `retry` as the collection's `on_due` takes them.
+ * @param {import('./model.js').default} scheduled
+ */
 async function sendScheduledMessage(scheduled) {
     const result = await api.hook('scheduledMessageDue', scheduled, { handled: false });
     if (!result.handled) await sendDirect(scheduled);
     api.trigger('scheduledMessageProcessed', { scheduled, result: result.result });
+    return { park: result.park, retry: result.retry };
 }
 
 async function sendDirect(scheduled) {

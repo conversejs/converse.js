@@ -5,6 +5,7 @@ import ScheduledMessage from './model.js';
 
 const MAX_TIMEOUT = 2 ** 31 - 1;
 const RETRY_DELAY = 30_000;
+const MAX_FAILURES = 5;
 
 /**
  * Persistent scheduled messages, ordered by their delivery time.
@@ -12,9 +13,18 @@ const RETRY_DELAY = 30_000;
  * Delivery is injected so the collection stays useful to any headless client:
  * the web UI can send directly, while the daemon can reapply its policy first.
  *
- * A delivery handler may park a message instead of finishing it, by saving a
- * `parked` attribute on it. A parked message is never retried and stays stored
- * until it is cancelled.
+ * The delivery handler, `on_due`, resolves to what became of the message:
+ *
+ * - nothing: it was sent, and is removed.
+ * - `{ park }`: it won't be sent without the user, such as when policy refused
+ *   it. It's kept, with `park` saved as its `parked` attribute, and isn't
+ *   tried again until it's cancelled.
+ * - `{ retry: true }`: it can't be sent yet, such as when a rate limit holds
+ *   it back. It's tried again after `retry_delay`.
+ *
+ * A handler that throws failed to send it. It's tried again, waiting twice as
+ * long each time, and parked after `max_failures` tries. A message that is
+ * waiting to be tried again doesn't hold back the ones due after it.
  * @extends {Collection<ScheduledMessage>}
  */
 class ScheduledMessages extends Collection {
@@ -33,6 +43,7 @@ class ScheduledMessages extends Collection {
         this.set_timer = options.set_timer ?? setTimeout;
         this.clear_timer = options.clear_timer ?? clearTimeout;
         this.retry_delay = options.retry_delay ?? RETRY_DELAY;
+        this.max_failures = options.max_failures ?? MAX_FAILURES;
         this.active = false;
         this.dispatching = null;
         this.timer = null;
@@ -83,27 +94,61 @@ class ScheduledMessages extends Collection {
         while (this.active) {
             const scheduled = this.#next();
             if (!scheduled) return;
-            const delay = Date.parse(scheduled.get('send_at')) - this.now();
+            const delay = dueTime(scheduled) - this.now();
             if (delay > 0) return this.#setTimer(delay);
-            if (!(await this.#deliver(scheduled))) return;
+            await this.#deliver(scheduled);
         }
     }
 
+    /** @param {ScheduledMessage} scheduled */
     async #deliver(scheduled) {
+        let outcome;
         try {
-            await this.on_due(scheduled);
-            if (!scheduled.get('parked')) await destroy(scheduled);
-            return true;
+            outcome = await this.on_due(scheduled);
         } catch (e) {
             log.error(`Could not send scheduled message ${scheduled.id}: ${e.message}`);
-            if (this.active) this.#setTimer(this.retry_delay);
-            return false;
+            const failures = (scheduled.get('failures') ?? 0) + 1;
+            if (failures >= this.max_failures) {
+                await this.#park(scheduled, {
+                    rule: 'failed',
+                    message: `Sending it failed ${failures} times: ${e.message}`,
+                });
+            } else {
+                await this.#retry(scheduled, this.retry_delay * 2 ** (failures - 1), { failures });
+            }
+            return;
+        }
+        if (outcome?.park) {
+            await this.#park(scheduled, outcome.park);
+        } else if (outcome?.retry) {
+            await this.#retry(scheduled, this.retry_delay);
+        } else {
+            await destroy(scheduled);
         }
     }
 
-    /** The earliest message that is still due to be sent, skipping parked ones. */
+    /**
+     * @param {ScheduledMessage} scheduled
+     * @param {Record<string, unknown>} park
+     */
+    #park(scheduled, park) {
+        return scheduled.save({ parked: { ...park, at: new Date(this.now()).toISOString() } });
+    }
+
+    /**
+     * @param {ScheduledMessage} scheduled
+     * @param {number} delay
+     * @param {Record<string, unknown>} [attrs]
+     */
+    #retry(scheduled, delay, attrs = {}) {
+        return scheduled.save({ ...attrs, retry_at: new Date(this.now() + delay).toISOString() });
+    }
+
+    /** The message to send next, skipping parked ones. */
     #next() {
-        return this.models.find((scheduled) => !scheduled.get('parked'));
+        return this.models
+            .filter((scheduled) => !scheduled.get('parked'))
+            .reduce((next, scheduled) => (!next || dueTime(scheduled) < dueTime(next) ? scheduled : next), null);
     }
 
     #arm() {
@@ -111,7 +156,7 @@ class ScheduledMessages extends Collection {
         this.#clearTimer();
         const next = this.#next();
         if (!next) return;
-        const delay = Math.max(0, Date.parse(next.get('send_at')) - this.now());
+        const delay = Math.max(0, dueTime(next) - this.now());
         this.#setTimer(delay);
     }
 
@@ -130,6 +175,15 @@ class ScheduledMessages extends Collection {
         this.clear_timer(this.timer);
         this.timer = null;
     }
+}
+
+/**
+ * When a message is next to be tried: its delivery time, or later if it has
+ * been held back since.
+ * @param {ScheduledMessage} scheduled
+ */
+function dueTime(scheduled) {
+    return Date.parse(scheduled.get('retry_at') ?? scheduled.get('send_at'));
 }
 
 /** Resolve once Skeletor has removed a persisted model. */

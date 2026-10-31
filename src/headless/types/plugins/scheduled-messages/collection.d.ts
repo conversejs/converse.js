@@ -5,9 +5,18 @@ export default ScheduledMessages;
  * Delivery is injected so the collection stays useful to any headless client:
  * the web UI can send directly, while the daemon can reapply its policy first.
  *
- * A delivery handler may park a message instead of finishing it, by saving a
- * `parked` attribute on it. A parked message is never retried and stays stored
- * until it is cancelled.
+ * The delivery handler, `on_due`, resolves to what became of the message:
+ *
+ * - nothing: it was sent, and is removed.
+ * - `{ park }`: it won't be sent without the user, such as when policy refused
+ *   it. It's kept, with `park` saved as its `parked` attribute, and isn't
+ *   tried again until it's cancelled.
+ * - `{ retry: true }`: it can't be sent yet, such as when a rate limit holds
+ *   it back. It's tried again after `retry_delay`.
+ *
+ * A handler that throws failed to send it. It's tried again, waiting twice as
+ * long each time, and parked after `max_failures` tries. A message that is
+ * waiting to be tried again doesn't hold back the ones due after it.
  * @extends {Collection<ScheduledMessage>}
  */
 declare class ScheduledMessages extends Collection<ScheduledMessage> {
@@ -19,6 +28,7 @@ declare class ScheduledMessages extends Collection<ScheduledMessage> {
     set_timer: any;
     clear_timer: any;
     retry_delay: any;
+    max_failures: any;
     active: boolean;
     dispatching: Promise<void>;
     timer: any;

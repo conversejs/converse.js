@@ -33,9 +33,8 @@ export default {
             const chatbox = message.collection.chatbox;
             const to_jid = chatbox.get('jid');
             const type = chatbox.get('type') === 'chatroom' ? 'groupchat' : 'chat';
-            // In a MUC a message is referred to by the stanza_id the MUC gave it, if any.
-            const muc_stanza_id = type === 'groupchat' ? message.get(`stanza_id ${to_jid}`) : null;
-            const msg_id = muc_stanza_id || message.get('msgid');
+            // A MUC message without a stanza-id from the MUC can only be referred to by its own id.
+            const msg_id = message.getReferenceID() || message.get('msgid');
 
             const my_jid = getOwnReactionJID(chatbox);
             const previous = [...(message.get('reactions')?.[my_jid] || [])];

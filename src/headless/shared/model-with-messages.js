@@ -469,11 +469,7 @@ export default function ModelWithMessages(BaseModel) {
             }
 
             if (replying_to) {
-                // In a groupchat a message is referred to by the id the room gave it, elsewhere by its own.
-                const reply_to_id =
-                    this.get('message_type') === 'groupchat'
-                        ? replying_to.get(`stanza_id ${this.get('jid')}`)
-                        : replying_to.get('msgid');
+                const reply_to_id = replying_to.getReferenceID();
                 if (!reply_to_id) {
                     throw new Error("Can't reply to a groupchat message that has no stanza-id from the room");
                 }

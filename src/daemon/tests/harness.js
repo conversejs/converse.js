@@ -27,6 +27,7 @@ export { JID };
  * @param {{ jid: string, name?: string, subscription?: string }[]} [options.roster]
  * @param {string[]} [options.server_features]
  * @param {Parameters<typeof serve>[0]['archive']} [options.archive]
+ * @param {Parameters<typeof serve>[0]['room_archives']} [options.room_archives]
  * @param {Record<string, unknown>} [options.settings] - More headless settings
  * @param {Parameters<typeof serve>[0]['mam_mode']} [options.mam_mode]
  * @param {boolean} [options.fulltext] - Whether the archive offers full-text search. Defaults to true.
@@ -43,6 +44,7 @@ export async function startDaemon({
     roster = [],
     server_features,
     archive,
+    room_archives,
     settings,
     mam_mode,
     fulltext,
@@ -102,6 +104,7 @@ export async function startDaemon({
         jid: JID,
         server_features,
         archive,
+        room_archives,
         mam_mode,
         fulltext,
         upload_service,

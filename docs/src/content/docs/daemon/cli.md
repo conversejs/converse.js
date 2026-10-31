@@ -382,7 +382,9 @@ in step with this page.
 
 `in <conversation>` only appears in `search`, which can match messages from any conversation.
 
-- `<id>` is the message's id. Any command that takes an id accepts it.
+- `<id>` is the message's id. Any command that takes an id accepts it. An id,
+  sender or emoji with spaces, quotes or brackets in it is printed as a JSON
+  string, since the sender may have chosen it to look like other fields.
 - `<notes>` only appear when there are any. `reply to <id>` names the message this
   one answers. `edited` means it was corrected, and the body is the corrected text.
   `retracted` means its sender withdrew it, so it has no body. `reactions:` lists

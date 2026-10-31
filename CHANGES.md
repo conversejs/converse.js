@@ -13,6 +13,7 @@
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
 - Invitation links from other clients (xmpp.link, i.kaidan.im, invite.joinjabber.org and
   conversations.im) open the chat or groupchat in Converse instead of the invitation page.
+- Opening a groupchat from an `xmpp:` or invitation link asks for confirmation first.
 - The user details, profile and groupchat details modals show a button that copies the XMPP address.
   In the user details modal the address is no longer a link, and the groupchat details modal shows the
   room's address instead of an `xmpp:` join URI.

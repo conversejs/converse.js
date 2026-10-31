@@ -4,8 +4,8 @@
  *
  * XEP-0147 (XMPP URI Scheme Query Components) dispatch: parses an `xmpp:` URI (via
  * the pure ./xmpp-uri.js helpers) and performs the corresponding in-app action.
- * State-mutating actions (roster / subscription changes) ask the user to confirm
- * first, per XEP-0147's Security Considerations.
+ * State-mutating actions (roster / subscription changes, joining a groupchat)
+ * ask the user to confirm first, per XEP-0147's Security Considerations.
  */
 import { api, log } from '@converse/headless';
 import { __ } from 'i18n';
@@ -63,9 +63,18 @@ export async function dispatchXMPPURI(href) {
                 break;
             }
             case 'join': {
-                const attrs = {};
                 const password = firstValue(params.password);
                 const nick = firstValue(params.nick);
+                // Joining hands the room our nick (and, in a non-anonymous room,
+                // our JID), and a link only says where it points, not what that
+                // room is. An open room has already had both.
+                if (!(await api.rooms.get(jid))) {
+                    const message = nick
+                        ? __('Join the groupchat %1$s as %2$s?', jid, nick)
+                        : __('Join the groupchat %1$s?', jid);
+                    if (!(await confirmAction(message))) break;
+                }
+                const attrs = {};
                 if (password) attrs.password = password;
                 if (nick) attrs.nick = nick;
                 // Via `openConversation` too: the password/nick are seeded onto the

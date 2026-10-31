@@ -587,12 +587,14 @@ describe('Groupchats', function () {
 
                 await view.model.handleMessageStanza(msg);
                 await u.waitUntil(() => view.querySelector('.chat-msg__text a'));
+                spyOn(_converse.api, 'confirm').and.callFake(() => Promise.resolve(true));
                 view.querySelector('.chat-msg__text a').click();
 
                 await mock.waitForMUCDiscoInfo(_converse, 'coven@chat.shakespeare.lit');
                 await mock.waitForReservedNick(_converse, 'coven@chat.shakespeare.lit', 'romeo');
                 await u.waitUntil(() => _converse.chatboxes.length === 3);
                 expect(_converse.chatboxes.pluck('id').includes('coven@chat.shakespeare.lit')).toBe(true);
+                expect(_converse.api.confirm).toHaveBeenCalledOnce();
             }),
         );
 

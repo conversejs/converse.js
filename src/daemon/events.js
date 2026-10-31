@@ -5,6 +5,7 @@
  * @module @converse/daemon/events
  */
 import { converse } from '@converse/headless';
+import { mayCall } from './access.js';
 import { isRoomMessage, toMessageDTO } from './messages.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
@@ -123,7 +124,7 @@ export function createEvents(_converse, { mode }) {
             async 'events.subscribe'(params, client) {
                 const { type, filter, once } = await parseSubscription(_converse, params);
                 // A draft event carries the whole draft, so it's for those who may see the drafts.
-                if (type === 'draft' && client.access !== 'full' && mode !== 'as_user') {
+                if (type === 'draft' && !mayCall('drafts.list', client.access, mode)) {
                     throw new RPCError(
                         ERRORS.ACCESS_DENIED,
                         'Draft events are only available where "drafts.list" is: at full access, or at ' +

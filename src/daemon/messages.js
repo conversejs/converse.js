@@ -688,13 +688,24 @@ export function isRoomMessage(message) {
 
 /**
  * Finds a message by any of its ids, or by a unique prefix of its DTO id.
+ *
+ * An archive gives a message its id, but its sender chooses its origin-id and
+ * msgid, and can choose one that another message has. So a message is looked
+ * for by its archive id first, and one found by an id that more than one
+ * message has isn't taken.
  * @param {import('@converse/headless').Message[]} messages
  * @param {string} id
  * @param {string} [where] - Where the messages are from, for the error message
  */
 function findMessage(messages, id, where = 'in this conversation') {
-    const exact = messages.find((m) => getIDs(m).includes(id));
-    if (exact) return exact;
+    const archived = messages.filter((m) => m.getArchiveID() === id);
+    const exact = archived.length ? archived : messages.filter((m) => getIDs(m).includes(id));
+    if (exact.length === 1) return exact[0];
+    if (exact.length > 1) {
+        throw new RPCError(ERRORS.AMBIGUOUS, `More than one message has the id "${id}" ${where}.`, {
+            candidates: exact.map((m) => `${getIDs(m)[0]} in ${conversationOf(m)}`),
+        });
+    }
 
     const matches = id ? messages.filter((m) => getIDs(m)[0]?.startsWith(id)) : [];
     if (matches.length === 1) return matches[0];

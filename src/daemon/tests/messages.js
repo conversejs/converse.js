@@ -491,6 +491,36 @@ describe('Messages in a 1:1 chat', () => {
             expect(messages.find((m) => m.id === 'abc-4').reactions).toEqual({ '❤️': [OWN, JULIET] });
         });
 
+        it('reacts to the message with the archive id, not one whose sender gave it that id', async () => {
+            // Older, so that it comes first.
+            await receive({ body: 'Look-alike', id: 'abc-4', stamp: '2026-10-01T10:00:00Z' });
+            await client.request('messages.react', { id: 'abc-4', emoji: '👍' });
+            expect(sentStanzas().at(-1).querySelector('reactions').getAttribute('id')).toBe('m4');
+        });
+
+        it('refuses an id that messages in different conversations share, unless the conversation is named', async () => {
+            const MERCUTIO = 'mercutio@montague.lit';
+            const BENVOLIO = 'benvolio@montague.lit';
+            await receive({ body: 'From Mercutio', id: 'dup-1', from: MERCUTIO });
+            await receive({ body: 'From Benvolio', id: 'dup-1', from: BENVOLIO });
+
+            await expect(client.request('messages.react', { id: 'dup-1', emoji: '👍' })).rejects.toMatchObject({
+                code: ERRORS.AMBIGUOUS,
+                message: 'More than one message has the id "dup-1" in any conversation.',
+                data: { candidates: [`dup-1 in ${MERCUTIO}`, `dup-1 in ${BENVOLIO}`] },
+            });
+            await client.request('messages.react', { id: 'dup-1', emoji: '👍', conversation: BENVOLIO });
+            expect(sentStanzas().at(-1).getAttribute('to')).toBe(BENVOLIO);
+        });
+
+        it('refuses an id that two messages in the same conversation share', async () => {
+            await receive({ body: 'One', id: 'dup-2' });
+            await receive({ body: 'Two', id: 'dup-2' });
+            await expect(
+                client.request('messages.react', { id: 'dup-2', emoji: '👍', conversation: JULIET }),
+            ).rejects.toMatchObject({ code: ERRORS.AMBIGUOUS });
+        });
+
         it('refuses something that is not a single emoji', async () => {
             for (const emoji of ['ok', '👍👍', ':nosuchemoji:', '', undefined]) {
                 await expect(client.request('messages.react', { id: 'abc-4', emoji })).rejects.toMatchObject({

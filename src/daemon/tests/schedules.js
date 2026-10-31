@@ -160,6 +160,23 @@ describe('Scheduled sends', () => {
         expect(sent()).toEqual([]);
     });
 
+    it('holds back a due message that a rate limit refuses, to try again later, instead of parking it', async () => {
+        daemon = await startDaemon({
+            roster: ROSTER,
+            mode: 'bot',
+            policy: { direct: [JULIET], rate_limit: { per_conversation: 1, overall: 20, window: 60 } },
+        });
+        // Scheduling checks the limit too, so it's spent between then and the due time.
+        const { schedule } = await request('messages.send', { to: JULIET, body: 'Too soon', at: at(500) });
+        await request('messages.send', { to: JULIET, body: 'Now' });
+        const { promise, resolve } = Promise.withResolvers();
+        daemon.api.listen.once('scheduledMessageProcessed', resolve);
+
+        expect(await promise).toMatchObject({ result: { outcome: 'refused', rule: 'rate_conversation' } });
+        expect((await request('schedules.list')).schedules).toEqual([schedule]);
+        expect(sent()).toEqual(['Now']);
+    });
+
     it('requires a future ISO 8601 time', async () => {
         daemon = await startDaemon({ roster: ROSTER });
         for (const value of ['tomorrow morning', new Date(Date.now() - 1).toISOString()]) {

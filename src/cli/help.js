@@ -300,8 +300,8 @@ export const HELP = {
         summary: 'List messages waiting for their delivery time',
         description:
             'List the messages scheduled with send --at that are still waiting: id, delivery time, ' +
-            'recipient and text. One that policy refused when it became due is marked NOT SENT, ' +
-            'with the reason.',
+            'recipient and text. One that policy refused when it became due, or that kept failing ' +
+            'to send, is marked NOT SENT, with the reason. One a rate limit held back is tried again later.',
         options: [FULL],
         examples: ['converse-cli schedules list'],
     },

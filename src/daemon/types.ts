@@ -262,8 +262,9 @@ export type ScheduleDTO = {
     access: Access;
     reply_to: string | null;
     correct: string | null;
-    /** Set when policy refused the send at due time. The message is kept, not sent. */
-    parked: (Extract<SendResult, { outcome: 'refused' }> & { at: string }) | null;
+    // Set when the message won't be sent without the owner: policy refused it
+    // at due time, or sending it kept failing (rule "failed"). It's kept, not sent.
+    parked: { rule: string; message: string; at: string } | null;
 };
 
 /**

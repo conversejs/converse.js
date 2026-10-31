@@ -6,6 +6,9 @@ import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 import { ownMessagesOnly } from './messages.js';
 
+/** The policy rules that refuse a send only for now. */
+const RATE_LIMITS = ['rate_conversation', 'rate_room', 'rate_overall'];
+
 /**
  * @param {import('@converse/headless').ConversePrivateGlobal} _converse
  * @param {Object} deps
@@ -60,12 +63,15 @@ export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
             notify: () => {},
         };
         const result = await sendNow({ to, body, reply_to: metadata.reply_to, correct: metadata.correct }, client);
-        if (result.outcome === 'refused') {
-            // Keep it so the owner can see why it was not sent, instead of dropping it silently.
-            const { rule, message } = result;
-            await scheduled.save({ parked: { rule, message, at: new Date().toISOString() } });
-        }
-        return { ...state, handled: true, result };
+        if (result.outcome !== 'refused') return { ...state, handled: true, result };
+
+        // A rate limit lets it through once the window has moved on. Any other
+        // refusal stands, so it's kept for the owner to see why it wasn't sent,
+        // instead of being dropped silently.
+        const { rule, message } = result;
+        if (RATE_LIMITS.includes(rule)) return { ...state, handled: true, result, retry: true };
+
+        return { ...state, handled: true, result, park: { rule, message } };
     }
 
     return {

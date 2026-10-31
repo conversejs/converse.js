@@ -131,6 +131,26 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
     }
 
     /**
+     * Returns the XEP-0359 stanza-id which the archive holding this message gave
+     * it: the room's for a groupchat message, our account's otherwise.
+     * @returns {string|undefined}
+     */
+    getArchiveID() {
+        const by_jid = this.get('type') === 'groupchat' ? this.chatbox.get('jid') : _converse.session.get('bare_jid');
+        return this.get(`stanza_id ${by_jid}`);
+    }
+
+    /**
+     * Returns the id by which other messages refer to this one, such as
+     * XEP-0461 replies and XEP-0444 reactions: in a groupchat the stanza-id
+     * which the room gave it, elsewhere its own id.
+     * @returns {string|undefined}
+     */
+    getReferenceID() {
+        return this.get('type') === 'groupchat' ? this.getArchiveID() : this.get('msgid');
+    }
+
+    /**
      * Returns the XEP-0359 stanza-ids which `by_jid` assigned to all versions of
      * this message: first the original's, then those of its XEP-0308 corrections.
      * @param {string} by_jid - The JID of the entity which assigned the stanza-ids

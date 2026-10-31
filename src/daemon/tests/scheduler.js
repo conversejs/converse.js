@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { NodeSQLiteStorage, PersistentStorage } from '@converse/skeletor';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import ScheduledMessages from '../collection.js';
+import { ScheduledMessages } from '../scheduler.js';
 
 const NOON = new Date('2026-10-26T12:00:00Z');
 const LATER = new Date('2026-10-26T12:05:00Z');

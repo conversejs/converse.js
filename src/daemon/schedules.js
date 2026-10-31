@@ -1,10 +1,13 @@
 /**
- * Daemon policy and protocol adapter for headless scheduled messages.
+ * Sending a message later: the RPC methods, and the send policy applied again
+ * when a message comes due.
  * @module @converse/daemon/schedules
  */
+import { u } from '@converse/headless';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 import { ownMessagesOnly } from './messages.js';
+import { createScheduler } from './scheduler.js';
 
 /** The policy rules that refuse a send only for now. */
 const RATE_LIMITS = ['rate_conversation', 'rate_room', 'rate_overall'];
@@ -17,7 +20,7 @@ const RATE_LIMITS = ['rate_conversation', 'rate_room', 'rate_overall'];
  * @param {import('./types').Mode} deps.mode
  */
 export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
-    const { api } = _converse;
+    const scheduler = createScheduler(_converse, onDue);
 
     /** Queue instead of sending when `at` is present. */
     const send = (params, client) => (params.at === undefined ? sendNow(params, client) : schedule(params, client));
@@ -38,10 +41,13 @@ export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
     }
 
     async function addSchedule(params, client) {
-        const scheduled = await api.scheduledMessages.schedule({
+        const schedules = await scheduler.get();
+        const scheduled = await schedules.schedule({
+            id: u.getUniqueId('scheduled'),
             to: params.to,
             body: params.body,
             send_at: params.send_at,
+            created: new Date().toISOString(),
             metadata: {
                 access: client.access,
                 consumer: client.consumer,
@@ -52,55 +58,52 @@ export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
         return { outcome: 'scheduled', schedule: toScheduleDTO(scheduled) };
     }
 
-    /** Rebuild the originating client and pass through the normal send path. */
-    async function onDue(scheduled, state) {
+    /**
+     * Rebuild the originating client and pass through the normal send path.
+     * @param {import('./scheduler.js').ScheduledMessage} scheduled
+     */
+    async function onDue(scheduled) {
         const { to, body, metadata = {} } = scheduled.toJSON();
         const client = {
-            // One scheduled other than through the daemon says nothing of who
-            // asked for it, so policy applies to it as to an agent's.
+            // One that doesn't say who asked for it is held to policy, as an agent's is.
             access: metadata.access ?? 'restricted',
             consumer: metadata.consumer ?? null,
             notify: () => {},
         };
         const result = await sendNow({ to, body, reply_to: metadata.reply_to, correct: metadata.correct }, client);
-        if (result.outcome !== 'refused') return { ...state, handled: true, result };
+        if (result.outcome !== 'refused') return;
 
         // A rate limit lets it through once the window has moved on. Any other
         // refusal stands, so it's kept for the owner to see why it wasn't sent,
         // instead of being dropped silently.
         const { rule, message } = result;
-        if (RATE_LIMITS.includes(rule)) return { ...state, handled: true, result, retry: true };
+        if (RATE_LIMITS.includes(rule)) return { retry: true };
 
-        return { ...state, handled: true, result, park: { rule, message } };
+        return { park: { rule, message } };
     }
 
     return {
-        onDue,
         methods: {
             'messages.send': send,
             async 'schedules.list'(_params, client) {
-                const schedules = await api.scheduledMessages.get();
-                return { schedules: schedules.filter((scheduled) => canManage(client, scheduled)).map(toScheduleDTO) };
+                const schedules = await scheduler.get();
+                return {
+                    schedules: schedules.models.filter((scheduled) => canManage(client, scheduled)).map(toScheduleDTO),
+                };
             },
             async 'schedules.cancel'({ id }, client) {
                 if (typeof id !== 'string' || !id) {
                     throw new RPCError(ERRORS.INVALID_PARAMS, '"id" must be a scheduled message id.');
                 }
-                const existing = await api.scheduledMessages.get(id);
+                const schedules = await scheduler.get();
+                const existing = schedules.get(id);
                 if (!existing || !canManage(client, existing)) {
                     throw new RPCError(
                         ERRORS.NOT_FOUND,
                         `No scheduled message with id "${id}". List them with "converse-cli schedules list".`,
                     );
                 }
-                const scheduled = await api.scheduledMessages.cancel(id);
-                if (!scheduled) {
-                    throw new RPCError(
-                        ERRORS.NOT_FOUND,
-                        `No scheduled message with id "${id}". List them with "converse-cli schedules list".`,
-                    );
-                }
-                return { schedule: toScheduleDTO(scheduled) };
+                return { schedule: toScheduleDTO(await schedules.cancel(id)) };
             },
         },
     };

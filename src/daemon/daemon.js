@@ -152,7 +152,6 @@ async function serve(config, gid) {
         sendNow: messages['messages.send'],
         mode: config.mode,
     });
-    api.listen.on('scheduledMessageDue', schedules.onDue);
     const methods = {
         ...messages,
         ...schedules.methods,

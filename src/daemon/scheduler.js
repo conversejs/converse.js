@@ -1,17 +1,19 @@
-import { Collection } from '@converse/skeletor';
-import log from '@converse/log';
-import { createStore } from '../../utils/storage.js';
-import ScheduledMessage from './model.js';
+/**
+ * Messages that wait in the daemon for their delivery time. They're sent only
+ * while the daemon runs, which suits it, being always on, unlike a browser.
+ * @module @converse/daemon/scheduler
+ */
+import { Collection, Model, log, u } from '@converse/headless';
 
 const MAX_TIMEOUT = 2 ** 31 - 1;
 const RETRY_DELAY = 30_000;
 const MAX_FAILURES = 5;
 
+/** A message waiting for its delivery time. */
+export class ScheduledMessage extends Model {}
+
 /**
  * Persistent scheduled messages, ordered by their delivery time.
- *
- * Delivery is injected so the collection stays useful to any headless client:
- * the web UI can send directly, while the daemon can reapply its policy first.
  *
  * The delivery handler, `on_due`, resolves to what became of the message:
  *
@@ -27,7 +29,7 @@ const MAX_FAILURES = 5;
  * waiting to be tried again doesn't hold back the ones due after it.
  * @extends {Collection<ScheduledMessage>}
  */
-class ScheduledMessages extends Collection {
+export class ScheduledMessages extends Collection {
     get model() {
         return ScheduledMessage;
     }
@@ -36,18 +38,23 @@ class ScheduledMessages extends Collection {
         return true;
     }
 
-    initialize(_models, options = {}) {
+    /**
+     * @param {ScheduledMessage[]} _models
+     * @param {Object} options
+     * @param {import('@converse/skeletor').PersistentStorage} options.storage
+     * @param {(scheduled: ScheduledMessage) => Promise<{ park?: Record<string, unknown>, retry?: boolean }|void>} options.on_due
+     * @param {number} [options.retry_delay]
+     * @param {number} [options.max_failures]
+     */
+    initialize(_models, options) {
         this.comparator = 'send_at';
+        this.storage = options.storage;
         this.on_due = options.on_due;
-        this.now = options.now ?? (() => Date.now());
-        this.set_timer = options.set_timer ?? setTimeout;
-        this.clear_timer = options.clear_timer ?? clearTimeout;
         this.retry_delay = options.retry_delay ?? RETRY_DELAY;
         this.max_failures = options.max_failures ?? MAX_FAILURES;
         this.active = false;
         this.dispatching = null;
         this.timer = null;
-        this.storage = options.storage ?? createStore(options.id);
     }
 
     /** Persist and arm a new scheduled message. */
@@ -94,7 +101,7 @@ class ScheduledMessages extends Collection {
         while (this.active) {
             const scheduled = this.#next();
             if (!scheduled) return;
-            const delay = dueTime(scheduled) - this.now();
+            const delay = dueTime(scheduled) - Date.now();
             if (delay > 0) return this.#setTimer(delay);
             await this.#deliver(scheduled);
         }
@@ -132,7 +139,7 @@ class ScheduledMessages extends Collection {
      * @param {Record<string, unknown>} park
      */
     #park(scheduled, park) {
-        return scheduled.save({ parked: { ...park, at: new Date(this.now()).toISOString() } });
+        return scheduled.save({ parked: { ...park, at: new Date().toISOString() } });
     }
 
     /**
@@ -141,7 +148,7 @@ class ScheduledMessages extends Collection {
      * @param {Record<string, unknown>} [attrs]
      */
     #retry(scheduled, delay, attrs = {}) {
-        return scheduled.save({ ...attrs, retry_at: new Date(this.now() + delay).toISOString() });
+        return scheduled.save({ ...attrs, retry_at: new Date(Date.now() + delay).toISOString() });
     }
 
     /** The message to send next, skipping parked ones. */
@@ -156,12 +163,12 @@ class ScheduledMessages extends Collection {
         this.#clearTimer();
         const next = this.#next();
         if (!next) return;
-        const delay = Math.max(0, dueTime(next) - this.now());
-        this.#setTimer(delay);
+        this.#setTimer(Math.max(0, dueTime(next) - Date.now()));
     }
 
+    /** @param {number} delay */
     #setTimer(delay) {
-        this.timer = this.set_timer(
+        this.timer = setTimeout(
             () => {
                 this.timer = null;
                 this.#dispatchDue();
@@ -172,9 +179,46 @@ class ScheduledMessages extends Collection {
 
     #clearTimer() {
         if (this.timer === null) return;
-        this.clear_timer(this.timer);
+        clearTimeout(this.timer);
         this.timer = null;
     }
+}
+
+/**
+ * Keeps the account's scheduled messages for as long as its session lasts,
+ * and dispatches them while connected.
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {ScheduledMessages['on_due']} on_due
+ */
+export function createScheduler(_converse, on_due) {
+    const { api } = _converse;
+    let ready = Promise.withResolvers();
+    /** @type {ScheduledMessages|null} */
+    let schedules = null;
+
+    api.listen.on('userSessionInitialized', async () => {
+        const bare_jid = _converse.session.get('bare_jid');
+        schedules = new ScheduledMessages([], {
+            storage: u.createStore(`converse.scheduled-messages-${bare_jid}`),
+            on_due,
+        });
+        await schedules.hydrated;
+        ready.resolve(schedules);
+    });
+    const resume = async () => (await ready.promise).resume();
+    api.listen.on('connected', resume);
+    api.listen.on('reconnected', resume);
+    api.listen.on('disconnected', () => schedules?.pause());
+    api.listen.on('clearSession', () => {
+        schedules?.pause();
+        schedules = null;
+        ready = Promise.withResolvers();
+    });
+
+    return {
+        /** The account's scheduled messages, once its session has loaded them. */
+        get: () => ready.promise,
+    };
 }
 
 /**
@@ -190,5 +234,3 @@ function dueTime(scheduled) {
 function destroy(model) {
     return new Promise((resolve, reject) => model.destroy({ success: () => resolve(), error: (_m, e) => reject(e) }));
 }
-
-export default ScheduledMessages;

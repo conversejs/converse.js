@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { converse } from '@converse/headless';
 import { start } from '../daemon.js';
@@ -139,27 +140,6 @@ describe('Scheduled sends', () => {
         expect((await request('schedules.list')).schedules).toEqual([]);
     });
 
-    it('sends a message scheduled outside the daemon only as far as policy allows a restricted one', async () => {
-        daemon = await startDaemon({ roster: ROSTER, mode: 'bot', policy: { direct: [] } });
-        const scheduled = await daemon.api.scheduledMessages.schedule({
-            to: JULIET,
-            body: 'No one asked for this',
-            send_at: at(100),
-        });
-
-        await vi.waitFor(async () => {
-            const { schedules } = await request('schedules.list', {}, 'full');
-            expect(schedules).toEqual([
-                expect.objectContaining({
-                    id: scheduled.id,
-                    access: 'restricted',
-                    parked: expect.objectContaining({ rule: 'allowlist' }),
-                }),
-            ]);
-        });
-        expect(sent()).toEqual([]);
-    });
-
     it('holds back a due message that a rate limit refuses, to try again later, instead of parking it', async () => {
         daemon = await startDaemon({
             roster: ROSTER,
@@ -169,10 +149,12 @@ describe('Scheduled sends', () => {
         // Scheduling checks the limit too, so it's spent between then and the due time.
         const { schedule } = await request('messages.send', { to: JULIET, body: 'Too soon', at: at(500) });
         await request('messages.send', { to: JULIET, body: 'Now' });
-        const { promise, resolve } = Promise.withResolvers();
-        daemon.api.listen.once('scheduledMessageProcessed', resolve);
 
-        expect(await promise).toMatchObject({ result: { outcome: 'refused', rule: 'rate_conversation' } });
+        // The refusal at due time is audited.
+        await vi.waitFor(async () => {
+            const audit = (await fs.readFile(daemon.config.paths.audit, 'utf8')).trim().split('\n').map(JSON.parse);
+            expect(audit.at(-1)).toMatchObject({ outcome: 'refused', rule: 'rate_conversation' });
+        });
         expect((await request('schedules.list')).schedules).toEqual([schedule]);
         expect(sent()).toEqual(['Now']);
     });

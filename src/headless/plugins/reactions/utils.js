@@ -1,6 +1,7 @@
 import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
 import _converse from '../../shared/_converse.js';
+import { buildReactionFallbackBody } from './fallback.js';
 
 const { Strophe, u } = converse.env;
 
@@ -140,8 +141,11 @@ export function onBeforeMessageCreated(chatbox, attrs, data) {
  * were waiting for it. If so, merge their reactions onto the new
  * message and destroy the placeholders.
  *
+ * It's a hook, so it returns the message for the next listener in the chain.
+ *
  * @param {ChatBoxOrMUC} chatbox
  * @param {BaseMessage} message - The newly created message model
+ * @returns {BaseMessage}
  */
 export function onAfterMessageCreated(chatbox, message) {
     const msgid = message.get('msgid');
@@ -155,14 +159,14 @@ export function onAfterMessageCreated(chatbox, message) {
         .map((k) => message.get(k))
         .filter(Boolean);
 
-    if (!msgid && !origin_id && !stanza_id_values.length) return;
+    if (!msgid && !origin_id && !stanza_id_values.length) return message;
 
     const danglings = chatbox.messages.models.filter((m) => {
         if (!m.get('dangling_reaction')) return false;
         const reaction_to_id = m.get('reaction_to_id');
         return reaction_to_id === msgid || reaction_to_id === origin_id || stanza_id_values.includes(reaction_to_id);
     });
-    if (!danglings.length) return;
+    if (!danglings.length) return message;
 
     const reactions = { ...(message.get('reactions') || {}) };
     for (const dangling of danglings) {
@@ -177,6 +181,7 @@ export function onAfterMessageCreated(chatbox, message) {
         dangling.destroy();
     }
     message.save({ reactions });
+    return message;
 }
 
 /**
@@ -214,6 +219,7 @@ export function getOwnReactionJID(chatbox) {
 Object.assign(u, {
     reactions: {
         ...u.reactions,
+        buildReactionFallbackBody,
         getOwnReactionJID,
     },
 });

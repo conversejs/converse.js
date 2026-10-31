@@ -430,6 +430,11 @@ export default function ModelWithMessages(BaseModel) {
          * set to `failed` and `send_error_code` set to that code. Nothing resends it on its
          * own. Call {@link resendFailedMessage} or {@link discardFailedMessage} to act on it.
          * @param {Object} [attrs] - A map of attributes to be saved on the message
+         * @param {Object} [options]
+         * @param {BaseMessage} [options.replying_to] - A message of this conversation that this
+         *  one replies to (XEP-0461). Defaults to the one chosen with the chat's `reply_to_id`.
+         * @param {BaseMessage} [options.correcting] - One of our messages in this conversation
+         *  that this one corrects (XEP-0308). Defaults to the one marked `correcting`.
          * @returns {Promise<BaseMessage>}
          * @throws {Error} When the message could not be sent. Its `code` gives the reason.
          * @example
@@ -440,7 +445,7 @@ export default function ModelWithMessages(BaseModel) {
          *      // e.code is set, for example 'no-omemo-devices'
          *  }
          */
-        async sendMessage(attrs) {
+        async sendMessage(attrs, { replying_to, correcting } = {}) {
             await api.emojis.initialize();
 
             if (!this.canPostMessages()) {
@@ -448,8 +453,20 @@ export default function ModelWithMessages(BaseModel) {
                 return;
             }
 
+            if (replying_to) {
+                // In a groupchat a message is referred to by the id the room gave it, elsewhere by its own.
+                const reply_to_id =
+                    this.get('message_type') === 'groupchat'
+                        ? replying_to.get(`stanza_id ${this.get('jid')}`)
+                        : replying_to.get('msgid');
+                if (!reply_to_id) {
+                    throw new Error("Can't reply to a groupchat message that has no stanza-id from the room");
+                }
+                attrs = { ...attrs, reply_to_id, reply_to: replying_to.get('from') };
+            }
+
             attrs = await this.getOutgoingMessageAttributes(attrs);
-            let message = this.messages.findWhere('correcting');
+            let message = correcting ?? this.messages.findWhere('correcting');
             if (message) {
                 const older_versions = message.get('older_versions') || {};
                 const edited_time = message.get('edited') || message.get('time');
@@ -517,17 +534,15 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Sends a failed message again. Only a call from the client resends a message,
          * nothing resends on its own. The `attrs` apply to this attempt only: they are
-         * saved before the send and restored if it fails again, so a failed attempt
-         * leaves the message as it was, failure included.
+         * saved before the send and restored if it fails again. A failed attempt keeps
+         * its own failure, not the earlier one, since that's the one the user hasn't seen.
          * @param {BaseMessage} message - A message whose `send_status` is `failed`.
          * @param {Object} [attrs] - Attributes to apply to this attempt.
          * @returns {Promise<BaseMessage>}
          */
         async resendFailedMessage(message, attrs = {}) {
-            const previous = {
-                ...this.#clearSendFailure(message),
-                ...Object.fromEntries(Object.keys(attrs).map((key) => [key, message.get(key)])),
-            };
+            this.#clearSendFailure(message);
+            const previous = Object.fromEntries(Object.keys(attrs).map((key) => [key, message.get(key)]));
             message.save(attrs);
             try {
                 await this.#sendStoredMessage(message);
@@ -547,26 +562,19 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * Clears the failure from a message and returns the failure it had, so that it can be restored.
+         * Clears the failure from a message, so that a new attempt can record its own.
          * @param {BaseMessage} message
          */
         #clearSendFailure(message) {
             if (message.get('send_status') !== 'failed') {
                 throw new Error('Only a failed message can be sent again');
             }
-            const failure = {
-                send_status: message.get('send_status'),
-                send_error_code: message.get('send_error_code'),
-                send_error_from: message.get('send_error_from'),
-                send_can_send_unencrypted: message.get('send_can_send_unencrypted'),
-            };
             message.save({
                 send_status: undefined,
                 send_error_code: undefined,
                 send_error_from: undefined,
                 send_can_send_unencrypted: undefined,
             });
-            return failure;
         }
 
         /**

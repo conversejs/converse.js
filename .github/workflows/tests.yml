@@ -33,6 +33,29 @@ jobs:
     - name: Run linting, type checks and tests
       run: make check
 
+  # Tests against a real Prosody. It runs in Docker, started by a step rather
+  # than as a service container, because service containers start before
+  # checkout and so can't mount the config from the repo.
+  prosody:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+    - name: Install dependencies
+      run: npm ci
+    - name: Start Prosody
+      run: node tests/prosody/server.js start
+    - name: Run the real-server tests
+      run: npm run test:prosody
+    - name: Show the Prosody log
+      if: failure()
+      run: docker logs converse-test-prosody
+
   docs:
     runs-on: ubuntu-latest
 

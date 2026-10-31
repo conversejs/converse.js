@@ -295,4 +295,21 @@ export default defineConfig([{
             }],
         }],
     },
+}, {
+    // Node programs, not browser code.
+    files: ["src/daemon/**/*.js", "src/cli/**/*.js"],
+    languageOptions: {
+        globals: globals.node,
+    },
+    rules: {
+        // Reading config at startup and in a short-lived CLI process is
+        // simplest done synchronously; nothing there serves other requests.
+        "no-sync": "off",
+    },
+}, {
+    // Entry points own their process's exit code.
+    files: ["src/daemon/bin/*.js", "src/cli/bin/*.js"],
+    rules: {
+        "no-process-exit": "off",
+    },
 }]);

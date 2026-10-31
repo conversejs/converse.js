@@ -242,9 +242,10 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         const text = attrs?.body;
         const body = text ? u.emojis.shortnamesToUnicode(text) : undefined;
 
-        // Get reply attributes from chatbox model if replying to a message
-        const reply_to_id = this.get('reply_to_id');
-        const reply_to = this.get('reply_to');
+        // A reply passed in wins over the one chosen on the chatbox, which then stays chosen.
+        const reply_from_state = !attrs?.reply_to_id;
+        const reply_to_id = attrs?.reply_to_id ?? this.get('reply_to_id');
+        const reply_to = reply_from_state ? this.get('reply_to') : attrs.reply_to;
 
         attrs = Object.assign(
             {},
@@ -273,7 +274,7 @@ class ChatBox extends ModelWithVCard(ModelWithMessages(ModelWithContact(ColorAwa
         attrs = this.addReplyFallback(attrs);
 
         // Clear reply state after capturing it
-        if (reply_to_id) {
+        if (reply_to_id && reply_from_state) {
             this.save({ reply_to_id: undefined, reply_to: undefined });
         }
 

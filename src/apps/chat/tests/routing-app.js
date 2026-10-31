@@ -155,4 +155,34 @@ describe('The Chat app URL routing', function () {
             },
         ),
     );
+
+    it(
+        "doesn't mirror a conversation over a hash it doesn't own",
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { enable_url_routing: true, view_mode: 'fullscreen' },
+            async function (_converse) {
+                const { api, state } = _converse;
+                await mock.waitForRoster(_converse, 'current', 1);
+                const mercutio = 'mercutio@montague.lit';
+                const el = mountChatApp();
+
+                // A link that is still waiting for login to be handled (here
+                // planted without a `hashchange`), and an embedding page's own
+                // fragment, both survive a conversation coming to the foreground.
+                for (const hash of ['#converse/action?uri=xmpp%3Ajuliet%40capulet.lit', '#juliet@capulet.lit', '#faq']) {
+                    history.replaceState(null, '', `${location.pathname}${location.search}${hash}`);
+                    await api.chats.open(mercutio, {}, true);
+                    await u.waitUntil(() => state.chatboxes.get(mercutio).get('hidden') === false);
+                    await new Promise((resolve) => setTimeout(resolve, 50));
+                    expect(location.hash).toBe(hash);
+                    await state.chatboxes.get(mercutio).close();
+                }
+
+                el.remove();
+                clearHash();
+            },
+        ),
+    );
 });

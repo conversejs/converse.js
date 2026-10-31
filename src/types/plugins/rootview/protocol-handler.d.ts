@@ -22,8 +22,12 @@ export function registerProtocolHandlerIfEnabled(): void;
  * Dispatch waits for a live connection. A cold click on an `xmpp:` link lands
  * here before login, and the chat and roster actions (along with their confirm
  * prompts) only mean anything against a live session. The hash is deliberately
- * left in place until it has been handled, so the intent survives the login and
- * the `connected` handler picks it up instead of it being silently dropped.
+ * left in place until then, so the intent survives the login and the
+ * `connected` handler picks it up instead of it being silently dropped.
+ *
+ * It's dropped before dispatching, not after: with URL routing on, opening the
+ * conversation pushes the chat's own route, which clearing afterwards would
+ * wipe before the router gets to it.
  *
  * @returns {Promise<boolean>} Whether the URI was handled.
  */

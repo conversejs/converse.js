@@ -31,6 +31,14 @@ export default class Message extends ObservableElement {
     shouldShowAvatar(): boolean;
     /** @param {MouseEvent} ev */
     onImgClick(ev: MouseEvent): void;
+    /**
+     * Ask before following a link out of the chat, since the sender chose where
+     * it leads. Clicks that Converse handles itself, such as an image opening in
+     * a modal or an `xmpp:` URI opening a chat, have already been prevented by
+     * the time they bubble up to here.
+     * @param {MouseEvent} ev
+     */
+    onLinkClick(ev: MouseEvent): Promise<void>;
     onUnfurlAnimationEnd(): void;
     onRetrySendClicked(): Promise<void>;
     onSendUnencryptedClicked(): Promise<void>;

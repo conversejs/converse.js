@@ -20,6 +20,19 @@ import { alertSendError } from 'shared/chat/send-errors.js';
 const { Strophe } = converse.env;
 const { SUCCESS } = constants;
 
+/**
+ * Whether following a link leaves Converse for a web page. Other schemes, such
+ * as `mailto:` and the `xmpp:` URIs Converse leaves to the OS, go to a local
+ * app, and `blob:` URLs are files Converse made itself. Only the page Converse
+ * runs on counts as its own, not every page on its origin.
+ * @param {URL} url
+ */
+function isExternalURL(url) {
+    if (!['http:', 'https:'].includes(url.protocol)) return false;
+
+    return url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search;
+}
+
 export default class Message extends ObservableElement {
     /**
      * @typedef {import('shared/components/types').ObservableProperty} ObservableProperty
@@ -30,6 +43,9 @@ export default class Message extends ObservableElement {
         this.model_with_messages = null;
         this.model = null;
         this.observable = /** @type {ObservableProperty} */ ('once');
+        this.addEventListener('click', (ev) => this.onLinkClick(ev));
+        // A middle-click doesn't fire `click`, but still opens the link in a new tab.
+        this.addEventListener('auxclick', (ev) => ev.button === 1 && this.onLinkClick(ev));
     }
 
     static get properties() {
@@ -134,6 +150,41 @@ export default class Message extends ObservableElement {
         ev.preventDefault();
         const img = /** @type {HTMLImageElement} */ (ev.target);
         api.modal.show('converse-image-modal', { src: img.src, filename: img.dataset.filename }, ev);
+    }
+
+    /**
+     * Ask before following a link out of the chat, since the sender chose where
+     * it leads. Clicks that Converse handles itself, such as an image opening in
+     * a modal or an `xmpp:` URI opening a chat, have already been prevented by
+     * the time they bubble up to here.
+     * @param {MouseEvent} ev
+     */
+    async onLinkClick(ev) {
+        // Only an explicit `false` turns it off, so that a setting which was
+        // never registered doesn't silently disable the confirmation.
+        if (ev.defaultPrevented || api.settings.get('confirm_external_links') === false) return;
+
+        const link = /** @type {Element} */ (ev.target).closest('a[href]');
+        if (!(link instanceof HTMLAnchorElement)) return;
+
+        let url;
+        try {
+            url = new URL(link.href);
+        } catch {
+            url = null; // Unparseable, so there's no telling where it leads.
+        }
+        if (url && !isExternalURL(url)) return;
+
+        ev.preventDefault();
+        const confirmed = await api.confirm(__('Open external link?'), [
+            url ? __('This link will take you to %1$s', url.hostname) : __('This link will take you to:'),
+            link.href,
+        ]);
+        // Opened the way the link's `target="_blank" rel="noopener"` would have.
+        // Clicking it again instead would hand the click back to the link's own
+        // handlers, and browsers ignore the modifier keys of a scripted click,
+        // except that a shift-click's request for a new window can be honoured.
+        if (confirmed) window.open(link.href, '_blank', ev.shiftKey ? 'noopener,popup' : 'noopener');
     }
 
     /**

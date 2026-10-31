@@ -536,6 +536,16 @@ When desktop notifications are turned on (see [show_desktop_notifications](#show
 
 Receiving constant notifications that a user's client is connecting and disconnecting is annoying, so this option allows you to ignore those JIDs.
 
+### confirm_external_links
+
+- Default: `true`
+
+When a link in a chat message leads to a web page outside of Converse, ask the user to confirm before following it. The confirmation shows the site and the full address the link points to, which can differ from what the message made it look like. This applies to a middle-click as well as a normal click.
+
+Links that Converse handles itself, such as `xmpp:` URIs and invitation links that open a chat or groupchat, and links to the page Converse runs on, are followed without asking. So are links that open another app rather than a web page, such as `mailto:` links.
+
+A confirmed link opens in a new tab. A shift-click opens it in a new window, but a Ctrl- or Cmd-click opens it in the foreground rather than in a background tab.
+
 ### connection_options
 
 - Default: `{}`

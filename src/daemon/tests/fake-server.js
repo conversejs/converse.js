@@ -20,9 +20,12 @@ const TIMED_OUT = Symbol('timed out');
  * @param {(stanza: import('strophe.js').Builder) => void} options.receive
  * @param {string} options.jid - Our full JID
  * @param {string[]} [options.server_features] - What the server's disco#info lists
- * @param {{ id: string, from: string, to: string, body: string, time: string }[]} [options.archive]
+ * @param {{ id: string, from: string, to: string, body: string, time: string, origin_id?: string }[]} [options.archive]
  *  Messages in our account's archive, oldest first, each with the stanza-id the archive
- *  assigned it. If given, our account supports MAM.
+ *  assigned it and the origin-id its sender gave it, if any. If given, our account supports MAM.
+ * @param {Record<string, { id: string, from: string, body: string, time: string }[]>} [options.room_archives]
+ *  Rooms' archives by room JID, each oldest first, with the stanza-id the room assigned each
+ *  message and the occupant JID it came from. The rooms listed support MAM.
  * @param {boolean} [options.fulltext] - Whether the archive offers full-text search (XEP-0431), which
  *  matches each word of the text case-insensitively in a message's body. Defaults to true.
  * @param {'answer'|'error'|'silent'} [options.mam_mode] - How MAM queries are answered: with the
@@ -35,6 +38,7 @@ export function serve({
     jid,
     server_features = [],
     archive,
+    room_archives = {},
     mam_mode = 'answer',
     fulltext = true,
     upload_service,
@@ -92,6 +96,7 @@ export function serve({
                         <identity category="conference" type="text"/>
                         <feature var="${Strophe.NS.MUC}"/>
                         <feature var="${Strophe.NS.OCCUPANTID}"/>
+                        ${room_archives[to] ? stx`<feature var="${NS_MAM}"/>` : ''}
                     </query>
                 </iq>`;
         }
@@ -121,7 +126,8 @@ export function serve({
                 </iq>`;
         }
         const mam = iq.querySelector(`query[xmlns="${NS_MAM}"]`);
-        if (mam && archive && !to) {
+        const queried = to ? room_archives[to] : archive;
+        if (mam && queried) {
             mam_queries.push(mam);
             if (current_mam_mode === 'silent') return TIMED_OUT;
             if (current_mam_mode === 'error') {
@@ -132,7 +138,7 @@ export function serve({
                         </error>
                     </iq>`;
             }
-            answerMAM(mam, id);
+            answerMAM(mam, id, to);
             return null;
         }
         return null;
@@ -142,8 +148,9 @@ export function serve({
      * Sends the matching page of the archive, newest last, then the <fin/>.
      * @param {Element} query
      * @param {string} iq_id
+     * @param {string|null} room - The room whose archive was queried, or null for our account's
      */
-    function answerMAM(query, iq_id) {
+    function answerMAM(query, iq_id, room) {
         const field = (name) => query.querySelector(`x field[var="${name}"] value`)?.textContent ?? undefined;
         const rsm = (name) => query.querySelector(`set[xmlns="${NS_RSM}"] > ${name}`)?.textContent;
         const [with_jid, start, end] = [field('with'), field('start'), field('end')];
@@ -151,7 +158,7 @@ export function serve({
         const max = Number(rsm('max') ?? 50);
         const before = rsm('before');
 
-        let matches = archive.filter(
+        let matches = (room ? room_archives[room] : archive).filter(
             (m) =>
                 (!with_jid || m.from === with_jid || m.to === with_jid) &&
                 (!start || m.time >= start) &&
@@ -168,12 +175,13 @@ export function serve({
 
         page.forEach((m) =>
             receive(stx`
-                <message xmlns="jabber:client" to="${jid}">
+                <message xmlns="jabber:client" from="${room ?? bare_jid}" to="${jid}">
                     <result xmlns="${NS_MAM}" queryid="${query.getAttribute('queryid')}" id="${m.id}">
                         <forwarded xmlns="urn:xmpp:forward:0">
                             <delay xmlns="urn:xmpp:delay" stamp="${m.time}"/>
-                            <message xmlns="jabber:client" from="${m.from}" to="${m.to}" type="chat">
+                            <message xmlns="jabber:client" from="${m.from}" to="${room ? jid : m.to}" type="${room ? 'groupchat' : 'chat'}">
                                 <body>${m.body}</body>
+                                ${m.origin_id ? stx`<origin-id xmlns="${Strophe.NS.SID}" id="${m.origin_id}"/>` : ''}
                             </message>
                         </forwarded>
                     </result>

@@ -6,11 +6,12 @@ import { converse } from '@converse/headless';
 import { ERRORS } from '../protocol.js';
 import { JID, startDaemon } from './harness.js';
 
-const { Strophe, stx } = converse.env;
+const { Strophe, stx, u } = converse.env;
 
 const OWN = 'romeo@montague.lit';
 const JULIET = 'juliet@capulet.lit';
 const TYBALT = 'tybalt@capulet.lit';
+const HALL = 'hall@conference.montague.lit';
 
 /**
  * Messages from `from` to us, one a minute, with ids `${prefix}1`, `${prefix}2`, ...
@@ -91,6 +92,53 @@ describe('Reading history', () => {
         expect(await ids({ limit: 3, before: 'a1' })).toEqual([]);
         expect(await ids({ limit: 50 })).toHaveLength(7);
         expect(daemon.mam_queries.length).toBe(queries);
+    });
+
+    it("pages back through a room's archive by the ids the room gave its messages, until it runs out", async () => {
+        const archive = archiveOf(`${HALL}/tybalt`, 'h', 7);
+        await start({ room_archives: { [HALL]: archive }, rooms: [{ jid: HALL, nick: 'claude' }] });
+        await daemon.enterRoom(HALL);
+        // Entering fetches the newest page.
+        const room = await daemon.api.rooms.get(HALL);
+        await u.waitUntil(() => room.messages.length >= 3);
+        const room_ids = async (params) =>
+            (await client.request('messages.list', { conversation: HALL, ...params })).messages.map((m) => m.id);
+
+        const queries = daemon.mam_queries.length;
+        expect(await room_ids({ limit: 3 })).toEqual(['h5', 'h6', 'h7']);
+        expect(await room_ids({ limit: 3, before: 'h5' })).toEqual(['h2', 'h3', 'h4']);
+        expect(await room_ids({ limit: 3, before: 'h2' })).toEqual(['h1']);
+        const befores = daemon.mam_queries.slice(queries).map((q) => q.querySelector('set > before')?.textContent);
+        expect(befores).toEqual(['h5', 'h2', 'h1']);
+
+        // The archive has said there's nothing older, so it isn't asked again.
+        expect(await room_ids({ limit: 50 })).toHaveLength(7);
+        expect(daemon.mam_queries.length).toBe(queries + 3);
+    });
+
+    it('stops paging back by time once the archive has nothing older than the oldest message held', async () => {
+        const archive = [];
+        await start({ archive });
+        const chat = await daemon.api.chats.get(JULIET, {}, true);
+        // Opening it fetches the newest page, of which there's none yet.
+        await u.waitUntil(() => daemon.mam_queries.length > 0);
+        await chat.msg_chain;
+        // What we sent gets no stanza-id from our archive until it's fetched from there.
+        const sent = await chat.sendMessage({ body: 'Hello' });
+        archive.push({
+            id: 'a1',
+            from: JID,
+            to: JULIET,
+            body: 'Hello',
+            time: sent.get('time'),
+            origin_id: sent.get('origin_id'),
+        });
+
+        const queries = daemon.mam_queries.length;
+        expect(await ids({ limit: 10 })).toHaveLength(1);
+        expect(daemon.mam_queries.length).toBe(queries + 1);
+        expect(await ids({ limit: 10 })).toHaveLength(1);
+        expect(daemon.mam_queries.length).toBe(queries + 1);
     });
 
     it("doesn't duplicate a message that arrived live and is also in the archive", async () => {

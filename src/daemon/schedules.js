@@ -53,7 +53,9 @@ export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
     async function onDue(scheduled, state) {
         const { to, body, metadata = {} } = scheduled.toJSON();
         const client = {
-            access: metadata.access ?? 'full',
+            // One scheduled other than through the daemon says nothing of who
+            // asked for it, so policy applies to it as to an agent's.
+            access: metadata.access ?? 'restricted',
             consumer: metadata.consumer ?? null,
             notify: () => {},
         };
@@ -139,7 +141,7 @@ function toScheduleDTO(scheduled) {
         send_at,
         created,
         consumer: metadata.consumer ?? null,
-        access: metadata.access ?? 'full',
+        access: metadata.access ?? 'restricted',
         reply_to: metadata.reply_to ?? null,
         correct: metadata.correct ?? null,
         parked,

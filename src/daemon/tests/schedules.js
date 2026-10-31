@@ -139,6 +139,27 @@ describe('Scheduled sends', () => {
         expect((await request('schedules.list')).schedules).toEqual([]);
     });
 
+    it('sends a message scheduled outside the daemon only as far as policy allows a restricted one', async () => {
+        daemon = await startDaemon({ roster: ROSTER, mode: 'bot', policy: { direct: [] } });
+        const scheduled = await daemon.api.scheduledMessages.schedule({
+            to: JULIET,
+            body: 'No one asked for this',
+            send_at: at(100),
+        });
+
+        await vi.waitFor(async () => {
+            const { schedules } = await request('schedules.list', {}, 'full');
+            expect(schedules).toEqual([
+                expect.objectContaining({
+                    id: scheduled.id,
+                    access: 'restricted',
+                    parked: expect.objectContaining({ rule: 'allowlist' }),
+                }),
+            ]);
+        });
+        expect(sent()).toEqual([]);
+    });
+
     it('requires a future ISO 8601 time', async () => {
         daemon = await startDaemon({ roster: ROSTER });
         for (const value of ['tomorrow morning', new Date(Date.now() - 1).toISOString()]) {

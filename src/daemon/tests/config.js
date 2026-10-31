@@ -2,7 +2,15 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { AccountError, getPassword, listAccounts, loadConfig } from '../config.js';
+import {
+    AccountError,
+    checkRuntimeDir,
+    findDaemon,
+    getPassword,
+    listAccounts,
+    listDaemons,
+    loadConfig,
+} from '../config.js';
 
 describe('The account configuration', () => {
     let dir, env;
@@ -267,6 +275,33 @@ describe('The account configuration', () => {
         await writeConfig({ jid: 'romeo@montague.lit' });
         await installKeyring('romeo@montague.lit', 'from keyring');
         expect(await getPassword(loadConfig(env), env)).toBe('from keyring');
+    });
+
+    it("doesn't trust the records in a runtime directory others can write in", async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', websocket_url: 'wss://montague.lit/ws' });
+        const config = loadConfig(env);
+        const { runtime_dir, record } = config.paths;
+        expect(findDaemon(config)).toBe(null);
+
+        await fs.mkdir(path.dirname(record), { recursive: true });
+        await fs.writeFile(record, JSON.stringify({ account: 'default', pid: process.pid, socket: '/elsewhere' }));
+        await fs.chmod(runtime_dir, 0o777);
+        expect(() => findDaemon(config)).toThrow(/is open to other users/);
+        expect(() => listDaemons(env)).toThrow(/is open to other users/);
+
+        await fs.chmod(runtime_dir, 0o700);
+        expect(findDaemon(config)).toMatchObject({ socket: '/elsewhere' });
+    });
+
+    it("refuses a runtime directory that isn't a directory of this user's own, such as a planted link", async () => {
+        const target = path.join(dir, 'theirs');
+        await fs.mkdir(target, { mode: 0o700 });
+        await fs.mkdir(path.join(dir, 'run'));
+        const runtime_dir = path.join(dir, 'run', 'converse');
+        await fs.symlink(target, runtime_dir);
+        for (const options of [{}, { check_mode: false }]) {
+            expect(() => checkRuntimeDir(runtime_dir, options)).toThrow(/isn't a directory of this user's own/);
+        }
     });
 
     it('says how to store a password when there is none', async () => {

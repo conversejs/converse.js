@@ -136,6 +136,53 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
     );
 
     it(
+        'join action opens the groupchat after confirmation, naming the nick it will use',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            spyOn(api, 'confirm').and.callFake(() => Promise.resolve(true));
+            // Asserted on the event rather than the room: opening a groupchat
+            // waits for disco replies that only `mock.openAndEnterMUC` gives.
+            const triggered = new Promise((resolve) => api.listen.once('openConversation', resolve));
+            await clickXMPPURI(_converse, 'xmpp:coven@chat.shakespeare.lit?join;nick=romeo');
+            expect(await triggered).toEqual({
+                view: 'room',
+                jid: 'coven@chat.shakespeare.lit',
+                attrs: { nick: 'romeo' },
+            });
+            expect(api.confirm).toHaveBeenCalledOnce();
+            expect(api.confirm.calls.argsFor(0)[1]).toBe('Join the groupchat coven@chat.shakespeare.lit as romeo?');
+        }),
+    );
+
+    it(
+        'join action is a no-op when the confirmation is cancelled',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            spyOn(api, 'confirm').and.callFake(() => Promise.resolve(false));
+            const triggered = [];
+            api.listen.on('openConversation', (data) => triggered.push(data));
+            await clickXMPPURI(_converse, 'xmpp:coven@chat.shakespeare.lit?join');
+            await u.waitUntil(() => api.confirm.calls.count() === 1);
+            await new Promise((resolve) => setTimeout(resolve));
+            expect(api.confirm.calls.argsFor(0)[1]).toBe('Join the groupchat coven@chat.shakespeare.lit?');
+            expect(triggered).toEqual([]);
+        }),
+    );
+
+    it(
+        "join action doesn't ask again for a groupchat that's already open",
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.openAndEnterMUC(_converse, 'coven@chat.shakespeare.lit', 'romeo');
+            spyOn(api, 'confirm').and.callFake(() => Promise.resolve(true));
+            const triggered = new Promise((resolve) => api.listen.once('openConversation', resolve));
+            await clickXMPPURI(_converse, 'xmpp:coven@chat.shakespeare.lit?join');
+            expect(await triggered).toEqual(jasmine.objectContaining({ view: 'room', jid: 'coven@chat.shakespeare.lit' }));
+            expect(api.confirm).not.toHaveBeenCalled();
+        }),
+    );
+
+    it(
         'subscribe action sends a presence subscription after confirmation',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;

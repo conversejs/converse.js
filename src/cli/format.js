@@ -10,6 +10,47 @@
 export const MAX_BODY_LENGTH = 280;
 
 /**
+ * Control and invisible format characters: escape sequences, bidi overrides,
+ * zero width and tag characters. Printed as they are, they can move the
+ * cursor, hide text, or reorder what is printed around them. The zero width
+ * joiner is left alone, as emoji sequences are made with it.
+ */
+const INVISIBLE = /(?!\u200d)[\p{Cc}\p{Cf}]/gu;
+
+/** The same, but keeping the newlines and tabs that lay out text over several lines. */
+const INVISIBLE_IN_TEXT = /(?![\n\t\u200d])[\p{Cc}\p{Cf}]/gu;
+
+/**
+ * Text someone else chose, with its control and invisible characters shown
+ * as JSON escapes, so that a quoted string stays one a JSON parser reads back
+ * as the text that was sent.
+ * @param {string} text
+ * @param {RegExp} [pattern]
+ */
+function escapeInvisible(text, pattern = INVISIBLE) {
+    return text.replace(pattern, (c) =>
+        [...Array(c.length).keys()].map((i) => `\\u${c.charCodeAt(i).toString(16).padStart(4, '0')}`).join(''),
+    );
+}
+
+/**
+ * Text someone else chose, as a JSON string.
+ * @param {string} text
+ */
+export function quote(text) {
+    return escapeInvisible(JSON.stringify(text));
+}
+
+/**
+ * A value as one line of JSON, for --json. A script reads the same value
+ * back, but a terminal that shows the line can't be driven by it.
+ * @param {unknown} value
+ */
+export function formatJSON(value) {
+    return escapeInvisible(JSON.stringify(value)) + '\n';
+}
+
+/**
  * One message, on one line: id, time (ISO and relative), sender, body.
  *
  * The body is printed as a JSON string. Its quotes mark exactly where text
@@ -41,9 +82,14 @@ export function formatMessage(message, { full = false, now = new Date(), convers
         .map((note) => `[${note}]  `)
         .join('');
     const place = conversation ? `in ${message.conversation}  ` : '';
+    // Besides the body, the sender chose the ids (where the server added
+    // none), the nickname in `from`, and the emojis, so none of them may
+    // break the line either.
     return (
-        `${message.id}  ${formatTime(time)} (${formatAgo(time, now)})  ${place}` +
-        `${message.from}  ${notes}${formatBody(message.body, { full })}\n`
+        escapeInvisible(
+            `${message.id}  ${formatTime(time)} (${formatAgo(time, now)})  ${place}` +
+                `${message.from}  ${notes}${formatBody(message.body, { full })}`,
+        ) + '\n'
     );
 }
 
@@ -62,16 +108,19 @@ export function formatDraft(draft, { full = false, now = new Date() } = {}) {
         .map((note) => `[${note}]  `)
         .join('');
     return (
-        `${draft.id}  ${formatTime(time)} (${formatAgo(time, now)})  to ${draft.to}  ` +
-        `${notes}${formatBody(draft.body, { full })}\n`
+        escapeInvisible(
+            `${draft.id}  ${formatTime(time)} (${formatAgo(time, now)})  to ${draft.to}  ` +
+                `${notes}${formatBody(draft.body, { full })}`,
+        ) + '\n'
     );
 }
 
 /**
  * One draft in full, for the user to review before sending it: who it's for,
  * who made it and when, the message it acts on, and its text as written, over
- * as many lines as it has. The text comes last, so that nothing it says can be
- * mistaken for the lines above it.
+ * as many lines as it has. The text comes last and indented, so that nothing
+ * it says can be mistaken for the lines above it, and its control characters
+ * are shown escaped, so that what the user reads is what would be sent.
  * @param {import('@converse/daemon/types').Draft} draft
  * @param {import('@converse/daemon/types').MessageDTO|null} target - The message it acts on, if held
  * @param {Object} [options]
@@ -79,22 +128,32 @@ export function formatDraft(draft, { full = false, now = new Date() } = {}) {
  */
 export function formatDraftDetails(draft, target, { now = new Date() } = {}) {
     const time = new Date(draft.created);
+    // The client that made the draft chose its consumer name and its text.
+    const consumer = draft.consumer ? quote(draft.consumer) : 'an unnamed client';
     const lines = [
-        `Draft ${draft.id}, made by ${draft.consumer ?? 'an unnamed client'} ${formatTime(time)} (${formatAgo(time, now)})`,
-        `To: ${draft.to}`,
+        `Draft ${draft.id}, made by ${consumer} ${formatTime(time)} (${formatAgo(time, now)})`,
+        `To: ${escapeInvisible(draft.to)}`,
     ];
     const [label, id] = draftTarget(draft) ?? [];
     if (label) {
-        lines.push(`${label}: ${target ? formatMessage(target, { now }).trimEnd() : `${id} (no longer held here)`}`);
+        const shown = target
+            ? formatMessage(target, { now }).trimEnd()
+            : `${escapeInvisible(id)} (no longer held here)`;
+        lines.push(`${label}: ${shown}`);
     }
     if (draft.retract) return lines.join('\n') + '\n';
 
     if (draft.reaction_to) {
-        lines.push(`Emoji: ${draft.body}`);
+        lines.push(`Emoji: ${quote(draft.body ?? '')}`);
     } else if (draft.upload) {
-        lines.push(`File: ${draft.body}`);
+        lines.push(`File: ${quote(draft.body ?? '')}`);
     } else {
-        lines.push('Text:', draft.body ?? '');
+        lines.push(
+            'Text:',
+            ...escapeInvisible(draft.body ?? '', INVISIBLE_IN_TEXT)
+                .split('\n')
+                .map((line) => `  ${line}`),
+        );
     }
     return lines.join('\n') + '\n';
 }
@@ -115,7 +174,11 @@ function draftTarget({ reply_to, correct, retract, reaction_to, remove }) {
 /** One scheduled message, on one line: id, delivery time, recipient and body. */
 export function formatSchedule(schedule, { full = false } = {}) {
     const parked = schedule.parked ? `  NOT SENT: ${schedule.parked.message}` : '';
-    return `${schedule.id}  ${schedule.send_at}  to ${schedule.to}  ${formatBody(schedule.body, { full })}${parked}\n`;
+    return (
+        escapeInvisible(
+            `${schedule.id}  ${schedule.send_at}  to ${schedule.to}  ${formatBody(schedule.body, { full })}${parked}`,
+        ) + '\n'
+    );
 }
 
 /**
@@ -126,7 +189,7 @@ export function formatSchedule(schedule, { full = false } = {}) {
 function formatBody(text, { full }) {
     const chars = [...(text ?? '')];
     const truncated = !full && chars.length > MAX_BODY_LENGTH;
-    const body = JSON.stringify(truncated ? chars.slice(0, MAX_BODY_LENGTH).join('') : chars.join(''));
+    const body = quote(truncated ? chars.slice(0, MAX_BODY_LENGTH).join('') : chars.join(''));
     const more = truncated ? ` [+${chars.length - MAX_BODY_LENGTH} chars, --full to show]` : '';
     return body + more;
 }
@@ -139,9 +202,9 @@ function formatBody(text, { full }) {
  * @param {Date} [options.now]
  */
 export function formatConversation(conversation, { now = new Date() } = {}) {
-    const name = conversation.name ? `  ${JSON.stringify(conversation.name)}` : '';
+    const name = conversation.name ? `  ${quote(conversation.name)}` : '';
     const last = conversation.last_activity ? formatAgo(new Date(conversation.last_activity), now) : 'never';
-    return `${conversation.jid}${name}  unread ${conversation.unread}  last active ${last}\n`;
+    return `${escapeInvisible(conversation.jid)}${name}  unread ${conversation.unread}  last active ${last}\n`;
 }
 
 /**
@@ -203,7 +266,7 @@ export function parseSince(value, now = new Date()) {
  * @param {string|null} text
  */
 function quoted(text) {
-    return text === null ? '-' : JSON.stringify(text);
+    return text === null ? '-' : quote(text);
 }
 
 /**
@@ -212,7 +275,7 @@ function quoted(text) {
  * @param {import('@converse/daemon/types').OccupantDTO} occupant
  */
 export function formatOccupant(occupant) {
-    return `${JSON.stringify(occupant.nick)}  ${occupant.role}  ${occupant.affiliation}  ${occupant.jid ?? '-'}\n`;
+    return `${quote(occupant.nick)}  ${occupant.role}  ${occupant.affiliation}  ${escapeInvisible(occupant.jid ?? '-')}\n`;
 }
 
 /**
@@ -220,7 +283,7 @@ export function formatOccupant(occupant) {
  * @param {import('@converse/daemon/types').RoomListing} room
  */
 export function formatRoomListing(room) {
-    return `${room.jid}  ${quoted(room.name)}\n`;
+    return `${escapeInvisible(room.jid)}  ${quoted(room.name)}\n`;
 }
 
 /**
@@ -228,7 +291,7 @@ export function formatRoomListing(room) {
  * @param {import('@converse/daemon/types').ContactSummary} contact
  */
 export function formatContact(contact) {
-    return `${contact.jid}  ${contact.presence}  ${quoted(contact.name)}\n`;
+    return `${escapeInvisible(contact.jid)}  ${contact.presence}  ${quoted(contact.name)}\n`;
 }
 
 /**
@@ -237,7 +300,9 @@ export function formatContact(contact) {
  * @param {import('@converse/daemon/types').ContactDetails} details
  */
 export function formatContactDetails(details) {
-    const lines = [`${details.jid}  ${details.presence}  ${details.on_roster ? 'on roster' : 'not on roster'}`];
+    const lines = [
+        `${escapeInvisible(details.jid)}  ${details.presence}  ${details.on_roster ? 'on roster' : 'not on roster'}`,
+    ];
     lines.push(`  name: ${quoted(details.name)}`);
     if (details.vcard) {
         for (const [field, value] of Object.entries(details.vcard)) {
@@ -249,11 +314,11 @@ export function formatContactDetails(details) {
     if (!details.resources.length) lines.push('  no connected clients');
     for (const resource of details.resources) {
         const identities = resource.identities.map(
-            ({ category, type, name }) => `${category}/${type}${name ? ` ${JSON.stringify(name)}` : ''}`,
+            ({ category, type, name }) => `${category}/${type}${name ? ` ${quote(name)}` : ''}`,
         );
-        const status = resource.status === null ? '' : `, status ${JSON.stringify(resource.status)}`;
+        const status = resource.status === null ? '' : `, status ${quote(resource.status)}`;
         lines.push(
-            `  client ${JSON.stringify(resource.name)}: ${resource.presence}, priority ${resource.priority}${status}` +
+            `  client ${quote(resource.name)}: ${resource.presence}, priority ${resource.priority}${status}` +
                 `; identities: ${identities.join(', ') || 'none known'}`,
         );
     }

@@ -125,10 +125,11 @@ export class Texture extends String {
         const { url } = url_obj;
         const filtered_url = filterQueryParamsFromURL(url);
         let template;
-        if (url_obj.is_gif && this.shouldRenderMedia(url, 'image')) {
+        // WebP comes first, since a `.gif` URL may be served as WebP (going by its headers).
+        if (url_obj.is_webp && this.shouldRenderMedia(url, 'image')) {
+            template = tplWebP(filtered_url, this.hide_media_urls, this.onImgClick, this.onImgLoad);
+        } else if (url_obj.is_gif && this.shouldRenderMedia(url, 'image')) {
             template = tplGif(filtered_url, this.hide_media_urls);
-        } else if (url_obj.is_webp) {
-            template = tplWebP(filtered_url, this.hide_media_urls);
         } else if (url_obj.is_image && this.shouldRenderMedia(url, 'image')) {
             template = tplImage({
                 src: filtered_url,

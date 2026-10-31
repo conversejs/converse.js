@@ -1,75 +1,134 @@
-import ConverseGif from "shared/gif/index.js";
+import { log } from '@converse/headless';
+import ConverseGif from 'shared/gif/index.js';
+
+// Beyond this many decoded pixels (summed over all frames) we don't keep the
+// frames in memory, and instead leave the image for the browser to render.
+const MAX_DECODED_PIXELS = 50_000_000;
 
 export default class ConverseWebP extends ConverseGif {
+    is_static = false;
+    disposed = false;
+
     /**
-     * Create a new ConverseWebP instance.
-     * @param {import('./component').default} el
-     * @param {import("shared/gif/types").ConverseGifOptions} opts
+     * The element fetches the file and passes it to `handleGIFResponse`,
+     * since it has to look at it before deciding to use a player.
      */
-    constructor(el, opts) {
-        super(el, opts);
-        this.el = el;
+    async initialize() {}
+
+    /**
+     * Stops playback and frees the decoded frames. The player can't be used afterwards.
+     */
+    dispose() {
+        this.disposed = true;
+        this.playing = false;
+        this.closeFrames();
+    }
+
+    play() {
+        // initPlayer() may still have a delayed call to play() pending.
+        if (this.disposed) return;
+
+        super.play();
+    }
+
+    closeFrames() {
+        this.frames.forEach((frame) => frame.bitmap.close());
+        this.frames = [];
     }
 
     /**
      * @param {ArrayBuffer} data - The WebP file data, as returned by the server
      */
     async handleGIFResponse(data) {
-        await this.loadWebPFrames(data);
-        this.setSizes(
-            this.options.width ?? this.frames[0].dims.width,
-            this.options.height ?? this.frames[0].dims.height
-        );
+        if (this.disposed) return;
 
-        if (this.frames.length === 1) {
-            this.renderImage(false);
+        try {
+            await this.decodeFrames(data);
+        } catch (e) {
+            this.closeFrames();
+            if (this.disposed) return;
+
+            log.warn(`Could not decode WebP image ${this.gif_el.src}: ${e.message}`);
+            this.showError();
             return;
         }
 
+        if (this.disposed) {
+            // Disposed while decoding, so free any frames decoded since.
+            this.closeFrames();
+            return;
+        }
+
+        if (this.is_static) {
+            // A single frame has nothing to play, so it's rendered as a regular image.
+            this.el.requestUpdate();
+            return;
+        }
+
+        const { width, height } = this.frames[0].dims;
+        this.setSizes(this.options.width ?? width, this.options.height ?? height);
         this.initPlayer();
+        if (!this.options.autoplay) this.drawPlayIcon();
     }
 
     /**
-     * 
-     * @param {ArrayBuffer} fileBuffer 
+     * @param {ArrayBuffer} data
      */
-    async loadWebPFrames(fileBuffer) {
-        const decoder = new globalThis.ImageDecoder({ 
-            data: fileBuffer, 
-            type: 'image/webp' 
-        });
+    async decodeFrames(data) {
+        if (!globalThis.ImageDecoder) {
+            throw new Error('ImageDecoder is not supported by this browser');
+        }
+        const decoder = new ImageDecoder({ data, type: 'image/webp' });
+        try {
+            await decoder.tracks.ready;
+            const frame_count = decoder.tracks.selectedTrack.frameCount;
+            if (!frame_count) throw new Error('No frames found');
 
-        await decoder.tracks.ready;
-        const track = decoder.tracks.selectedTrack;
-        const totalFrames = track.frameCount;
+            if (frame_count === 1) {
+                this.is_static = true;
+                return;
+            }
 
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
+            for (let i = 0; i < frame_count; i++) {
+                const { image } = await decoder.decode({ frameIndex: i });
+                try {
+                    if (this.disposed) return;
 
-        for (let i = 0; i < totalFrames; i++) {
-            const result = await decoder.decode({ frameIndex: i });
-            const frameImage = result.image;
+                    // Decoded frames are composited to the full image size,
+                    // so the first one tells us the total for all of them.
+                    const width = image.displayWidth;
+                    const height = image.displayHeight;
+                    if (i === 0 && width * height * frame_count > MAX_DECODED_PIXELS) {
+                        throw new Error('Too large to decode');
+                    }
+                    this.frames.push({
+                        bitmap: await createImageBitmap(image),
+                        dims: { width, height, left: 0, top: 0 },
+                        delay: (image.duration ?? 0) / 1000, // microseconds to milliseconds
+                    });
+                } finally {
+                    image.close();
+                }
+            }
+        } finally {
+            decoder.close();
+        }
+    }
 
-            tempCanvas.width = frameImage.codedWidth;
-            tempCanvas.height = frameImage.codedHeight;
+    /**
+     * Unlike GIF patches, decoded WebP frames are already fully composited,
+     * so each one replaces the previous one instead of being drawn over it.
+     * @param {boolean} show_pause_on_hover
+     */
+    renderImage(show_pause_on_hover = true) {
+        const frame = this.frames[this.frame_idx] ?? this.frames[0];
+        if (!frame) return;
 
-            tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-            tempCtx.drawImage(frameImage, 0, 0);
-            const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(frame.bitmap, 0, 0, this.canvas.width, this.canvas.height);
 
-            // Build the frame object structure expected by renderImage
-            this.frames.push({
-                dims: {
-                    width: frameImage.codedWidth,
-                    height: frameImage.codedHeight,
-                    left: 0, // WebP defaults to full frame context per VideoFrame
-                    top: 0
-                },
-                patch: imgData.data, 
-                delay: (frameImage.duration || 0) / 1000, 
-            });
-
-            frameImage.close();
+        if (show_pause_on_hover && this.hovering) {
+            this.drawPauseIcon();
         }
     }
 }

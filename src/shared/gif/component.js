@@ -36,10 +36,10 @@ export default class ConverseGIFElement extends CustomElement {
     }
 
     initGIF () {
-        this.supergif = new ConverseGif(this, this.initOPtions());
+        this.supergif = new ConverseGif(this, this.getPlayerOptions());
     }
 
-    initOPtions () {
+    getPlayerOptions () {
         /** @type {Record<string, any>} */
         const options = {
             'autoplay': this.autoplay,

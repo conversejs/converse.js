@@ -168,11 +168,44 @@ describe('The Chat app URL routing', function () {
     );
 
     it(
+        'opens the chat a shareable link to this page names, and routes to it',
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            {
+                enable_url_routing: true,
+                view_mode: 'fullscreen',
+                shareable_link_url: `${location.origin}${location.pathname}`,
+            },
+            async function (_converse) {
+                const { state } = _converse;
+                await mock.waitForRoster(_converse, 'current', 1);
+                const mercutio = 'mercutio@montague.lit';
+                clearHash();
+                const el = mountChatApp();
+
+                location.hash = `#${mercutio}`;
+                await u.waitUntil(() => state.chatboxes.get(mercutio)?.get('hidden') === false);
+                // The invitation's fragment gives way to the chat's own route.
+                await u.waitUntil(() => location.hash === buildChatRoute({ view: 'chat', jid: mercutio }));
+
+                el.remove();
+                clearHash();
+            },
+        ),
+    );
+
+    it(
         "doesn't mirror a conversation over a hash it doesn't own",
         mock.initConverse(
             converse,
             ['chatBoxesFetched'],
-            { enable_url_routing: true, view_mode: 'fullscreen' },
+            {
+                enable_url_routing: true,
+                view_mode: 'fullscreen',
+                // Shareable links point at the page the specs run on.
+                shareable_link_url: `${location.origin}${location.pathname}`,
+            },
             async function (_converse) {
                 const { api, state } = _converse;
                 await mock.waitForRoster(_converse, 'current', 1);
@@ -181,10 +214,12 @@ describe('The Chat app URL routing', function () {
 
                 // A link that is still waiting for login to be handled (here
                 // planted without a `hashchange`) survives a conversation coming
-                // to the foreground. The legacy `?jid=` forms look like Chat
+                // to the foreground, be it a protocol-handler link or a
+                // shareable one. The legacy `?jid=` forms look like Chat
                 // routes, but aren't ours either.
                 for (const hash of [
                     '#converse/action?uri=xmpp%3Ajuliet%40capulet.lit',
+                    '#juliet@capulet.lit',
                     '#converse/chat?jid=juliet@capulet.lit',
                     '#converse/room?jid=coven@chat.shakespeare.lit',
                 ]) {

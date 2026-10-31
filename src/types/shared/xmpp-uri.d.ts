@@ -22,6 +22,13 @@ export function parseXMPPURI(href: string): {
     params: Record<string, string | string[]>;
 };
 /**
+ * The `xmpp:` URI an invitation page carries in its fragment, or null when
+ * the fragment is empty or one of Converse's own `#converse/...` routes.
+ * @param {string} hash - A URL's fragment, with or without its `#`.
+ * @returns {string|null}
+ */
+export function fragmentToXMPPURI(hash: string): string | null;
+/**
  * The `xmpp:` URI an https invitation link stands for, or null when the link
  * isn't one. Mirrors how Conversations reads the same links.
  * @param {URL} url
@@ -59,6 +66,22 @@ export function jidSegmentToXMPPURI(segment: string, join?: boolean): string | n
  * @returns {boolean}
  */
 export function isHandledXMPPURI(href: string): boolean;
+/**
+ * An https link that invites whoever opens it to chat with `jid` (or, with
+ * `join`, to join the groupchat `jid`), for places where an `xmpp:` URI isn't
+ * clickable. Null when shareable links are turned off.
+ *
+ * The JID goes in the fragment, as xmpp.link does it, so the server hosting
+ * the page never sees it. It's written raw, except for the characters that
+ * would end the JID early or be decoded twice.
+ *
+ * @param {string} jid
+ * @param {{ join?: boolean }} [options]
+ * @returns {string|null}
+ */
+export function getShareableLink(jid: string, { join }?: {
+    join?: boolean;
+}): string | null;
 export const HANDLED_ACTIONS: string[];
 /**
  * The action a query-less `xmpp:<jid>` implies. RFC-5122 gives a bare JID no

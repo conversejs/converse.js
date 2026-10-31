@@ -321,6 +321,36 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
     );
 
     it(
+        'handles a shareable link on the page set in shareable_link_url in-app',
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { shareable_link_url: 'https://chat.example.org/converse/' },
+            async function (_converse) {
+                const ev = await clickLinkifiedURI(_converse, 'https://chat.example.org/converse/#tybalt@montague.lit');
+                expect(ev.defaultPrevented).toBe(true);
+                await u.waitUntil(() => _converse.chatboxes.get('tybalt@montague.lit'));
+            },
+        ),
+    );
+
+    it(
+        'leaves a link to the shareable_link_url page that holds no JID to the browser',
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { shareable_link_url: 'https://chat.example.org/converse/' },
+            async function (_converse) {
+                const ev = await clickLinkifiedURI(
+                    _converse,
+                    'https://chat.example.org/converse/#converse/chat/tybalt%40montague.lit',
+                );
+                expect(ev.defaultPrevented).toBe(false);
+            },
+        ),
+    );
+
+    it(
         'leaves an invitation link it cannot act on to the browser',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             // A domain-only JID, which Converse can't open a chat with.

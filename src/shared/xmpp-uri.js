@@ -11,7 +11,7 @@
  * SEMICOLON-separated pairs, so `URLSearchParams` (which splits on `&`) must not be
  * used: it would swallow `?join;password=x` as a single `join;password` key.
  */
-import { u } from '@converse/headless';
+import { api, log, u } from '@converse/headless';
 
 // The query actions the dispatcher handles. Any other `xmpp:` URI is left to the
 // browser's default handler (a plain `target="_blank"` anchor).
@@ -97,6 +97,29 @@ export function parseXMPPURI(href) {
  */
 export const INVITATION_FRAGMENT_HOSTS = ['xmpp.link', 'invite.joinjabber.org', 'i.kaidan.im'];
 
+// Converse's own hash routes (`#converse/chat/...`, `#converse?loglevel=...`).
+const CONVERSE_ROUTE = /^converse([/?]|$)/;
+
+/**
+ * The `xmpp:` URI an invitation page carries in its fragment, or null when
+ * the fragment is empty or one of Converse's own `#converse/...` routes.
+ * @param {string} hash - A URL's fragment, with or without its `#`.
+ * @returns {string|null}
+ */
+export function fragmentToXMPPURI(hash) {
+    const fragment = hash.replace(/^#/, '');
+    if (CONVERSE_ROUTE.test(fragment)) return null;
+
+    // Conversations form-encodes the whole URI into the fragment (`@` as
+    // `%40`, a space as `+`), so its own escapes arrive doubled, while Kaidan
+    // (and Converse) write the URI in as is. A literal `@` or `?` can only be
+    // the latter, which must not be decoded here, or an escaped `;` in a value
+    // would become a separator and a `+` in a JID a space.
+    const is_encoded = !fragment.includes('@') && !fragment.includes('?');
+    const uri = (is_encoded ? decodeValue(fragment.replaceAll('+', ' ')) : fragment).replace(/^xmpp:/i, '');
+    return uri ? `xmpp:${uri}` : null;
+}
+
 /**
  * Conversations' older invitation format, with the JID as a path segment:
  * `/i/<jid>` for a contact and `/j/<jid>` for a groupchat.
@@ -110,21 +133,18 @@ export const INVITATION_PATH_HOST = 'conversations.im';
  * @returns {string|null}
  */
 export function invitationToXMPPURI(url) {
+    // Our own links, on whichever page `shareable_link_url` names. Matched on
+    // origin, so a deployment on plain http (a local one) is recognised too.
+    const base = getShareableLinkBase();
+    if (base && url.origin === base.origin && url.pathname === base.pathname) {
+        return fragmentToXMPPURI(url.hash);
+    }
+
     if (url.protocol !== 'https:') return null;
 
     const host = url.hostname.toLowerCase();
     if (INVITATION_FRAGMENT_HOSTS.includes(host)) {
-        if (url.pathname !== '/') return null;
-
-        // Conversations form-encodes the whole URI into the fragment (`@` as
-        // `%40`, a space as `+`), so its own escapes arrive doubled, while
-        // Kaidan pastes the URI in as is. A literal `@` or `?` can only be the
-        // latter, which must not be decoded here, or an escaped `;` in a value
-        // would become a separator and a `+` in a JID a space.
-        const fragment = url.hash.slice(1);
-        const is_encoded = !fragment.includes('@') && !fragment.includes('?');
-        const uri = (is_encoded ? decodeValue(fragment.replaceAll('+', ' ')) : fragment).replace(/^xmpp:/i, '');
-        return uri ? `xmpp:${uri}` : null;
+        return url.pathname === '/' ? fragmentToXMPPURI(url.hash) : null;
     }
     if (host === INVITATION_PATH_HOST) {
         const m = url.pathname.match(/^\/([ij])\/([^/]+)$/);
@@ -193,4 +213,42 @@ function hasValidDomainpart(jid) {
 export function isHandledXMPPURI(href) {
     const { jid, action } = parseXMPPURI(href);
     return u.isValidJID(jid) && hasValidDomainpart(jid) && HANDLED_ACTIONS.includes(action ?? DEFAULT_ACTION);
+}
+
+/**
+ * The `shareable_link_url` setting as a URL, or null when shareable links are
+ * turned off (or the setting isn't a URL).
+ * @returns {URL|null}
+ */
+function getShareableLinkBase() {
+    const base = api.settings.get('shareable_link_url');
+    if (!base) return null;
+
+    try {
+        return new URL(base);
+    } catch {
+        log.warn(`shareable_link_url is not a URL: ${base}`);
+        return null;
+    }
+}
+
+/**
+ * An https link that invites whoever opens it to chat with `jid` (or, with
+ * `join`, to join the groupchat `jid`), for places where an `xmpp:` URI isn't
+ * clickable. Null when shareable links are turned off.
+ *
+ * The JID goes in the fragment, as xmpp.link does it, so the server hosting
+ * the page never sees it. It's written raw, except for the characters that
+ * would end the JID early or be decoded twice.
+ *
+ * @param {string} jid
+ * @param {{ join?: boolean }} [options]
+ * @returns {string|null}
+ */
+export function getShareableLink(jid, { join = false } = {}) {
+    const base = getShareableLinkBase();
+    if (!base) return null;
+
+    const escaped = jid.replace(/[%?#]/g, encodeURIComponent);
+    return `${base.origin}${base.pathname}${base.search}#${escaped}${join ? '?join' : ''}`;
 }

@@ -32,6 +32,9 @@ converse.plugins.add('converse-rootview', {
             register_protocol_handler: false,
             // Languages for which the UI is right-to-left
             rtl_langs: ['ar', 'fa', 'he', 'ug'],
+            // The page shareable invitation links point at, with the JID in the
+            // fragment. An empty value turns them off.
+            shareable_link_url: 'https://chat.conversejs.org/',
             show_background: false,
             theme: 'classic',
         });

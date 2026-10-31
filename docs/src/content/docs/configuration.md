@@ -1647,6 +1647,18 @@ Changing this during a session takes effect immediately for the queries Converse
 
 Note that this setting controls _outgoing_ timezone information only. To stop Converse from querying your contacts, use `show_entity_time`.
 
+### shareable_link_url
+
+- Default: `'https://chat.conversejs.org/'`
+
+The page that shareable invitation links point at. An `xmpp:` address can't be clicked in an email, on social media or in most chat apps, so the profile, user details and groupchat details modals also show an https link, with a button to copy it and, where the browser supports the Web Share API, one to share it.
+
+The XMPP address goes in the link's fragment, as [xmpp.link](https://xmpp.link) does it, so the server hosting the page never sees it: `https://chat.conversejs.org/#romeo@montague.lit` for a contact, and `https://chat.conversejs.org/#coven@chat.shakespeare.lit?join` for a groupchat.
+
+Set this to your own Converse deployment to have the links point there. Converse opens a link to that page in-app, both when it's clicked in a message and when the page itself is opened with one, once the user has logged in. A groupchat link asks for confirmation before joining.
+
+Set it to an empty string to turn shareable links off, for example when your users can't use other XMPP clients and an outside link would only confuse them.
+
 ### show_background
 
 - Default: `true`

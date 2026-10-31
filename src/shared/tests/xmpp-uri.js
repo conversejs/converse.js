@@ -1,5 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { parseXMPPURI, isHandledXMPPURI, invitationToXMPPURI, DEFAULT_ACTION } from '../xmpp-uri.js';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { api } from '@converse/headless';
+import {
+    parseXMPPURI,
+    isHandledXMPPURI,
+    invitationToXMPPURI,
+    getShareableLink,
+    DEFAULT_ACTION,
+} from '../xmpp-uri.js';
 
 describe('XEP-0147 xmpp: URI parsing', function () {
     it('parses a bare JID with no query', function () {
@@ -192,5 +199,58 @@ describe('https invitation links', function () {
         expect(toURI('https://conversations.im/')).toBeNull();
         expect(toURI('https://conversations.im/x/romeo@montague.lit')).toBeNull();
         expect(toURI('https://conversations.im/i/romeo@montague.lit/extra')).toBeNull();
+    });
+});
+
+describe('Shareable invitation links', function () {
+    // These specs run the source module without initialising Converse, so the
+    // setting is stubbed rather than set.
+    let base;
+    beforeEach(() => {
+        base = 'https://chat.conversejs.org/';
+        vi.spyOn(api.settings, 'get').mockImplementation((key) => (key === 'shareable_link_url' ? base : undefined));
+    });
+
+    const roundTrip = (/** @type {string} */ jid, opts = {}) =>
+        parseXMPPURI(invitationToXMPPURI(new URL(getShareableLink(jid, opts))));
+
+    it('write the JID raw into the fragment', function () {
+        expect(getShareableLink('romeo@montague.lit')).toBe('https://chat.conversejs.org/#romeo@montague.lit');
+        expect(getShareableLink('coven@chat.shakespeare.lit', { join: true })).toBe(
+            'https://chat.conversejs.org/#coven@chat.shakespeare.lit?join',
+        );
+    });
+
+    it('parse back to the JID and action they were made from', function () {
+        expect(roundTrip('romeo@montague.lit')).toEqual({ jid: 'romeo@montague.lit', action: null, params: {} });
+        expect(roundTrip('coven@chat.shakespeare.lit', { join: true })).toEqual({
+            jid: 'coven@chat.shakespeare.lit',
+            action: 'join',
+            params: {},
+        });
+        expect(isHandledXMPPURI(invitationToXMPPURI(new URL(getShareableLink('romeo@montague.lit'))))).toBe(true);
+    });
+
+    it('survive a JID holding characters that mean something in a URL', function () {
+        for (const jid of ['dev?talk@muc.example.org', 'a#b@montague.lit', 'a%41@montague.lit', 'a+b@montague.lit']) {
+            expect(roundTrip(jid).jid).toBe(jid);
+            expect(roundTrip(jid, { join: true })).toEqual({ jid, action: 'join', params: {} });
+        }
+    });
+
+    it('are recognised on the configured page only, and only when the fragment is a JID', function () {
+        base = 'http://localhost:8008/fullscreen.html';
+        const toURI = (/** @type {string} */ href) => invitationToXMPPURI(new URL(href));
+        expect(toURI('http://localhost:8008/fullscreen.html#romeo@montague.lit')).toBe('xmpp:romeo@montague.lit');
+        expect(toURI('https://localhost:8008/fullscreen.html#romeo@montague.lit')).toBeNull();
+        expect(toURI('http://localhost:8008/#romeo@montague.lit')).toBeNull();
+        expect(toURI('http://localhost:8008/fullscreen.html#converse/chat/romeo%40montague.lit')).toBeNull();
+        expect(toURI('https://chat.conversejs.org/#romeo@montague.lit')).toBeNull();
+    });
+
+    it('are neither made nor recognised when turned off', function () {
+        base = '';
+        expect(getShareableLink('romeo@montague.lit')).toBeNull();
+        expect(invitationToXMPPURI(new URL('https://chat.conversejs.org/#romeo@montague.lit'))).toBeNull();
     });
 });

@@ -40,6 +40,8 @@ import {
     parseSince,
     formatDevice,
     formatDeviceList,
+    formatJSON,
+    quote,
 } from './format.js';
 
 /**
@@ -223,7 +225,7 @@ async function request(ctx, method, params, { spawn = true, access = accessFor(c
  */
 function reportSend(result, { options, out, err, hello }) {
     if (options.json) {
-        out(JSON.stringify(result) + '\n');
+        out(formatJSON(result));
     } else if (result.outcome === 'sent') {
         out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
     } else if (result.outcome === 'draft') {
@@ -288,7 +290,7 @@ const COMMANDS = {
         });
 
         if (options.json) {
-            messages.forEach((m) => out(JSON.stringify(m) + '\n'));
+            messages.forEach((m) => out(formatJSON(m)));
         } else if (messages.length) {
             const now = new Date();
             messages.forEach((m) => out(formatMessage(m, { full: options.full, now })));
@@ -308,7 +310,7 @@ const COMMANDS = {
             limit: parseLimit(options.limit),
         });
         if (options.json) {
-            out(JSON.stringify(result) + '\n');
+            out(formatJSON(result));
             return EXIT.OK;
         }
         out(SEARCHED[result.method] + '\n');
@@ -345,7 +347,7 @@ const COMMANDS = {
         if (result.outcome !== 'sent' || options.json) return reportSend(result, ctx);
 
         out(
-            `Uploaded ${JSON.stringify(path.basename(file_path))} to ${result.message.conversation} ` +
+            `Uploaded ${quote(path.basename(file_path))} to ${result.message.conversation} ` +
                 `as ${result.message.id}\n`,
         );
         return EXIT.OK;
@@ -359,7 +361,7 @@ const COMMANDS = {
         if (result.outcome !== 'sent') return reportSend(result, ctx);
         const { message } = result;
         if (options.json) {
-            out(JSON.stringify(message) + '\n');
+            out(formatJSON(message));
         } else {
             out(`Retracted ${message.id} in ${message.conversation}.\n`);
         }
@@ -391,7 +393,7 @@ const COMMANDS = {
             { access: 'full' },
         );
         if (options.json) {
-            out(JSON.stringify(message) + '\n');
+            out(formatJSON(message));
         } else {
             out(`Discarded ${message.id} from ${message.conversation}. It was never sent.\n`);
         }
@@ -427,7 +429,7 @@ const COMMANDS = {
         /** @type {{ drafts: import('@converse/daemon/types').Draft[] }} */
         const { drafts } = await requestDrafts(ctx, 'drafts.list', {});
         if (options.json) {
-            drafts.forEach((d) => out(JSON.stringify(d) + '\n'));
+            drafts.forEach((d) => out(formatJSON(d)));
         } else if (drafts.length) {
             const now = new Date();
             drafts.forEach((d) => out(formatDraft(d, { full: options.full, now })));
@@ -442,7 +444,7 @@ const COMMANDS = {
         const id = takeOne(ctx, 'draft id');
         /** @type {{ draft: import('@converse/daemon/types').Draft, target: import('@converse/daemon/types').MessageDTO|null }} */
         const { draft, target } = await requestDrafts(ctx, 'drafts.get', { id });
-        out(options.json ? JSON.stringify(draft) + '\n' : formatDraftDetails(draft, target));
+        out(options.json ? formatJSON(draft) : formatDraftDetails(draft, target));
         return EXIT.OK;
     },
 
@@ -459,7 +461,7 @@ const COMMANDS = {
         /** @type {{ draft: import('@converse/daemon/types').Draft }} */
         const { draft } = await request(ctx, 'drafts.reject', { id }, { access: 'full' });
         if (options.json) {
-            out(JSON.stringify(draft) + '\n');
+            out(formatJSON(draft));
         } else {
             out(`Withdrew draft ${draft.id}. Nothing was sent.\n`);
         }
@@ -471,7 +473,7 @@ const COMMANDS = {
         /** @type {{ schedules: import('@converse/daemon/types').ScheduleDTO[] }} */
         const { schedules } = await request(ctx, 'schedules.list');
         if (options.json) {
-            schedules.forEach((schedule) => out(JSON.stringify(schedule) + '\n'));
+            schedules.forEach((schedule) => out(formatJSON(schedule)));
         } else if (schedules.length) {
             schedules.forEach((schedule) => out(formatSchedule(schedule, { full: options.full })));
         } else {
@@ -486,7 +488,7 @@ const COMMANDS = {
         /** @type {{ schedule: import('@converse/daemon/types').ScheduleDTO }} */
         const { schedule } = await request(ctx, 'schedules.cancel', { id });
         if (options.json) {
-            out(JSON.stringify(schedule) + '\n');
+            out(formatJSON(schedule));
         } else {
             out(`Cancelled scheduled message ${schedule.id}. Nothing was sent.\n`);
         }
@@ -498,7 +500,7 @@ const COMMANDS = {
         /** @type {import('@converse/daemon/types').ConversationSummary[]} */
         const { conversations } = await request(ctx, 'conversations.list');
         if (options.json) {
-            conversations.forEach((c) => out(JSON.stringify(c) + '\n'));
+            conversations.forEach((c) => out(formatJSON(c)));
         } else if (conversations.length) {
             const now = new Date();
             conversations.forEach((c) => out(formatConversation(c, { now })));
@@ -513,7 +515,7 @@ const COMMANDS = {
         /** @type {import('@converse/daemon/types').Inbox} */
         const { conversations } = await request(ctx, 'inbox.read');
         if (options.json) {
-            conversations.forEach((group) => out(JSON.stringify(group) + '\n'));
+            conversations.forEach((group) => out(formatJSON(group)));
         } else if (conversations.length) {
             const now = new Date();
             for (const { conversation, messages } of conversations) {
@@ -550,7 +552,7 @@ const COMMANDS = {
             return EXIT.TIMEOUT;
         }
         if (options.json) {
-            out(JSON.stringify(message) + '\n');
+            out(formatJSON(message));
         } else {
             out(formatMessage(message, { full: options.full }));
         }
@@ -563,11 +565,11 @@ const COMMANDS = {
         /** @type {{ contacts: import('@converse/daemon/types').ContactSummary[] }} */
         const { contacts } = await request(ctx, 'contacts.list', { query });
         if (options.json) {
-            contacts.forEach((c) => out(JSON.stringify(c) + '\n'));
+            contacts.forEach((c) => out(formatJSON(c)));
         } else if (contacts.length) {
             contacts.forEach((c) => out(formatContact(c)));
         } else {
-            err(query === undefined ? 'No contacts.\n' : `No contacts match ${JSON.stringify(query)}.\n`);
+            err(query === undefined ? 'No contacts.\n' : `No contacts match ${quote(query)}.\n`);
         }
         return EXIT.OK;
     },
@@ -577,7 +579,7 @@ const COMMANDS = {
         const jid = takeOne(ctx, 'contact');
         /** @type {import('@converse/daemon/types').ContactDetails} */
         const details = await request(ctx, 'contacts.whois', { jid });
-        out(options.json ? JSON.stringify(details) + '\n' : formatContactDetails(details));
+        out(options.json ? formatJSON(details) : formatContactDetails(details));
         return EXIT.OK;
     },
 
@@ -587,7 +589,7 @@ const COMMANDS = {
         /** @type {import('@converse/daemon/types').DeviceList} */
         const list = await request(ctx, 'omemo.devices.list', { conversation });
         if (options.json) {
-            out(JSON.stringify(list) + '\n');
+            out(formatJSON(list));
         } else {
             out(formatDeviceList(list));
         }
@@ -600,7 +602,7 @@ const COMMANDS = {
         const [conversation, device, trust] = args;
         /** @type {import('@converse/daemon/types').DeviceDTO} */
         const dto = await request(ctx, 'omemo.devices.trust', { conversation, device, trust });
-        out(options.json ? JSON.stringify(dto) + '\n' : formatDevice(dto));
+        out(options.json ? formatJSON(dto) : formatDevice(dto));
         return EXIT.OK;
     },
 
@@ -614,10 +616,9 @@ const COMMANDS = {
             message: words.length ? words.join(' ') : undefined,
         });
         if (options.json) {
-            out(JSON.stringify(presence) + '\n');
+            out(formatJSON(presence));
         } else {
-            const status =
-                presence.status_message === null ? '' : ` with status ${JSON.stringify(presence.status_message)}`;
+            const status = presence.status_message === null ? '' : ` with status ${quote(presence.status_message)}`;
             out(`Your presence is now ${presence.show}${status}.\n`);
         }
         return EXIT.OK;
@@ -629,9 +630,9 @@ const COMMANDS = {
         /** @type {{ conversation: import('@converse/daemon/types').ConversationDTO, nick: string }} */
         const joined = await request(ctx, 'rooms.join', { room, nick: options.nick });
         if (options.json) {
-            out(JSON.stringify(joined) + '\n');
+            out(formatJSON(joined));
         } else {
-            out(`Joined ${joined.conversation.jid} as ${JSON.stringify(joined.nick)}.\n`);
+            out(`Joined ${joined.conversation.jid} as ${quote(joined.nick)}.\n`);
         }
         return EXIT.OK;
     },
@@ -642,7 +643,7 @@ const COMMANDS = {
         /** @type {{ conversation: import('@converse/daemon/types').ConversationDTO, was_in: boolean }} */
         const left = await request(ctx, 'rooms.leave', { room });
         if (options.json) {
-            out(JSON.stringify(left) + '\n');
+            out(formatJSON(left));
         } else if (left.was_in) {
             out(`Left ${left.conversation.jid}.\n`);
         } else {
@@ -657,7 +658,7 @@ const COMMANDS = {
         /** @type {{ occupants: import('@converse/daemon/types').OccupantDTO[] }} */
         const { occupants } = await request(ctx, 'rooms.occupants', { room });
         if (options.json) {
-            occupants.forEach((o) => out(JSON.stringify(o) + '\n'));
+            occupants.forEach((o) => out(formatJSON(o)));
         } else if (occupants.length) {
             occupants.forEach((o) => out(formatOccupant(o)));
         } else {
@@ -672,7 +673,7 @@ const COMMANDS = {
         /** @type {{ rooms: import('@converse/daemon/types').RoomListing[] }} */
         const { rooms } = await request(ctx, 'rooms.discover', { service });
         if (options.json) {
-            rooms.forEach((r) => out(JSON.stringify(r) + '\n'));
+            rooms.forEach((r) => out(formatJSON(r)));
         } else if (rooms.length) {
             rooms.forEach((r) => out(formatRoomListing(r)));
         } else {
@@ -684,7 +685,7 @@ const COMMANDS = {
     accounts: ({ options, out, err, env }) => {
         const accounts = listAccounts(env).map((account) => ({ ...account, jid: readJID(account.config) }));
         if (options.json) {
-            accounts.forEach((a) => out(JSON.stringify(a) + '\n'));
+            accounts.forEach((a) => out(formatJSON(a)));
         } else if (accounts.length) {
             accounts.forEach((a) =>
                 out(`${a.name}  ${a.jid ?? '(no valid "jid")'}${a.default ? '  (default)' : ''}\n`),
@@ -699,7 +700,7 @@ const COMMANDS = {
     'daemon stop': async ({ options, out, env }) => {
         const stopped = await stopDaemon({ env });
         if (options.json) {
-            out(JSON.stringify({ stopped: stopped !== false }) + '\n');
+            out(formatJSON({ stopped: stopped !== false }));
         } else if (stopped === 'asked') {
             // Its pidfile may be on another host, so the closed connection is all there is to go by.
             out('Asked the daemon to stop. It has closed the connection.\n');
@@ -741,7 +742,7 @@ async function printStatus(ctx, spawn) {
     const status = await request(ctx, 'daemon.status', {}, { spawn });
     // Which socket was reached tells a daemon through a tunnel from a local one.
     if (ctx.options.json) {
-        ctx.out(JSON.stringify({ ...status, socket: ctx.socket_path }) + '\n');
+        ctx.out(formatJSON({ ...status, socket: ctx.socket_path }));
     } else {
         const state = status.connected ? `connected as ${status.jid}` : 'disconnected';
         ctx.out(`${state}, pid ${status.pid}, up ${formatDuration(status.uptime)}, on ${ctx.socket_path}\n`);
@@ -762,7 +763,7 @@ function printAllStatuses({ options, out, err, env }) {
         uptime: Math.floor((Date.now() - Date.parse(started)) / 1000),
     }));
     if (options.json) {
-        daemons.forEach((d) => out(JSON.stringify(d) + '\n'));
+        daemons.forEach((d) => out(formatJSON(d)));
     } else if (daemons.length) {
         daemons.forEach((d) => out(`${d.account}  ${d.jid}  pid ${d.pid}  up ${formatDuration(d.uptime)}\n`));
     } else {
@@ -808,7 +809,7 @@ async function readUpload(file_path) {
         if (!metadata.isFile()) throw Object.assign(new Error('not a regular file'), { code: 'not a regular file' });
         if (metadata.size > MAX_UPLOAD_SIZE) {
             throw new Error(
-                `${JSON.stringify(path.basename(file_path))} is ${metadata.size} bytes, which exceeds the daemon's ` +
+                `${quote(path.basename(file_path))} is ${metadata.size} bytes, which exceeds the daemon's ` +
                     `${MAX_UPLOAD_SIZE}-byte upload limit. Choose a smaller file.`,
             );
         }
@@ -816,7 +817,7 @@ async function readUpload(file_path) {
     } catch (e) {
         if (!e.code) throw e;
         throw new Error(
-            `The file at ${JSON.stringify(file_path)} could not be read (${e.code}). ` +
+            `The file at ${quote(file_path)} could not be read (${e.code}). ` +
                 'Check that the path names a readable file, then try again.',
             { cause: e },
         );

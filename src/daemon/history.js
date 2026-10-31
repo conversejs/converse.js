@@ -46,12 +46,19 @@ export async function getPage(chat, { limit, before, since }) {
         if (gap) {
             await gap.fetchMissingMessages();
         } else if (reached_start && !exhausted.has(chat)) {
-            const result = await fetchOlder(chat);
+            const oldest = chat.getOldestMessage();
+            const result = await fetchOlder(chat, oldest);
             await chat.msg_chain;
             // Only an answer from the archive says whether there's anything older.
             // If the query failed or wasn't made, the question stays open for the next read.
             if (!result || result.error) return page;
-            if (result.messages.length === 0) exhausted.add(chat);
+            // Paging by time, the answer includes the messages sent when the oldest
+            // was, itself among them. So only one that brings an older message says
+            // there may be more.
+            const by_time = oldest && !oldest.getArchiveID();
+            if (result.messages.length === 0 || (by_time && chat.getOldestMessage() === oldest)) {
+                exhausted.add(chat);
+            }
         } else {
             return page;
         }
@@ -122,12 +129,12 @@ export function isMessage(model) {
 /**
  * Fetches the archive's page of history from before the oldest message held.
  * @param {import('@converse/headless').ChatBox} chat
+ * @param {import('@converse/headless').Message} [oldest]
  */
-function fetchOlder(chat) {
-    const oldest = chat.getOldestMessage();
-    const stanza_id = oldest?.get(`stanza_id ${_converse.session.get('bare_jid')}`);
-    if (stanza_id) {
-        return u.mam.fetchArchivedMessages(chat, { rsm: { before: stanza_id } });
+function fetchOlder(chat, oldest) {
+    const archive_id = oldest?.getArchiveID();
+    if (archive_id) {
+        return u.mam.fetchArchivedMessages(chat, { rsm: { before: archive_id } });
     } else if (oldest) {
         // Not from the archive, so there's no archive id to page from: page
         // back from its time instead.

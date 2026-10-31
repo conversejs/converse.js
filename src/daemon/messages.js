@@ -58,7 +58,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                 const messages = await getPage(room, {
                     limit,
                     since: since_ms,
-                    before: before === undefined ? undefined : (models) => findMessage(models, before, ownJID()),
+                    before: before === undefined ? undefined : (models) => findMessage(models, before),
                 });
                 return {
                     conversation: toRoomDTO(room),
@@ -93,7 +93,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
             const messages = await getPage(chat, {
                 limit,
                 since: since_ms,
-                before: before === undefined ? undefined : (models) => findMessage(models, before, ownJID()),
+                before: before === undefined ? undefined : (models) => findMessage(models, before),
             });
             return {
                 conversation: toConversationDTO(jid, contact),
@@ -165,9 +165,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                     correct === undefined ? undefined : await findOwn(_converse, correct, jid, 'correct');
                 // Taken before the send: a correction gets a new origin-id, which can change the message's id.
                 const target = replying_to ?? correcting;
-                const action = target
-                    ? { action: replying_to ? 'reply' : 'correct', target: getIDs(target, ownJID())[0] }
-                    : {};
+                const action = target ? { action: replying_to ? 'reply' : 'correct', target: getIDs(target)[0] } : {};
                 const dto = await sendMessage(_converse, jid, body, { replying_to, correcting });
                 audit.record({
                     consumer: client.consumer,
@@ -215,7 +213,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
             const to = found.collection.chatbox.get('jid');
             const retract = async (routing) => {
                 const message = ownedBy(found, id, 'retract');
-                const target = getIDs(message, ownJID())[0];
+                const target = getIDs(message)[0];
                 const dto = await retractMessage(_converse, message, id);
                 audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'retract', target, ...routing });
                 return { outcome: 'sent', message: dto };
@@ -254,7 +252,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
             const to = chatbox.get('jid');
             const react = async (routing) => {
                 const dto = await sendReaction(_converse, message, reaction, remove);
-                const target = getIDs(message, ownJID())[0];
+                const target = getIDs(message)[0];
                 audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'react', target, ...routing });
                 return { outcome: 'sent', message: dto };
             };
@@ -412,7 +410,7 @@ export async function findTarget(_converse, id, jid) {
     }
     const messages = (await heldConversations(_converse, jid)).flatMap((c) => c.messages.models.filter(isMessage));
     const where = jid ? 'in this conversation' : 'in any conversation';
-    return findMessage(messages, id, _converse.session.get('bare_jid'), where);
+    return findMessage(messages, id, where);
 }
 
 /**
@@ -675,11 +673,9 @@ function notConnected() {
 /**
  * The ids a message can be addressed by, its DTO id first.
  * @param {import('@converse/headless').Message} message
- * @param {string} own_jid
  */
-function getIDs(message, own_jid) {
-    const stanza_id_by = isRoomMessage(message) ? Strophe.getBareJidFromJid(message.get('from')) : own_jid;
-    return [message.get(`stanza_id ${stanza_id_by}`), message.get('origin_id'), message.get('msgid')].filter(Boolean);
+function getIDs(message) {
+    return [message.getArchiveID(), message.get('origin_id'), message.get('msgid')].filter(Boolean);
 }
 
 /**
@@ -694,18 +690,17 @@ export function isRoomMessage(message) {
  * Finds a message by any of its ids, or by a unique prefix of its DTO id.
  * @param {import('@converse/headless').Message[]} messages
  * @param {string} id
- * @param {string} own_jid
  * @param {string} [where] - Where the messages are from, for the error message
  */
-function findMessage(messages, id, own_jid, where = 'in this conversation') {
-    const exact = messages.find((m) => getIDs(m, own_jid).includes(id));
+function findMessage(messages, id, where = 'in this conversation') {
+    const exact = messages.find((m) => getIDs(m).includes(id));
     if (exact) return exact;
 
-    const matches = id ? messages.filter((m) => getIDs(m, own_jid)[0]?.startsWith(id)) : [];
+    const matches = id ? messages.filter((m) => getIDs(m)[0]?.startsWith(id)) : [];
     if (matches.length === 1) return matches[0];
     if (matches.length > 1) {
         throw new RPCError(ERRORS.AMBIGUOUS, `More than one message has an id starting with "${id}".`, {
-            candidates: matches.map((m) => getIDs(m, own_jid)[0]),
+            candidates: matches.map((m) => getIDs(m)[0]),
         });
     }
     throw new RPCError(ERRORS.NOT_FOUND, `No message with id "${id}" ${where}.`);
@@ -736,7 +731,7 @@ export function toRoomDTO(room) {
  */
 export function toMessageDTO(message, conversation, own_jid) {
     const outgoing = message.get('sender') === 'me';
-    const id = getIDs(message, own_jid)[0];
+    const id = getIDs(message)[0];
     const retracted = message.isRetracted();
     const undecryptable = isUndecryptable(message);
     const rest = {
@@ -747,7 +742,7 @@ export function toMessageDTO(message, conversation, own_jid) {
         // An encrypted message's text is its plaintext, and one that couldn't be decrypted has none.
         body: retracted || undecryptable ? null : (message.stripReplyFallback(getText(message)) ?? null),
         encryption: getEncryption(message),
-        reply_to: getReplyTarget(message, own_jid),
+        reply_to: getReplyTarget(message),
         edited: message.get('edited') ?? null,
         retracted: retracted ? (message.get('retracted') ?? message.get('time')) : null,
         reactions: getReactions(message),
@@ -844,13 +839,12 @@ function toOccupantJID(room, key) {
  * found in what `read` shows. Otherwise the id the reply gave, which is the
  * best there is.
  * @param {import('@converse/headless').Message} message
- * @param {string} own_jid
  * @returns {string|null}
  */
-function getReplyTarget(message, own_jid) {
+function getReplyTarget(message) {
     const reply_to_id = message.get('reply_to_id');
     if (!reply_to_id) return null;
 
     const target = message.collection?.chatbox?.getReferencedMessage(reply_to_id);
-    return target ? getIDs(target, own_jid)[0] : reply_to_id;
+    return target ? getIDs(target)[0] : reply_to_id;
 }

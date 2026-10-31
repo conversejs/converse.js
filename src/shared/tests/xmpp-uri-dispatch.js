@@ -251,6 +251,9 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
      * @returns {Promise<MouseEvent>} The dispatched click, for `defaultPrevented`.
      */
     async function clickLinkifiedURI(_converse, body, click_init = {}) {
+        // Otherwise an https invitation link left to the browser is prevented
+        // by the message's external link confirmation, which has tests of its own.
+        _converse.api.settings.set('confirm_external_links', false);
         await mock.waitForRoster(_converse, 'current');
         const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
         await mock.openChatBoxFor(_converse, contact_jid);

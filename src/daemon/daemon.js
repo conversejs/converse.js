@@ -8,7 +8,7 @@ import path from 'node:path';
 import { _converse, api, converse, log } from '@converse/headless';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
-import { findDaemon, getGroupId, getPassword, isRunning } from './config.js';
+import { checkRuntimeDir, findDaemon, getGroupId, getPassword, isRunning } from './config.js';
 import { createCursors } from './cursors.js';
 import { createDrafter, createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
@@ -79,7 +79,8 @@ export async function start(config) {
         );
     }
     await fs.mkdir(paths.runtime_dir, { recursive: true, mode: 0o700 });
-    // mkdir leaves the mode of an existing directory alone.
+    // mkdir leaves an existing directory alone, whoever made it, and whatever its mode.
+    checkRuntimeDir(paths.runtime_dir, { check_mode: false });
     await fs.chmod(paths.runtime_dir, 0o700);
     await claimPidfile(config);
     try {

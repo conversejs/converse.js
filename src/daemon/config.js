@@ -330,6 +330,36 @@ export function getRuntimeDir(env = process.env) {
 }
 
 /**
+ * Refuses a runtime directory that isn't the user's own, such as one another
+ * user made first in a shared place like `/tmp`: the records and sockets in
+ * it could be theirs. One that isn't there yet has nothing in it to trust.
+ * @param {string} dir
+ * @param {Object} [options]
+ * @param {boolean} [options.check_mode] - Also refuse one that others may write in
+ */
+export function checkRuntimeDir(dir, { check_mode = true } = {}) {
+    let stat;
+    try {
+        stat = fs.lstatSync(dir);
+    } catch (e) {
+        if (e.code === 'ENOENT') return;
+        throw e;
+    }
+    if (!stat.isDirectory() || stat.uid !== process.getuid()) {
+        throw new Error(
+            `${dir}, where the daemons keep their sockets, isn't a directory of this user's own. ` +
+                'Another user may have made it: remove it, or set XDG_RUNTIME_DIR to a directory only this user can enter.',
+        );
+    }
+    if (check_mode && stat.mode & 0o077) {
+        throw new Error(
+            `${dir}, where the daemons keep their sockets, is open to other users. ` +
+                `Make it owner-only with "chmod 700 ${dir}".`,
+        );
+    }
+}
+
+/**
  * The runtime directory holds the full access socket and the pidfile, one pair
  * per account. It's created owner-only, which is what keeps other local users
  * off the full access socket. The restricted socket is in a directory of its
@@ -378,6 +408,7 @@ function getPaths(account, jid, env, restricted_dir) {
  * @returns {import('./types').DaemonRecord[]}
  */
 export function listDaemons(env = process.env) {
+    checkRuntimeDir(getRuntimeDir(env));
     const dir = path.join(getRuntimeDir(env), 'accounts');
     let files = [];
     try {
@@ -400,6 +431,7 @@ export function listDaemons(env = process.env) {
  * @returns {import('./types').DaemonRecord|null}
  */
 export function findDaemon(config) {
+    checkRuntimeDir(config.paths.runtime_dir);
     const record = readRecord(config.paths.record);
     return record && isRunning(record.pid) ? record : null;
 }

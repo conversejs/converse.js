@@ -6,7 +6,7 @@
  */
 import { converse } from '@converse/headless';
 import { mayCall } from './access.js';
-import { isRoomMessage, toMessageDTO } from './messages.js';
+import { isRoomMessage, toMessageDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 

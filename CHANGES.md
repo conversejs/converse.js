@@ -10,6 +10,19 @@
 - The unused `errors.UserFacingError` class is removed.
 - `@converse/log` is bumped to 0.1.0, because its API changed to variadic `log(level, ...args)` and `debug(...args)` without a version bump.
 - fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
+- Projects can bundle `dist/converse.js` themselves: it no longer pulls all of `dist/` into a
+  webpack build. Serve `dist/chunkjs/` and `dist/libomemo.esm.min.js` next to your bundle.
+- The source is exported as `converse.js/src/*`, with its dependencies (including
+  `@converse/headless`) installed. Bundling it still needs a build setup like Converse's own:
+  `node_modules/converse.js/src` as a module directory (the source imports `shared/...`,
+  `plugins/...` and `i18n` without a path), Sass with `node_modules` and that `src` folder as
+  load paths, and a loader for the `.po` translation files.
+- **Breaking:** the `converse.js` npm package no longer contains the source of
+  `@converse/headless`, `@converse/log`, the daemon or the CLI. Import headless from
+  `@converse/headless` instead of `converse.js/src/headless/...`. On npm-based CDNs, load
+  `https://cdn.jsdelivr.net/npm/@converse/headless@<version>/dist/converse-headless.min.js`
+  instead of `.../npm/converse.js@<version>/src/headless/dist/converse-headless.min.js`.
+  `https://cdn.conversejs.org/<version>/src/headless/dist/converse-headless.min.js` is unchanged.
 - #194: Full support for XEP-0115: Entity capabilities.
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
 - With `enable_url_routing` on, an `xmpp:` link handed over by the browser now opens its chat or

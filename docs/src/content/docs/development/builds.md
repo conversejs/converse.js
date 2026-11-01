@@ -127,15 +127,26 @@ After building, the following files will be generated in the `dist/` directory:
 - `converse.min.js` - Minified ESM bundle
 - `converse.css` - Main CSS bundle
 - `converse.min.css` - Minified CSS bundle
+- `chunkjs/` - Lazily loaded code, such as translations and the message editor
+- `libomemo.esm.min.js` - GPL-licensed crypto library, loaded when OMEMO is used
+
+`converse.js` loads `chunkjs/` and `libomemo.esm.min.js` relative to its own URL.
+
+:::note
+If you bundle `dist/converse.js` into your own project, that URL becomes the URL
+of your bundle. Serve `dist/chunkjs/` and `dist/libomemo.esm.min.js` from the
+same directory as your bundle. Otherwise translations and the editor fail to
+load, and OMEMO can't start. Other assets, such as `emoji.json`, sounds and
+images, are loaded from the [assets_path](/docs/configuration/#assets_path)
+setting instead.
+:::
 
 The headless build generates files in `src/headless/dist/`:
 
 - `converse-headless.js` - Single-file ESM bundle (no code-splitting)
 - `converse-headless.min.js` - Minified single-file ESM bundle
-- `libomemo.esm.js` - GPL-licensed crypto library companion file
-- `curve25519_compiled.wasm` - WebAssembly crypto primitives
+- `libomemo.esm.min.js` - GPL-licensed crypto library companion file
 - `emoji.json` - Emoji metadata
 
 When deploying the headless build, all files must be served from the same directory.
-The `libomemo.esm.js` file is loaded on-demand when OMEMO encryption is used,
-and it in turn loads `curve25519_compiled.wasm` from the same location.
+The `libomemo.esm.min.js` file is loaded on-demand when OMEMO encryption is used.

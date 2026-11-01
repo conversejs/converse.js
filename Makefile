@@ -91,6 +91,7 @@ version:
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' manifest.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' package.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' src/headless/package.json
+	$(SED) -i '/"@converse\/headless":/s/:.*/: "$(VERSION)",/' package.json
 	$(SED) -ri 's/--package-version=$(VERSION_FORMAT)/--package-version=$(VERSION)/' Makefile
 
 	$(SED) -i "s/[Uu]nreleased/`date +%Y-%m-%d`/" CHANGES.md

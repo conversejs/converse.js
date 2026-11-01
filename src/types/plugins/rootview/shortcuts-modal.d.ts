@@ -3,4 +3,4 @@ export default class KeyboardShortcutsModal extends BaseModal {
     renderModal(): import("lit-html").TemplateResult<1>;
 }
 import BaseModal from 'plugins/modal/modal.js';
-//# sourceMappingURL=modal.d.ts.map
+//# sourceMappingURL=shortcuts-modal.d.ts.map

@@ -120,7 +120,7 @@ describe('The social feed virtualization', function () {
 
     it(
         'jumps to the top of the whole list when Home is pressed',
-        mock.initConverse(converse, [], {}, async function (_converse) {
+        mock.initConverse(converse, [], { view_mode: 'fullscreen' }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const bare_jid = _converse.bare_jid;
 
@@ -170,7 +170,7 @@ describe('The social feed virtualization', function () {
 
     it(
         'jumps to the bottom of the whole list when End is pressed',
-        mock.initConverse(converse, [], {}, async function (_converse) {
+        mock.initConverse(converse, [], { view_mode: 'fullscreen' }, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const bare_jid = _converse.bare_jid;
 

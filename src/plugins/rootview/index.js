@@ -4,8 +4,11 @@ import ConverseRoot from './root.js';
 import { ensureElement } from './utils.js';
 import { routeApp, syncAppToHash, clearAppRoutes } from './routing.js';
 import { routeXMPPURI, registerProtocolHandlerIfEnabled } from './protocol-handler.js';
+import { addHelpShortcut, onKeyDown, shortcuts } from './shortcuts.js';
+import { removeLiveRegion } from 'utils/accessibility.js';
 import './background.js';
 import './app-container.js';
+import './shortcuts-modal.js';
 
 converse.plugins.add('converse-rootview', {
     initialize() {
@@ -19,6 +22,7 @@ converse.plugins.add('converse-rootview', {
             apps: ['chat', 'social'], // Apps offered in the switcher
             auto_insert: true,
             dark_theme: 'dracula',
+            enable_keyboard_shortcuts: true,
             // When true, reflect in-app navigation in `location.hash` so the browser
             // back/forward buttons and shareable/deep links work.
             enable_url_routing: false,
@@ -47,6 +51,14 @@ converse.plugins.add('converse-rootview', {
         api.listen.on('connected', routeXMPPURI);
         api.listen.on('reconnected', routeXMPPURI);
         api.listen.on('connected', registerProtocolHandlerIfEnabled);
+
+        addHelpShortcut();
+        document.addEventListener('keydown', onKeyDown);
+        api.listen.on('cleanup', () => {
+            document.removeEventListener('keydown', onKeyDown);
+            shortcuts.clear();
+            removeLiveRegion();
+        });
 
         // Only define the element now, otherwise it it's already in the DOM
         // before `converse.initialized` has been called it will render too

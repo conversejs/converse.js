@@ -12,4 +12,12 @@ export type App = {
     render: () => TemplateResult;
     renderControlbox?: () => TemplateResult;
 };
+export type KeyboardShortcut = {
+    id: string;
+    group: string;
+    label: string;
+    description: string;
+    matches: (_ev: KeyboardEvent) => boolean;
+    handler: () => void;
+};
 //# sourceMappingURL=types.d.ts.map

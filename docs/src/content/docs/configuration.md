@@ -1647,6 +1647,25 @@ Changing this during a session takes effect immediately for the queries Converse
 
 Note that this setting controls _outgoing_ timezone information only. To stop Converse from querying your contacts, use `show_entity_time`.
 
+### shareable_link_apps
+
+- Default: Conversations, Converse Desktop, Monal, Gajim and Dino
+
+The XMPP apps suggested to someone who opens a [shareable link](/docs/configuration/#shareable_link_url) while logged out, followed by a link to the full list on xmpp.org. Each entry has a `name`, the `url` to get it from and, optionally, the `platforms` it runs on: `'Android'`, `'iOS'`, `'Windows'`, `'macOS'` or `'Linux'`.
+
+```javascript
+converse.initialize({
+    shareable_link_apps: [
+        { name: 'Conversations', url: 'https://conversations.im/', platforms: ['Android'] },
+        { name: 'Gajim', url: 'https://gajim.org/', platforms: ['Windows', 'Linux'] },
+    ],
+});
+```
+
+Only the first app for the visitor's platform is suggested, so order the list by preference. When the platform can't be told, or no app is listed for it, all of them are.
+
+Set it to an empty list to suggest no apps.
+
 ### shareable_link_url
 
 - Default: `'https://chat.conversejs.org/'`
@@ -1657,7 +1676,7 @@ The XMPP address goes in the link's fragment, as [xmpp.link](https://xmpp.link) 
 
 Set this to your own Converse deployment to have the links point there. Converse opens a link to that page in-app, both when it's clicked in a message and when the page itself is opened with one, once the user has logged in. A groupchat link asks for confirmation before joining.
 
-Someone who opens a link while logged out sees the invitation above the login form, with a button that hands it to the XMPP app they already have and a short list of apps for those who'd rather install one. They can also log in, or create an account, and then land in the chat or groupchat the link was for.
+Someone who opens a link while logged out sees the invitation above the login form, with a button that hands it to the XMPP app they already have and a short list of apps for those who'd rather install one (see [shareable_link_apps](/docs/configuration/#shareable_link_apps)). They can also log in, or create an account, and then land in the chat or groupchat the link was for.
 
 Set it to an empty string to turn shareable links off, for example when your users can't use other XMPP clients and an outside link would only confuse them.
 

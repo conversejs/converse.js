@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../dist/converse.js';
 
@@ -17,6 +17,16 @@ const settings = () => ({
     shareable_link_url: `${location.origin}${location.pathname}`,
 });
 
+/**
+ * Pretend to be a browser on another platform.
+ * @param {string|undefined} platform The User-Agent Client Hints platform, if any
+ * @param {string} [user_agent]
+ */
+function stubPlatform(platform, user_agent = '') {
+    vi.spyOn(Navigator.prototype, 'userAgentData', 'get').mockReturnValue(platform ? { platform } : undefined);
+    vi.spyOn(Navigator.prototype, 'userAgent', 'get').mockReturnValue(user_agent);
+}
+
 async function getControlBox(_converse) {
     const toggle = await u.waitUntil(() => document.querySelector('.toggle-controlbox'));
     if (!u.isVisible(document.querySelector('#controlbox'))) {
@@ -27,6 +37,8 @@ async function getControlBox(_converse) {
 }
 
 describe('A pending invitation', function () {
+    afterEach(() => vi.restoreAllMocks());
+
     it('is shown above the login form when the page was opened with one', async function () {
         openWith('#mercutio@montague.lit');
         await mock.initConverse(converse, [], settings(), async function (_converse) {
@@ -41,10 +53,104 @@ describe('A pending invitation', function () {
             );
             expect(cbview.querySelector('converse-login-form')).not.toBeNull();
 
-            // For someone without an XMPP app yet.
-            const apps = [...card.querySelectorAll('.pending-invitation__apps a')].map((a) => a.textContent.trim());
-            expect(apps).toEqual(['Conversations', 'Monal', 'Gajim', 'Dino', 'More apps']);
             clearHash();
+        })();
+    });
+
+    describe('suggests an XMPP app', function () {
+        /** @param {any} _converse */
+        async function getSuggestedApps(_converse) {
+            const cbview = await getControlBox(_converse);
+            const card = await u.waitUntil(() =>
+                cbview.querySelector('converse-pending-invitation .pending-invitation'),
+            );
+            return [...card.querySelectorAll('.pending-invitation__apps a')].map((a) => a.textContent.trim());
+        }
+
+        const MAC_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)';
+        const cases = [
+            ['Android', 'Android', '', 'Conversations'],
+            ['iOS', undefined, 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', 'Monal'],
+            ['iPadOS', undefined, MAC_UA, 'Monal', 5],
+            ['macOS', undefined, MAC_UA, 'Converse Desktop', 0],
+            ['Windows', 'Windows', '', 'Converse Desktop'],
+            ['Linux', 'Linux', '', 'Converse Desktop'],
+        ];
+        for (const [name, hint, user_agent, app, touch_points] of cases) {
+            it(`for ${name}`, async function () {
+                stubPlatform(hint, user_agent);
+                if (touch_points !== undefined) {
+                    vi.spyOn(Navigator.prototype, 'maxTouchPoints', 'get').mockReturnValue(touch_points);
+                }
+                openWith('#mercutio@montague.lit');
+                await mock.initConverse(converse, [], settings(), async function (_converse) {
+                    expect(await getSuggestedApps(_converse)).toEqual([app, 'More apps']);
+                    clearHash();
+                })();
+            });
+        }
+
+        it('of each kind when the platform is unknown', async function () {
+            stubPlatform('Chrome OS');
+            openWith('#mercutio@montague.lit');
+            await mock.initConverse(converse, [], settings(), async function (_converse) {
+                expect(await getSuggestedApps(_converse)).toEqual([
+                    'Conversations',
+                    'Converse Desktop',
+                    'Monal',
+                    'Gajim',
+                    'Dino',
+                    'More apps',
+                ]);
+                const platforms = document.querySelector('.pending-invitation__platforms');
+                expect(platforms.textContent).toBe('(Android)');
+                clearHash();
+            })();
+        });
+    });
+
+    it('suggests the apps the shareable_link_apps setting lists', async function () {
+        stubPlatform('Linux');
+        openWith('#mercutio@montague.lit');
+        const shareable_link_apps = [
+            { name: 'Our App', url: 'https://example.org/app' },
+            { name: 'Their App', url: 'https://example.org/theirs', platforms: ['Android'] },
+        ];
+        await mock.initConverse(converse, [], { ...settings(), shareable_link_apps }, async function (_converse) {
+            const cbview = await getControlBox(_converse);
+            const card = await u.waitUntil(() =>
+                cbview.querySelector('converse-pending-invitation .pending-invitation'),
+            );
+            const links = [...card.querySelectorAll('.pending-invitation__apps a')];
+            // None is for Linux, so all of them.
+            expect(links.map((a) => a.textContent.trim())).toEqual(['Our App', 'Their App', 'More apps']);
+            expect(links[0].getAttribute('href')).toBe('https://example.org/app');
+            expect(card.querySelector('.pending-invitation__platforms').textContent).toBe('(Android)');
+            clearHash();
+        })();
+    });
+
+    it('suggests no apps when shareable_link_apps is empty', async function () {
+        openWith('#mercutio@montague.lit');
+        await mock.initConverse(converse, [], { ...settings(), shareable_link_apps: [] }, async function (_converse) {
+            const cbview = await getControlBox(_converse);
+            const card = await u.waitUntil(() =>
+                cbview.querySelector('converse-pending-invitation .pending-invitation'),
+            );
+            expect(card.querySelector('.pending-invitation__open-app')).not.toBeNull();
+            expect(card.querySelector('.pending-invitation__apps')).toBeNull();
+            clearHash();
+        })();
+    });
+
+    it('is acted on straight away when the session is restored', async function () {
+        openWith('#mercutio@montague.lit');
+        const { shareable_link_url } = settings();
+        await mock.initConverse(converse, [], { shareable_link_url }, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            await u.waitUntil(() => _converse.state.chatboxes.get('mercutio@montague.lit')?.get('hidden') === false);
+            expect(document.querySelector('converse-pending-invitation .pending-invitation')).toBeNull();
+            expect(location.hash).toBe('');
         })();
     });
 

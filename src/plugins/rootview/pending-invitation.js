@@ -7,30 +7,75 @@ import tplCopyableAddress from 'templates/copyable-address.js';
 import { getPendingXMPPURI } from './protocol-handler.js';
 import './styles/pending-invitation.scss';
 
-/**
- * A few well-known XMPP apps, for someone without one who would rather
- * install an app than use the browser. Deliberately short: the link after
- * them leads to the full list.
- */
-const APPS = [
-    { name: 'Conversations', url: 'https://conversations.im/', platforms: 'Android' },
-    { name: 'Monal', url: 'https://monal-im.org/', platforms: 'iOS, macOS' },
-    { name: 'Gajim', url: 'https://gajim.org/', platforms: 'Windows, Linux' },
-    { name: 'Dino', url: 'https://dino.im/', platforms: 'Linux' },
-];
 const MORE_APPS_URL = 'https://xmpp.org/software/';
 
+/**
+ * What the User-Agent Client Hints platform or the user agent string names,
+ * first match wins. ChromeOS runs both Android and Linux apps, so it's left
+ * unknown, and Android user agents also mention Linux.
+ * @type {Array<[RegExp, import('./types').Platform|null]>}
+ */
+const PLATFORM_PATTERNS = [
+    [/CrOS|Chrome OS|Chromium OS/, null],
+    [/Android/, 'Android'],
+    [/iPhone|iPad|iPod|^iOS$/, 'iOS'],
+    [/Mac/, 'macOS'],
+    [/Win/, 'Windows'],
+    [/Linux/, 'Linux'],
+];
+
+/**
+ * The platform the visitor is on, as far as the browser lets on, or null when
+ * it can't be told.
+ * @returns {import('./types').Platform|null}
+ */
+function getPlatform() {
+    // User-Agent Client Hints are Chromium only, and not in TypeScript's DOM types.
+    const hint = /** @type {any} */ (navigator).userAgentData?.platform;
+    const ua = hint || navigator.userAgent;
+    const [, platform = null] = PLATFORM_PATTERNS.find(([re]) => re.test(ua)) ?? [];
+    // iPadOS Safari presents itself as a Mac, but Macs have no touch screen.
+    return platform === 'macOS' && navigator.maxTouchPoints > 1 ? 'iOS' : platform;
+}
+
+/**
+ * The apps to suggest: the first one in the `shareable_link_apps` setting
+ * for the visitor's platform, or all of them if there's none or the platform
+ * is unknown.
+ * @returns {{ apps: import('./types').XMPPApp[], for_platform: boolean }}
+ */
+function getSuggestedApps() {
+    /** @type {import('./types').XMPPApp[]} */
+    const apps = api.settings.get('shareable_link_apps') ?? [];
+    const platform = getPlatform();
+    const app = platform && apps.find((a) => a.platforms?.includes(platform));
+    return app ? { apps: [app], for_platform: true } : { apps, for_platform: false };
+}
+
+/**
+ * XMPP apps for someone without one who would rather install an app than use
+ * the browser. The link after them leads to the full list.
+ */
 function tplApps() {
-    const i18n_no_app = __("Don't have an XMPP app yet? Try one of these:");
+    const { apps, for_platform } = getSuggestedApps();
+    if (!apps.length) return '';
+
+    const i18n_no_app = for_platform
+        ? __("Don't have an XMPP app yet? Try this one:")
+        : __("Don't have an XMPP app yet? Try one of these:");
     const i18n_more = __('More apps');
     return html`<div class="pending-invitation__apps mt-3">
         <p class="mb-1">${i18n_no_app}</p>
         <ul class="list-inline mb-0">
-            ${APPS.map(
+            ${apps.map(
                 (a) =>
                     html`<li class="list-inline-item">
                         <a href="${a.url}" target="_blank" rel="noopener">${a.name}</a>
-                        <span class="pending-invitation__platforms">(${a.platforms})</span>
+                        ${
+                            !for_platform && a.platforms?.length
+                                ? html`<span class="pending-invitation__platforms">(${a.platforms.join(', ')})</span>`
+                                : ''
+                        }
                     </li>`,
             )}
             <li class="list-inline-item">

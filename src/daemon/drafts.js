@@ -9,8 +9,10 @@
  * @module @converse/daemon/drafts
  */
 import { withdrawalNotice, draftNotice } from './notices.js';
-import { findOwn, findTarget, retractMessage, sendMessage, sendReaction, toMessageDTO } from './messages.js';
+import { toMessageDTO } from './dto.js';
+import { findOwn, findTarget } from './find.js';
 import { ERRORS, RPCError } from './protocol.js';
+import { retractMessage, sendMessage, sendReaction } from './send.js';
 import { readStateFile, writeStateFile } from './state-file.js';
 
 /**

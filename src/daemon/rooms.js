@@ -8,7 +8,7 @@
  * @module @converse/daemon/rooms
  */
 import { converse, log } from '@converse/headless';
-import { toRoomDTO } from './messages.js';
+import { toRoomDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { parseJID, resolveRoomJID } from './resolve.js';
 import { readStateFile, writeStateFile } from './state-file.js';

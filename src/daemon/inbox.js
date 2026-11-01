@@ -7,7 +7,7 @@
  */
 import { isMessage } from './history.js';
 import { constants } from '@converse/headless';
-import { isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './messages.js';
+import { isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
 
 /** @param {import('@converse/headless').ChatBox} box - A chat or a room */

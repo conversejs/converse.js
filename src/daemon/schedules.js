@@ -6,7 +6,7 @@
 import { u } from '@converse/headless';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
-import { ownMessagesOnly } from './messages.js';
+import { ownMessagesOnly } from './send.js';
 import { createScheduler } from './scheduler.js';
 
 /** The policy rules that refuse a send only for now. */

@@ -9,6 +9,9 @@
 - feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
 - The unused `errors.UserFacingError` class is removed.
 - fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
+- Projects can bundle `converse.js` themselves: `dist/converse.js` no longer pulls all of `dist/`
+  into a webpack build, and the source is importable as `converse.js/src/*` with its dependencies
+  (including `@converse/headless`) installed.
 - #194: Full support for XEP-0115: Entity capabilities.
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
 - Invitation links from other clients (xmpp.link, i.kaidan.im, invite.joinjabber.org and

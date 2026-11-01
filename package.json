@@ -15,7 +15,8 @@
       }
     },
     "./dist/*": "./dist/*",
-    "./shared/*": "./src/shared/*"
+    "./shared/*": "./src/shared/*",
+    "./src/*": "./src/*"
   },
   "types": "./src/types/index.d.ts",
   "browser": "dist/converse.js",
@@ -99,7 +100,6 @@
     "browser": "*"
   },
   "devDependencies": {
-    "@converse/headless": "file:src/headless",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^10.0.1",
     "@rspack/cli": "^2.0.4",
@@ -140,7 +140,9 @@
     "webpack-merge": "^6.0.1"
   },
   "dependencies": {
+    "@converse/headless": "14.0.0",
     "@converse/log": "file:src/log",
+    "@converse/openpromise": "^0.0.5",
     "@lexical/code": "^0.52.0",
     "@lexical/history": "^0.52.0",
     "@lexical/html": "^0.52.0",
@@ -150,7 +152,9 @@
     "@lexical/rich-text": "^0.52.0",
     "@lexical/utils": "^0.52.0",
     "@lit-labs/signals": "^0.3.0",
+    "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
+    "dayjs": "^1.11.8",
     "dompurify": "^3.0.8",
     "favico.js-slevomat": "^0.3.11",
     "gifuct-js": "^2.1.2",

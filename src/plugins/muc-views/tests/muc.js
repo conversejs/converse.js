@@ -567,7 +567,7 @@ describe('Groupchats', function () {
 
         it(
             'is opened when an xmpp: URI is clicked inside another groupchat',
-            mock.initConverse(converse, [], {}, async function (_converse) {
+            mock.initConverse(converse, [], { allow_bookmarks: false }, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current');
                 await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
                 const view = _converse.chatboxviews.get('lounge@montague.lit');

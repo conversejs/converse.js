@@ -26,7 +26,7 @@ export function addVisibilityListener(listener: EventListener): void;
  */
 export function removeVisibilityListener(listener: EventListener): void;
 /**
- * The URL fragment Converse routes on, e.g. `#converse/room?jid=...`.
+ * The URL fragment Converse routes on, e.g. `#converse?loglevel=debug`.
  * @returns {string}
  */
 export function getRouteHash(): string;

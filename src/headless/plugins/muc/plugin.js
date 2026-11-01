@@ -17,7 +17,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
-import { addRouteListener, addVisibilityListener } from '../../utils/environment.js';
+import { addVisibilityListener } from '../../utils/environment.js';
 import {
     autoJoinRooms,
     disconnectChatRooms,
@@ -32,7 +32,6 @@ import {
     onStatusInitialized,
     onWindowStateChanged,
     registerDirectInvitationHandler,
-    routeToRoom,
 } from './utils.js';
 import { computeAffiliationsDelta } from './affiliations/utils.js';
 import {
@@ -159,9 +158,6 @@ converse.plugins.add('converse-muc', {
         const labels = { muc: { STATUS_CODE_MESSAGES } };
         Object.assign(_converse.labels, labels);
         Object.assign(_converse, labels); // XXX DEPRECATED
-
-        routeToRoom();
-        addRouteListener(routeToRoom);
 
         // TODO: DEPRECATED
         const legacy_exports = {

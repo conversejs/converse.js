@@ -82,7 +82,7 @@ Check the terminal output from your `npm install` command for any error messages
 
 For additional help, you can join our community chatroom: [discuss@conference.conversejs.org](xmpp:discuss@conference.conversejs.org).
 
-If you don't have an XMPP client installed, you can access the chatroom directly through [conversejs.org](https://conversejs.org/fullscreen#converse/room?jid=discuss@conference.conversejs.org) where you can log in and join the conversation.
+If you don't have an XMPP client installed, you can access the chatroom directly through [conversejs.org](https://conversejs.org/fullscreen#converse/action?uri=xmpp%3Adiscuss%40conference.conversejs.org%3Fjoin) where you can log in and join the conversation.
 
 ## Optional: Enabling OMEMO Encryption
 

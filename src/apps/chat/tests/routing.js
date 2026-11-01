@@ -37,35 +37,16 @@ describe('Chat hash routing grammar', function () {
         expect(parseChatRoute(hash)).toEqual({ view: 'room', jid: 'orchard@muc.shakespeare.lit' });
     });
 
-    it('accepts the legacy `?jid=` chat form and maps it to the chat route', function () {
-        expect(parseChatRoute('#converse/chat?jid=juliet@capulet.lit')).toEqual({
-            view: 'chat',
-            jid: 'juliet@capulet.lit',
-        });
-    });
-
-    it('accepts the legacy `?jid=` room form and maps it to the room route', function () {
-        expect(parseChatRoute('#converse/room?jid=orchard@muc.shakespeare.lit')).toEqual({
-            view: 'room',
-            jid: 'orchard@muc.shakespeare.lit',
-        });
-    });
-
-    it('canonicalizes a legacy `?jid=` deep-link to the `/jid` form on build', function () {
-        const route = parseChatRoute('#converse/chat?jid=juliet@capulet.lit');
-        expect(buildChatRoute(route)).toBe('#converse/chat/juliet%40capulet.lit');
-        // The rebuilt hash differs from the legacy input (proves canonicalization).
-        expect(buildChatRoute(route)).not.toBe('#converse/chat?jid=juliet@capulet.lit');
-    });
-
-    it('does NOT collapse the legacy `?jid=` form to the bare list route', function () {
-        // The crux: `#converse/chat?jid=x` must open x, never background it as `list`.
-        expect(parseChatRoute('#converse/chat?jid=romeo@montague.lit')).not.toEqual({ view: 'list' });
+    it('does not treat the legacy `?jid=` forms as a Chat route', function () {
+        // The rootview protocol handler reads them, as the `xmpp:` URI they
+        // stand for. Returning the list here would background the open chats.
+        expect(parseChatRoute('#converse/chat?jid=juliet@capulet.lit')).toBe(null);
+        expect(parseChatRoute('#converse/room?jid=orchard@muc.shakespeare.lit')).toBe(null);
+        expect(parseChatRoute('#converse/chat?jid=')).toBe(null);
     });
 
     it('falls back to the list for an empty JID', function () {
         expect(parseChatRoute('#converse/chat/')).toEqual({ view: 'list' });
-        expect(parseChatRoute('#converse/chat?jid=')).toEqual({ view: 'list' });
         expect(buildChatRoute({ view: 'chat' })).toBe(null);
         expect(buildChatRoute({ view: 'room' })).toBe(null);
     });

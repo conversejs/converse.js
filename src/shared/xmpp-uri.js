@@ -33,7 +33,7 @@ export const DEFAULT_ACTION = 'message';
  * @param {string} s
  * @returns {string}
  */
-function decodeValue(s) {
+export function decodeValue(s) {
     try {
         return decodeURIComponent(s);
     } catch {
@@ -130,12 +130,33 @@ export function invitationToXMPPURI(url) {
         const m = url.pathname.match(/^\/([ij])\/([^/]+)$/);
         if (!m) return null;
 
-        // The path names a JID only, so a decoded `?` is part of it and is
-        // escaped again, rather than starting a query that picks the action.
-        const jid = decodeValue(m[2]).replace(/[%?]/g, encodeURIComponent);
-        return m[1] === 'j' ? `xmpp:${jid}?join` : `xmpp:${jid}`;
+        return jidSegmentToXMPPURI(m[2], m[1] === 'j');
     }
     return null;
+}
+
+/**
+ * The `xmpp:` URI for a percent-encoded segment that names a JID and nothing
+ * else (a Conversations `/i/` or `/j/` path, a legacy `#converse/chat?jid=`
+ * fragment), or null when the segment has a malformed `%` sequence.
+ *
+ * A decoded `?` or `#` is part of the JID, so it is escaped again rather than
+ * starting a query that picks the action or a fragment that cuts the JID short.
+ * Whether the JID is one we can act on is left to {@link isHandledXMPPURI}.
+ *
+ * @param {string} segment
+ * @param {boolean} [join=false] Whether it names a groupchat to join, not a contact.
+ * @returns {string|null}
+ */
+export function jidSegmentToXMPPURI(segment, join = false) {
+    let jid;
+    try {
+        jid = decodeURIComponent(segment);
+    } catch {
+        return null;
+    }
+    const escaped = jid.replace(/[%?#]/g, encodeURIComponent);
+    return join ? `xmpp:${escaped}?join` : `xmpp:${escaped}`;
 }
 
 const DOMAINPART = /^(?:\[[\d.:a-f]+\]|(?:[\d.a-z-]|\P{ASCII})+)$/iu;

@@ -31,7 +31,7 @@ If file sharing isn't working, the most common cause is missing CORS headers on 
 ## Integration
 
 - **Embeddable** — Run as a standalone page, a floating overlay, or embedded inside a `<div>`
-- **URL-based chat opening** — Link directly to a chat or room with URL fragments like `#converse/chat?jid=user@domain`
+- **`xmpp:` link handling** — Open `xmpp:` links ([XEP-0147](https://xmpp.org/extensions/xep-0147.html)) in Converse, including from other applications via the browser's protocol handler (see [`register_protocol_handler`](/docs/configuration/#register_protocol_handler))
 - **Session management** — Auto-login users already authenticated on your website
 - **Plugin system** — Extend or customize behavior with plugins
 

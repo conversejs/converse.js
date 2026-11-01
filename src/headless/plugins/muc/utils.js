@@ -5,7 +5,7 @@ import log from '@converse/log';
 import { MUC_ROLE_WEIGHTS } from './constants.js';
 import { safeSave } from '../../utils/init.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
-import { addUnloadListener, getRouteHash, isAppHidden } from '../../utils/environment.js';
+import { addUnloadListener, isAppHidden } from '../../utils/environment.js';
 
 const { Strophe, sizzle, u } = converse.env;
 
@@ -104,32 +104,6 @@ export async function onWindowStateChanged() {
         const rooms = await api.rooms.get();
         rooms.forEach((room) => room.rejoinIfNecessary());
     }
-}
-
-/**
- * @param {Event} [event]
- */
-export async function routeToRoom(event) {
-    // In fullscreen with URL routing on, the Chat app's own router owns the
-    // `#converse/room...` space (it also accepts this legacy `?jid=` form and
-    // canonicalizes it), so bow out to avoid double-opening.
-    if (api.settings.get('enable_url_routing') && api.settings.get('view_mode') === 'fullscreen') {
-        return;
-    }
-    const hash = getRouteHash();
-    if (!hash.startsWith('#converse/room?jid=')) {
-        return;
-    }
-    event?.preventDefault();
-    const jid = hash.split('=').pop();
-    if (!u.isValidMUCJID(jid)) {
-        return log.warn(`invalid jid "${jid}" provided in url fragment`);
-    }
-    await api.waitUntil('roomsAutoJoined');
-    if (api.settings.get('allow_bookmarks')) {
-        await api.waitUntil('bookmarksInitialized');
-    }
-    api.rooms.open(jid, {}, true);
 }
 
 /**

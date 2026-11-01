@@ -15,10 +15,13 @@
  *    hash, which {@link routeXMPPURI} unpacks and passes to the existing
  *    dispatcher in shared/xmpp-uri-dispatch.js. All the parsing, the confirm
  *    prompts for state-mutating actions and the set of supported query actions
- *    live there and this module is only the transport.
+ *    live there and this module is only the transport. The legacy
+ *    `#converse/chat?jid=` and `#converse/room?jid=` deep links take the same
+ *    path, read as the `xmpp:` URI they stand for.
  */
 import { api, log } from '@converse/headless';
 import { dispatchXMPPURI } from 'shared/xmpp-uri-dispatch.js';
+import { decodeValue, isHandledXMPPURI, jidSegmentToXMPPURI } from 'shared/xmpp-uri.js';
 
 /**
  * The hash the protocol handler hands the URI back on. Must stay in sync with
@@ -26,7 +29,7 @@ import { dispatchXMPPURI } from 'shared/xmpp-uri-dispatch.js';
  */
 export const ACTION_HASH_PREFIX = '#converse/action?uri=';
 
-// Guards against `hashchange` and `connected` both dispatching the same URI.
+// Handles one link at a time, so their confirm prompts don't stack.
 let dispatching = false;
 
 /**
@@ -62,6 +65,27 @@ export function registerProtocolHandlerIfEnabled() {
 }
 
 /**
+ * The legacy deep-link fragments (`#converse/chat?jid=<jid>` and
+ * `#converse/room?jid=<jid>`), still accepted as an alias for the `xmpp:` URI
+ * they stand for but never emitted.
+ */
+const LEGACY_HASH = /^#converse\/(chat|room)\?jid=([^&;]*)/;
+
+/**
+ * The `xmpp:` URI a legacy `?jid=` fragment stands for, or null when the
+ * fragment isn't one or doesn't name a JID we can act on.
+ * @param {string} hash
+ * @returns {string|null}
+ */
+function legacyHashToXMPPURI(hash) {
+    const m = hash.match(LEGACY_HASH);
+    if (!m) return null;
+
+    const uri = jidSegmentToXMPPURI(m[2], m[1] === 'room');
+    return uri && isHandledXMPPURI(uri) ? uri : null;
+}
+
+/**
  * The `xmpp:` URI the current hash carries, or null when it carries none.
  *
  * The URI is attacker-supplied (any page can link to this hash), so a malformed
@@ -70,19 +94,23 @@ export function registerProtocolHandlerIfEnabled() {
  * @returns {string|null}
  */
 function getURIFromHash() {
-    if (!location.hash.startsWith(ACTION_HASH_PREFIX)) return null;
+    if (!location.hash.startsWith(ACTION_HASH_PREFIX)) return legacyHashToXMPPURI(location.hash);
 
     const escaped = location.hash.slice(ACTION_HASH_PREFIX.length);
-    if (!escaped) return null;
-
-    try {
-        return decodeURIComponent(escaped);
-    } catch {
-        return escaped;
-    }
+    return escaped ? decodeValue(escaped) : null;
 }
 
-/** Drop the action hash, without a history entry and without firing `hashchange`. */
+/**
+ * Whether the current hash is an `xmpp:` link waiting to be handled (it is
+ * left in place until there's a live connection), so that nothing else, such
+ * as the Chat app mirroring its foreground conversation, overwrites it first.
+ * @returns {boolean}
+ */
+export function isWaitingXMPPLink() {
+    return getURIFromHash() !== null;
+}
+
+/** Drop the link from the hash, without a history entry and without firing `hashchange`. */
 function clearActionHash() {
     history.replaceState(history.state, '', `${location.pathname}${location.search}`);
 }
@@ -101,6 +129,9 @@ function clearActionHash() {
  * conversation pushes the chat's own route, which clearing afterwards would
  * wipe before the router gets to it.
  *
+ * A link that arrives while another is being handled (e.g. during its confirm
+ * prompt) waits in the hash and is handled next.
+ *
  * @returns {Promise<boolean>} Whether the URI was handled.
  */
 export async function routeXMPPURI() {
@@ -113,5 +144,6 @@ export async function routeXMPPURI() {
         return await dispatchXMPPURI(uri);
     } finally {
         dispatching = false;
+        if (getURIFromHash()) routeXMPPURI();
     }
 }

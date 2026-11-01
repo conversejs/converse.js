@@ -6,10 +6,6 @@
  */
 export function confirmDirectMUCInvitation({ contact, jid, reason }: import("./types").MUCInvitationObj): any;
 /**
- * @param {string} jid
- */
-export function clearHistory(jid: string): void;
-/**
  * @param {MUC} model
  */
 export function destroyMUC(model: MUC): Promise<any>;

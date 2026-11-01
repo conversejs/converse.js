@@ -100,12 +100,14 @@ export class HashRouter {
 /**
  * The app a `#converse/...` hash selects by its leading segment, or null when the
  * hash names no app route (e.g. `#converse?loglevel=`, an empty fragment). A MUC
- * (`room`) is part of the chat app.
+ * (`room`) is part of the chat app. A legacy `#converse/chat?jid=` link names no
+ * app: it's an `xmpp:` link for the protocol handler, which may yet reject it or
+ * be declined, and the conversation it opens brings its own route.
  * @param {string} [hash=location.hash]
  * @returns {'chat'|'social'|null}
  */
 export function appOfHash(hash = location.hash) {
-    const m = hash.match(/^#converse\/(chat|room|social)(\/|\?|$)/);
+    const m = hash.match(/^#converse\/(chat|room|social)(\/|$)/);
     if (!m) return null;
     return m[1] === 'social' ? 'social' : 'chat';
 }

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
@@ -119,6 +120,33 @@ describe('The Login Form', function () {
                 } finally {
                     u.isPersistentStorageAvailable = is_persistent_storage_available;
                 }
+            },
+        ),
+    );
+
+    it(
+        'drops the login route from the address bar on login, without a history entry',
+        mock.initConverse(
+            converse,
+            ['chatBoxesInitialized'],
+            { auto_login: false, allow_registration: false },
+            async function (_converse) {
+                mock.toggleControlBox(_converse);
+                const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
+                await u.waitUntil(() => cbview.querySelector('input[name="jid"]'));
+
+                const { search } = location;
+                history.replaceState(null, '', `${location.pathname}${search}#converse/login`);
+                const push = vi.spyOn(history, 'pushState');
+
+                cbview.querySelector('input[name="jid"]').value = 'romeo@montague.lit';
+                cbview.querySelector('input[name="password"]').value = 'secret';
+                cbview.querySelector('button[type="submit"]').click();
+
+                await u.waitUntil(() => location.hash === '');
+                expect(push).not.toHaveBeenCalled();
+                expect(location.search).toBe(search);
+                push.mockRestore();
             },
         ),
     );

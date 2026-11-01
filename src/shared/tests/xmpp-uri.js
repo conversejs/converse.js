@@ -174,6 +174,16 @@ describe('https invitation links', function () {
         expect(room.jid).toBe('coven@chat.shakespeare.lit?message;body=hi');
     });
 
+    it('ignores a Conversations path with a malformed percent-sequence', function () {
+        expect(toURI('https://conversations.im/i/r%zz@montague.lit')).toBeNull();
+    });
+
+    it("doesn't let an encoded `#` in a Conversations path cut the JID short", function () {
+        expect(parseXMPPURI(toURI('https://conversations.im/i/romeo@montague.lit%23x')).jid).toBe(
+            'romeo@montague.lit#x',
+        );
+    });
+
     it('ignores every other link', function () {
         expect(toURI('https://xmpp.link/')).toBeNull();
         expect(toURI('https://xmpp.link/faq#romeo@montague.lit')).toBeNull();

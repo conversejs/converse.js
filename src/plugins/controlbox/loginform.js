@@ -84,8 +84,8 @@ class LoginForm extends CustomElement {
      * @param {string} [jid]
      */
     connect (jid) {
-        if (['converse/login', 'converse/register'].includes(location.hash)) {
-            history.pushState(null, '', window.location.pathname);
+        if (['#converse/login', '#converse/register'].includes(location.hash)) {
+            history.replaceState(history.state, '', `${location.pathname}${location.search}`);
         }
         api.connection.get()?.reset();
         api.user.login(jid);

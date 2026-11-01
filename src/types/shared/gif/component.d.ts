@@ -21,8 +21,9 @@ export default class ConverseGIFElement extends CustomElement {
     noloop: boolean;
     fallback: string;
     progress_color: any;
+    /** @type {import('shared/animation/player.js').default} */
+    supergif: import("shared/animation/player.js").default;
     initGIF(): void;
-    supergif: ConverseGif;
     getPlayerOptions(): Record<string, any>;
     render(): string | import("utils/html.js").TemplateResult;
     renderErrorFallback(): string | import("utils/html.js").TemplateResult;
@@ -33,5 +34,4 @@ export default class ConverseGIFElement extends CustomElement {
     onControlsClicked(ev: MouseEvent): void;
 }
 import { CustomElement } from 'shared/components/element.js';
-import ConverseGif from 'shared/gif/index.js';
 //# sourceMappingURL=component.d.ts.map

@@ -100,7 +100,7 @@ export default class ConverseWebPElement extends ConverseGIFElement {
 
         const supergif = new ConverseWebP(this, this.getPlayerOptions());
         this.supergif = supergif;
-        supergif.handleGIFResponse(this.animation_data);
+        supergif.load(this.animation_data);
         this.animation_data = null;
     }
 

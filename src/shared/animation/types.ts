@@ -1,9 +1,9 @@
-export interface ConverseGifOptions {
+export interface AnimationPlayerOptions {
     autoplay?: boolean;
     height?: number; // The height, in pixels, of the canvas
-    loop?: boolean; // Setting this to `true` will enable looping of the gif
+    loop?: boolean; // Setting this to `true` will enable looping of the animation
     max_width?: number; // Scale images over max_width down to max_width. Helpful with mobile.
-    onIterationEnd?: (gifElement: HTMLElement) => void; // Callback for when the gif reaches the end of a single loop (one iteration)
+    onIterationEnd?: (_el: HTMLElement) => void; // Callback for when the animation reaches the end of a single loop (one iteration)
     progress_bar_height?: number; // Default is 5
     progress_bg_color?: string; // Default is 'rgba(0,0,0,0.4)'
     progress_color?: string; // Default is 'rgba(255,0,22,.8)'

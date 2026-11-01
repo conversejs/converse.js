@@ -1,19 +1,17 @@
-export default class ConverseWebP extends ConverseGif {
+export default class ConverseWebP extends AnimationPlayer {
     is_static: boolean;
     disposed: boolean;
+    abort_controller: AbortController;
     /**
      * Stops playback and frees the decoded frames. The player can't be used afterwards.
      */
     dispose(): void;
     closeFrames(): void;
     /**
-     * @param {ArrayBuffer} data - The WebP file data, as returned by the server
+     * Decodes the WebP file and starts playing it.
+     * @param {ArrayBuffer} data - The WebP file data
      */
-    handleGIFResponse(data: ArrayBuffer): Promise<void>;
-    /**
-     * @param {ArrayBuffer} data
-     */
-    decodeFrames(data: ArrayBuffer): Promise<void>;
+    load(data: ArrayBuffer): Promise<void>;
 }
-import ConverseGif from 'shared/gif/index.js';
+import AnimationPlayer from 'shared/animation/player.js';
 //# sourceMappingURL=index.d.ts.map

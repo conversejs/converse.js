@@ -33,6 +33,8 @@ export default class ConverseGIFElement extends CustomElement {
         this.noloop = false;
         this.fallback = 'url';
         this.progress_color = null;
+        /** @type {import('shared/animation/player.js').default} */
+        this.supergif = null;
     }
 
     initGIF () {

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 

@@ -1,9 +1,9 @@
-export interface ConverseGifOptions {
+export interface AnimationPlayerOptions {
     autoplay?: boolean;
     height?: number;
     loop?: boolean;
     max_width?: number;
-    onIterationEnd?: (gifElement: HTMLElement) => void;
+    onIterationEnd?: (_el: HTMLElement) => void;
     progress_bar_height?: number;
     progress_bg_color?: string;
     progress_color?: string;

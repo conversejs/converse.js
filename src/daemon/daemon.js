@@ -6,11 +6,12 @@ import fs from 'node:fs/promises';
 import net from 'node:net';
 import path from 'node:path';
 import { _converse, api, converse, log } from '@converse/headless';
-import { checkMethodAccess, mayCall } from './access.js';
+import { checkMethodAccess } from './access.js';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
 import { checkRuntimeDir, findDaemon, getGroupId, getPassword } from './config.js';
 import { createCursors } from './cursors.js';
+import { createDispatcher } from './dispatch.js';
 import { createDrafter, createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
 import { fileMethods } from './files.js';
@@ -21,7 +22,7 @@ import { presenceMethods } from './presence.js';
 import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
 import { claimPidfile } from './pidfile.js';
 import { createPolicy } from './policy.js';
-import { ERRORS, MAX_LINE_LENGTH, PROTOCOL_VERSION, RPCError } from './protocol.js';
+import { ERRORS, MAX_LINE_LENGTH } from './protocol.js';
 import { createSendRouter } from './routing.js';
 import { scheduleMethods } from './schedules.js';
 import { TIMED_OUT, withTimeout } from './timeout.js';
@@ -312,77 +313,15 @@ async function leave() {
  * @param {ReturnType<typeof createEvents>} context.events
  */
 function serveClient(socket, { access, config, methods, getJID, events }) {
-    /** @type {import('./types').Hello|null} */
-    let hello = null;
-
     const send = (message) => socket.writable && socket.write(JSON.stringify({ jsonrpc: '2.0', ...message }) + '\n');
-    /** @type {import('./types').Client} */
-    const client = { access, consumer: null, notify: (params) => send({ method: 'event', params }) };
+    const { client, handle } = createDispatcher({
+        access,
+        config,
+        methods,
+        getJID,
+        notify: (params) => send({ method: 'event', params }),
+    });
     socket.once('close', () => events.forget(client));
-
-    /**
-     * The consumer a client is, from the name it asks for. A restricted
-     * client is the configured consumer: the daemon can't tell restricted
-     * clients apart, so the name a client asks for would only be a label,
-     * and it decides whose cursors, schedules and drafts the client reaches.
-     * The name is the first hello's, and stays.
-     * @param {unknown} asked
-     * @returns {string}
-     */
-    const consumerFor = (asked) => {
-        const name = typeof asked === 'string' && asked ? asked : (client.consumer ?? config.consumer);
-        if (access === 'restricted' && name !== config.consumer) {
-            throw new RPCError(
-                ERRORS.ACCESS_DENIED,
-                `A restricted connection is the consumer "${config.consumer}", as the config names it, ` +
-                    `not "${name}". Leave "consumer" out of "hello".`,
-            );
-        }
-        if (client.consumer !== null && name !== client.consumer) {
-            throw new RPCError(
-                ERRORS.INVALID_PARAMS,
-                `This connection is already the consumer "${client.consumer}", and that can't change. ` +
-                    'Connect again to be another.',
-            );
-        }
-        return name;
-    };
-
-    const call = (method, params) => {
-        if (method === 'hello') {
-            if (params?.protocol !== PROTOCOL_VERSION) {
-                throw new RPCError(
-                    ERRORS.PROTOCOL_MISMATCH,
-                    `This daemon speaks protocol version ${PROTOCOL_VERSION} but the client asked for ` +
-                        `${params?.protocol}. Upgrade whichever is older; to restart the daemon, ` +
-                        `stop it with "daemon.stop".`,
-                    { protocol: PROTOCOL_VERSION },
-                );
-            }
-            hello = {
-                protocol: PROTOCOL_VERSION,
-                consumer: consumerFor(params.consumer),
-                access,
-                mode: config.mode,
-                jid: getJID(),
-            };
-            client.consumer = hello.consumer;
-            return hello;
-        }
-        if (!hello) {
-            throw new RPCError(ERRORS.HELLO_REQUIRED, 'Send "hello" with the protocol version first.');
-        }
-        if (!Object.hasOwn(methods, method)) {
-            throw new RPCError(ERRORS.METHOD_NOT_FOUND, `Unknown method "${method}".`);
-        }
-        if (!mayCall(method, access, config.mode)) {
-            throw new RPCError(
-                ERRORS.ACCESS_DENIED,
-                `"${method}" is only available at full access, and this connection is restricted.`,
-            );
-        }
-        return methods[method](params ?? {}, client);
-    };
 
     const onRefused = (code) => {
         const message =
@@ -392,30 +331,6 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
                 : `The request is longer than the ${MAX_LINE_LENGTH} bytes the daemon accepts, so it was ` +
                   'refused and the connection closed.';
         socket.end(JSON.stringify({ jsonrpc: '2.0', id: null, error: { code, message } }) + '\n');
-    };
-
-    /** @param {string} line */
-    const answer = async (line) => {
-        let request;
-        try {
-            request = JSON.parse(line);
-        } catch {
-            return send({ id: null, error: { code: ERRORS.PARSE_ERROR, message: 'Not valid JSON.' } });
-        }
-        const { id = null, method, params } = request ?? {};
-        if (request?.jsonrpc !== '2.0' || typeof method !== 'string') {
-            return send({ id, error: { code: ERRORS.INVALID_REQUEST, message: 'Not a JSON-RPC 2.0 request.' } });
-        }
-        try {
-            const result = await call(method, params);
-            // A request without an id is a notification, which gets no response.
-            if (id !== null) send({ id, result });
-        } catch (e) {
-            const { code, message, data } =
-                e instanceof RPCError ? e : { code: ERRORS.INTERNAL_ERROR, message: e.message, data: undefined };
-            if (id !== null) send({ id, error: { code, message, data } });
-            if (code === ERRORS.PROTOCOL_MISMATCH) socket.end();
-        }
     };
 
     // The server keeps a connection open after the client ends its side, so
@@ -428,7 +343,9 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
     readLines(socket, onRefused, async (line) => {
         in_flight++;
         try {
-            await answer(line);
+            const { response, close } = await handle(line);
+            if (response) send(response);
+            if (close) socket.end();
         } finally {
             in_flight--;
             endIfDone();

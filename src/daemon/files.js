@@ -8,7 +8,7 @@
  * @module @converse/daemon/files
  */
 import { getUploadService, uploadFile } from '@converse/headless';
-import { sendMessage } from './messages.js';
+import { sendMessage } from './send.js';
 import { ERRORS, MAX_UPLOAD_SIZE, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 

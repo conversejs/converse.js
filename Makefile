@@ -109,8 +109,9 @@ release-checkout:
 .PHONY: publish
 publish:
 	make release-checkout
-	cd release-$(BRANCH) && npm pack && npm publish --tag $(NPM_TAG)
+	@# Headless first: converse.js depends on this exact headless version.
 	cd release-$(BRANCH)/src/headless && npm pack && npm publish --tag $(NPM_TAG)
+	cd release-$(BRANCH) && npm pack && npm publish --tag $(NPM_TAG)
 	find ./release-$(BRANCH)/ -name "converse.js-*.tgz" -exec mv {} . \;
 	find ./release-$(BRANCH)/src/headless -name "converse-headless-*.tgz" -exec mv {} . \;
 	rm -rf release-$(BRANCH)

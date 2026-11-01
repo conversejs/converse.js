@@ -371,9 +371,9 @@ export const HELP = {
             'Join a room, and rejoin it after every restart until you leave it. Restricted access ' +
             'may join only the rooms listed in "policy.rooms".',
         args: [ROOM],
-        options: [['--nick <name>', 'The nickname to use there (default: claude)']],
+        options: [['--nick <name>', 'The nickname to use there (default: the consumer name, agent unless configured)']],
         exits: [EXIT.NOT_FOUND],
-        examples: ['converse-cli rooms join lobby@conference.example.org --nick claude'],
+        examples: ['converse-cli rooms join lobby@conference.example.org --nick romeo'],
     },
     'rooms leave': {
         summary: 'Leave a room, and forget it',

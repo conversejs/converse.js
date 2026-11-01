@@ -52,7 +52,7 @@ export async function eventually(fn, { timeout = 10000, what = 'the condition' }
 export async function startDaemon(
     account,
     {
-        resource = 'claude',
+        resource = 'agent',
         websocket_url = WEBSOCKET_URL,
         policy,
         mode,

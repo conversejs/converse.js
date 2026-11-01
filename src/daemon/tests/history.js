@@ -96,7 +96,7 @@ describe('Reading history', () => {
 
     it("pages back through a room's archive by the ids the room gave its messages, until it runs out", async () => {
         const archive = archiveOf(`${HALL}/tybalt`, 'h', 7);
-        await start({ room_archives: { [HALL]: archive }, rooms: [{ jid: HALL, nick: 'claude' }] });
+        await start({ room_archives: { [HALL]: archive }, rooms: [{ jid: HALL, nick: 'agent' }] });
         await daemon.enterRoom(HALL);
         // Entering fetches the newest page.
         const room = await daemon.api.rooms.get(HALL);

@@ -65,7 +65,7 @@ describe('Scheduled sends', () => {
                 id: expect.any(String),
                 to: JULIET,
                 body: 'Later',
-                consumer: 'claude',
+                consumer: 'agent',
                 access: 'restricted',
             },
         });

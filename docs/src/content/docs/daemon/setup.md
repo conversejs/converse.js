@@ -172,7 +172,7 @@ account, see [Several accounts](#several-accounts).
   to. It must be your account. In `as_user` mode it's the same as `jid`, and can
   be left out.
 - `consumer` is the name the agent goes by: its read cursors, scheduled
-  messages and drafts are kept under it. It defaults to `claude`. Every client of
+  messages and drafts are kept under it. It defaults to `agent`. Every client of
   the restricted socket is this consumer, and the daemon refuses one that asks
   to be another.
 - `mode` is how the agent acts. See "Modes" below. It defaults to `owner_only`.

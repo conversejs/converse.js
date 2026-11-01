@@ -86,7 +86,7 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
         }
         if (!may_spawn) {
             throw new DaemonUnavailableError(
-                `The daemon for ${config.jid} isn't running. Start it with "converse-cli daemon start".`,
+                `The daemon for ${config.jid} isn't running. Start it with "converse-daemon".`,
                 { cause: e },
             );
         }

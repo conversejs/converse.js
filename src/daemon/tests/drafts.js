@@ -106,14 +106,14 @@ describe('Drafts', () => {
             {
                 to: BENVOLIO,
                 body:
-                    `Draft d1 for ${JULIET}, from claude. Nothing was sent. ` +
+                    `Draft d1 for ${JULIET}, from agent. Nothing was sent. ` +
                     'To send it, copy the text into your client:\n"Shall we meet at noon?"',
             },
         ]);
         expect(audit()).toEqual([
             {
                 time: expect.any(String),
-                consumer: 'claude',
+                consumer: 'agent',
                 to: JULIET,
                 outcome: 'draft',
                 draft: 'd1',
@@ -151,7 +151,7 @@ describe('Drafts', () => {
 
         expect(sent().some(({ to }) => to === JULIET)).toBe(false);
         expect(notices().at(-1).body).toBe(
-            `Draft d1 for ${JULIET}, from claude. Nothing was sent. To send it as a reply to the message ` +
+            `Draft d1 for ${JULIET}, from agent. Nothing was sent. To send it as a reply to the message ` +
                 `from ${JULIET}, "Noon or never?", copy the text into your client:\n"Noon"`,
         );
         expect((await fullRequest('drafts.list')).drafts[0]).toMatchObject({
@@ -197,7 +197,7 @@ describe('Drafts', () => {
 
         expect(sent().filter(({ to }) => to !== BENVOLIO)).toEqual([]);
         expect(notices().at(-1).body).toBe(
-            `Draft d1 for ${JULIET}, from claude. Nothing was sent. To send it, react to the message ` +
+            `Draft d1 for ${JULIET}, from agent. Nothing was sent. To send it, react to the message ` +
                 `from ${JULIET}, "Noon or never?", with:\n"👍"`,
         );
         expect((await fullRequest('drafts.list')).drafts).toEqual([
@@ -214,7 +214,7 @@ describe('Drafts', () => {
                 {
                     id: 'd1',
                     to: JULIET,
-                    consumer: 'claude',
+                    consumer: 'agent',
                     created: expect.any(String),
                     action: 'send',
                     body: 'Shall we meet at noon?',
@@ -269,7 +269,7 @@ describe('Drafts', () => {
         expect((await fullRequest('drafts.list')).drafts).toEqual([]);
         expect(audit().at(-1)).toEqual({
             time: expect.any(String),
-            consumer: 'claude',
+            consumer: 'agent',
             to: JULIET,
             outcome: 'rejected',
             draft: 'd1',
@@ -285,7 +285,7 @@ describe('Drafts', () => {
 
         await expect(fullRequest('drafts.reject', { id: 'd99' })).rejects.toMatchObject({
             code: ERRORS.NOT_FOUND,
-            message: 'No draft with id "d99". List the drafts with "converse-cli drafts list".',
+            message: 'No draft with id "d99". List the drafts with "drafts.list".',
         });
         await expect(fullRequest('drafts.reject', { id: 7 })).rejects.toMatchObject({
             code: ERRORS.INVALID_PARAMS,

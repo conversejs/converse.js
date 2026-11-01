@@ -52,7 +52,7 @@ describe('The daemon', () => {
         daemon = await startDaemon();
         await expect(start(daemon.config)).rejects.toThrow(
             `A daemon for romeo@montague.lit is already running (pid ${process.pid}). ` +
-                'Stop it with "converse-cli daemon stop".',
+                'Stop it with "daemon.stop".',
         );
         // The refused start left the running daemon's files alone.
         await expect(fs.stat(daemon.config.paths.socket)).resolves.toBeTruthy();
@@ -93,7 +93,7 @@ describe('The daemon', () => {
         client.close();
 
         const default_client = await daemon.connect();
-        expect(default_client.hello.consumer).toBe('claude');
+        expect(default_client.hello.consumer).toBe('agent');
         default_client.close();
     });
 
@@ -112,7 +112,7 @@ describe('The daemon', () => {
                     code: ERRORS.PROTOCOL_MISMATCH,
                     message:
                         `This daemon speaks protocol version ${PROTOCOL_VERSION} but the client asked for 99. ` +
-                        'Upgrade whichever is older; to restart the daemon, run "converse-cli daemon stop".',
+                        'Upgrade whichever is older; to restart the daemon, stop it with "daemon.stop".',
                     data: { protocol: PROTOCOL_VERSION },
                 },
             },

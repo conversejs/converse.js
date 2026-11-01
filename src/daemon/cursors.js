@@ -1,5 +1,5 @@
 /**
- * Read cursors for each consumer: how far a named consumer (such as `claude`)
+ * Read cursors for each consumer: how far a named consumer (such as `agent`)
  * has read in each conversation. They're kept in a file, so that they survive
  * a restart, and they're separate from the user's own read state, which
  * headless keeps and which no consumer touches.

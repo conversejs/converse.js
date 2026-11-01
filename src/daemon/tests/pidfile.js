@@ -34,7 +34,7 @@ describe('The pidfile', () => {
     it('is refused to a daemon while a running one holds it', async () => {
         await fs.writeFile(pidfile, `${LIVE[1]}\n`);
         await expect(claimPidfile(pidfile, { jid: JID, pid: LIVE[0] })).rejects.toThrow(
-            `A daemon for ${JID} is already running (pid ${LIVE[1]}). Stop it with "converse-cli daemon stop".`,
+            `A daemon for ${JID} is already running (pid ${LIVE[1]}). Stop it with "daemon.stop".`,
         );
         expect(await contents()).toBe(`${LIVE[1]}\n`);
     });
@@ -61,7 +61,7 @@ describe('The pidfile', () => {
         expect(winners).toHaveLength(1);
         const loser = /** @type {PromiseRejectedResult} */ (results.find((r) => r.status === 'rejected'));
         expect(loser.reason.message).toBe(
-            `A daemon for ${JID} is already running (pid ${winners[0]}). Stop it with "converse-cli daemon stop".`,
+            `A daemon for ${JID} is already running (pid ${winners[0]}). Stop it with "daemon.stop".`,
         );
         return winners[0];
     }

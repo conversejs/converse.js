@@ -10,8 +10,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 
-const DEFAULT_RESOURCE = 'claude';
-const DEFAULT_CONSUMER = 'claude';
+const DEFAULT_RESOURCE = 'agent';
+const DEFAULT_CONSUMER = 'agent';
 const ACCESS_LEVELS = ['restricted', 'full'];
 const MODES = ['owner_only', 'bot', 'as_user'];
 const BARE_JID = /^[^@/\s]+@[^@/\s]+$/;

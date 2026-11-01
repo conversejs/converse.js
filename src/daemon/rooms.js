@@ -89,7 +89,7 @@ export async function enter(room, nick) {
         ERRORS.NOT_CONNECTED,
         `The room ${room.get('jid')} didn't confirm the join within ${JOIN_TIMEOUT / 1000} seconds. ` +
             'It may still let us in, and the daemon will try it again after a restart, until you ' +
-            'leave it. Check "converse-cli daemon status", then try again.',
+            'leave it. Check "daemon.status", then try again.',
     );
 }
 
@@ -171,7 +171,7 @@ export function roomMethods(_converse, { config, policy, store }) {
             throw new RPCError(
                 ERRORS.NOT_CONNECTED,
                 'The daemon is not connected to the server, so nothing was done. ' +
-                    'Check "converse-cli daemon status", then try again.',
+                    'Check "daemon.status", then try again.',
             );
         }
     };

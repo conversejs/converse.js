@@ -98,7 +98,7 @@ describe('Routing restricted sends by mode and target', () => {
             expect(audit()).toEqual([
                 {
                     time: expect.any(String),
-                    consumer: 'claude',
+                    consumer: 'agent',
                     to: BENVOLIO,
                     outcome: 'sent',
                     id: expect.any(String),
@@ -129,7 +129,7 @@ describe('Routing restricted sends by mode and target', () => {
             expect(audit()).toEqual([
                 {
                     time: expect.any(String),
-                    consumer: 'claude',
+                    consumer: 'agent',
                     to: HALL,
                     outcome: 'refused',
                     rule: 'room_allowlist',

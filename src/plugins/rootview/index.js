@@ -3,10 +3,11 @@ import app_api from './api.js';
 import ConverseRoot from './root.js';
 import { ensureElement } from './utils.js';
 import { routeApp, syncAppToHash, clearAppRoutes } from './routing.js';
-import { routeXMPPURI, registerProtocolHandlerIfEnabled } from './protocol-handler.js';
+import { initPendingXMPPURI, routeXMPPURI, registerProtocolHandlerIfEnabled } from './protocol-handler.js';
 import { addHelpShortcut, onKeyDown, shortcuts } from './shortcuts.js';
 import { removeLiveRegion } from 'utils/accessibility.js';
 import './background.js';
+import './pending-invitation.js';
 import './app-container.js';
 import './shortcuts-modal.js';
 
@@ -49,7 +50,9 @@ converse.plugins.add('converse-rootview', {
         api.listen.on('appSwitch', syncAppToHash);
         api.listen.on('clearSession', clearAppRoutes);
 
-        // XEP-0147 `xmpp:` links handed over by the browser's protocol handler.
+        // XEP-0147 `xmpp:` links handed over by the browser's protocol handler,
+        // and shareable links to this page.
+        initPendingXMPPURI();
         addEventListener('hashchange', routeXMPPURI);
         api.listen.on('connected', routeXMPPURI);
         api.listen.on('reconnected', routeXMPPURI);

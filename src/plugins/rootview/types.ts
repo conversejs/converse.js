@@ -22,3 +22,8 @@ export type KeyboardShortcut = {
     matches: (_ev: KeyboardEvent) => boolean; // Whether the pressed keys are this shortcut
     handler: () => void; // Called when the shortcut is pressed
 };
+
+export type PendingXMPPURI = {
+    uri: string; // The `xmpp:` URI to act on once logged in
+    from_handler: boolean; // Handed over by the browser's protocol handler, rather than a shareable link
+};

@@ -5,6 +5,7 @@ import BaseMessage from '../../shared/message';
 export type MAMQueryOptions = {
     end?: string; // A date string in ISO-8601 format, before which messages should be returned.
     start?: string; // A date string in ISO-8601 format, after which messages should be returned.
+    fulltext?: string; // Text to match in the messages, by the server's full-text search (XEP-0431).
     with?: string; // A JID against which to match messages, according to either the `to` or `from` attribute.
     // An item in a MUC archive matches if the publisher of the item matches the JID.
     // If `with` is omitted, all messages that match the rest of the query will be returned, regardless of to/from

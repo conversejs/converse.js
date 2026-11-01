@@ -488,7 +488,12 @@ export class MockConnection extends Connection {
 
         // @ts-ignore
         this._proto._processRequest = () => {};
-        this._proto._disconnect = () => this._onDisconnectTimeout();
+        // Record the unavailable presence that a graceful disconnect sends,
+        // as a real transport would put it on the wire.
+        this._proto._disconnect = (pres) => {
+            if (pres) this.sent_stanzas.push(pres);
+            this._onDisconnectTimeout();
+        };
         this._proto._onDisconnectTimeout = () => {};
 
         // Drain the send queue synchronously into sent_stanzas: this

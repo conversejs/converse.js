@@ -64,6 +64,9 @@ npx vitest run --project main src/plugins/chatview/tests/messages.js
 > Use `npm run test:headless` (or `npm run dev:headless` before it) when
 > working in that area. `npm test` only covers the UI plugins under `src/plugins/`.
 
+The daemon and CLI tests run under Node with a mock connection: `npm run test:daemon`. The real-server
+tests need Docker and start Prosody themselves: `npm run test:prosody`.
+
 #### Creating new test files
 
 Just drop the `*.js` file in a plugin's `tests/` directory — Vitest discovers it via the

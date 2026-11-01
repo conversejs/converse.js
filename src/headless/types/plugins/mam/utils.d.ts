@@ -41,8 +41,10 @@ export function handleMAMResult(model: ChatBox | MUC, result: any, query: any, o
  * @param {('forwards'|'backwards'|false)} [should_page=false] - Determines whether
  *  this function should recursively page through the entire result set if a limited
  *  number of results were returned.
+ * @returns {Promise<import('./types').MAMQueryResult|undefined>} The archive's
+ *  answer, which has an `error` if the query failed. Undefined if no query was made.
  */
-export function fetchArchivedMessages(model: ChatBox | MUC, options?: import("./types").FetchArchivedMessagesOptions, should_page?: ("forwards" | "backwards" | false)): Promise<void>;
+export function fetchArchivedMessages(model: ChatBox | MUC, options?: import("./types").FetchArchivedMessagesOptions, should_page?: ("forwards" | "backwards" | false)): Promise<import("./types").MAMQueryResult | undefined>;
 /**
  * Creates a placeholder to fetch messages at the top of the chat history.
  * @param {ChatBox|MUC} model
@@ -53,7 +55,30 @@ export function createScrollupPlaceholder(model: ChatBox | MUC): void;
  * the last archived message in our local cache.
  * @param {ChatBox|MUC} model
  */
-export function fetchNewestMessages(model: ChatBox | MUC): Promise<void>;
+export function fetchNewestMessages(model: ChatBox | MUC): Promise<import("./types").MAMQueryResult>;
+/**
+ * Searches the archive for messages whose text matches `text` (XEP-0431), and
+ * holds the ones found in their conversations, so that they're messages like
+ * any other: they can be read, replied to and reacted to.
+ *
+ * A match is left out if it has no conversation to be held in: one in a room
+ * we aren't in, or in a chat we don't have, unless `create` is set.
+ * @param {string} text
+ * @param {Object} [options]
+ * @param {string} [options.with] - The bare JID of a contact or room, to search only that conversation
+ * @param {number} [options.max] - The most matches to return, the newest
+ * @param {boolean} [options.create] - Whether to create the chats that matches are in, if we don't have them
+ * @returns {Promise<{messages: import('../../shared/message.js').default[], complete: boolean}|null>}
+ *  The matches, oldest first, or null if the server can't search its archive. Throws if the query fails.
+ */
+export function searchArchive(text: string, { with: jid, max, create }?: {
+    with?: string;
+    max?: number;
+    create?: boolean;
+}): Promise<{
+    messages: import("../../shared/message.js").default[];
+    complete: boolean;
+} | null>;
 export type MUC = import("../muc/muc").default;
 export type ChatBox = import("../chat/model").default;
 export type Model = import("@converse/skeletor").Model;

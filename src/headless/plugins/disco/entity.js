@@ -29,26 +29,31 @@ class DiscoEntity extends Model {
         this.waitUntilFeaturesDiscovered = getOpenPromise();
         this.waitUntilItemsFetched = getOpenPromise();
 
+        // Keyed by our own bare JID too, so that another account using the
+        // same storage doesn't read what this one discovered.
+        const bare_jid = _converse.session.get('bare_jid');
+        const jid = this.get('jid');
+
         this.dataforms = new Collection();
-        let id = `converse.dataforms-${this.get('jid')}`;
+        let id = `converse.dataforms-${bare_jid}-${jid}`;
         this.dataforms.storage = createStore(id, 'session');
 
         this.features = new Collection();
-        id = `converse.features-${this.get('jid')}`;
+        id = `converse.features-${bare_jid}-${jid}`;
         this.features.storage = createStore(id, 'session');
         this.listenTo(this.features, 'add', this.onFeatureAdded);
 
         this.fields = new Collection();
-        id = `converse.fields-${this.get('jid')}`;
+        id = `converse.fields-${bare_jid}-${jid}`;
         this.fields.storage = createStore(id, 'session');
         this.listenTo(this.fields, 'add', this.onFieldAdded);
 
         this.items = new Collection();
-        id = `converse.items-${this.get('jid')}`;
+        id = `converse.items-${bare_jid}-${jid}`;
         this.items.storage = createStore(id, 'session');
 
         this.identities = new Collection();
-        id = `converse.identities-${this.get('jid')}`;
+        id = `converse.identities-${bare_jid}-${jid}`;
         this.identities.storage = createStore(id, 'session');
 
         this.fetchFeatures(options);

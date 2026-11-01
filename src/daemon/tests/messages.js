@@ -271,7 +271,7 @@ describe('Messages in a 1:1 chat', () => {
             daemon.receive(stx`
                 <message xmlns="jabber:client" from="${JULIET}/balcony" to="${JID}" type="chat" id="reply-1">
                     <body>&gt; Romeo:\n&gt; Indeed\nYes</body>
-                    <reply xmlns="${Strophe.NS.REPLY}" id="${mine.id}" to="${OWN}/claude"/>
+                    <reply xmlns="${Strophe.NS.REPLY}" id="${mine.id}" to="${OWN}/agent"/>
                     <fallback xmlns="${Strophe.NS.FALLBACK}" for="${Strophe.NS.REPLY}">
                         <body start="0" end="18"/>
                     </fallback>

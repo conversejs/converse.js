@@ -73,7 +73,7 @@ export function omemoMethods(_converse) {
                 throw new RPCError(
                     ERRORS.NOT_FOUND,
                     `${jid} has no OMEMO device ${JSON.stringify(String(device))}. ` +
-                        'List their devices with "omemo devices", then try again.',
+                        'List their devices with "omemo.devices.list", then try again.',
                 );
             }
             model.save('trusted', TRUST_VALUES[trust]);
@@ -90,7 +90,7 @@ export function omemoMethods(_converse) {
             throw new RPCError(
                 ERRORS.NOT_CONNECTED,
                 "The daemon isn't connected to the server, so OMEMO devices can't be read. " +
-                    'Check "converse-cli daemon status", then try again.',
+                    'Check "daemon.status", then try again.',
             );
         }
         if (!api.omemo) {

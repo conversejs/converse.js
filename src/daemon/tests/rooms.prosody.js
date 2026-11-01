@@ -69,7 +69,7 @@ describe('Rooms on a real Prosody', () => {
         const joined = await romeo.requestFull('rooms.join', { room });
         expect(joined).toEqual({
             conversation: expect.objectContaining({ jid: room, type: 'groupchat' }),
-            nick: 'claude',
+            nick: 'agent',
         });
         expect(await juliet.requestFull('rooms.join', { room, nick: 'juliet' })).toMatchObject({ nick: 'juliet' });
     });
@@ -82,7 +82,7 @@ describe('Rooms on a real Prosody', () => {
             },
             { what: 'both occupants to be listed' },
         );
-        expect(occupants.map((o) => o.nick)).toEqual(['claude', 'juliet']);
+        expect(occupants.map((o) => o.nick)).toEqual(['agent', 'juliet']);
     });
 
     it('exchanges messages in the room, with each sender identified as its occupant', async () => {
@@ -91,7 +91,7 @@ describe('Rooms on a real Prosody', () => {
         expect(refused).toMatchObject({ outcome: 'refused', rule: 'room_allowlist' });
 
         const sent = await romeo.requestFull('messages.send', { to: room, body: 'Is this the room?' });
-        expect(sent).toMatchObject({ outcome: 'sent', message: { conversation: room, from: `${room}/claude` } });
+        expect(sent).toMatchObject({ outcome: 'sent', message: { conversation: room, from: `${room}/agent` } });
 
         const received = await eventually(
             async () =>
@@ -102,8 +102,8 @@ describe('Rooms on a real Prosody', () => {
         );
         expect(received).toMatchObject({
             conversation: room,
-            from: `${room}/claude`,
-            nick: 'claude',
+            from: `${room}/agent`,
+            nick: 'agent',
             direction: 'incoming',
         });
     });
@@ -125,7 +125,7 @@ describe('Rooms on a real Prosody', () => {
         const { conversations: groups } = await juliet.request('inbox.read');
         expect(groups.find((g) => g.conversation.jid === room)).toMatchObject({
             conversation: { type: 'groupchat' },
-            messages: [expect.objectContaining({ body: 'Second message', nick: 'claude' })],
+            messages: [expect.objectContaining({ body: 'Second message', nick: 'agent' })],
         });
     });
 
@@ -152,8 +152,8 @@ describe('Rooms on a real Prosody', () => {
         }
 
         // Guards against passing vacuously: the watcher must have seen romeo, when it entered.
-        expect(watcher.presences.slice(0, before).some(({ from }) => from === `${room}/claude`)).toBe(true);
-        const from_romeo = watcher.presences.slice(before).filter(({ from }) => from === `${room}/claude`);
+        expect(watcher.presences.slice(0, before).some(({ from }) => from === `${room}/agent`)).toBe(true);
+        const from_romeo = watcher.presences.slice(before).filter(({ from }) => from === `${room}/agent`);
         expect(from_romeo).toEqual([]);
     });
 
@@ -162,7 +162,7 @@ describe('Rooms on a real Prosody', () => {
         await eventually(
             async () => {
                 const { occupants } = await romeo.request('rooms.occupants', { room });
-                return occupants.some((o) => o.nick === 'claude');
+                return occupants.some((o) => o.nick === 'agent');
             },
             { what: 'the daemon to rejoin the room after its restart' },
         );

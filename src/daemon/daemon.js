@@ -326,7 +326,7 @@ function serveClient(socket, { access, config, methods, getJID, events }) {
                     ERRORS.PROTOCOL_MISMATCH,
                     `This daemon speaks protocol version ${PROTOCOL_VERSION} but the client asked for ` +
                         `${params?.protocol}. Upgrade whichever is older; to restart the daemon, ` +
-                        `run "converse-cli daemon stop".`,
+                        `stop it with "daemon.stop".`,
                     { protocol: PROTOCOL_VERSION },
                 );
             }
@@ -470,10 +470,9 @@ async function claimPidfile({ jid, paths }) {
 
         const pid = parseInt(await fs.readFile(paths.pidfile, 'utf8'), 10);
         if (isRunning(pid)) {
-            throw new Error(
-                `A daemon for ${jid} is already running (pid ${pid}). Stop it with "converse-cli daemon stop".`,
-                { cause: e },
-            );
+            throw new Error(`A daemon for ${jid} is already running (pid ${pid}). Stop it with "daemon.stop".`, {
+                cause: e,
+            });
         }
         await fs.rm(paths.pidfile, { force: true });
         await fs.writeFile(paths.pidfile, `${process.pid}\n`, { flag: 'wx', mode: 0o600 });
@@ -492,7 +491,7 @@ async function writeRecord(config) {
     if (running && running.pid !== process.pid) {
         throw new Error(
             `A daemon for the account "${account}" is already running, as ${running.jid} (pid ${running.pid}). ` +
-                'Stop it with "converse-cli daemon stop".',
+                'Stop it with "daemon.stop".',
         );
     }
     /** @type {import('./types').DaemonRecord} */

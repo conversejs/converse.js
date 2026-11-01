@@ -86,7 +86,7 @@ describe('Joining and leaving, with rooms stored from an earlier run', () => {
     beforeAll(async () => {
         daemon = await startDaemon({
             rooms: [
-                { jid: GARDEN, nick: 'claude' },
+                { jid: GARDEN, nick: 'agent' },
                 { jid: HALL, nick: 'romeo' },
             ],
         });
@@ -129,11 +129,11 @@ describe('Joining and leaving, with rooms stored from an earlier run', () => {
 
     it('keeps the nickname it has in a room it is already in, and says so', async () => {
         const joining = full.request('rooms.join', { room: ORCHARD });
-        await daemon.enterRoom(ORCHARD, 'claude');
-        expect(await joining).toMatchObject({ nick: 'claude' });
+        await daemon.enterRoom(ORCHARD, 'agent');
+        expect(await joining).toMatchObject({ nick: 'agent' });
 
-        expect(await full.request('rooms.join', { room: ORCHARD, nick: 'bob' })).toMatchObject({ nick: 'claude' });
-        expect(stored()).toEqual([{ jid: ORCHARD, nick: 'claude' }]);
+        expect(await full.request('rooms.join', { room: ORCHARD, nick: 'bob' })).toMatchObject({ nick: 'agent' });
+        expect(stored()).toEqual([{ jid: ORCHARD, nick: 'agent' }]);
     });
 
     it('remembers a room before the room confirms the join, and forgets it if the room turns it down', async () => {
@@ -143,7 +143,7 @@ describe('Joining and leaving, with rooms stored from an earlier run', () => {
 
         await daemon.refuseRoom(TOMB);
         await expect(joining).rejects.toMatchObject({ code: ERRORS.JOIN_REFUSED });
-        expect(stored()).toEqual([{ jid: ORCHARD, nick: 'claude' }]);
+        expect(stored()).toEqual([{ jid: ORCHARD, nick: 'agent' }]);
     });
 });
 
@@ -161,18 +161,18 @@ describe('The room store', () => {
     it('keeps the rooms and their nicknames across a restart, and forgets one that is removed', () => {
         const file = path.join(dir, 'romeo.rooms.json');
         const store = createRoomStore(file);
-        store.add(GARDEN, 'claude');
+        store.add(GARDEN, 'agent');
         store.add(HALL, 'romeo');
-        store.add(GARDEN, 'claude-2');
+        store.add(GARDEN, 'agent-2');
 
         const reloaded = createRoomStore(file);
         expect(reloaded.list()).toEqual([
             { jid: HALL, nick: 'romeo' },
-            { jid: GARDEN, nick: 'claude-2' },
+            { jid: GARDEN, nick: 'agent-2' },
         ]);
 
         reloaded.remove(HALL);
-        expect(createRoomStore(file).list()).toEqual([{ jid: GARDEN, nick: 'claude-2' }]);
+        expect(createRoomStore(file).list()).toEqual([{ jid: GARDEN, nick: 'agent-2' }]);
     });
 
     it('starts empty when there is no file yet', () => {

@@ -51,7 +51,7 @@ export async function resolveJID(_converse, value, name) {
         throw new RPCError(
             ERRORS.NOT_FOUND,
             `No contact or room is called "${text}". Check the spelling, or list your contacts ` +
-                'with "converse-cli contacts".',
+                'with "contacts.list".',
         );
     }
     throw new RPCError(
@@ -121,7 +121,7 @@ function requireConnection(_converse, text) {
         throw new RPCError(
             ERRORS.NOT_CONNECTED,
             `"${text}" is a name, and names are looked up in your contacts and rooms, which needs the daemon to be ` +
-                'connected. Check "converse-cli daemon status", then try again, or use the JID.',
+                'connected. Check "daemon.status", then try again, or use the JID.',
         );
     }
 }

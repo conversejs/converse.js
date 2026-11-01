@@ -112,7 +112,7 @@ describe('Acting as the user (as_user mode)', () => {
             expect(audit()).toEqual([
                 {
                     time: expect.any(String),
-                    consumer: 'claude',
+                    consumer: 'agent',
                     to: JULIET,
                     outcome: 'draft',
                     draft: 'd1',
@@ -259,7 +259,7 @@ describe('Acting as the user (as_user mode)', () => {
 
             expect((await restricted('drafts.list')).drafts.map((d) => d.id)).toEqual(['d1']);
             expect(await restricted('drafts.get', { id: 'd1' })).toEqual({
-                draft: expect.objectContaining({ id: 'd1', to: JULIET, body: 'Noon?', consumer: 'claude' }),
+                draft: expect.objectContaining({ id: 'd1', to: JULIET, body: 'Noon?', consumer: 'agent' }),
                 target: null,
             });
             for (const method of ['drafts.send', 'drafts.reject']) {
@@ -273,7 +273,7 @@ describe('Acting as the user (as_user mode)', () => {
             await begin();
             await expect(full('drafts.get', { id: 'd9' })).rejects.toMatchObject({
                 code: ERRORS.NOT_FOUND,
-                message: 'No draft with id "d9". List the drafts with "converse-cli drafts list".',
+                message: 'No draft with id "d9". List the drafts with "drafts.list".',
             });
         });
 
@@ -292,7 +292,7 @@ describe('Acting as the user (as_user mode)', () => {
             expect((await full('drafts.list')).drafts).toEqual([]);
             expect(audit().at(-1)).toEqual({
                 time: expect.any(String),
-                consumer: 'claude',
+                consumer: 'agent',
                 to: JULIET,
                 outcome: 'sent',
                 id: result.message.id,
@@ -398,7 +398,7 @@ describe('Acting as the user (as_user mode)', () => {
             expect(sentStanzas()).toEqual([]);
             expect(audit().at(-1)).toEqual({
                 time: expect.any(String),
-                consumer: 'claude',
+                consumer: 'agent',
                 to: JULIET,
                 outcome: 'rejected',
                 draft: 'd1',

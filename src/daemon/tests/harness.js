@@ -145,7 +145,7 @@ export async function startDaemon({
          * @param {string} room
          * @param {string} [nick]
          */
-        async enterRoom(room, nick = 'claude') {
+        async enterRoom(room, nick = 'agent') {
             await awaitJoin(room, nick);
             receive(stx`
                 <presence xmlns="jabber:client" from="${room}/${nick}" to="${JID}">
@@ -162,7 +162,7 @@ export async function startDaemon({
          * @param {string} room
          * @param {string} [nick]
          */
-        async refuseRoom(room, nick = 'claude') {
+        async refuseRoom(room, nick = 'agent') {
             await awaitJoin(room, nick);
             receive(stx`
                 <presence xmlns="jabber:client" from="${room}/${nick}" to="${JID}" type="error">

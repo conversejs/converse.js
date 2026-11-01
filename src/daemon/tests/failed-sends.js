@@ -184,8 +184,8 @@ describe('A failed send', () => {
             await expect(full.request('messages.resend', { id: sent.id })).rejects.toMatchObject({
                 code: ERRORS.NOT_FOUND,
                 message:
-                    `Message "${sent.id}" isn't a failed send, so it can't be sent again. "converse-cli read" ` +
-                    'marks a failed send with [send failed: <reason>].',
+                    `Message "${sent.id}" isn't a failed send, so it can't be sent again. "messages.list" gives ` +
+                    'a failed send the status "failed".',
             });
             await expect(full.request('messages.discard', { id: sent.id })).rejects.toMatchObject({
                 code: ERRORS.NOT_FOUND,

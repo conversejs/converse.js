@@ -46,7 +46,7 @@ export function presenceMethods(_converse, { config }) {
                 throw new RPCError(
                     ERRORS.NOT_CONNECTED,
                     "The daemon is not connected to the server, so your presence wasn't changed. " +
-                        'Check "converse-cli daemon status", then try again.',
+                        'Check "daemon.status", then try again.',
                 );
             }
 

@@ -57,7 +57,7 @@ describe('Names given for a conversation or contact', () => {
     it('fails with NOT_FOUND, pointing at the contacts command, when no contact has the name', async () => {
         const error = await list('Paris').catch((e) => e);
         expect(error).toMatchObject({ code: ERRORS.NOT_FOUND });
-        expect(error.message).toContain('converse-cli contacts');
+        expect(error.message).toContain('"contacts.list"');
     });
 
     it('refuses an empty name', async () => {

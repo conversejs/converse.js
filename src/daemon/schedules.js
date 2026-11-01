@@ -109,7 +109,7 @@ export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
                 if (!existing || !canManage(client, existing)) {
                     throw new RPCError(
                         ERRORS.NOT_FOUND,
-                        `No scheduled message with id "${id}". List them with "converse-cli schedules list".`,
+                        `No scheduled message with id "${id}". List them with "schedules.list".`,
                     );
                 }
                 return { schedule: toScheduleDTO(await schedules.cancel(id)) };

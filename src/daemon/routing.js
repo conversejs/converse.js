@@ -58,6 +58,6 @@ export function createSendRouter(_converse, { policy, audit, mode }) {
 export function notJoined(jid) {
     return new RPCError(
         ERRORS.NOT_FOUND,
-        `We aren't in ${jid}, so the message wasn't sent. Join it first with "converse-cli rooms join ${jid}".`,
+        `We aren't in ${jid}, so the message wasn't sent. Join it first with "rooms.join".`,
     );
 }

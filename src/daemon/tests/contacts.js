@@ -151,6 +151,6 @@ describe('Whois', () => {
     it('refuses a name that matches nobody, pointing at the contacts command', async () => {
         const error = await client.request('contacts.whois', { jid: 'Paris' }).catch((e) => e);
         expect(error).toMatchObject({ code: ERRORS.NOT_FOUND });
-        expect(error.message).toContain('converse-cli contacts');
+        expect(error.message).toContain('"contacts.list"');
     });
 });

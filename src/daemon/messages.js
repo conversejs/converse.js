@@ -76,7 +76,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                     throw new RPCError(
                         ERRORS.NOT_CONNECTED,
                         `There's no conversation with ${jid} stored locally, and the daemon isn't connected ` +
-                            'to the server to look in its archive. Check "converse-cli daemon status", then try again.',
+                            'to the server to look in its archive. Check "daemon.status", then try again.',
                     );
                 }
                 if (!contact && !(await hasArchivedMessages(jid))) {
@@ -406,7 +406,7 @@ function notRetracted(message, id) {
  */
 export async function findTarget(_converse, id, jid) {
     if (typeof id !== 'string' || !id) {
-        throw new RPCError(ERRORS.INVALID_PARAMS, 'A message id must be one that "converse-cli read" showed.');
+        throw new RPCError(ERRORS.INVALID_PARAMS, 'A message id must be one that "messages.list" gave.');
     }
     const messages = (await heldConversations(_converse, jid)).flatMap((c) => c.messages.models.filter(isMessage));
     const where = jid ? 'in this conversation' : 'in any conversation';
@@ -542,8 +542,8 @@ function failedSendOf(message, id, verb) {
     if (!isFailedSend(message)) {
         throw new RPCError(
             ERRORS.NOT_FOUND,
-            `Message "${id}" isn't a failed send, so it can't be ${verb}. "converse-cli read" marks a failed ` +
-                'send with [send failed: <reason>].',
+            `Message "${id}" isn't a failed send, so it can't be ${verb}. "messages.list" gives a failed ` +
+                'send the status "failed".',
         );
     }
     return message;
@@ -665,8 +665,7 @@ const UNSENT = {
 function notConnected() {
     return new RPCError(
         ERRORS.NOT_CONNECTED,
-        'The daemon is not connected to the server, so nothing was sent. ' +
-            'Check "converse-cli daemon status", then try again.',
+        'The daemon is not connected to the server, so nothing was sent. Check "daemon.status", then try again.',
     );
 }
 

@@ -59,7 +59,7 @@ describe('The send policy', () => {
         expect(audit()).toEqual([
             {
                 time: expect.any(String),
-                consumer: 'claude',
+                consumer: 'agent',
                 to: JULIET,
                 outcome: 'draft',
                 draft: 'd1',
@@ -87,7 +87,7 @@ describe('The send policy', () => {
         expect(audit()).toEqual([
             {
                 time: expect.any(String),
-                consumer: 'claude',
+                consumer: 'agent',
                 to: TYBALT,
                 outcome: 'refused',
                 rule: 'allowlist',
@@ -114,7 +114,7 @@ describe('The send policy', () => {
         expect(result.outcome).toBe('sent');
         expect(sent()).toEqual([{ to: MERCUTIO, body: 'Come to the park' }]);
         expect(audit()).toEqual([
-            { time: expect.any(String), consumer: 'claude', to: MERCUTIO, outcome: 'sent', id: result.message.id },
+            { time: expect.any(String), consumer: 'agent', to: MERCUTIO, outcome: 'sent', id: result.message.id },
         ]);
     });
 

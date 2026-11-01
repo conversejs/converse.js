@@ -111,7 +111,7 @@ describe('converse-cli drafts, in as_user mode', () => {
         expect(code).toBe(EXIT.OK);
         expect(stdout).toMatch(
             new RegExp(
-                '^Draft d1, made by "claude" \\S+ \\(just now\\)\\n' +
+                '^Draft d1, made by "agent" \\S+ \\(just now\\)\\n' +
                     `To: ${JULIET}\\n` +
                     `Replies to: sid-j1  \\S+ \\(just now\\)  ${JULIET}  "Noon or never\\?"\\n` +
                     'Text:\\n' +

@@ -55,6 +55,33 @@ const EXIT_FOR_ERROR = {
     [ERRORS.AMBIGUOUS]: EXIT.AMBIGUOUS,
 };
 
+/**
+ * The daemon's errors name the methods, or the program, that help, since its
+ * clients aren't all this one. Those this CLI has a command for are shown as
+ * that command.
+ */
+const COMMAND_FOR = {
+    'converse-daemon': 'converse-cli daemon start',
+    'daemon.status': 'converse-cli daemon status',
+    'daemon.stop': 'converse-cli daemon stop',
+    'contacts.list': 'converse-cli contacts',
+    'drafts.list': 'converse-cli drafts list',
+    'drafts.reject': 'converse-cli drafts reject',
+    'messages.list': 'converse-cli read',
+    'omemo.devices.list': 'converse-cli omemo devices',
+    'rooms.join': 'converse-cli rooms join',
+    'schedules.list': 'converse-cli schedules list',
+};
+
+/**
+ * @param {string} message - From the daemon
+ * @returns {string}
+ */
+const inCommands = (message) =>
+    message.replace(/"([a-z.-]+)"/g, (quoted, name) =>
+        Object.hasOwn(COMMAND_FOR, name) ? `"${COMMAND_FOR[name]}"` : quoted,
+    );
+
 /** How the outcome of a send maps onto exit codes. */
 const EXIT_FOR_OUTCOME = {
     sent: EXIT.OK,
@@ -152,7 +179,7 @@ function reportError(e, io) {
         io.err(`converse-cli: ${e.message} Run "converse-cli --help" for usage.\n`);
         return EXIT.ERROR;
     }
-    io.err(`converse-cli: ${e.message}\n`);
+    io.err(`converse-cli: ${inCommands(e.message)}\n`);
     if (e instanceof AccountError) {
         e.candidates.forEach((c) => io.err(`  ${c}\n`));
         return e.reason === 'ambiguous' ? EXIT.AMBIGUOUS : EXIT.NOT_FOUND;

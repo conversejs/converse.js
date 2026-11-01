@@ -1,5 +1,31 @@
 export default apps_api;
 declare namespace apps_api {
+    namespace shortcuts {
+        /**
+         * Registers a keyboard shortcut. It's handled anywhere in Converse
+         * (unless `enable_keyboard_shortcuts` is false) and listed in the
+         * keyboard shortcuts help modal, under its group.
+         *
+         * A shortcut with the same `id` as an existing one replaces it.
+         *
+         * @param {import('./types').KeyboardShortcut} shortcut
+         * @example
+         * api.shortcuts.add({
+         *     id: 'myplugin-hello',
+         *     group: __('My plugin'),
+         *     label: 'Alt+Shift+Y',
+         *     description: __('Say hello'),
+         *     matches: (ev) => ev.altKey && ev.shiftKey && ev.code === 'KeyY',
+         *     handler: () => alert('Hello'),
+         * });
+         */
+        function add(shortcut: import("./types").KeyboardShortcut): void;
+        /**
+         * Returns the registered keyboard shortcuts, in the order they were added.
+         * @returns {import('./types').KeyboardShortcut[]}
+         */
+        function get(): import("./types").KeyboardShortcut[];
+    }
     namespace protocolHandler {
         /**
          * Ask the browser to route `xmpp:` links (XEP-0147) to this Converse

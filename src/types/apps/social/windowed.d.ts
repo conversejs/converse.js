@@ -1,4 +1,3 @@
-declare const WindowedListElement_base: typeof CustomElement & (new (...args: any[]) => import("@lit-labs/signals").SignalWatcherApi);
 /**
  * Base class implementing a virtualized, top-anchored post list. Only a window
  * of {@link WindowedListElement#window_size} items is rendered to the DOM, and
@@ -16,6 +15,12 @@ declare const WindowedListElement_base: typeof CustomElement & (new (...args: an
  * disabled on the scroller (`overflow-anchor: none`) so the two don't both
  * compensate.
  */
+/**
+ * The windowed lists currently in the DOM.
+ * @type {Set<WindowedListElement>}
+ */
+export const mounted_lists: Set<WindowedListElement>;
+declare const WindowedListElement_base: typeof CustomElement & (new (...args: any[]) => import("@lit-labs/signals").SignalWatcherApi);
 export class WindowedListElement extends WindowedListElement_base {
     static get properties(): {
         window_top: {
@@ -25,7 +30,6 @@ export class WindowedListElement extends WindowedListElement_base {
     window_top: number;
     window_size: number;
     scrollHandler: () => void;
-    keydownHandler: (ev: KeyboardEvent) => void;
     /**
      * The full list of models the window slides over. Subclasses must implement this.
      * @returns {import('@converse/skeletor').Model[]}

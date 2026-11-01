@@ -8,16 +8,19 @@ reader or who navigate with the keyboard only.
 
 ## Keyboard shortcuts
 
-The following shortcuts work anywhere on the page:
+`Ctrl+/` shows the keyboard shortcuts that are available:
 
 | Shortcut      | Description                                  |
 | ------------- | -------------------------------------------- |
 | `Ctrl+/`      | Show the keyboard shortcuts                  |
 | `Alt+Shift+↓` | Open the next chat with unread messages      |
 | `Alt+Shift+↑` | Open the previous chat with unread messages  |
+| `Home`        | Jump to the newest post (Social app)         |
+| `End`         | Jump to the oldest post (Social app)         |
 
 These follow the conventions of other chat clients. On macOS, use `Cmd+/`
-instead of `Ctrl+/`, and `Alt` is the `Option` key.
+instead of `Ctrl+/`, and `Alt` is the `Option` key. `Home` and `End` don't
+apply while you're typing in a text field.
 
 Dialogs close with `Escape`.
 
@@ -41,6 +44,9 @@ Pass these settings to `converse.initialize()` like any other
 - **Default**: `true`
 
 Enables the keyboard shortcuts listed above.
+
+Plugins can add their own shortcuts with `api.shortcuts.add()`, which also
+lists them in the keyboard shortcuts help.
 
 ## Reporting problems
 

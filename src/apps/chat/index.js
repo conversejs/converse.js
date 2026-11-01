@@ -8,6 +8,7 @@ import './view.js';
 import ChatBoxViews from './container.js';
 import { calculateViewportHeightUnit } from './utils.js';
 import { openConversationRouted } from './navigation.js';
+import { addShortcuts } from './shortcuts.js';
 import 'plugins/rootview/index.js';
 
 import './styles/chats.scss';
@@ -50,6 +51,8 @@ converse.plugins.add('converse-app-chat', {
                 }
             `,
         });
+
+        if (api.settings.get('apps')?.includes('chat')) addShortcuts();
 
         const chatboxviews = new ChatBoxViews();
         Object.assign(_converse, { chatboxviews }); // XXX DEPRECATED

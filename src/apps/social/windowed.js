@@ -4,7 +4,6 @@
  */
 import { SignalWatcher } from '@lit-labs/signals';
 import { CustomElement } from 'shared/components/element.js';
-import { isEditableTarget } from '../../utils/html.js';
 
 const WINDOW_SIZE = 50; // Number of items rendered to the DOM at a time.
 const WINDOW_DELTA = 5; // How many items the window moves at a time.
@@ -26,6 +25,12 @@ const WINDOW_DELTA = 5; // How many items the window moves at a time.
  * disabled on the scroller (`overflow-anchor: none`) so the two don't both
  * compensate.
  */
+/**
+ * The windowed lists currently in the DOM.
+ * @type {Set<WindowedListElement>}
+ */
+export const mounted_lists = new Set();
+
 export class WindowedListElement extends SignalWatcher(CustomElement) {
     static get properties() {
         return {
@@ -81,18 +86,14 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
                 this.#setWindow();
             });
         };
-
-        // Home / End jump to the very top / bottom of the whole list
-        this.keydownHandler = /** @param {KeyboardEvent} ev */ (ev) => this.#onKeyDown(ev);
     }
 
     connectedCallback() {
         super.connectedCallback();
         this.addEventListener('scroll', this.scrollHandler, { passive: true });
 
-        // On the document, not this element. After a wheel/trackpad scroll focus
-        // sits on <body>, which wouldn't reach a listener on the element.
-        document.addEventListener('keydown', this.keydownHandler);
+        // Home and End are handled by the Social app's keyboard shortcuts
+        mounted_lists.add(this);
 
         // Corrects the reading position when rendered items change height after
         // our own update has already run.
@@ -101,7 +102,7 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
 
     disconnectedCallback() {
         this.removeEventListener('scroll', this.scrollHandler);
-        document.removeEventListener('keydown', this.keydownHandler);
+        mounted_lists.delete(this);
         this.#resize_observer?.disconnect();
         this.#resize_observer = null;
         this.#observed_container = null;
@@ -287,21 +288,5 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
 
         const delta = anchor.el.getBoundingClientRect().top - anchor.top;
         if (delta) this.scrollTop += delta;
-    }
-
-    /**
-     * Jump to the top (Home) or bottom (End) of the whole list. Skipped while a
-     * text field (the compose box or a search input) has focus, so the keys still
-     * move the caret there, and for Alt/Meta chords (OS/browser shortcuts).
-     * @param {KeyboardEvent} ev
-     */
-    #onKeyDown(ev) {
-        if (ev.altKey || ev.metaKey) return;
-        if (ev.key !== 'Home' && ev.key !== 'End') return;
-        if (isEditableTarget(ev.target)) return;
-
-        ev.preventDefault();
-        if (ev.key === 'Home') this.resetWindow();
-        else this.resetToBottom();
     }
 }

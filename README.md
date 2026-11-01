@@ -5,14 +5,14 @@
   </a>
 </h2>
 
-[![XMPP Chat](https://conference.conversejs.org/muc_badge/discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
+[![XMPP Chat](https://conference.conversejs.org/muc_badge/discuss@conference.conversejs.org)](https://chat.conversejs.org/#discuss@conference.conversejs.org?join)
 [![CI Tests](https://github.com/conversejs/converse.js/actions/workflows/tests.yml/badge.svg)](https://github.com/conversejs/converse.js/actions/workflows/tests.yml)
 [![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
 
 [Converse](https://conversejs.org) is a modern, feature-rich and 100% client-side [XMPP](https://xmpp.org) chat app that runs in a web browser.
 It can be used as a standalone web app or seamlessly integrated into existing websites.
 
-Join our [chat room](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org) (XMPP URL: [discuss@conference.conversejs.org](xmpp:discuss@conference.conversejs.org?join)).
+Join our [chat room](https://chat.conversejs.org/#discuss@conference.conversejs.org?join) (XMPP URL: [discuss@conference.conversejs.org](xmpp:discuss@conference.conversejs.org?join)).
 
 ## Quick Start
 

@@ -109,6 +109,14 @@ will still be included in your build.
 To see which other plugins a particular plugin depends on, open it up in your
 text editor and look at the import statements and plugin dependencies.
 
+:::note
+If you bundle Converse from its source in your own project (for example by importing
+`converse.js/src/index.js`), install a released version of `converse.js` from npm.
+An install from a branch such as `master` gets the `@converse/headless` version pinned in
+its `package.json` from npm. That is the last release, which may be older than the UI code
+on that branch.
+:::
+
 ## Build configuration files
 
 The RSPack build configuration files are located in the `rspack/` directory:

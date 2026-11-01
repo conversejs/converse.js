@@ -137,7 +137,7 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
 
     it(
         'join action opens the groupchat after confirmation, naming the nick it will use',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { allow_bookmarks: false }, async function (_converse) {
             const { api } = _converse;
             spyOn(api, 'confirm').and.callFake(() => Promise.resolve(true));
             // Asserted on the event rather than the room: opening a groupchat
@@ -156,7 +156,7 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
 
     it(
         'join action is a no-op when the confirmation is cancelled',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], { allow_bookmarks: false }, async function (_converse) {
             const { api } = _converse;
             spyOn(api, 'confirm').and.callFake(() => Promise.resolve(false));
             const triggered = [];

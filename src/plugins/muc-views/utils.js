@@ -54,15 +54,6 @@ export function confirmDirectMUCInvitation({ contact, jid, reason }) {
 }
 
 /**
- * @param {string} jid
- */
-export function clearHistory(jid) {
-    if (location.hash === `converse/room?jid=${jid}`) {
-        history.pushState(null, '', window.location.pathname);
-    }
-}
-
-/**
  * @param {MUC} model
  */
 export async function destroyMUC(model) {

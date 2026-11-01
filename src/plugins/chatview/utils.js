@@ -1,12 +1,6 @@
 import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless';
 
-export function clearHistory (jid) {
-    if (location.hash === `converse/chat?jid=${jid}`) {
-        history.pushState(null, '', window.location.pathname);
-    }
-}
-
 export async function clearMessages (chat) {
     const result = await api.confirm(
         __('Confirm'),

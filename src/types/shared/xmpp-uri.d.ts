@@ -1,4 +1,10 @@
 /**
+ * Decode one URI component, tolerating a malformed `%` sequence rather than throwing.
+ * @param {string} s
+ * @returns {string}
+ */
+export function decodeValue(s: string): string;
+/**
  * The first value of a (possibly repeated) query key.
  * @param {string|string[]|undefined} v
  * @returns {string|undefined}
@@ -22,6 +28,20 @@ export function parseXMPPURI(href: string): {
  * @returns {string|null}
  */
 export function invitationToXMPPURI(url: URL): string | null;
+/**
+ * The `xmpp:` URI for a percent-encoded segment that names a JID and nothing
+ * else (a Conversations `/i/` or `/j/` path, a legacy `#converse/chat?jid=`
+ * fragment), or null when the segment has a malformed `%` sequence.
+ *
+ * A decoded `?` or `#` is part of the JID, so it is escaped again rather than
+ * starting a query that picks the action or a fragment that cuts the JID short.
+ * Whether the JID is one we can act on is left to {@link isHandledXMPPURI}.
+ *
+ * @param {string} segment
+ * @param {boolean} [join=false] Whether it names a groupchat to join, not a contact.
+ * @returns {string|null}
+ */
+export function jidSegmentToXMPPURI(segment: string, join?: boolean): string | null;
 /**
  * Whether an `xmpp:` URI names an action the dispatcher handles (so the caller
  * attaches an in-app click handler instead of leaving it to the OS handler).

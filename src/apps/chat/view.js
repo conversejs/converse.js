@@ -1,6 +1,7 @@
 import { api, u, _converse, constants } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { HashRouter, appOfHash } from 'plugins/rootview/routing.js';
+import { isWaitingXMPPLink } from 'plugins/rootview/protocol-handler.js';
 import { CHAT_ROUTE_ROOT, buildChatRoute, parseChatRoute } from './routing.js';
 import tplChats from './templates/chats.js';
 
@@ -113,7 +114,7 @@ class ChatApp extends CustomElement {
             if (route.view === 'chat') {
                 await api.chats.open(route.jid, {}, true);
             } else if (route.view === 'room') {
-                // Match legacy routeToRoom: don't race auto-join on a cold deep-link.
+                // Don't race auto-join on a cold deep-link.
                 await api.waitUntil('roomsAutoJoined');
                 if (api.settings.get('allow_bookmarks')) await api.waitUntil('bookmarksInitialized');
                 await api.rooms.open(route.jid, {}, true);
@@ -165,11 +166,13 @@ class ChatApp extends CustomElement {
         if (!this.router.enabled || api.settings.get('view_mode') !== 'fullscreen') return;
         if (this._applying_route) return;
 
-        // Only own an empty hash or an existing chat/room one. Anything else is
-        // someone else's: another app's route (e.g. `#converse/social` during
-        // the boot window before the app-switcher unmounts us), or an `xmpp:`
-        // action or shareable link still waiting for login to be handled.
-        if (location.hash && appOfHash(location.hash) !== 'chat') return;
+        // Never clobber an `xmpp:` link still waiting for login to be handled,
+        // nor another app's route (e.g. `#converse/social` during the boot
+        // window before the app-switcher unmounts us).
+        if (isWaitingXMPPLink()) return;
+
+        const owner = appOfHash(location.hash);
+        if (owner && owner !== 'chat') return;
 
         const hash = buildChatRoute(this.currentForegroundRoute());
         if (!hash || hash === location.hash) return;

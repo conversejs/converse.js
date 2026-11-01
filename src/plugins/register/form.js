@@ -319,8 +319,8 @@ class RegistrationForm extends CustomElement {
             log.debug('Registered successfully.');
             api.connection.get().reset();
 
-            if (['converse/login', 'converse/register'].includes(window.location.hash)) {
-                history.pushState(null, '', window.location.pathname);
+            if (['#converse/login', '#converse/register'].includes(window.location.hash)) {
+                history.replaceState(history.state, '', `${location.pathname}${location.search}`);
             }
             setActiveForm('login');
 

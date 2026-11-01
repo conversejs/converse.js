@@ -16,6 +16,13 @@ export function registerProtocolHandler(): boolean;
  */
 export function registerProtocolHandlerIfEnabled(): void;
 /**
+ * Whether the current hash is an `xmpp:` link waiting to be handled (it is
+ * left in place until there's a live connection), so that nothing else, such
+ * as the Chat app mirroring its foreground conversation, overwrites it first.
+ * @returns {boolean}
+ */
+export function isWaitingXMPPLink(): boolean;
+/**
  * `hashchange`/`connected` handler: perform the XEP-0147 query action that an
  * incoming `xmpp:` URI names.
  *
@@ -28,6 +35,9 @@ export function registerProtocolHandlerIfEnabled(): void;
  * It's dropped before dispatching, not after: with URL routing on, opening the
  * conversation pushes the chat's own route, which clearing afterwards would
  * wipe before the router gets to it.
+ *
+ * A link that arrives while another is being handled (e.g. during its confirm
+ * prompt) waits in the hash and is handled next.
  *
  * @returns {Promise<boolean>} Whether the URI was handled.
  */

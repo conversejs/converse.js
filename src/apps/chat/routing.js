@@ -9,14 +9,12 @@
  *
  * Grammar:
  *   #converse/chat                     the chat app (no conversation foregrounded)
- *   #converse/chat/<jid>               a 1:1 chat (canonical)
- *   #converse/room/<jid>               a MUC / groupchat (canonical)
- *   #converse/chat?jid=<jid>           a 1:1 chat (legacy `routeToChat` form, accepted)
- *   #converse/room?jid=<jid>           a MUC (legacy `routeToRoom` form, accepted)
+ *   #converse/chat/<jid>               a 1:1 chat
+ *   #converse/room/<jid>               a MUC / groupchat
  *
- * The legacy `?jid=` forms are accepted on input but never emitted: `buildChatRoute`
- * only ever produces the canonical `/jid` path form, so the first foreground->hash
- * mirror canonicalizes a legacy deep-link.
+ * A hash with a query (e.g. the legacy `#converse/chat?jid=<jid>` deep link) is
+ * not a Chat route. The legacy forms are read by the rootview protocol handler,
+ * as the `xmpp:` URI they stand for.
  */
 
 export const CHAT_ROUTE_ROOT = '#converse/chat';
@@ -42,10 +40,8 @@ function decodeSegment(s) {
  * @returns {import("./types.ts").ChatRoute|null}
  */
 export function parseChatRoute(hash = location.hash) {
-    const raw = hash.replace(/^#/, '');
-    const qi = raw.indexOf('?');
-    const path = qi === -1 ? raw : raw.slice(0, qi);
-    const query = qi === -1 ? '' : raw.slice(qi + 1);
+    const path = hash.replace(/^#/, '');
+    if (path.includes('?')) return null;
 
     /** @type {'chat'|'room'} */
     let kind;
@@ -53,22 +49,14 @@ export function parseChatRoute(hash = location.hash) {
     else if (path === 'converse/room' || path.startsWith('converse/room/')) kind = 'room';
     else return null;
 
-    // The legacy `?jid=<jid>` form (`routeToChat`/`routeToRoom`). Checked before the
-    // path segments so it never collapses to the bare list route
-    if (query.startsWith('jid=')) {
-        const jid = decodeSegment(query.slice(4).split(/[&;]/)[0]);
-        return jid ? { view: kind, jid } : { view: 'list' };
-    }
-
-    // The canonical path form. `converse/chat` / `converse/room` alone is the list.
+    // `converse/chat` / `converse/room` alone is the list.
     const jid = path.split('/').map(decodeSegment)[2];
     return jid ? { view: kind, jid } : { view: 'list' };
 }
 
 /**
  * Build the `#converse/...` hash for a Chat route, or null when a chat/room route
- * is missing its JID (so callers can no-op). Only the canonical `/jid` path form is
- * emitted; the legacy `?jid=` form is never produced.
+ * is missing its JID (so callers can no-op).
  * @param {import("./types.ts").ChatRoute} route
  * @returns {string|null}
  */

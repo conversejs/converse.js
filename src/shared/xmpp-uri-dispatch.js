@@ -21,6 +21,25 @@ async function confirmAction(message) {
     return result !== false;
 }
 
+/** How long a groupchat link waits for the automatically joined groupchats before asking anyway. */
+const AUTO_JOIN_WAIT_MS = 5000;
+
+/**
+ * Resolves once the groupchats joined automatically (the `auto_join_rooms`
+ * setting and autojoin bookmarks) are open, or after {@link AUTO_JOIN_WAIT_MS}:
+ * neither signal fires when joining or fetching the bookmarks fails.
+ * @returns {Promise<void>}
+ */
+async function waitForAutoJoin() {
+    const waits = [api.waitUntil('roomsAutoJoined')];
+    if (api.settings.get('allow_bookmarks')) waits.push(api.waitUntil('bookmarksInitialized'));
+
+    let timer;
+    const timeout = new Promise((resolve) => (timer = setTimeout(resolve, AUTO_JOIN_WAIT_MS)));
+    await Promise.race([Promise.allSettled(waits), timeout]);
+    clearTimeout(timer);
+}
+
 /**
  * Perform the in-app action for an `xmpp:` URI (XEP-0147). No-op (returns false)
  * for a URI whose action we don't handle. Errors are logged, never thrown.
@@ -67,8 +86,15 @@ export async function dispatchXMPPURI(href) {
                 const nick = firstValue(params.nick);
                 // Joining hands the room our nick (and, in a non-anonymous room,
                 // our JID), and a link only says where it points, not what that
-                // room is. An open room has already had both.
-                if (!(await api.rooms.get(jid))) {
+                // room is. An open room has already had both, as has one about
+                // to be joined automatically (a cold link arrives straight after
+                // login), so don't ask about one of those.
+                let room = await api.rooms.get(jid);
+                if (!room) {
+                    await waitForAutoJoin();
+                    room = await api.rooms.get(jid);
+                }
+                if (!room) {
                     const message = nick
                         ? __('Join the groupchat %1$s as %2$s?', jid, nick)
                         : __('Join the groupchat %1$s?', jid);

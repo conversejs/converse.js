@@ -8,8 +8,7 @@
 export function parseChatRoute(hash?: string): import("./types.ts").ChatRoute | null;
 /**
  * Build the `#converse/...` hash for a Chat route, or null when a chat/room route
- * is missing its JID (so callers can no-op). Only the canonical `/jid` path form is
- * emitted; the legacy `?jid=` form is never produced.
+ * is missing its JID (so callers can no-op).
  * @param {import("./types.ts").ChatRoute} route
  * @returns {string|null}
  */
@@ -25,14 +24,12 @@ export function buildChatRoute(route: import("./types.ts").ChatRoute): string | 
  *
  * Grammar:
  *   #converse/chat                     the chat app (no conversation foregrounded)
- *   #converse/chat/<jid>               a 1:1 chat (canonical)
- *   #converse/room/<jid>               a MUC / groupchat (canonical)
- *   #converse/chat?jid=<jid>           a 1:1 chat (legacy `routeToChat` form, accepted)
- *   #converse/room?jid=<jid>           a MUC (legacy `routeToRoom` form, accepted)
+ *   #converse/chat/<jid>               a 1:1 chat
+ *   #converse/room/<jid>               a MUC / groupchat
  *
- * The legacy `?jid=` forms are accepted on input but never emitted: `buildChatRoute`
- * only ever produces the canonical `/jid` path form, so the first foreground->hash
- * mirror canonicalizes a legacy deep-link.
+ * A hash with a query (e.g. the legacy `#converse/chat?jid=<jid>` deep link) is
+ * not a Chat route. The legacy forms are read by the rootview protocol handler,
+ * as the `xmpp:` URI they stand for.
  */
 export const CHAT_ROUTE_ROOT: "#converse/chat";
 //# sourceMappingURL=routing.d.ts.map

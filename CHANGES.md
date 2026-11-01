@@ -13,6 +13,9 @@
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
 - With `enable_url_routing` on, an `xmpp:` link handed over by the browser now opens its chat or
   groupchat, also when it arrives before login.
+- fix: With `enable_url_routing` on, the open chat is shown in the address bar again after logging in
+  from a `#converse/login` or `#converse/register` page, and that page's fragment no longer stays in
+  the address bar once logged in.
 - Invitation links from other clients (xmpp.link, i.kaidan.im, invite.joinjabber.org and
   conversations.im) open the chat or groupchat in Converse instead of the invitation page.
 - Opening a groupchat from an `xmpp:` or invitation link asks for confirmation first.
@@ -91,6 +94,13 @@ Resource binding (and the `beforeResourceBinding` event) is now skipped when a s
 is resumed via XEP-0198. Plugins that use `beforeResourceBinding` to register stanza handlers
 must also listen to the new `streamResumed` event, which fires while `<resumed/>` is processed,
 before the server's replay of queued stanzas is handled.
+
+The `routeToChat` and `routeToRoom` functions are removed. The legacy `#converse/chat?jid=<jid>` and
+`#converse/room?jid=<jid>` fragments are still accepted, but are now handled like an `xmpp:` link
+(see `register_protocol_handler`): they wait for login, and a room link asks before joining a
+groupchat you're not already in. They're only understood by the full build, not by a page that loads
+`@converse/headless` alone, and Converse no longer emits them. To link to a chat, use an `xmpp:` URI,
+or `#converse/action?uri=` followed by the percent-encoded URI.
 
 The `callButtonClicked` event is removed, together with the generic call button that emitted it.
 The `call` key of `visible_toolbar_buttons` now shows the built-in audio call button instead.

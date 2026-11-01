@@ -3,14 +3,13 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import { api, converse, constants } from '@converse/headless';
+import { api, converse } from '@converse/headless';
 import './affiliation-form.js';
 import './role-form.js';
 import MUCView from './muc.js';
-import { clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
+import { confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
 
 const { Strophe } = converse.env;
-const { CHATROOMS_TYPE } = constants;
 
 import './styles/index.scss';
 
@@ -73,12 +72,6 @@ converse.plugins.add('converse-muc-views', {
                 view.roomspanel.model.destroy();
                 view.roomspanel.remove();
                 delete view.roomspanel;
-            }
-        });
-
-        api.listen.on('chatBoxClosed', (model) => {
-            if (model.get('type') === CHATROOMS_TYPE) {
-                clearHistory(model.get('jid'));
             }
         });
 

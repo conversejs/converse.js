@@ -312,7 +312,7 @@ agent, can read trust but never change it.
 
 Joins a room, and rejoins it after every restart until you leave it.
 
-- `--nick <name>`: the nickname to use in the room. The default is `claude`.
+- `--nick <name>`: the nickname to use in the room. The default is the consumer name, `agent` unless the config sets another.
 
 Restricted access may join only the rooms listed in `policy.rooms`.
 

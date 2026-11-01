@@ -56,14 +56,14 @@ describe('Access levels', () => {
         const restricted = await daemon.connect({ access: 'restricted' });
         expect(full.hello).toEqual({
             protocol: PROTOCOL_VERSION,
-            consumer: 'claude',
+            consumer: 'agent',
             access: 'full',
             mode: 'owner_only',
             jid: JID,
         });
         expect(restricted.hello).toEqual({
             protocol: PROTOCOL_VERSION,
-            consumer: 'claude',
+            consumer: 'agent',
             access: 'restricted',
             mode: 'owner_only',
             jid: JID,
@@ -78,7 +78,7 @@ describe('Access levels', () => {
             jsonrpc: '2.0',
             id: 1,
             method: 'hello',
-            params: { protocol: PROTOCOL_VERSION, consumer: 'claude', access: 'full' },
+            params: { protocol: PROTOCOL_VERSION, consumer: 'agent', access: 'full' },
         });
         expect(response.result.access).toBe('restricted');
     });

@@ -30,7 +30,7 @@ export async function claimPidfile(pidfile, { jid, pid = process.pid }) {
 
         const holder = parseInt(text, 10);
         if (isRunning(holder)) {
-            throw new Error(`A daemon for ${jid} is already running (pid ${holder}). Stop it with "converse-cli daemon stop".`);
+            throw new Error(`A daemon for ${jid} is already running (pid ${holder}). Stop it with "daemon.stop".`);
         }
         await removeStale(pidfile, text, pid);
     }

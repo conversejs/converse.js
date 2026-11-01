@@ -121,10 +121,7 @@ export function draftMethods(_converse, { drafts, audit, events, owner, mode }) 
         }
         const draft = drafts.get(id);
         if (!draft) {
-            throw new RPCError(
-                ERRORS.NOT_FOUND,
-                `No draft with id "${id}". List the drafts with "converse-cli drafts list".`,
-            );
+            throw new RPCError(ERRORS.NOT_FOUND, `No draft with id "${id}". List the drafts with "drafts.list".`);
         }
         return draft;
     };
@@ -157,7 +154,7 @@ export function draftMethods(_converse, { drafts, audit, events, owner, mode }) 
                     ERRORS.ACCESS_DENIED,
                     `The daemon only sends drafts in "as_user" mode, and this one runs in "${mode}". ` +
                         "Here a draft's text was delivered to you: send it from your own client, or withdraw " +
-                        'it with "converse-cli drafts reject".',
+                        'it with "drafts.reject".',
                 );
             }
             const draft = find(id);

@@ -156,7 +156,7 @@ describe('The restricted socket', () => {
             const client = await connect({ env });
             expect(client.hello).toEqual({
                 protocol: PROTOCOL_VERSION,
-                consumer: 'claude',
+                consumer: 'agent',
                 access: 'restricted',
                 mode: 'bot',
                 jid: JID,

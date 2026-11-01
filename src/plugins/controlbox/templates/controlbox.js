@@ -25,10 +25,12 @@ function whenNotConnected(el) {
                 : el.model.get('active-form') === 'register'
                   ? html`${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
                         <converse-brand-logo></converse-brand-logo>
+                        <converse-pending-invitation></converse-pending-invitation>
                         <converse-registration-form class="fade-in rounded"></converse-registration-form>
                         ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''} `
                   : html`${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
                         <converse-brand-logo></converse-brand-logo>
+                        <converse-pending-invitation></converse-pending-invitation>
                         <converse-login-form class="fade-in rounded"></converse-login-form>
                         ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''} `}
         </div>

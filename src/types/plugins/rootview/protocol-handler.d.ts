@@ -1,4 +1,15 @@
 /**
+ * The `xmpp:` URI that will be acted on once logged in, if any: from a
+ * shareable link to this page or from the browser's protocol handler.
+ * @returns {import('./types').PendingXMPPURI|null}
+ */
+export function getPendingXMPPURI(): import("./types").PendingXMPPURI | null;
+/**
+ * Take the link the page was opened with as the pending one, if any. Called
+ * when Converse is initialized, so a link is shown before login.
+ */
+export function initPendingXMPPURI(): void;
+/**
  * Ask the browser to route `xmpp:` links to this Converse instance.
  *
  * Browsers only accept this from a secure context with a same-origin URL, and
@@ -28,13 +39,14 @@ export function isWaitingXMPPLink(): boolean;
  *
  * Dispatch waits for a live connection. A cold click on an `xmpp:` link lands
  * here before login, and the chat and roster actions (along with their confirm
- * prompts) only mean anything against a live session. The hash is deliberately
- * left in place until then, so the intent survives the login and the
- * `connected` handler picks it up instead of it being silently dropped.
+ * prompts) only mean anything against a live session. Until then the URI is
+ * kept as the pending one (see {@link getPendingXMPPURI}), and the hash is left
+ * in place so that a reload doesn't lose it either. The `connected` handler
+ * then picks it up instead of it being silently dropped.
  *
- * It's dropped before dispatching, not after: with URL routing on, opening the
- * conversation pushes the chat's own route, which clearing afterwards would
- * wipe before the router gets to it.
+ * The hash is dropped before dispatching, not after: with URL routing on,
+ * opening the conversation pushes the chat's own route, which clearing
+ * afterwards would wipe before the router gets to it.
  *
  * A link that arrives while another is being handled (e.g. during its confirm
  * prompt) waits in the hash and is handled next.

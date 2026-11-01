@@ -1657,6 +1657,8 @@ The XMPP address goes in the link's fragment, as [xmpp.link](https://xmpp.link) 
 
 Set this to your own Converse deployment to have the links point there. Converse opens a link to that page in-app, both when it's clicked in a message and when the page itself is opened with one, once the user has logged in. A groupchat link asks for confirmation before joining.
 
+Someone who opens a link while logged out sees the invitation above the login form, with a button that hands it to the XMPP app they already have and a short list of apps for those who'd rather install one. They can also log in, or create an account, and then land in the chat or groupchat the link was for.
+
 Set it to an empty string to turn shareable links off, for example when your users can't use other XMPP clients and an outside link would only confuse them.
 
 ### show_background

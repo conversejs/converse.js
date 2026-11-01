@@ -20,4 +20,8 @@ export type KeyboardShortcut = {
     matches: (_ev: KeyboardEvent) => boolean;
     handler: () => void;
 };
+export type PendingXMPPURI = {
+    uri: string;
+    from_handler: boolean;
+};
 //# sourceMappingURL=types.d.ts.map

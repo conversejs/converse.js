@@ -20,9 +20,8 @@
   conversations.im) open the chat or groupchat in Converse instead of the invitation page.
 - Opening a groupchat from an `xmpp:` or invitation link asks for confirmation first.
 - Following a link out of a chat message asks for confirmation first. New setting `confirm_external_links`.
-- #4201: The profile, user details and groupchat details modals show a shareable https link to the
-  contact or groupchat, with buttons to copy and share it. The new `shareable_link_url` setting
-  chooses the page it points at, which opens such links in-app.
+- #4201: Shareable links to contacts and groupchats (`shareable_link_url`)
+- #4201: Logged-out landing page for shareable links
 - The user details, profile and groupchat details modals show a button that copies the XMPP address.
   In the user details modal the address is no longer a link, and the groupchat details modal shows the
   room's address instead of an `xmpp:` join URI.

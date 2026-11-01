@@ -20,6 +20,12 @@ export type KeyboardShortcut = {
     matches: (_ev: KeyboardEvent) => boolean;
     handler: () => void;
 };
+export type XMPPApp = {
+    name: string;
+    url: string;
+    platforms?: Platform[];
+};
+export type Platform = 'Android' | 'iOS' | 'Windows' | 'macOS' | 'Linux';
 export type PendingXMPPURI = {
     uri: string;
     from_handler: boolean;

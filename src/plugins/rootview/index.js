@@ -33,6 +33,20 @@ converse.plugins.add('converse-rootview', {
             register_protocol_handler: false,
             // Languages for which the UI is right-to-left
             rtl_langs: ['ar', 'fa', 'he', 'ug'],
+            // XMPP apps suggested to someone who opens a shareable link while
+            // logged out: the first one for their platform, or all of them
+            // when it's unknown. An empty list hides the suggestions.
+            shareable_link_apps: [
+                { name: 'Conversations', url: 'https://conversations.im/', platforms: ['Android'] },
+                {
+                    name: 'Converse Desktop',
+                    url: 'https://github.com/conversejs/converse-desktop',
+                    platforms: ['Windows', 'macOS', 'Linux'],
+                },
+                { name: 'Monal', url: 'https://monal-im.org/', platforms: ['iOS', 'macOS'] },
+                { name: 'Gajim', url: 'https://gajim.org/', platforms: ['Windows', 'Linux'] },
+                { name: 'Dino', url: 'https://dino.im/', platforms: ['Linux'] },
+            ],
             // The page shareable invitation links point at, with the JID in the
             // fragment. An empty value turns them off.
             shareable_link_url: 'https://chat.conversejs.org/',

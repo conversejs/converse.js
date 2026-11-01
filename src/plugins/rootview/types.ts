@@ -23,6 +23,14 @@ export type KeyboardShortcut = {
     handler: () => void; // Called when the shortcut is pressed
 };
 
+export type XMPPApp = {
+    name: string;
+    url: string; // Where to get it
+    platforms?: Platform[]; // Where it runs
+};
+
+export type Platform = 'Android' | 'iOS' | 'Windows' | 'macOS' | 'Linux';
+
 export type PendingXMPPURI = {
     uri: string; // The `xmpp:` URI to act on once logged in
     from_handler: boolean; // Handed over by the browser's protocol handler, rather than a shareable link

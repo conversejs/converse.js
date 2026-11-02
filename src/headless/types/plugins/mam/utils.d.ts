@@ -68,7 +68,8 @@ export function fetchNewestMessages(model: ChatBox | MUC): Promise<import("./typ
  * any other: they can be read, replied to and reacted to.
  *
  * A match is left out if it has no conversation to be held in: one in a room
- * we aren't in, or in a chat we don't have, unless `create` is set.
+ * we aren't in, a private message in a room (XEP-0045), or one in a chat we
+ * don't have, unless `create` is set.
  * @param {string} text
  * @param {Object} [options]
  * @param {string} [options.with] - The bare JID of a contact or room, to search only that conversation

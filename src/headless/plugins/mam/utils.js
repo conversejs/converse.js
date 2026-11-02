@@ -396,7 +396,8 @@ export function fetchNewestMessages(model) {
  * any other: they can be read, replied to and reacted to.
  *
  * A match is left out if it has no conversation to be held in: one in a room
- * we aren't in, or in a chat we don't have, unless `create` is set.
+ * we aren't in, a private message in a room (XEP-0045), or one in a chat we
+ * don't have, unless `create` is set.
  * @param {string} text
  * @param {Object} [options]
  * @param {string} [options.with] - The bare JID of a contact or room, to search only that conversation
@@ -437,6 +438,9 @@ export async function searchArchive(
         const from = Strophe.getBareJidFromJid(forwarded.getAttribute('from'));
         const to = Strophe.getBareJidFromJid(forwarded.getAttribute('to'));
         const is_room = forwarded.getAttribute('type') === 'groupchat';
+        // A private message in a room is with an occupant, not a chat with the room's JID.
+        if (!is_room && sizzle(`x[xmlns="${NS.MUC_USER}"]`, forwarded).length) continue;
+
         const conversation = is_room ? from : from === bare_jid ? to : from;
 
         const archive_id = sizzle(`[xmlns="${NS.MAM}"]`, stanza).pop()?.getAttribute('id');

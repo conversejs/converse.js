@@ -379,9 +379,10 @@ describe('Message Archive Management', function () {
         /**
          * Answers the search that was sent with each of `matches`, then the <fin/>.
          * A match is the JID of its sender, or says what it is. The i-th has the id
-         * `msg-i` (counting from 1), by which a later one can correct it.
+         * `msg-i` (counting from 1), by which a later one can correct it. A match
+         * that's `in_room` is a private message in a room (XEP-0045).
          * @param {import('../../../shared/_converse.js').ConversePrivateGlobal} _converse
-         * @param {(string|{ from: string, body?: string, replace?: string })[]} matches
+         * @param {(string|{ from: string, to?: string, body?: string, replace?: string, in_room?: boolean })[]} matches
          * @param {Object} [options]
          * @param {boolean} [options.malformed] - Whether to answer first with a result that forwards nothing
          */
@@ -406,8 +407,10 @@ describe('Message Archive Management', function () {
             matches.forEach((match, i) => {
                 const {
                     from,
+                    to = 'romeo@montague.lit',
                     body = 'Meet me on the balcony.',
                     replace,
+                    in_room,
                 } = typeof match === 'string' ? { from: match } : match;
                 receive(stx`<message id='m${i + 1}' to='romeo@montague.lit' xmlns="jabber:client">
                         <result xmlns='urn:xmpp:mam:2' queryid='${queryid}' id='archive-${i + 1}'>
@@ -415,11 +418,12 @@ describe('Message Archive Management', function () {
                                 <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:0${i}:25Z'/>
                                 <message xmlns='jabber:client'
                                     id='msg-${i + 1}'
-                                    to='romeo@montague.lit'
+                                    to='${to}'
                                     from='${from}/balcony'
                                     type='chat'>
                                     <body>${body}</body>
                                     ${replace ? stx`<replace xmlns='urn:xmpp:message-correct:0' id='${replace}'/>` : ''}
+                                    ${in_room ? stx`<x xmlns='http://jabber.org/protocol/muc#user'/>` : ''}
                                 </message>
                             </forwarded>
                         </result>
@@ -444,6 +448,24 @@ describe('Message Archive Management', function () {
                 const [message] = result.messages;
                 expect(message.get('stanza_id romeo@montague.lit')).toBe('archive-1');
                 expect(message.collection.chatbox.get('jid')).toBe('mercutio@montague.lit');
+            }),
+        );
+
+        it(
+            'leaves out a private message in a room, rather than creating a chat with the room',
+            mock.initConverse(converse, ['rosterInitialized'], {}, async function (_converse) {
+                const { api } = _converse;
+                await mock.waitForRoster(_converse, 'current');
+                const promise = api.archive.search('balcony', { create: true });
+                await answerSearch(_converse, [
+                    { from: 'lounge@montague.lit', in_room: true },
+                    { from: 'romeo@montague.lit', to: 'lounge@montague.lit/juliet', in_room: true },
+                    'mercutio@montague.lit',
+                ]);
+
+                const result = await promise;
+                expect(result.messages.map((m) => m.collection.chatbox.get('jid'))).toEqual(['mercutio@montague.lit']);
+                expect(await api.chats.get('lounge@montague.lit')).toBeNull();
             }),
         );
 

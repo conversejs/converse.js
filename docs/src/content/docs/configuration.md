@@ -470,6 +470,8 @@ Please refer to your XMPP server's documentation on how to enable BOSH. For more
 
 A more modern alternative to BOSH is to use [websockets](https://developer.mozilla.org/en/docs/WebSockets). Please see the `websocket-url` configuration setting.
 
+Note that this setting is superseded by any server-defined settings in host-meta when [discover_connection_methods](#discover_connection_methods) is enabled. If you want to avoid this, set [discover_connection_methods](#discover_connection_methods) to `false`.
+
 ### call_ice_servers
 
 - Default: `[]`
@@ -636,6 +638,8 @@ JIDs with other domains are still allowed but need to be provided in full. To sp
 Use [XEP-0156](https://xmpp.org/extensions/xep-0156.html) to discover whether the XMPP host for the current user advertises any Websocket or BOSH connection URLs that can be used.
 
 Currently only the XML encoded host-meta resource is supported as shown in [Example 2 under section 3.3](https://xmpp.org/extensions/xep-0156.html#httpexamples).
+
+When this setting is enabled, endpoints discovered from host-meta (if any) will supersede endpoints specified via the [websocket_url](#websocket_url) and [bosh_service_url](#bosh_service_url) settings.
 
 ### domain_placeholder
 
@@ -1952,6 +1956,8 @@ This option is used to specify a [websocket](https://developer.mozilla.org/en/do
 Websockets provide a more modern and effective two-way communication protocol between the browser and a server, effectively emulating TCP at the application layer and therefore overcoming many of the problems with existing long-polling techniques for bidirectional HTTP (such as [BOSH](https://en.wikipedia.org/wiki/BOSH)).
 
 Please refer to your XMPP server's documentation on how to enable websocket support.
+
+Note that this setting is superseded by any server-defined settings in host-meta when [discover_connection_methods](#discover_connection_methods) is enabled. If you want to avoid this, set [discover_connection_methods](#discover_connection_methods) to `false`.
 
 ### view_mode
 

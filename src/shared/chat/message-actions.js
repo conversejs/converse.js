@@ -1,13 +1,12 @@
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
-import { api, log, _converse, u, constants, converse } from '@converse/headless';
+import { api, log, _converse, u, constants } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import { isMediaURLDomainAllowed, isDomainWhitelisted } from 'utils/url.js';
 
 import './styles/message-actions.scss';
 
-const { Strophe } = converse.env;
 const { getMediaURLs } = u;
 const { CHATROOMS_TYPE } = constants;
 
@@ -327,46 +326,11 @@ class MessageActions extends CustomElement {
         this.getMessageForm()?.insertAtCaret(this.model.getMessageText().replaceAll(/^/gm, '> '));
     }
 
-    /**
-     * Get the appropriate reply_to_id for this message based on XEP-0461 rules.
-     * For groupchat messages, use stanza_id with the room's JID.
-     * For other message types, use msgid.
-     * @returns {string|undefined}
-     */
-    getReplyToId() {
-        const message_type = this.model.get('type');
-        if (message_type === 'groupchat') {
-            // For groupchat, use the stanza_id assigned by the MUC
-            const from_jid = this.model.get('from_muc') || this.model.get('from');
-            const bare_jid = Strophe.getBareJidFromJid(from_jid);
-            return this.model.get(`stanza_id ${bare_jid}`);
-        } else {
-            // For other message types, use msgid
-            return this.model.get('msgid');
-        }
-    }
-
-    /**
-     * Check if this message can be replied to based on XEP-0461 rules.
-     * @returns {boolean}
-     */
-    canReply() {
-        const message_type = this.model.get('type');
-        if (message_type === 'groupchat') {
-            // For groupchat, we need a stanza_id to reply
-            const from_jid = this.model.get('from_muc') || this.model.get('from');
-            const bare_jid = Strophe.getBareJidFromJid(from_jid);
-            return !!this.model.get(`stanza_id ${bare_jid}`);
-        }
-        return true;
-    }
-
     /** @param {MouseEvent} [ev] */
     onMessageReplyButtonClicked(ev) {
         ev?.preventDefault?.();
         const chatbox = this.model.collection.chatbox;
-        // Get the message ID to reply to based on XEP-0461 rules
-        const reply_to_id = this.getReplyToId();
+        const reply_to_id = this.model.getReferenceID();
         // Get the sender's JID for the reply
         const reply_to = this.model.get('from');
         // Store reply state on the chatbox
@@ -425,8 +389,8 @@ class MessageActions extends CustomElement {
         });
 
         if (this.model.collection.chatbox.canPostMessages()) {
-            // Only show reply button if the message can be replied to (has stanza_id for groupchat)
-            if (this.canReply()) {
+            // A reply refers to the message by an id, which a groupchat message lacks until the room gives it one.
+            if (this.model.getReferenceID()) {
                 buttons.push({
                     'i18n_text': __('Reply'),
                     'handler': /** @param {MouseEvent} ev */ (ev) => this.onMessageReplyButtonClicked(ev),

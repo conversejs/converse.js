@@ -54,6 +54,39 @@ describe('Sending a message that targets another', function () {
     );
 
     it(
+        "refuses to correct a message that isn't ours, or isn't in the conversation",
+        mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
+            await mock.waitForRoster(_converse, 'current', 2);
+            const [contact_jid, other_jid] = mock.cur_names
+                .slice(0, 2)
+                .map((name) => name.replace(/ /g, '.').toLowerCase() + '@montague.lit');
+            const chat = await mock.openChatBoxFor(_converse, contact_jid);
+            const other_chat = await mock.openChatBoxFor(_converse, other_jid);
+            await _converse.handleMessageStanza(stx`
+                <message xmlns="jabber:client" from="${contact_jid}/orchard" to="${_converse.bare_jid}"
+                        type="chat" id="theirs">
+                    <body>Wherefore art thou?</body>
+                </message>`);
+            const theirs = await u.waitUntil(() => chat.messages.findWhere({ msgid: 'theirs' }));
+            const elsewhere = await other_chat.sendMessage({ body: 'Elsewhere' });
+
+            const { sent_stanzas } = _converse.api.connection.get();
+            const sent = sent_stanzas.length;
+            await expect(chat.sendMessage({ body: 'Mine now' }, { correcting: theirs })).rejects.toThrow(
+                "Can't correct",
+            );
+            await expect(chat.sendMessage({ body: 'Moved' }, { correcting: elsewhere })).rejects.toThrow(
+                "Can't correct",
+            );
+
+            expect(theirs.get('body')).toBe('Wherefore art thou?');
+            expect(elsewhere.get('body')).toBe('Elsewhere');
+            expect(chat.messages.length).toBe(1);
+            expect(sent_stanzas.length).toBe(sent);
+        }),
+    );
+
+    it(
         'replies to a groupchat message by the stanza-id the room gave it',
         mock.initConverse(converse, [], {}, async (_converse) => {
             await mock.waitUntilBookmarksReturned(_converse);

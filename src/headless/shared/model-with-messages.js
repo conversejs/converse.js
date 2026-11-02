@@ -475,6 +475,9 @@ export default function ModelWithMessages(BaseModel) {
                 }
                 attrs = { ...attrs, reply_to_id, reply_to: replying_to.get('from') };
             }
+            if (correcting && (correcting.collection !== this.messages || !correcting.get('editable'))) {
+                throw new Error("Can't correct a message that isn't an editable one of ours in this conversation");
+            }
 
             attrs = await this.getOutgoingMessageAttributes(attrs);
             let message = correcting ?? this.messages.findWhere('correcting');

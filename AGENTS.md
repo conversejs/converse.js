@@ -180,7 +180,18 @@ converse.plugins.add('plugin-name', {
 ### Plugin Design Philosophy
 
 Converse.js mirrors the XMPP philosophy: a minimal core with features implemented as
-plugins corresponding to individual XEPs.
+plugins.
+
+**Plugin boundaries follow features, not XEPs:** a plugin should hold one cohesive feature
+that makes sense on its own. A XEP doesn't automatically get its own plugin, nor does it
+automatically go into an existing one. Ask whether the code could stand alone:
+
+- If it only serves an existing feature (it depends on that plugin, extends its API, and has
+  no other consumer), put it in that plugin, in its own file or subdirectory
+  (e.g. `src/headless/plugins/muc/affiliations/`).
+- If it's a distinct feature that other plugins or UIs could use independently, or that a
+  deployment might want to leave out, give it its own plugin, rather than growing an
+  existing plugin with unrelated functionality.
 
 **Avoiding leaky abstractions:** Shared core code (`src/headless/shared/`, e.g.
 `model-with-messages.js`) must not contain logic specific to a particular plugin.

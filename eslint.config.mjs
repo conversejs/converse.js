@@ -283,15 +283,33 @@ export default defineConfig([{
         yoda: "off",
     },
 }, {
-    // The headless bundle inlines its own copy of @converse/log. Importing it
-    // directly from outside headless bundles a second, separate logger.
+    // The headless bundle inlines its dependencies. Importing one of them
+    // directly from outside headless bundles a second, separate copy (for
+    // example a logger that ignores the configured loglevel, or a dayjs or
+    // Strophe without the locales, plugins and namespaces headless registered).
+    // The daemon and CLI run in Node on headless's source entry, not the bundle.
     files: ["src/**/*.js"],
-    ignores: ["src/headless/**", "src/log/**"],
+    ignores: ["src/headless/**", "src/log/**", "src/daemon/**", "src/cli/**"],
     rules: {
         "no-restricted-imports": ["error", {
             paths: [{
                 name: "@converse/log",
                 message: "Import { log } from '@converse/headless' instead.",
+            }, {
+                name: "@converse/openpromise",
+                message: "Use u.getOpenPromise from '@converse/headless' instead.",
+            }],
+            patterns: [{
+                group: [
+                    "@converse/skeletor", "@converse/skeletor/*",
+                    "dayjs", "dayjs/*",
+                    "filesize",
+                    "pluggable.js",
+                    "sizzle",
+                    "sprintf-js",
+                    "strophe.js", "strophe.js/*",
+                ],
+                message: "@converse/headless bundles its own copy. Import it from '@converse/headless' or use converse.env instead.",
             }],
         }],
     },

@@ -1,4 +1,4 @@
-import { Collection, Model } from '@converse/skeletor';
+import { Collection, Model } from '@converse/headless';
 import { aggregatedCollectionSignal, attrSignal, collectionSignal } from '../signals.js';
 
 describe('The signals adapter', function () {

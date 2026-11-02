@@ -39,6 +39,27 @@ export async function getUploadService(domain) {
 }
 
 /**
+ * Whether `file` has content which can be read, and therefore uploaded.
+ *
+ * A directory pasted or dropped from a file manager arrives as a typeless `File` whose
+ * size is whatever the filesystem reports for it (e.g. 4096 bytes), so only failing to
+ * read it gives it away. The same goes for a file that was moved or deleted after it
+ * was copied. An empty file has nothing to upload.
+ * @param {File} file
+ * @returns {Promise<boolean>}
+ */
+export async function isUploadableFile(file) {
+    if (!file.size) return false;
+
+    try {
+        await file.slice(0, 1).arrayBuffer();
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+/**
  * The `code` on the error {@link requestSlot} throws when the service answered, but with
  * no slot in it. Distinguishable from the IQ itself failing, which the chat upload path
  * reports differently.
@@ -167,9 +188,12 @@ async function putFileWithFetch(file, slot) {
  * @param {string} [opts.domain] - Upload service host (defaults to our own domain).
  * @param {(fraction: number) => void} [opts.onProgress] - Upload progress (0..1).
  * @returns {Promise<import('./types').UploadedFile>}
- * @throws when no service is available, the file is too large, or the PUT fails.
+ * @throws when the file is empty or unreadable, no service is available, the file is
+ *      too large, or the PUT fails.
  */
 export async function uploadFile(file, { domain, onProgress } = {}) {
+    if (!(await isUploadableFile(file))) throw new Error('The file is empty or could not be read');
+
     const service = await getUploadService(domain);
     if (!service) throw new Error('No HTTP file upload service is available');
     if (file.size > service.max_file_size) throw new Error('The file is too large to upload');

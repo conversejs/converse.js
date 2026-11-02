@@ -307,6 +307,20 @@ export default class SocialComposeRich extends CustomElement {
     }
 
     /**
+     * Upload files dropped onto the editor, as {@link onPaste} does for pasted ones.
+     * Dragged text carries no files, so it falls through to Lexical unchanged.
+     * @param {DragEvent} ev
+     */
+    onDrop(ev) {
+        const files = ev.dataTransfer?.files;
+        if (!files?.length) return;
+
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+        this.onAttach(files);
+    }
+
+    /**
      * Normalise Lexical's HTML export to a well-formed XHTML `<div>` fragment: run
      * it through DOMPurify (stripping the editor-only `class`/`style` hooks Lexical
      * stamps on for styling, so they never reach the wire), then re-serialize via

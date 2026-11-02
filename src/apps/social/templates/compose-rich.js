@@ -38,6 +38,7 @@ export default (el) => html`
                 @focusin=${() => el.ensureEditor()}
                 @focusout=${(/** @type {FocusEvent} */ ev) => el.onEditorFocusOut(ev)}
                 @paste=${(/** @type {ClipboardEvent} */ ev) => el.onPaste(ev)}
+                @drop=${(/** @type {DragEvent} */ ev) => el.onDrop(ev)}
                 @keydown=${(/** @type {KeyboardEvent} */ ev) => el.onEditorKeyDown(ev)}
             ></div>
             ${el.typeahead.is_open ? tplTypeahead(el.typeahead) : ''}

@@ -6,6 +6,17 @@
  */
 export function getUploadService(domain?: string): Promise<import("./types").UploadService | null>;
 /**
+ * Whether `file` has content which can be read, and therefore uploaded.
+ *
+ * A directory pasted or dropped from a file manager arrives as a typeless `File` whose
+ * size is whatever the filesystem reports for it (e.g. 4096 bytes), so only failing to
+ * read it gives it away. The same goes for a file that was moved or deleted after it
+ * was copied. An empty file has nothing to upload.
+ * @param {File} file
+ * @returns {Promise<boolean>}
+ */
+export function isUploadableFile(file: File): Promise<boolean>;
+/**
  * Request an upload slot for `file` (XEP-0363 § 4).
  * @param {File} file
  * @param {string} slot_request_url
@@ -35,7 +46,8 @@ export function putFile(file: File, slot: import("./types").UploadTarget, onProg
  * @param {string} [opts.domain] - Upload service host (defaults to our own domain).
  * @param {(fraction: number) => void} [opts.onProgress] - Upload progress (0..1).
  * @returns {Promise<import('./types').UploadedFile>}
- * @throws when no service is available, the file is too large, or the PUT fails.
+ * @throws when the file is empty or unreadable, no service is available, the file is
+ *      too large, or the PUT fails.
  */
 export function uploadFile(file: File, { domain, onProgress }?: {
     domain?: string;

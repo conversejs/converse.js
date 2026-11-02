@@ -15,6 +15,7 @@ import * as errors from './errors.js';
 import { sendMarker, sendReceiptStanza, sendRetractionMessage } from './actions.js';
 import { parseMessage } from '../plugins/chat/parsers.js';
 import { getStanzaIDsByJID } from './parsers.js';
+import { isUploadableFile } from './http-upload.js';
 
 const { Strophe, stx, u } = converse.env;
 
@@ -590,8 +591,9 @@ export default function ModelWithMessages(BaseModel) {
          * Resolves once a message has been created for each file, or to `[]` if
          * the server has no upload service. Each message's `upload` attribute is
          * set to `SUCCESS` or `FAILURE` once its upload has finished. A file
-         * which is too large gets an ephemeral error message instead, whose
-         * `upload` is already `FAILURE` and whose `message` explains why.
+         * which is empty, unreadable (e.g. a directory) or too large gets an
+         * ephemeral error message instead, whose `upload` is already `FAILURE`
+         * and whose `message` explains why.
          * @param {File[]|FileList} files
          * @returns {Promise<BaseMessage[]>}
          */
@@ -622,6 +624,20 @@ export default function ModelWithMessages(BaseModel) {
                 return [];
             }
             const messages = Array.from(files).map(async (file) => {
+                if (!(await isUploadableFile(file))) {
+                    return this.createMessage({
+                        message: file.size
+                            ? __(
+                                  'Sorry, %1$s could not be uploaded, because it is a folder or could not be read.',
+                                  file.name,
+                              )
+                            : __('Sorry, %1$s could not be uploaded, because it is empty.', file.name),
+                        type: 'error',
+                        is_ephemeral: true,
+                        upload: constants.FAILURE,
+                    });
+                }
+
                 /**
                  * *Hook* which allows plugins to transform files before they'll be
                  * uploaded. The main use-case is to encrypt the files.

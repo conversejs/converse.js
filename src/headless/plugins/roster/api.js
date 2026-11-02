@@ -92,7 +92,7 @@ export default {
             if (!wanted) return [];
 
             const matches = roster.filter((contact) => {
-                const names = [contact.get('nickname'), contact.vcard?.getDisplayName()];
+                const names = [contact.get('nickname'), contact.vcard?.getName()];
                 return names.some((candidate) => candidate?.toLowerCase() === wanted);
             });
             return matches

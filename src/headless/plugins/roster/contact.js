@@ -86,7 +86,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
      * @returns {string}
      */
     getDisplayName(options) {
-        return this.get('nickname') || this.vcard?.getDisplayName() || (options?.no_jid ? null : this.get('jid'));
+        return this.get('nickname') || this.vcard?.getName() || (options?.no_jid ? null : this.get('jid'));
     }
 
     /**

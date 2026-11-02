@@ -59,6 +59,29 @@ describe('Resolving a name to roster contacts', function () {
     );
 
     it(
+        'matches a contact by vCard name, and not by JID when it has no name',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            // Without nicknames, so that the contacts' names come from their vCards
+            await mock.waitForRoster(_converse, 'current', -1, false);
+
+            const named = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const nameless = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const { roster } = _converse.state;
+            const vcards = () => [roster.get(named).vcard, roster.get(nameless).vcard];
+            await converse.env.u.waitUntil(() => vcards().every((vcard) => vcard?.get('vcard_updated')));
+            roster.get(named).vcard.set('fullname', 'Romeo Montague');
+            roster.get(nameless).vcard.unset('fullname');
+
+            expect(await api.contacts.resolve({ name: 'romeo montague' })).toEqual([
+                { jid: named, name: 'Romeo Montague' },
+            ]);
+            expect(await api.contacts.resolve({ name: nameless })).toEqual([]);
+            expect(await api.contacts.resolve({ jid: nameless })).toEqual([{ jid: nameless, name: null }]);
+        }),
+    );
+
+    it(
         'returns every contact a shared name matches, rather than picking one',
         mock.initConverse(converse, [], {}, async (_converse) => {
             const { api } = _converse;

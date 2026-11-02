@@ -91,7 +91,9 @@ version:
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' manifest.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' package.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' src/headless/package.json
-	$(SED) -i '/"@converse\/headless":/s/:.*/: "$(VERSION)",/' package.json
+	npm pkg set 'dependencies.@converse/headless=$(VERSION)'
+	npm pkg set 'dependencies.@converse/headless=^$(VERSION)' --workspace src/daemon
+	npm install --package-lock-only
 	$(SED) -ri 's/--package-version=$(VERSION_FORMAT)/--package-version=$(VERSION)/' Makefile
 
 	$(SED) -i "s/[Uu]nreleased/`date +%Y-%m-%d`/" CHANGES.md

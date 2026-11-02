@@ -75,7 +75,7 @@
     "url": "https://github.com/conversejs/converse.js/issues"
   },
   "dependencies": {
-    "@converse/log": "^0.0.1",
+    "@converse/log": "^0.1.0",
     "@converse/openpromise": "^0.0.5",
     "@converse/skeletor": "^4.0.0",
     "dayjs": "^1.11.8",

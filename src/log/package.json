@@ -1,6 +1,6 @@
 {
   "name": "@converse/log",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Logging utilities for Converse.js",
   "author": "JC Brand <jc@opkode.com>",
   "homepage": "https://conversejs.org",

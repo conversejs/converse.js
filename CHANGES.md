@@ -8,6 +8,7 @@
   Plugins add an entry through the new `getAttachmentMenuItems` hook.
 - feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
 - The unused `errors.UserFacingError` class is removed.
+- `@converse/log` is bumped to 0.1.0, because its API changed to variadic `log(level, ...args)` and `debug(...args)` without a version bump.
 - fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
 - #194: Full support for XEP-0115: Entity capabilities.
 - #1247: Register Converse as the browser's handler for `xmpp:` links.

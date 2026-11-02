@@ -46,18 +46,17 @@ export default (el) => {
         <div class="mb-3">
             <label for="chatroom" class="form-label">${label_name}:</label>
             <div class="input-group">
-                ${muc_search_service
-                    ? html` <converse-autocomplete
-                          .getAutoCompleteList="${getAutoCompleteList}"
-                          .validate="${/** @param {string} v */ (v) => el.validateMUCJID(v)}"
-                          ?autofocus="${true}"
-                          class="add-muc-autocomplete"
-                          min_chars="3"
-                          name="chatroom"
-                          position="below"
-                          required
-                      ></converse-autocomplete>`
-                    : ''}
+                <converse-autocomplete
+                    .auto_evaluate="${!!muc_search_service}"
+                    .getAutoCompleteList="${getAutoCompleteList}"
+                    .validate="${/** @param {string} v */ (v) => el.validateMUCJID(v)}"
+                    ?autofocus="${true}"
+                    class="add-muc-autocomplete"
+                    min_chars="3"
+                    name="chatroom"
+                    position="below"
+                    required
+                ></converse-autocomplete>
             </div>
             ${policy_hint
                 ? html`<div class="mb-3">

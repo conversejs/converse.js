@@ -111,6 +111,9 @@ declare namespace rooms {
      * Lists the rooms that a MUC service hosts, by asking it for its items
      * (XEP-0030). This only lists them: joining is a separate step.
      *
+     * A service that pages its list (XEP-0059) is asked for each page in turn,
+     * so that the list is the whole of it, and not only the first page.
+     *
      * @method api.rooms.discover
      * @param {string} service - The JID of the MUC service, e.g. "conference.example.org"
      * @param {Object} [options]

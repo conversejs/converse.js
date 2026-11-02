@@ -13,6 +13,12 @@ import { settings_api as settings } from '../../shared/settings/api.js';
 
 const { waitUntil } = promise_api;
 
+/** How many rooms to ask a MUC service for at a time, when it pages its list. */
+const DISCOVER_PAGE_SIZE = 100;
+
+/** An upper bound on the pages asked for, so that a misbehaving service can't keep a request going forever. */
+const DISCOVER_MAX_PAGES = 100;
+
 /**
  * The "rooms" namespace groups methods relevant to chatrooms
  * (aka groupchats).
@@ -173,6 +179,9 @@ const rooms = {
      * Lists the rooms that a MUC service hosts, by asking it for its items
      * (XEP-0030). This only lists them: joining is a separate step.
      *
+     * A service that pages its list (XEP-0059) is asked for each page in turn,
+     * so that the list is the whole of it, and not only the first page.
+     *
      * @method api.rooms.discover
      * @param {string} service - The JID of the MUC service, e.g. "conference.example.org"
      * @param {Object} [options]
@@ -183,11 +192,28 @@ const rooms = {
      * const rooms = await api.rooms.discover('conference.example.org');
      */
     async discover(service, options) {
-        const stanza = await _converse.api.disco.items(service, null, options);
-        const items = sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza);
-        return items
-            .filter((item) => !item.getAttribute('node'))
-            .map((item) => ({ jid: item.getAttribute('jid'), name: item.getAttribute('name') || null }));
+        const rooms = [];
+        let after;
+        for (let page = 0; page < DISCOVER_MAX_PAGES; page++) {
+            const rsm = { max: DISCOVER_PAGE_SIZE, after };
+            const stanza = await _converse.api.disco.items(service, null, { ...options, rsm });
+            const query = `query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`;
+            const items = sizzle(`${query} > item`, stanza);
+            rooms.push(
+                ...items
+                    .filter((item) => !item.getAttribute('node'))
+                    .map((item) => ({ jid: item.getAttribute('jid'), name: item.getAttribute('name') || null })),
+            );
+
+            // A service that doesn't page its list answers without a <set>, with all of it.
+            // The <count> may be approximate, so the list ends with an empty page instead.
+            const last = sizzle(`${query} > set[xmlns="${Strophe.NS.RSM}"] > last`, stanza).pop()?.textContent;
+            if (!items.length || !last || last === after) return rooms;
+
+            after = last;
+        }
+        log.warn(`api.rooms.discover: stopped after ${DISCOVER_MAX_PAGES} pages of rooms from ${service}`);
+        return rooms;
     },
 };
 

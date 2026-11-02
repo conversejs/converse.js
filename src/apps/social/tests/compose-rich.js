@@ -38,6 +38,59 @@ describe('The rich Social composer', function () {
     );
 
     it(
+        'uploads dropped files and lets dragged text through',
+        mock.initConverse(converse, [], {}, async function () {
+            await customElements.whenDefined('converse-social-compose-rich');
+            const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
+            const onAttach = vi.spyOn(el, 'onAttach').mockResolvedValue(undefined);
+
+            const dt = new DataTransfer();
+            dt.items.add(new File(['x'], 'shot.png', { type: 'image/png' }));
+            const fileDrop = new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt });
+            el.onDrop(fileDrop);
+            expect(fileDrop.defaultPrevented).toBe(true);
+            expect(onAttach).toHaveBeenCalledTimes(1);
+            expect(onAttach.mock.calls[0][0]).toBe(dt.files);
+
+            onAttach.mockClear();
+            const dt2 = new DataTransfer();
+            dt2.setData('text/plain', 'hello');
+            const textDrop = new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt2 });
+            el.onDrop(textDrop);
+            expect(textDrop.defaultPrevented).toBe(false);
+            expect(onAttach).not.toHaveBeenCalled();
+
+            // Mounted, a drop on the editor reaches the handler ahead of Lexical's own,
+            // so the file is uploaded and nothing lands in the editor.
+            document.body.appendChild(el);
+            await el.updateComplete;
+            const handle = await el.ensureEditor();
+            el.querySelector('.social-rich__editable').dispatchEvent(
+                new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt }),
+            );
+            expect(onAttach).toHaveBeenCalledTimes(1);
+            expect(handle.isEmpty()).toBe(true);
+            el.remove();
+        }),
+    );
+
+    it(
+        'toasts instead of attaching a folder or an empty file',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await customElements.whenDefined('converse-social-compose-rich');
+            const el = /** @type {any} */ (document.createElement('converse-social-compose-rich'));
+            const toast = vi.spyOn(_converse.api.toast, 'show');
+
+            await el.onAttach([mock.mockUnreadableFile('Downloads'), new File([], 'empty.txt')]);
+            expect(el._attachments).toEqual([]);
+            expect(toast.mock.calls.map(([, { body }]) => body)).toEqual([
+                'Sorry, could not upload “Downloads”',
+                'Sorry, could not upload “empty.txt”',
+            ]);
+        }),
+    );
+
+    it(
         'builds a ranked emoji shortname menu from the caret trigger query',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await _converse.api.emojis.initialize();

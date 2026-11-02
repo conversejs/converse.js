@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import {
     chatroom_names,
     createChatMessage,
@@ -19,6 +20,32 @@ import {
     waitUntilBookmarksReturned,
     waitUntilDiscoConfirmed,
 } from '../../headless/tests/mock.js';
+
+const blobSlice = Blob.prototype.slice;
+const unreadable_file_names = new Set();
+
+/**
+ * A `File` standing in for a directory copied in a file manager, or for a file deleted
+ * after it was copied: it has a size, but can't be read. Safe to call more than once
+ * per test.
+ * @param {string} name
+ * @param {number} [size] - Defaults to a directory's typical size on disk.
+ * @returns {File}
+ */
+function mockUnreadableFile(name, size = 4096) {
+    if (!vi.isMockFunction(Blob.prototype.slice)) {
+        // A fresh test: the previous one's spy has been restored.
+        unreadable_file_names.clear();
+        vi.spyOn(Blob.prototype, 'slice').mockImplementation(function (...args) {
+            if (this instanceof File && unreadable_file_names.has(this.name)) {
+                return { arrayBuffer: () => Promise.reject(new DOMException('', 'NotReadableError')) };
+            }
+            return blobSlice.apply(this, args);
+        });
+    }
+    unreadable_file_names.add(name);
+    return new File([new Uint8Array(size)], name);
+}
 
 function getContactJID(index) {
     return cur_names[index].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -754,6 +781,7 @@ export default {
     groups_map,
     initConverse,
     initializedOMEMO,
+    mockUnreadableFile,
     num_contacts,
     openAddMUCModal,
     openAndEnterMUC,

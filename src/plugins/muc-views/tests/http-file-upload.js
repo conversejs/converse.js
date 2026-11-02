@@ -109,12 +109,7 @@ describe('XEP-0363: HTTP File Upload', function () {
                         );
 
                         const view = _converse.chatboxviews.get(muc_jid);
-                        const file = {
-                            'type': 'image/jpeg',
-                            'size': '23456',
-                            'lastModifiedDate': '',
-                            'name': 'my-juliet.jpg',
-                        };
+                        const file = new File([new Uint8Array(23456)], 'my-juliet.jpg', { type: 'image/jpeg' });
                         view.model.sendFiles([file]);
 
                         await u.waitUntil(

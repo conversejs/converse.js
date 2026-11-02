@@ -10,6 +10,22 @@ converse-add-muc-modal {
             .suggestion-box ul li {
                 display: block;
             }
+
+            .suggestion-box ul li.room-suggestion {
+                display: flex;
+                gap: 0.5em;
+                justify-content: space-between;
+            }
+
+            .room-suggestion__label {
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .room-suggestion__nusers {
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
         }
     }
 }

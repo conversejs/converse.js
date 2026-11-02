@@ -4,6 +4,12 @@ import { FILTER_CONTAINS, FILTER_STARTSWITH, getAutoCompleteItem } from './utils
 import { api, u } from '@converse/headless';
 import { html } from 'lit';
 
+const FILTERS = {
+    contains: FILTER_CONTAINS,
+    startswith: FILTER_STARTSWITH,
+    none: () => true,
+};
+
 /**
  * A custom element that can be used to add auto-completion suggestions to a form input.
  * @example
@@ -25,12 +31,14 @@ export default class AutoCompleteComponent extends CustomElement {
             getAutoCompleteList: { type: Function },
             include_triggers: { type: String },
             list: { type: Array },
+            match_current_word: { type: Boolean },
             min_chars: { type: Number },
             name: { type: String },
             placeholder: { type: String },
             position: { type: String },
             renderItem: { type: Function },
             required: { type: Boolean },
+            sort: { type: Boolean },
             suffix: { type: String },
             triggers: { type: String },
             validate: { type: Function },
@@ -44,13 +52,14 @@ export default class AutoCompleteComponent extends CustomElement {
         this.auto_first = false;
         this.data = (a) => a;
         this.error_message = '';
-        /** @type { "contains" | "startswith" }
-         * Provide matches which contain the entered text, or which starts with the entered text */
+        /** @type { "contains" | "startswith" | "none" }
+         * Provide matches which contain the entered text, or which starts with the entered text.
+         * Use "none" when the list is already filtered, e.g. by a server-side search. */
         this.filter = 'contains';
         this.getAutoCompleteList = null;
         this.include_triggers = '';
         this.list = null;
-        this.match_current_word = false; // Match only the current word, otherwise all input is matched
+        this.match_current_word = true; // Match only the current word, otherwise all input is matched
         this.max_items = 10;
         this.min_chars = 1;
         this.name = '';
@@ -61,6 +70,8 @@ export default class AutoCompleteComponent extends CustomElement {
         this.renderItem = getAutoCompleteItem;
 
         this.required = false;
+        /** Whether to sort suggestions by where the entered text occurs in them */
+        this.sort = true;
         this.suffix = ' ';
         this.triggers = '';
         this.validate = null;
@@ -109,15 +120,17 @@ export default class AutoCompleteComponent extends CustomElement {
         this.auto_complete = new AutoComplete(/** @type HTMLElement */ (this.firstElementChild), {
             ac_triggers: this.triggers.split(' '),
             auto_first: this.auto_first,
-            filter: this.filter == 'contains' ? FILTER_CONTAINS : FILTER_STARTSWITH,
+            filter: FILTERS[this.filter] ?? FILTER_STARTSWITH,
             include_triggers: [],
             list: this.list ?? /** @param {string} q */ ((q) => this.getAutoCompleteList(q)),
             data: this.data,
-            match_current_word: true,
+            match_current_word: this.match_current_word,
             suffix: this.suffix,
             max_items: this.max_items,
             min_chars: this.min_chars,
             item: this.renderItem,
+            // AutoComplete only understands `false` here, `true` would replace its sort function
+            ...(this.sort ? {} : { sort: false }),
         });
         this.auto_complete.on('suggestion-box-selectcomplete', ({ suggestion }) => {
             this.auto_completing = false;

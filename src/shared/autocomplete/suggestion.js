@@ -1,9 +1,10 @@
 /**
  * An autocomplete suggestion
+ * @template [T=object]
  */
 class Suggestion extends String {
     /**
-     * @param {import("./types").AutoCompleteData} data
+     * @param {import("./types").AutoCompleteData<T>} data
      * @param {string} query - The query string being auto-completed
      */
     constructor(data, query) {

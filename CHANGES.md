@@ -35,6 +35,10 @@
 - feat: Record and send voice messages with the opt-in `converse-voice-messages` plugin. Adds the
   `max_voice_message_duration`, `voice_message_bitrate` and `voice_message_mime_type` settings,
   and the `voice_message` key of `visible_toolbar_buttons`.
+- feat(muc): Search for groupchats with XEP-0433 Extended Channel Search, through the new
+  `api.rooms.search` method. Groupchat suggestions in the "Add groupchat" modal now show how many
+  participants each one has, list the busiest first, and include groupchats whose name (rather
+  than address) matched.
 - fix(muc-views): The "Add groupchat" modal had no field for the groupchat's address when
   `muc_search_service` was set to an empty string.
 - feat: 1:1 audio calls over Jingle ([XEP-0167](https://xmpp.org/extensions/xep-0167.html)), set up with Jingle Message Initiation ([XEP-0353](https://xmpp.org/extensions/xep-0353.html)) and STUN/TURN discovery via [XEP-0215](https://xmpp.org/extensions/xep-0215.html). Adds the `call_ice_servers` setting, and the `call` key of `visible_toolbar_buttons` now shows the audio call button in 1:1 chats (on by default).

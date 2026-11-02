@@ -92,6 +92,7 @@ const NAMES = {
     'xep-0424': 'Message Retraction',
     'xep-0425': 'Moderated Message Retraction',
     'xep-0431': 'Full Text Search in MAM',
+    'xep-0433': 'Extended Channel Search',
     'xep-0437': 'Room Activity Indicators',
     'xep-0444': 'Message Reactions',
     'xep-0454': 'OMEMO Media sharing',

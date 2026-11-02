@@ -1115,7 +1115,9 @@ So, for example, if <john@example.com> joins a chatroom, his nickname will autom
 
 - Default: `'api@search.jabber.network'`
 
-The JID of the service that should be used to search for MUCs for auto-complete purposes. If this value is set to an empty string, no service will be used and the auto-complete feature for adding MUCs will be disabled.
+The JID of a [XEP-0433 Extended Channel Search](https://xmpp.org/extensions/xep-0433.html) service, used to suggest groupchats while you type the name or address of one to join, and by `api.rooms.search`. Services that only speak the pre-standard protocol of search.jabber.network are supported as well.
+
+If this value is set to an empty string, no service will be used and groupchats won't be suggested.
 
 ### muc_send_probes
 

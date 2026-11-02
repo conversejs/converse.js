@@ -367,4 +367,101 @@ describe('The "Groupchats" Add modal', function () {
             await u.waitUntil(() => _converse.chatboxes.get('lounge@muc.montague.lit'));
         }),
     );
+
+    it(
+        'suggests groupchats found with XEP-0433, busiest first',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const modal = await mock.openAddMUCModal(_converse);
+            const name_input = modal.querySelector('input[name="chatroom"]');
+            name_input.value = 'xmpp';
+            name_input.dispatchEvent(new Event('input'));
+
+            const { IQ_stanzas } = _converse.api.connection.get();
+            const iq = await u.waitUntil(() =>
+                IQ_stanzas.find((iq) => sizzle('search[xmlns="urn:xmpp:channel-search:0:search"]', iq).length),
+            );
+            expect(iq.getAttribute('to')).toBe('api@search.jabber.network');
+
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<iq type="result" from="api@search.jabber.network" id="${iq.getAttribute('id')}" xmlns="jabber:client">
+                        <result xmlns="urn:xmpp:channel-search:0:search">
+                            <item address="operators@muc.example.org">
+                                <name>XMPP Service Operators</name>
+                                <description>For operators of federated services</description>
+                                <nusers>43</nusers>
+                            </item>
+                            <item address="xmpp@muc.example.org">
+                                <nusers>7</nusers>
+                            </item>
+                        </result>
+                    </iq>`,
+                ),
+            );
+
+            const items = await u.waitUntil(() => {
+                const els = modal.querySelectorAll('.suggestion-box__results li.room-suggestion');
+                return els.length === 2 ? els : null;
+            });
+            // The first one only matched by name, and comes first because it has more participants
+            expect(items[0].querySelector('.room-suggestion__label').textContent.trim()).toBe(
+                'XMPP Service Operators (operators@muc.example.org)',
+            );
+            expect(items[0].querySelector('mark').textContent).toBe('XMPP');
+            expect(items[0].querySelector('.room-suggestion__nusers').textContent.trim()).toBe('43');
+            expect(items[0].getAttribute('title')).toBe('For operators of federated services');
+            expect(items[1].querySelector('.room-suggestion__label').textContent.trim()).toBe('xmpp@muc.example.org');
+            expect(items[1].querySelector('.room-suggestion__nusers').textContent.trim()).toBe('7');
+        }),
+    );
+
+    it(
+        'searches for the whole name and replaces it with the chosen address',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const modal = await mock.openAddMUCModal(_converse);
+            const name_input = modal.querySelector('input[name="chatroom"]');
+            name_input.value = 'XMPP Service';
+            name_input.dispatchEvent(new Event('input'));
+
+            const { IQ_stanzas } = _converse.api.connection.get();
+            const iq = await u.waitUntil(() =>
+                IQ_stanzas.find((iq) => sizzle('search[xmlns="urn:xmpp:channel-search:0:search"]', iq).length),
+            );
+            expect(sizzle('field[var="q"] value', iq).pop().textContent).toBe('XMPP Service');
+
+            _converse.api.connection.get()._dataRecv(
+                mock.createRequest(
+                    _converse,
+                    stx`<iq type="result" from="api@search.jabber.network" id="${iq.getAttribute('id')}" xmlns="jabber:client">
+                        <result xmlns="urn:xmpp:channel-search:0:search">
+                            <item address="operators@muc.example.org"><name>XMPP Service Operators</name></item>
+                        </result>
+                    </iq>`,
+                ),
+            );
+
+            const item = await u.waitUntil(() => modal.querySelector('.suggestion-box__results li.room-suggestion'));
+            const evt = new Event('mousedown', { bubbles: true });
+            evt.button = 0;
+            item.dispatchEvent(evt);
+            expect(name_input.value).toBe('operators@muc.example.org');
+        }),
+    );
+
+    it(
+        'searches for queries that are also names of Object properties',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const modal = await mock.openAddMUCModal(_converse);
+            const name_input = modal.querySelector('input[name="chatroom"]');
+            name_input.value = 'constructor';
+            name_input.dispatchEvent(new Event('input'));
+
+            const { IQ_stanzas } = _converse.api.connection.get();
+            const iq = await u.waitUntil(() =>
+                IQ_stanzas.find((iq) => sizzle('search[xmlns="urn:xmpp:channel-search:0:search"]', iq).length),
+            );
+            expect(sizzle('field[var="q"] value', iq).pop().textContent).toBe('constructor');
+        }),
+    );
 });

@@ -36,6 +36,9 @@ export default class AutoCompleteComponent extends CustomElement {
         list: {
             type: ArrayConstructor;
         };
+        match_current_word: {
+            type: BooleanConstructor;
+        };
         min_chars: {
             type: NumberConstructor;
         };
@@ -52,6 +55,9 @@ export default class AutoCompleteComponent extends CustomElement {
             type: FunctionConstructor;
         };
         required: {
+            type: BooleanConstructor;
+        };
+        sort: {
             type: BooleanConstructor;
         };
         suffix: {
@@ -71,9 +77,10 @@ export default class AutoCompleteComponent extends CustomElement {
     auto_first: boolean;
     data: (a: any) => any;
     error_message: string;
-    /** @type { "contains" | "startswith" }
-     * Provide matches which contain the entered text, or which starts with the entered text */
-    filter: "contains" | "startswith";
+    /** @type { "contains" | "startswith" | "none" }
+     * Provide matches which contain the entered text, or which starts with the entered text.
+     * Use "none" when the list is already filtered, e.g. by a server-side search. */
+    filter: "contains" | "startswith" | "none";
     getAutoCompleteList: any;
     include_triggers: string;
     list: any;
@@ -86,6 +93,8 @@ export default class AutoCompleteComponent extends CustomElement {
     position: "above" | "below";
     renderItem: typeof getAutoCompleteItem;
     required: boolean;
+    /** Whether to sort suggestions by where the entered text occurs in them */
+    sort: boolean;
     suffix: string;
     triggers: string;
     validate: any;

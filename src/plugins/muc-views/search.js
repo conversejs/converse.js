@@ -1,77 +1,63 @@
-import { _converse, api, converse, log } from "@converse/headless";
+import { _converse, api, log } from '@converse/headless';
+import { html } from 'lit';
+import { __ } from 'i18n';
+import { highlightMatches } from 'shared/autocomplete/utils.js';
 
-const { Strophe, stx, sizzle } = converse.env;
+/**
+ * Search results, keyed by search service and query
+ * @type {Map<string, Promise<import('./types').RoomData[]>>}
+ */
+const rooms_cache = new Map();
 
-Strophe.addNamespace('MUCSEARCH', 'https://xmlns.zombofant.net/muclumbus/search/1.0');
-
-const rooms_cache = {};
+export function clearRoomsCache() {
+    rooms_cache.clear();
+}
 
 /**
  * @param {string} query
+ * @returns {Promise<import('./types').RoomData[]>}
  */
-async function searchRooms (query) {
-    const muc_search_service = api.settings.get('muc_search_service');
-    const bare_jid = _converse.session.get('bare_jid');
-    const iq = stx`
-        <iq type="get"
-            from="${bare_jid}"
-            to="${muc_search_service}"
-            xmlns="jabber:client">
-            <search xmlns="${Strophe.NS.MUCSEARCH}">
-                <set xmlns="${Strophe.NS.RSM}">
-                    <max>10</max>
-                </set>
-                <x xmlns="${Strophe.NS.XFORM}" type="submit">
-                    <field var="FORM_TYPE" type="hidden">
-                        <value>https://xmlns.zombofant.net/muclumbus/search/1.0#params</value>
-                    </field>
-                    <field var="q" type="text-single">
-                        <value>${query}</value>
-                    </field>
-                    <field var="sinname" type="boolean">
-                        <value>true</value>
-                    </field>
-                    <field var="sindescription" type="boolean">
-                        <value>false</value>
-                    </field>
-                    <field var="sinaddr" type="boolean">
-                        <value>true</value>
-                    </field>
-                    <field var="min_users" type="text-single">
-                        <value>1</value>
-                    </field>
-                    <field var="key" type="list-single">
-                        <value>address</value>
-                        <option><value>nusers</value></option>
-                        <option><value>address</value></option>
-                    </field>
-                </x>
-            </search>
-        </iq>`;
-
-    let iq_result;
-    try {
-        iq_result = await api.sendIQ(iq);
-    } catch (e) {
-        log.error(e);
-        return [];
-    }
-    const s = `result[xmlns="${Strophe.NS.MUCSEARCH}"] item`;
-    return sizzle(s, iq_result).map(i => {
-        const jid = i.getAttribute('address');
-        return {
-            'label': `${i.querySelector('name')?.textContent} (${jid})`,
-            'value': jid
-        }
-    });
+async function searchRooms(query) {
+    const { items } = await api.rooms.search(query);
+    return items.map((item) => ({
+        ...item,
+        label: item.name ? `${item.name} (${item.jid})` : item.jid,
+        value: item.jid,
+    }));
 }
 
 /**
  * @param {string} query
  */
-export function getAutoCompleteList (query) {
-    if (!rooms_cache[query]) {
-        rooms_cache[query] = searchRooms(query);
+export function getAutoCompleteList(query) {
+    const key = `${api.settings.get('muc_search_service')} ${query}`;
+    if (!rooms_cache.has(key)) {
+        const promise = searchRooms(query).catch((e) => {
+            // Refusals are expected while a service is backed off, so don't warn on every keystroke
+            if (!(e instanceof _converse.exports.ChannelSearchRefusedError)) log.warn(e);
+            // Don't cache failures, so that the same query can be retried
+            if (rooms_cache.get(key) === promise) rooms_cache.delete(key);
+            return [];
+        });
+        rooms_cache.set(key, promise);
     }
-    return rooms_cache[query];
+    return rooms_cache.get(key);
+}
+
+/**
+ * Renders a groupchat found by searching, together with its number of participants.
+ * @param {import('shared/autocomplete/suggestion').default<import('@converse/headless/types/plugins/muc/types').ChannelSearchItem>} suggestion
+ * @param {string} query
+ */
+export function tplRoomSuggestion(suggestion, query) {
+    const { nusers, description } = suggestion.data;
+    const i18n_participants = __('Participants');
+    return html`<li aria-selected="false" class="room-suggestion" title="${description ?? ''}">
+        <span class="room-suggestion__label">${highlightMatches(suggestion.label, query)}</span>
+        ${nusers === undefined
+            ? ''
+            : html`<span class="room-suggestion__nusers" title="${i18n_participants}">
+                  <converse-icon class="fa fa-users" size="0.8em"></converse-icon> ${nusers}
+              </span>`}
+    </li>`;
 }

@@ -290,6 +290,10 @@ export type MessageAttributes = EncryptionAttrs & MessageErrorAttributes & {
     spoiler_hint: string;
     stanza_id: string;
     correction_stanza_ids?: Record<string, string[]>;
+    mam_gap?: {
+        before?: string;
+        start?: string;
+    } | null;
     subject: string;
     thread: string;
     time: string;

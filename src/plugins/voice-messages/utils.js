@@ -3,8 +3,7 @@
  * @license Mozilla Public License (MPLv2)
  */
 import { html } from 'lit';
-import { _converse, api, constants, converse, getUploadService } from '@converse/headless';
-import log from '@converse/log';
+import { _converse, api, constants, converse, getUploadService, log } from '@converse/headless';
 import { __ } from 'i18n';
 import { encodeOpus } from './encode.js';
 import { isRecordingSupported } from './session.js';

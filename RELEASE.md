@@ -11,9 +11,9 @@ below, applying the _(pre-release)_ notes where they appear.
 3. Run `make version VERSION=10.1.5`
     * `@converse/log` is released separately and `make version` doesn't touch it.
       If `src/log` changed since its last release, bump its version, publish
-      `@converse/log` first and update its range in both `package.json` and
-      `src/headless/package.json`. `make check` fails if a range doesn't match the
-      `src/log` version, but it can't tell that `src/log` changed without a bump.
+      `@converse/log` first and update its range in `src/headless/package.json`.
+      `make check` fails if the range doesn't match the `src/log` version, but it
+      can't tell that `src/log` changed without a bump.
     * _(pre-release)_ e.g. `make version VERSION=14.0.0-beta.1`. This stamps
       today's date into `CHANGES.md` (replacing `Unreleased`) and points the demo
       HTML at a `.../14.0.0-beta.1/` CDN path. Keep the `Unreleased` header for the

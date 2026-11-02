@@ -1,5 +1,4 @@
-import { log } from "@converse/headless";
-import { getOpenPromise } from "@converse/openpromise";
+import { log, u } from "@converse/headless";
 import { parseGIF, decompressFrames } from "gifuct-js";
 import AnimationPlayer from "shared/animation/player.js";
 
@@ -155,7 +154,7 @@ export default class ConverseGif extends AnimationPlayer {
      * @returns {Promise<ArrayBuffer>} Returns a promise which resolves with the response data.
      */
     fetchGIF(url) {
-        const promise = getOpenPromise();
+        const promise = u.getOpenPromise();
         const h = new XMLHttpRequest();
         h.open("GET", url, true);
         h.responseType = "arraybuffer";

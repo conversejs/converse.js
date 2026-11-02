@@ -2197,7 +2197,8 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      */
     getMessageByStanzaID(stanza_id) {
         const muc_jid = this.get('jid');
-        return this.messages.models.find((m) => m.getStanzaIDs(muc_jid).includes(stanza_id));
+        // The collection also holds models which aren't messages, e.g. MAM placeholders
+        return this.messages.models.find((m) => m.getStanzaIDs?.(muc_jid).includes(stanza_id));
     }
 
     /**

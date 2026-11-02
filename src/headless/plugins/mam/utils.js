@@ -457,22 +457,23 @@ export async function searchArchive(
         await model.msg_chain;
 
         // Held under the archive's id, which is the stanza-id by the account, or by the room.
-        const key = `stanza_id ${is_room ? conversation : bare_jid}`;
-        const added = [];
+        // A match that's a correction is held as the message it corrects.
+        const added = new Set();
         for (const { archive_id } of matches) {
-            const message = archive_id && model.messages.findWhere({ [key]: archive_id });
+            const message = archive_id && findByArchiveID(model, archive_id);
             if (!message) continue;
 
             held.set(archive_id, message);
-            if (!held_before.has(message)) added.push(message);
+            if (!held_before.has(message)) added.add(message);
         }
-        addPlaceholdersAround(model, added);
+        addPlaceholdersAround(model, [...added]);
     }
 
     // The archive's order is kept, and matches with no conversation to be held in are left out.
+    // A message is returned once, even if more than one version of it matched.
     const messages = result.messages
         .map((stanza) => sizzle(`[xmlns="${NS.MAM}"]`, stanza).pop()?.getAttribute('id'))
         .map((archive_id) => held.get(archive_id))
         .filter(Boolean);
-    return { messages, complete: !!result.complete };
+    return { messages: [...new Set(messages)], complete: !!result.complete };
 }

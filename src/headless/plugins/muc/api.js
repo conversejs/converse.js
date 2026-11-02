@@ -118,12 +118,14 @@ const rooms = {
             throw new TypeError(err_msg);
         } else if (typeof jids === 'string') {
             const room = /** @type {MUC} */ (await rooms.get(jids, attrs, true));
-            !attrs.hidden && room?.maybeShow(force);
+            if (!attrs.hidden) room?.maybeShow(force);
             return room;
         } else {
-            const rooms = await Promise.all(jids.map((jid) => rooms.get(jid, attrs, true)));
-            rooms.forEach((r) => !attrs.hidden && r.maybeShow(force));
-            return rooms;
+            const mucs = await Promise.all(
+                jids.map(async (jid) => /** @type {MUC} */ (await rooms.get(jid, attrs, true))),
+            );
+            if (!attrs.hidden) mucs.forEach((r) => r.maybeShow(force));
+            return mucs;
         }
     },
 

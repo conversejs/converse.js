@@ -104,5 +104,33 @@ export type OccupantData = {
     occupant_id?: string;
     affiliation?: MUCAffiliation | null;
 };
+export type ChannelSearchProtocol = 'xep-0433' | 'muclumbus';
+export type ChannelSearchSortKey = 'nusers' | 'address';
+export type ChannelSearchRefusal = 'rate-limited' | 'unresponsive' | 'unsupported';
+export type ChannelSearchBackOff = {
+    reason: 'rate-limited' | 'unresponsive';
+    attempts: number;
+    until: number;
+};
+export type ChannelSearchOptions = {
+    max?: number;
+    after?: string;
+    sort?: ChannelSearchSortKey;
+    service?: string;
+};
+export type ChannelSearchItem = {
+    jid: string;
+    name?: string;
+    description?: string;
+    language?: string;
+    nusers?: number;
+    is_open?: boolean;
+    anonymity_mode?: string;
+    service_type?: string;
+};
+export type ChannelSearchResult = {
+    items: ChannelSearchItem[];
+    last?: string;
+};
 export {};
 //# sourceMappingURL=types.d.ts.map

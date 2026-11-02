@@ -101,7 +101,7 @@ Converse implements a wide range of XMPP Extensions (XEPs), making it one of the
 
 <details>
 <!-- xeps:start -->
-<summary><strong>View all 74 supported XEPs and 5 RFCs</strong></summary>
+<summary><strong>View all 75 supported XEPs and 5 RFCs</strong></summary>
 
 | Spec | Name | Status | Since | Notes |
 | --- | --- | --- | --- | --- |
@@ -178,6 +178,7 @@ Converse implements a wide range of XMPP Extensions (XEPs), making it one of the
 | [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | Complete | 6.0.0 |  |
 | [XEP-0425](https://xmpp.org/extensions/xep-0425.html) | Moderated Message Retraction | Complete | 6.0.0 |  |
 | [XEP-0431](https://xmpp.org/extensions/xep-0431.html) | Full Text Search in MAM | Complete |  |  |
+| [XEP-0433](https://xmpp.org/extensions/xep-0433.html) | Extended Channel Search | Partial | 15.0.0 | Keyword search for XEP-0045 groupchats, used to suggest groupchats when joining one. The search form is not requested from the service, the "all" field (full listing) is not used, and MIX channels are not searched for. Falls back to the pre-standard protocol of search.jabber.network when a service doesn't support XEP-0433. |
 | [XEP-0437](https://xmpp.org/extensions/xep-0437.html) | Room Activity Indicators | Complete | 8.0.0 |  |
 | [XEP-0444](https://xmpp.org/extensions/xep-0444.html) | Message Reactions | Complete | 13.0.0 |  |
 | [XEP-0454](https://xmpp.org/extensions/xep-0454.html) | OMEMO Media sharing | Complete | 8.0.0 |  |

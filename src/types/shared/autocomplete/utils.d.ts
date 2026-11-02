@@ -24,6 +24,13 @@ export function FILTER_STARTSWITH(text: string, input: string): boolean;
  */
 export function SORT_BY_LENGTH(a: import("./suggestion").default, b: import("./suggestion").default): number;
 /**
+ * Marks the occurrences of the input string in a text.
+ * @param {string} text - The text to display.
+ * @param {string} input - The input string to highlight.
+ * @returns {Array<import('lit').TemplateResult|string>}
+ */
+export function highlightMatches(text: string, input: string): Array<import("lit").TemplateResult | string>;
+/**
  * Renders an item for display in a list.
  * @param {string} text - The text to display.
  * @param {string} input - The input string to highlight.

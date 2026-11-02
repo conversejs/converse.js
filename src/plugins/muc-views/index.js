@@ -7,6 +7,7 @@ import { api, converse } from '@converse/headless';
 import './affiliation-form.js';
 import './role-form.js';
 import MUCView from './muc.js';
+import { clearRoomsCache } from './search.js';
 import { confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
 
 const { Strophe } = converse.env;
@@ -38,7 +39,6 @@ converse.plugins.add('converse-muc-views', {
             'muc_mention_autocomplete_show_avatar': true,
             'muc_roomid_policy': null,
             'muc_roomid_policy_hint': null,
-            'muc_search_service': 'api@search.jabber.network',
             'roomconfig_whitelist': [],
             'show_retraction_warning': true,
         });
@@ -66,6 +66,7 @@ converse.plugins.add('converse-muc-views', {
             });
         }
 
+        api.listen.on('clearSession', clearRoomsCache);
         api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
         api.listen.on('confirmDirectMUCInvitation', confirmDirectMUCInvitation);
     },

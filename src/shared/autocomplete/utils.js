@@ -116,21 +116,26 @@ export const SORT_BY_QUERY_POSITION = function (a, b) {
 };
 
 /**
+ * Marks the occurrences of the input string in a text.
+ * @param {string} text - The text to display.
+ * @param {string} input - The input string to highlight.
+ * @returns {Array<import('lit').TemplateResult|string>}
+ */
+export function highlightMatches(text, input) {
+    input = input.trim();
+    const regex = new RegExp('(' + regExpEscape(input) + ')', 'ig');
+    const parts = input ? text.split(regex) : [text];
+    return parts.map((txt) => (input && txt.match(regex) ? html`<mark>${txt}</mark>` : txt));
+}
+
+/**
  * Renders an item for display in a list.
  * @param {string} text - The text to display.
  * @param {string} input - The input string to highlight.
  * @returns {import('lit').TemplateResult} The rendered HTML for the item.
  */
 export function getAutoCompleteItem(text, input) {
-    input = input.trim();
-    const regex = new RegExp('(' + regExpEscape(input) + ')', 'ig');
-    const parts = input ? text.split(regex) : [text];
-
-    return html`
-        <li aria-selected="false">
-            ${parts.map((txt) => (input && txt.match(regex) ? html`<mark>${txt}</mark>` : txt))}
-        </li>
-    `;
+    return html` <li aria-selected="false">${highlightMatches(text, input)}</li> `;
 }
 
 Object.assign(u, {

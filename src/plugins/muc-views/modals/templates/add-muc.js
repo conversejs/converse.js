@@ -2,7 +2,7 @@ import DOMPurify from 'dompurify';
 import { _converse, api } from '@converse/headless';
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { getAutoCompleteList } from '../../search.js';
+import { getAutoCompleteList, tplRoomSuggestion } from '../../search.js';
 import { __ } from 'i18n';
 
 const nickname_input = () => {
@@ -49,9 +49,13 @@ export default (el) => {
                 <converse-autocomplete
                     .auto_evaluate="${!!muc_search_service}"
                     .getAutoCompleteList="${getAutoCompleteList}"
+                    .match_current_word="${false}"
+                    .renderItem="${tplRoomSuggestion}"
+                    .sort="${false}"
                     .validate="${/** @param {string} v */ (v) => el.validateMUCJID(v)}"
                     ?autofocus="${true}"
                     class="add-muc-autocomplete"
+                    filter="none"
                     min_chars="3"
                     name="chatroom"
                     position="below"

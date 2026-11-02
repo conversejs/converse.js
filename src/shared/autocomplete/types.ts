@@ -5,7 +5,8 @@ export type closeParam = {
     reason: string;
 };
 
-export type AutoCompleteData = {
+// T are extra fields, available to renderers via Suggestion.data
+export type AutoCompleteData<T = object> = T & {
     label: string;
     value: string;
 };
@@ -22,6 +23,6 @@ export type AutoCompleteConfig = {
     match_current_word?: boolean;
     max_items?: number;
     min_chars?: number;
-    sort?: (a: Suggestion, b: Suggestion) => number | false;
+    sort?: ((a: Suggestion, b: Suggestion) => number) | false;
     suffix?: string;
 };

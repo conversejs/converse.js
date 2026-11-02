@@ -377,14 +377,15 @@ describe('Message Archive Management', function () {
         );
 
         /**
-         * Answers the search that was sent with a match from each of `senders`,
-         * then the <fin/>.
+         * Answers the search that was sent with each of `matches`, then the <fin/>.
+         * A match is the JID of its sender, or says what it is. The i-th has the id
+         * `msg-i` (counting from 1), by which a later one can correct it.
          * @param {import('../../../shared/_converse.js').ConversePrivateGlobal} _converse
-         * @param {string[]} senders
+         * @param {(string|{ from: string, body?: string, replace?: string })[]} matches
          * @param {Object} [options]
          * @param {boolean} [options.malformed] - Whether to answer first with a result that forwards nothing
          */
-        async function answerSearch(_converse, senders, { malformed = false } = {}) {
+        async function answerSearch(_converse, matches, { malformed = false } = {}) {
             const { api } = _converse;
             await mock.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [
                 Strophe.NS.MAM,
@@ -402,21 +403,28 @@ describe('Message Archive Management', function () {
                         <result xmlns='urn:xmpp:mam:2' queryid='${queryid}' id='archive-0'/>
                     </message>`);
             }
-            senders.forEach((sender, i) =>
+            matches.forEach((match, i) => {
+                const {
+                    from,
+                    body = 'Meet me on the balcony.',
+                    replace,
+                } = typeof match === 'string' ? { from: match } : match;
                 receive(stx`<message id='m${i + 1}' to='romeo@montague.lit' xmlns="jabber:client">
                         <result xmlns='urn:xmpp:mam:2' queryid='${queryid}' id='archive-${i + 1}'>
                             <forwarded xmlns='urn:xmpp:forward:0'>
                                 <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:0${i}:25Z'/>
                                 <message xmlns='jabber:client'
+                                    id='msg-${i + 1}'
                                     to='romeo@montague.lit'
-                                    from='${sender}/balcony'
+                                    from='${from}/balcony'
                                     type='chat'>
-                                    <body>Meet me on the balcony.</body>
+                                    <body>${body}</body>
+                                    ${replace ? stx`<replace xmlns='urn:xmpp:message-correct:0' id='${replace}'/>` : ''}
                                 </message>
                             </forwarded>
                         </result>
-                    </message>`),
-            );
+                    </message>`);
+            });
             receive(stx`<iq type='result' id='${sent_stanza.getAttribute('id')}' xmlns="jabber:client">
                     <fin xmlns='urn:xmpp:mam:2' complete='true'/>
                 </iq>`);
@@ -459,6 +467,48 @@ describe('Message Archive Management', function () {
             chat.messages
                 .filter((m) => m instanceof MAMPlaceholderMessage)
                 .map((m) => ({ before: m.get('before'), start: m.get('start'), end: m.get('end') }));
+
+        it(
+            "holds a match that's a correction as the message it corrects",
+            mock.initConverse(converse, ['rosterInitialized'], {}, async function (_converse) {
+                const { api } = _converse;
+                await mock.waitForRoster(_converse, 'current');
+                const chat = await api.chats.get('mercutio@montague.lit', {}, true);
+                await chat.messages.fetched;
+                const original = chat.messages.create({
+                    msgid: 'original',
+                    body: 'Meet me at noon.',
+                    type: 'chat',
+                    from: 'mercutio@montague.lit/balcony',
+                    time: '2010-07-10T22:00:00.000Z',
+                    'stanza_id romeo@montague.lit': 'held-1',
+                });
+
+                const promise = api.archive.search('balcony');
+                await answerSearch(_converse, [{ from: 'mercutio@montague.lit', replace: 'original' }]);
+
+                expect((await promise).messages).toEqual([original]);
+                expect(original.get('body')).toBe('Meet me on the balcony.');
+                expect(placeholders(chat)).toEqual([]);
+            }),
+        );
+
+        it(
+            'returns a message once, when both it and its correction match',
+            mock.initConverse(converse, ['rosterInitialized'], {}, async function (_converse) {
+                const { api } = _converse;
+                await mock.waitForRoster(_converse, 'current');
+                const promise = api.archive.search('balcony', { create: true });
+                await answerSearch(_converse, [
+                    'mercutio@montague.lit',
+                    { from: 'mercutio@montague.lit', body: 'Meet me on the balcony, at noon.', replace: 'msg-1' },
+                ]);
+
+                const { messages } = await promise;
+                expect(messages.map((m) => m.get('body'))).toEqual(['Meet me on the balcony, at noon.']);
+                expect(placeholders(messages[0].collection.chatbox)).toEqual([]);
+            }),
+        );
 
         it(
             'marks the history between matches in a conversation as not yet fetched',

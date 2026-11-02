@@ -346,4 +346,25 @@ describe('The "Groupchats" Add modal', function () {
             },
         ),
     );
+
+    it(
+        'still lets you enter an address when muc_search_service is disabled',
+        mock.initConverse(converse, ['chatBoxesFetched'], { muc_search_service: '' }, async function (_converse) {
+            const modal = await mock.openAddMUCModal(_converse);
+            const name_input = modal.querySelector('input[name="chatroom"]');
+            expect(name_input).not.toBeNull();
+
+            const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+            name_input.value = 'lounge';
+            name_input.dispatchEvent(new Event('input'));
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            expect(sent_stanzas.filter((s) => s.querySelector('search')).length).toBe(0);
+
+            name_input.value = 'lounge@muc.montague.lit';
+            modal.querySelector('input[name="nickname"]').value = 'romeo';
+            modal.querySelector('form input[type="submit"]').click();
+            await mock.waitForMUCDiscoInfo(_converse, 'lounge@muc.montague.lit');
+            await u.waitUntil(() => _converse.chatboxes.get('lounge@muc.montague.lit'));
+        }),
+    );
 });

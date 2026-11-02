@@ -205,6 +205,26 @@ describe('A corrected groupchat message', function () {
     );
 
     it(
+        'is removed by a moderation when the history before it has a gap',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const features = [...mock.default_muc_features, Strophe.NS.MODERATE];
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
+            const message = await receiveCorrectedMessage(_converse, model);
+            model.messages.add(
+                new _converse.exports.MAMPlaceholderMessage({
+                    before: 'gap-id',
+                    template_hook: 'getMessageTemplate',
+                    time: new Date(0).toISOString(),
+                }),
+            );
+
+            receiveModeration(_converse, 'correction-id-1');
+
+            await u.waitUntil(() => message.get('moderated') === 'retracted');
+        }),
+    );
+
+    it(
         'is shown as removed once when each of its versions is moderated',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const features = [...mock.default_muc_features, Strophe.NS.MODERATE];

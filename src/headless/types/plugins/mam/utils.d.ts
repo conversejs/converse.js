@@ -46,6 +46,12 @@ export function handleMAMResult(model: ChatBox | MUC, result: any, query: any, o
  */
 export function fetchArchivedMessages(model: ChatBox | MUC, options?: import("./types").FetchArchivedMessagesOptions, should_page?: ("forwards" | "backwards" | false)): Promise<import("./types").MAMQueryResult | undefined>;
 /**
+ * Adds the placeholder for the gap recorded on `message`, in place of the one it had.
+ * @param {ChatBox|MUC} model
+ * @param {import('../../shared/message.js').default} message
+ */
+export function addGapPlaceholder(model: ChatBox | MUC, message: import("../../shared/message.js").default): void;
+/**
  * Creates a placeholder to fetch messages at the top of the chat history.
  * @param {ChatBox|MUC} model
  */

@@ -1,5 +1,10 @@
 export default class MAMPlaceholderMessage extends Model<import("@converse/skeletor").ModelAttributes> {
     constructor(attributes?: Partial<import("@converse/skeletor").ModelAttributes>, options?: import("@converse/skeletor").ModelOptions);
+    /**
+     * The message whose `mam_gap` this placeholder is for, if it's for one.
+     * @type {import('../../shared/message.js').default}
+     */
+    gap_message: import("../../shared/message.js").default;
     defaults(): {
         msgid: string;
         is_ephemeral: boolean;

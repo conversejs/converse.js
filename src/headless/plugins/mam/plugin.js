@@ -12,6 +12,7 @@ import "../disco/index.js";
 import mam_api from "./api.js";
 import MAMPlaceholderMessage from "./placeholder.js";
 import {
+    addGapPlaceholder,
     createScrollupPlaceholder,
     fetchNewestMessages,
     getMAMPrefsFromFeature,
@@ -81,6 +82,7 @@ converse.plugins.add("converse-mam", {
         });
 
         api.listen.on("afterMessagesFetched", (chat) => {
+            chat.messages.filter((m) => m.get("mam_gap")).forEach((m) => addGapPlaceholder(chat, m));
             if (chat.get("type") === PRIVATE_CHAT_TYPE) {
                 fetchNewestMessages(chat);
             }

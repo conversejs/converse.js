@@ -108,8 +108,16 @@ const unescapeXml = (s) =>
         .replace(/&apos;/g, "'")
         .replace(/&amp;/g, '&');
 
-// Table cells can't hold a raw pipe or a line break.
-const cell = (s) => s.replace(/\s+/g, ' ').trim().replace(/\|/g, '\\|');
+// DOAP text is plain text, but a table cell is markdown: collapse line breaks,
+// escape backslashes before pipes (or `\|` would become an escaped backslash
+// followed by a column break), and keep `<` from opening an HTML tag.
+const cell = (s) =>
+    s
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/\\/g, '\\\\')
+        .replace(/\|/g, '\\|')
+        .replace(/</g, '&lt;');
 
 const field = (block, name) => {
     const m = block.match(new RegExp(`<xmpp:${name}>([\\s\\S]*?)</xmpp:${name}>`));

@@ -4,7 +4,7 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { claimPidfile, pidfileHolder } from '../pidfile.js';
 
-const JID = 'romeo@montague.lit';
+const ACCOUNT = 'romeo';
 // A pid that can't be running.
 const GONE = 2147483646;
 // Pids that are: this process, and the one that started it.
@@ -24,7 +24,7 @@ describe('The pidfile', () => {
     const leftovers = async () => (await fs.readdir(dir)).filter((f) => f !== 'romeo.pid');
 
     it('is taken by a daemon when no one holds it', async () => {
-        await claimPidfile(pidfile, { jid: JID, pid: LIVE[0] });
+        await claimPidfile(pidfile, { account: ACCOUNT, pid: LIVE[0] });
         expect(await contents()).toBe(`${LIVE[0]}\n`);
         expect((await fs.stat(pidfile)).mode & 0o777).toBe(0o600);
         expect(await pidfileHolder(pidfile)).toBe(LIVE[0]);
@@ -33,8 +33,8 @@ describe('The pidfile', () => {
 
     it('is refused to a daemon while a running one holds it', async () => {
         await fs.writeFile(pidfile, `${LIVE[1]}\n`);
-        await expect(claimPidfile(pidfile, { jid: JID, pid: LIVE[0] })).rejects.toThrow(
-            `A daemon for ${JID} is already running (pid ${LIVE[1]}). Stop it with "daemon.stop".`,
+        await expect(claimPidfile(pidfile, { account: ACCOUNT, pid: LIVE[0] })).rejects.toThrow(
+            `A daemon for the account "${ACCOUNT}" is already running (pid ${LIVE[1]}). Stop it with "daemon.stop".`,
         );
         expect(await contents()).toBe(`${LIVE[1]}\n`);
     });
@@ -43,7 +43,7 @@ describe('The pidfile', () => {
         for (const stale of [`${GONE}\n`, '', 'not a pid']) {
             await fs.writeFile(pidfile, stale);
             expect(await pidfileHolder(pidfile)).toBeNull();
-            await claimPidfile(pidfile, { jid: JID, pid: LIVE[0] });
+            await claimPidfile(pidfile, { account: ACCOUNT, pid: LIVE[0] });
             expect(await contents()).toBe(`${LIVE[0]}\n`);
             await fs.rm(pidfile);
         }
@@ -56,12 +56,12 @@ describe('The pidfile', () => {
 
     /** Races the two live pids to claim it, and returns which one won. */
     async function race() {
-        const results = await Promise.allSettled(LIVE.map((pid) => claimPidfile(pidfile, { jid: JID, pid })));
+        const results = await Promise.allSettled(LIVE.map((pid) => claimPidfile(pidfile, { account: ACCOUNT, pid })));
         const winners = LIVE.filter((_, i) => results[i].status === 'fulfilled');
         expect(winners).toHaveLength(1);
         const loser = /** @type {PromiseRejectedResult} */ (results.find((r) => r.status === 'rejected'));
         expect(loser.reason.message).toBe(
-            `A daemon for ${JID} is already running (pid ${winners[0]}). Stop it with "daemon.stop".`,
+            `A daemon for the account "${ACCOUNT}" is already running (pid ${winners[0]}). Stop it with "daemon.stop".`,
         );
         return winners[0];
     }

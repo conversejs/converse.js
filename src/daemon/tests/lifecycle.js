@@ -1,9 +1,11 @@
 import fs from 'node:fs/promises';
 import net from 'node:net';
+import path from 'node:path';
 import readline from 'node:readline';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { converse } from '@converse/headless';
 import { ERRORS, PROTOCOL_VERSION } from '../protocol.js';
+import { findDaemon } from '../config.js';
 import { start } from '../daemon.js';
 import { JID, startDaemon } from './harness.js';
 
@@ -51,12 +53,33 @@ describe('The daemon', () => {
     it('refuses to start a second time for the same account', async () => {
         daemon = await startDaemon();
         await expect(start(daemon.config)).rejects.toThrow(
-            `A daemon for romeo@montague.lit is already running (pid ${process.pid}). ` +
+            `A daemon for the account "default" is already running (pid ${process.pid}). ` +
                 'Stop it with "daemon.stop".',
         );
         // The refused start left the running daemon's files alone.
         await expect(fs.stat(daemon.config.paths.socket)).resolves.toBeTruthy();
         await expect(fs.stat(daemon.config.paths.pidfile)).resolves.toBeTruthy();
+    });
+
+    it('refuses to start for a JID that another account is already running', async () => {
+        daemon = await startDaemon();
+        const { paths } = daemon.config;
+        const other = {
+            ...daemon.config,
+            account: 'other',
+            paths: {
+                ...paths,
+                pidfile: path.join(paths.runtime_dir, 'other.pid'),
+                record: path.join(paths.runtime_dir, 'accounts', 'other.json'),
+            },
+        };
+        await expect(start(other)).rejects.toThrow(
+            `A daemon for ${daemon.config.jid} is already running, for the account "default" (pid ${process.pid}). ` +
+                'Stop it with "daemon.stop".',
+        );
+        await expect(fs.stat(other.paths.pidfile)).rejects.toThrow('ENOENT');
+        await expect(fs.stat(paths.socket)).resolves.toBeTruthy();
+        expect(findDaemon(daemon.config)?.pid).toBe(process.pid);
     });
 
     it("refuses to start from a config that names another host's sockets", async () => {

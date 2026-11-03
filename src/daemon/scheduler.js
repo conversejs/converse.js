@@ -4,7 +4,6 @@
  * @module @converse/daemon/scheduler
  */
 import { Collection, Model, api, log, u } from '@converse/headless';
-import { ownJID } from './session.js';
 
 const MAX_TIMEOUT = 2 ** 31 - 1;
 const RETRY_DELAY = 30_000;
@@ -197,9 +196,9 @@ export function createScheduler(on_due) {
     let schedules = null;
 
     api.listen.on('userSessionInitialized', async () => {
-        const bare_jid = ownJID();
         schedules = new ScheduledMessages([], {
-            storage: u.createStore(`converse.scheduled-messages-${bare_jid}`),
+            // The database is the account's own, so the store needs no JID in its name.
+            storage: u.createStore('converse.scheduled-messages'),
             on_due,
         });
         await schedules.hydrated;

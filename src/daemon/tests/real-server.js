@@ -81,7 +81,7 @@ export async function startDaemon(
             ...(mode ? { mode } : {}),
         }),
     );
-    const log = path.join(env.XDG_STATE_HOME, 'converse', `${account.jid}.log`);
+    const log = path.join(env.XDG_STATE_HOME, 'converse', 'accounts', 'default', 'daemon.log');
 
     const connectAndWait = async () => {
         const client = await connect({ env });

@@ -76,17 +76,17 @@ describe('The account configuration', () => {
             paths: {
                 config: path.join(dir, 'converse', 'accounts', 'default.json'),
                 runtime_dir: path.join(dir, 'run', 'converse'),
-                socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.sock'),
-                restricted_dir: path.join(dir, 'run', 'converse', 'romeo@montague.lit.restricted'),
-                restricted_socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.restricted', 'sock'),
-                pidfile: path.join(dir, 'run', 'converse', 'romeo@montague.lit.pid'),
+                socket: path.join(dir, 'run', 'converse', 'default.sock'),
+                restricted_dir: path.join(dir, 'run', 'converse', 'default.restricted'),
+                restricted_socket: path.join(dir, 'run', 'converse', 'default.restricted', 'sock'),
+                pidfile: path.join(dir, 'run', 'converse', 'default.pid'),
                 record: path.join(dir, 'run', 'converse', 'accounts', 'default.json'),
                 storage: expect.stringMatching(/\/converse\/accounts\/default$/),
-                log: expect.stringMatching(/\/converse\/romeo@montague\.lit\.log$/),
-                cursors: expect.stringMatching(/\/converse\/romeo@montague\.lit\.cursors\.json$/),
-                audit: expect.stringMatching(/\/converse\/romeo@montague\.lit\.audit\.jsonl$/),
-                drafts: expect.stringMatching(/\/converse\/romeo@montague\.lit\.drafts\.json$/),
-                rooms: expect.stringMatching(/\/converse\/romeo@montague\.lit\.rooms\.json$/),
+                log: expect.stringMatching(/\/converse\/accounts\/default\/daemon\.log$/),
+                cursors: expect.stringMatching(/\/converse\/accounts\/default\/cursors\.json$/),
+                audit: expect.stringMatching(/\/converse\/accounts\/default\/audit\.jsonl$/),
+                drafts: expect.stringMatching(/\/converse\/accounts\/default\/drafts\.json$/),
+                rooms: expect.stringMatching(/\/converse\/accounts\/default\/rooms\.json$/),
             },
         });
     });
@@ -204,7 +204,7 @@ describe('The account configuration', () => {
         expect(loadConfig(env).paths).toMatchObject({
             restricted_dir: '/srv/converse-agent',
             restricted_socket: '/srv/converse-agent/sock',
-            socket: path.join(dir, 'run', 'converse', 'romeo@montague.lit.sock'),
+            socket: path.join(dir, 'run', 'converse', 'default.sock'),
         });
         await writeConfig({ jid: 'romeo@montague.lit', restricted_dir: 'converse-agent' });
         expect(() => loadConfig(env)).toThrow('"restricted_dir" in');
@@ -216,7 +216,7 @@ describe('The account configuration', () => {
         await writeConfig({ jid: 'romeo@montague.lit', restricted_socket: '/tmp/tunnel/agent.sock' });
         expect(loadConfig(env).sockets).toEqual({ socket: null, restricted_socket: '/tmp/tunnel/agent.sock' });
         // The derived paths, which the daemon listens on, stay as they are.
-        expect(loadConfig(env).paths.socket).toBe(path.join(dir, 'run', 'converse', 'romeo@montague.lit.sock'));
+        expect(loadConfig(env).paths.socket).toBe(path.join(dir, 'run', 'converse', 'default.sock'));
         const load = () => loadConfig(env);
         for (const key of ['socket', 'restricted_socket']) {
             await writeConfig({ jid: 'romeo@montague.lit', [key]: 'tunnel.sock' });
@@ -249,10 +249,14 @@ describe('The account configuration', () => {
         expect(() => loadConfig(env)).toThrow('"policy.rate_limit.overall" in');
     });
 
-    it('names the socket after a hash of the JID when the JID would make its path too long', async () => {
-        const jid = `${'r'.repeat(60)}@montague.lit`;
-        await writeConfig({ jid });
-        const { socket, restricted_socket, pidfile } = loadConfig(env).paths;
+    it("names the socket after a hash of the account's name when the name would make its path too long", async () => {
+        const name = 'r'.repeat(64);
+        await fs.writeFile(
+            path.join(dir, 'converse', 'accounts', `${name}.json`),
+            JSON.stringify({ jid: 'romeo@montague.lit', owner: 'benvolio@montague.lit' }),
+        );
+        const { socket, restricted_socket, pidfile, record } = loadConfig(env).paths;
+        expect(path.basename(record)).toBe(`${name}.json`);
         expect(path.basename(socket)).toMatch(/^[0-9a-f]{16}\.sock$/);
         expect(path.basename(pidfile)).toBe(path.basename(socket).replace('.sock', '.pid'));
         expect(Buffer.byteLength(socket)).toBeLessThanOrEqual(103);
@@ -402,5 +406,12 @@ describe('Account selection', () => {
         const storage = (name) => loadConfig({ ...env, CONVERSE_ACCOUNT: name }).paths.storage;
         expect(storage('default')).toBe(path.join(dir, 'state', 'converse', 'accounts', 'default'));
         expect(storage('juliet')).toBe(path.join(dir, 'state', 'converse', 'accounts', 'juliet'));
+    });
+
+    it("keeps an account's files where they are when its JID changes", async () => {
+        await writeAccount('default', 'romeo@montague.lit');
+        const before = loadConfig(env).paths;
+        await writeAccount('default', 'juliet@capulet.lit');
+        expect(loadConfig(env).paths).toEqual(before);
     });
 });

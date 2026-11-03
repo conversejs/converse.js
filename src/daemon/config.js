@@ -240,7 +240,7 @@ export function loadConfig(env = process.env) {
         sockets,
         policy: parsePolicy(raw.policy, config_path, mode),
         settings: raw.settings ?? {},
-        paths: getPaths(account, jid, env, restricted_dir),
+        paths: getPaths(account, env, restricted_dir),
     };
 }
 
@@ -351,27 +351,31 @@ export function checkRuntimeDir(dir, { check_mode = true } = {}) {
 }
 
 /**
+ * Everything the daemon keeps is under its account's name, so that a change
+ * to the config's JID or a rename of its file never splits it up.
+ *
  * The runtime directory holds the full access socket and the pidfile, one pair
  * per account. It's created owner-only, which is what keeps other local users
  * off the full access socket. The restricted socket is in a directory of its
  * own, inside the runtime directory unless the config puts it elsewhere, so
- * that a sandbox can be given that directory alone.
+ * that a sandbox can be given that directory alone. Beside them, a running
+ * daemon leaves a record (see {@link findDaemon}).
  *
- * Beside them, a running daemon leaves a record under its account's name (see
- * {@link findDaemon}), so that it can be found by name whatever its JID.
+ * What outlasts the daemon is in the account's state directory: the headless
+ * database, and the daemon's own files beside it.
  * @param {import('./types').Account} account
- * @param {string} jid
  * @param {NodeJS.ProcessEnv} env
  * @param {string|null} restricted_dir - The directory the config names for the restricted socket, if any
  * @returns {import('./types').Paths}
  */
-function getPaths(account, jid, env, restricted_dir) {
+function getPaths(account, env, restricted_dir) {
     const runtime_dir = getRuntimeDir(env);
-    const state_dir = path.join(env.XDG_STATE_HOME || path.join(os.homedir(), '.local', 'state'), 'converse');
+    const state_home = env.XDG_STATE_HOME || path.join(os.homedir(), '.local', 'state');
+    const state_dir = path.join(state_home, 'converse', 'accounts', account.name);
     // A unix socket's path can't be longer than about 104 bytes (108 on Linux,
-    // less the terminator), so a long JID gets a hash of it instead.
-    const fits = Buffer.byteLength(path.join(runtime_dir, `${jid}.restricted`, 'sock')) <= MAX_SOCKET_PATH;
-    const name = fits ? jid : crypto.createHash('sha256').update(jid).digest('hex').slice(0, 16);
+    // less the terminator), so a long account name gets a hash of it instead.
+    const fits = Buffer.byteLength(path.join(runtime_dir, `${account.name}.restricted`, 'sock')) <= MAX_SOCKET_PATH;
+    const name = fits ? account.name : crypto.createHash('sha256').update(account.name).digest('hex').slice(0, 16);
     restricted_dir ??= path.join(runtime_dir, `${name}.restricted`);
     return {
         config: account.config,
@@ -381,12 +385,12 @@ function getPaths(account, jid, env, restricted_dir) {
         restricted_socket: path.join(restricted_dir, 'sock'),
         pidfile: path.join(runtime_dir, `${name}.pid`),
         record: path.join(runtime_dir, 'accounts', `${account.name}.json`),
-        storage: path.join(state_dir, 'accounts', account.name),
-        log: path.join(state_dir, `${jid}.log`),
-        cursors: path.join(state_dir, `${name}.cursors.json`),
-        audit: path.join(state_dir, `${jid}.audit.jsonl`),
-        drafts: path.join(state_dir, `${name}.drafts.json`),
-        rooms: path.join(state_dir, `${name}.rooms.json`),
+        storage: state_dir,
+        log: path.join(state_dir, 'daemon.log'),
+        cursors: path.join(state_dir, 'cursors.json'),
+        audit: path.join(state_dir, 'audit.jsonl'),
+        drafts: path.join(state_dir, 'drafts.json'),
+        rooms: path.join(state_dir, 'rooms.json'),
     };
 }
 
@@ -397,8 +401,16 @@ function getPaths(account, jid, env, restricted_dir) {
  * @returns {import('./types').DaemonRecord[]}
  */
 export function listDaemons(env = process.env) {
-    checkRuntimeDir(getRuntimeDir(env));
-    const dir = path.join(getRuntimeDir(env), 'accounts');
+    return daemonsIn(getRuntimeDir(env));
+}
+
+/**
+ * @param {string} runtime_dir
+ * @returns {import('./types').DaemonRecord[]} The running daemons that left a record in `runtime_dir`
+ */
+export function daemonsIn(runtime_dir) {
+    checkRuntimeDir(runtime_dir);
+    const dir = path.join(runtime_dir, 'accounts');
     let files = [];
     try {
         files = fs.readdirSync(dir);
@@ -413,9 +425,8 @@ export function listDaemons(env = process.env) {
 }
 
 /**
- * The record of the account's running daemon, if it has one. It names the
- * sockets the daemon listens on, which are those of the JID it was started
- * with: the config's JID may have changed since.
+ * The record of the account's running daemon, if it has one: the JID it was
+ * started with, which the config's may no longer be, and where it listens.
  * @param {import('./types').Config} config
  * @returns {import('./types').DaemonRecord|null}
  */

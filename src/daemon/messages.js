@@ -6,12 +6,12 @@ import { converse } from '@converse/headless';
 import { conversationOf, getIDs, isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.js';
 import { findMessage, findOwn, findTarget, notRetracted, ownedBy } from './find.js';
 import { getPage, hasArchivedMessages } from './history.js';
-import { ERRORS, RPCError } from './protocol.js';
+import { ERRORS, RPCError, requireConnected } from './protocol.js';
 import { resolveJID, rosterLoaded } from './resolve.js';
 import { searchMessages } from './search.js';
 import {
     attempt,
-    notConnected,
+    checkMessage,
     ownMessagesOnly,
     resendUnencrypted,
     retractMessage,
@@ -158,15 +158,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"at" is for "schedules.create", which sends it later.');
             }
             const jid = await resolveJID(_converse, to, 'to');
-            if (typeof body !== 'string' || !body.trim()) {
-                throw new RPCError(ERRORS.INVALID_PARAMS, 'There is nothing to send: "body" is empty.');
-            }
-            if (reply_to !== undefined && correct !== undefined) {
-                throw new RPCError(
-                    ERRORS.INVALID_PARAMS,
-                    'A message either replies or corrects: pass one of "reply_to" and "correct".',
-                );
-            }
+            checkMessage(body, reply_to, correct, 'send');
             const replying_to = reply_to === undefined ? undefined : await findTarget(_converse, reply_to, jid);
             /** @type {import('./types').SendRoute} */
             const send = async (routing) => {
@@ -318,7 +310,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
             const jid =
                 conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
             const message = failedSendOf(await findTarget(_converse, id, jid), id, 'sent again');
-            if (!api.connection.connected()) throw notConnected();
+            requireConnected(api, 'nothing was sent');
 
             const chatbox = message.collection.chatbox;
             const to = chatbox.get('jid');

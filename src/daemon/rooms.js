@@ -9,7 +9,7 @@
  */
 import { converse, log } from '@converse/headless';
 import { toRoomDTO } from './dto.js';
-import { ERRORS, RPCError } from './protocol.js';
+import { ERRORS, RPCError, requireConnected } from './protocol.js';
 import { parseJID, resolveRoomJID } from './resolve.js';
 import { readStateFile, writeStateFile } from './state-file.js';
 
@@ -166,16 +166,6 @@ export function roomMethods(_converse, { config, policy, store }) {
         }
     };
 
-    const requireConnected = () => {
-        if (!api.connection.connected()) {
-            throw new RPCError(
-                ERRORS.NOT_CONNECTED,
-                'The daemon is not connected to the server, so nothing was done. ' +
-                    'Check "daemon.status", then try again.',
-            );
-        }
-    };
-
     return {
         /**
          * Joins a room, and remembers it, so that a restart rejoins it. It's
@@ -194,7 +184,7 @@ export function roomMethods(_converse, { config, policy, store }) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"nick" must be a nickname.');
             }
             checkAccess(client, jid);
-            requireConnected();
+            requireConnected(api, 'nothing was done');
 
             const nickname = (nick ?? config.consumer).trim();
             const existing = await api.rooms.get(jid);
@@ -284,7 +274,7 @@ export function roomMethods(_converse, { config, policy, store }) {
                     '"service" must be the domain of a MUC service, such as "conference.capulet.lit".',
                 );
             }
-            requireConnected();
+            requireConnected(api, 'nothing was done');
             try {
                 return { rooms: await api.rooms.discover(service.trim(), { timeout: DISCOVER_TIMEOUT }) };
             } catch (e) {

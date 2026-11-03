@@ -84,6 +84,22 @@ describe('Scheduled sends', () => {
         expect((await request('schedules.list')).schedules).toEqual([]);
     });
 
+    it('refuses a message with nothing in it, or that both replies and corrects, as a send does', async () => {
+        daemon = await startDaemon({ roster: ROSTER });
+        const later = at(60_000);
+        await expect(request('schedules.create', { to: JULIET, body: '  ', at: later }, 'full')).rejects.toMatchObject({
+            code: ERRORS.INVALID_PARAMS,
+            message: 'There is nothing to schedule: "body" is empty.',
+        });
+        await expect(
+            request('schedules.create', { to: JULIET, body: 'Hi', reply_to: 'a', correct: 'b', at: later }, 'full'),
+        ).rejects.toMatchObject({
+            code: ERRORS.INVALID_PARAMS,
+            message: 'A message either replies or corrects: pass one of "reply_to" and "correct".',
+        });
+        expect((await request('schedules.list', {}, 'full')).schedules).toEqual([]);
+    });
+
     it('lets restricted access list and cancel the schedules it made', async () => {
         daemon = await startDaemon({ roster: ROSTER, mode: 'bot', policy: { direct: [JULIET] } });
         const { schedule } = await request('schedules.create', { to: JULIET, body: 'Maybe', at: at(60_000) });

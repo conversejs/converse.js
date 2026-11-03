@@ -15,6 +15,15 @@ export function createCursors(file) {
     const state = readStateFile(file, { consumers: {} }, 'the read cursors');
     const save = () => writeStateFile(file, state);
 
+    // Starts above every cursor, so that a message arriving after a read is
+    // after its cursor, even if the clock has gone back since.
+    let last_arrival = 0;
+    for (const { conversations } of Object.values(state.consumers)) {
+        for (const { arrived } of Object.values(conversations)) {
+            last_arrival = Math.max(last_arrival, arrived ?? 0);
+        }
+    }
+
     /**
      * The consumer's record, created the first time the consumer is seen.
      * @param {string} name
@@ -54,6 +63,16 @@ export function createCursors(file) {
         set(name, jid, cursor) {
             consumer(name).conversations[jid] = cursor;
             save();
+        },
+
+        /**
+         * A mark for a message arriving now: the time in milliseconds, but
+         * always above the last mark given, so that marks only go up.
+         * @returns {number}
+         */
+        nextArrival() {
+            last_arrival = Math.max(Date.now(), last_arrival + 1);
+            return last_arrival;
         },
     };
 }

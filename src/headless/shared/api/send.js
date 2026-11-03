@@ -1,7 +1,6 @@
 import _converse from '../_converse.js';
 import log from '@converse/log';
 import { Strophe } from 'strophe.js';
-import { TimeoutError } from '../errors.js';
 
 export default {
     /**
@@ -60,11 +59,10 @@ export default {
             timeout = timeout || api.settings.get('stanza_timeout');
             if (reject) {
                 promise = new Promise((resolve, reject) => connection.sendIQ(el, resolve, reject, timeout));
+                // Callers get `null` on a timeout. Only log here: throwing would
+                // reject this derived promise, which nobody handles.
                 promise.catch((e) => {
-                    if (e === null) {
-                        log.error(el);
-                        throw new TimeoutError(`Timeout error after ${timeout}ms for IQ stanza`);
-                    }
+                    if (e === null) log.error(`Timeout error after ${timeout}ms for IQ stanza`, el);
                 });
             } else {
                 promise = new Promise((resolve) => connection.sendIQ(el, resolve, resolve, timeout));

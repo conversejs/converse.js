@@ -294,7 +294,8 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model)
             return this.save({
                 is_ephemeral: true,
                 message:
-                    e.code === NO_SLOT
+                    // `e` is null if the slot request timed out
+                    e?.code === NO_SLOT
                         ? __('Sorry, could not determine file upload URL.')
                         : __('Sorry, could not determine upload URL.'),
                 type: 'error',

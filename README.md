@@ -1,7 +1,7 @@
 <h2 align="center">
 
   <a href="https://conversejs.org" target="_blank" rel="noopener">
-    <img alt="Converse.js" src="https://github.com/conversejs/converse.js/blob/master/logo/readme.png" width="480">
+    <img alt="Converse" src="https://github.com/conversejs/converse.js/blob/master/logo/readme.png" width="480">
   </a>
 </h2>
 
@@ -9,10 +9,13 @@
 [![CI Tests](https://github.com/conversejs/converse.js/actions/workflows/tests.yml/badge.svg)](https://github.com/conversejs/converse.js/actions/workflows/tests.yml)
 [![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
 
-[Converse](https://conversejs.org) is a modern, feature-rich and 100% client-side [XMPP](https://xmpp.org) chat app that runs in a web browser.
-It can be used as a standalone web app or seamlessly integrated into existing websites.
+[Converse](https://conversejs.org) is a modern, feature-rich [XMPP](https://xmpp.org) chat client.
+It runs in the browser, as a standalone web app or integrated into existing websites,
+and its headless core ([`@converse/headless`](https://www.npmjs.com/package/@converse/headless)) also runs in Node.js.
 
 Join our [chat room](https://chat.conversejs.org/#discuss@conference.conversejs.org?join) (XMPP URL: [discuss@conference.conversejs.org](xmpp:discuss@conference.conversejs.org?join)).
+
+![Screenshot of Converse in full-page mode](https://conversejs.org/media/screenshots/converse-enter-muc.png)
 
 ## Quick Start
 
@@ -22,9 +25,9 @@ You can also download and install [Converse Desktop](https://github.com/converse
 Or set up your own instance:
 
 ```bash
-git clone --filter=blob:none git@github.com:conversejs/converse.js.git
+git clone --filter=blob:none https://github.com/conversejs/converse.js.git
 cd converse.js
-git clone https://github.com/conversejs/media.git media; // To see images like sponsorship logos
+git clone https://github.com/conversejs/media.git media  # images such as sponsor logos
 npm install
 npm run build
 npm run serve -- -p 8008
@@ -40,22 +43,27 @@ See our [quickstart guide](https://conversejs.org/docs/quickstart/) for more det
 
 ## Screenshots
 
-<details>
-<summary>Click to view screenshots</summary>
+Converse can be displayed in three ways. Click a screenshot to see it full size.
 
-### Overlay Mode
-
-![Screenshot of Converse in overlay mode](https://conversejs.org/media/screenshots/converse-overlayed.png)
-
-### Fullpage Mode
-
-![Screenshot of Converse in full-page mode](https://conversejs.org/media/screenshots/converse-enter-muc.png)
-
-### Embedded Mode
-
-![Screenshot of Converse in embedded mode](https://conversejs.org/media/screenshots/converse-prosody.png)
-
-</details>
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <a href="https://conversejs.org/media/screenshots/converse-enter-muc.png"><img alt="Screenshot of Converse in full-page mode" src="https://conversejs.org/media/screenshots/converse-enter-muc.png" width="300"></a><br>
+      <strong>Fullpage</strong> (default)<br>
+      A single-page application covering the entire viewport.
+    </td>
+    <td align="center" width="33%">
+      <a href="https://conversejs.org/media/screenshots/converse-overlayed.png"><img alt="Screenshot of Converse in overlay mode" src="https://conversejs.org/media/screenshots/converse-overlayed.png" width="300"></a><br>
+      <strong>Overlay</strong><br>
+      Chat boxes appear on top of your website.
+    </td>
+    <td align="center" width="33%">
+      <a href="https://conversejs.org/media/screenshots/converse-prosody.png"><img alt="Screenshot of Converse in embedded mode" src="https://conversejs.org/media/screenshots/converse-prosody.png" width="300"></a><br>
+      <strong>Embedded</strong><br>
+      Converse integrates into specific elements in your page's DOM.
+    </td>
+  </tr>
+</table>
 
 ## Live Demos
 
@@ -76,6 +84,9 @@ Comprehensive documentation is available at [conversejs.org/docs](https://conver
 - **Multiple UI Options**: Overlay chat boxes, full-page application, or embedded components
 - **Rich Messaging**: Message styling, corrections, reactions, and URL previews
 - **Privacy-Focused**: End-to-end encryption with OMEMO
+- **Audio Calls**: 1:1 audio calls over Jingle (since 15.0.0)
+- **Voice Messages**: Record and send voice messages, via an opt-in plugin (since 15.0.0)
+- **Microblogging**: Follow and post to social feeds (since 15.0.0)
 - **User Status**: Custom status messages and availability indicators
 - **Notifications**: Desktop notifications for new messages
 - **File Sharing**: HTTP File Upload support
@@ -83,16 +94,6 @@ Comprehensive documentation is available at [conversejs.org/docs](https://conver
 - **Internationalized**: Translated into 40+ languages
 - **Anonymous Login**: Use without registration (server permitting)
 - **Responsive**: Works on desktop and mobile devices
-
-### Display Modes
-
-Converse adapts to your needs with multiple display options:
-
-| Mode                   | Description                                                         |
-| ---------------------- | ------------------------------------------------------------------- |
-| **Fullpage** (default) | Functions as a single-page application covering the entire viewport |
-| **Overlay**            | Chat boxes appear on top of your website                            |
-| **Embedded**           | Integrates into specific elements in your page's DOM                |
 
 ## XMPP Protocol Support
 
@@ -196,7 +197,7 @@ contribution.
 
 Using LLMs or coding agents to help write your contribution is allowed. AI is a
 legitimate tool, and we won't reject a patch simply because a model helped write
-it. But the bar is the same as for any other pull request:
+it, but the bar is the same as for any other pull request:
 
 - **Understand what you submit.** You are responsible for your contribution. Be
   able to explain how it works and why it's correct.
@@ -205,12 +206,22 @@ it. But the bar is the same as for any other pull request:
 - **Disclose it.** Note in your pull request that AI tooling was used. This is
   about honesty and giving reviewers context, not stigma.
 - **No slop.** Unreviewed, untested, auto-generated output thrown over the fence
-  will be closed. Volume is not contribution, and reviewing it costs maintainers
-  real time.
+  will be closed.
 
 If you're driving Converse with a coding agent, start with
 [`AGENTS.md`](./AGENTS.md), which documents the architecture, conventions and
 build/test workflow the project expects.
+
+The repo also comes with a code review skill,
+[`codereview-conversejs`](./.agents/skills/codereview-conversejs/SKILL.md).
+It checks a change against the project's architectural rules as well as the usual
+correctness and testing concerns. It uses the open [Agent Skills](https://agentskills.io)
+format, so coding agents that support skills (such as Codex, Claude Code and
+OpenCode) can pick it up automatically when you work in this repo. To run it
+explicitly, use `$codereview-conversejs` in Codex or `/codereview-conversejs` in
+Claude Code, or ask your agent to use the skill by name. Running it on your change
+before you open a pull request is a good way to catch problems early, but it
+doesn't replace your own review or the maintainers'.
 
 ## Support the Project
 
@@ -224,7 +235,7 @@ Thanks to everyone who has supported this project over the years through donatio
 
 ## Sponsors
 
-<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center;">
+<p align="center">
   <a href="https://blokt.com?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="Blokt Crypto & Privacy" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/blokt.png" width="200">
   </a>
@@ -234,4 +245,4 @@ Thanks to everyone who has supported this project over the years through donatio
   <a href="https://www.keycdn.com?utm_source=conversejs" target="_blank" rel="noopener">
     <img alt="KeyCDN" src="https://raw.githubusercontent.com/conversejs/converse.js/541613d1fea8aef364af00180f60e959162e5e4b/logo/keycdn.png" width="200">
   </a>
-</div>
+</p>

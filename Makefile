@@ -251,12 +251,20 @@ check-git-clean:
 check-workspace-versions: node_modules
 	node scripts/check-workspace-versions.mjs
 
+.PHONY: readme-xeps
+readme-xeps:
+	node scripts/readme-xeps.mjs
+
+.PHONY: check-readme-xeps
+check-readme-xeps:
+	node scripts/readme-xeps.mjs --check
+
 .PHONY: eslint
 eslint: node_modules
 	npm run lint
 
 .PHONY: check
-check: check-workspace-versions eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
+check: check-workspace-versions check-readme-xeps eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
 	npm run types
 	make check-git-clean
 	npm run test:all

@@ -71,8 +71,8 @@ converse.plugins.add('my-plugin', {
         // Export for other plugins
         Object.assign(_converse.exports, { MyClass, myFunction });
 
-        // Extend API
-        Object.assign(api, { myMethod: () => {} });
+        // Extend the API under the plugin's own namespace (see "API design" in AGENTS.md)
+        Object.assign(api, { myfeature: { get: (id) => { /* ... */ } } });
 
         // Listen to events
         api.listen.on('connected', () => { /* ... */ });

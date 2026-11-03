@@ -53,9 +53,15 @@ node_modules
 
 # LLMs
 .aider*
-.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/codereview-conversejs/
 .prompts/
-.claude/
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/codereview-conversejs
 
 # Vitest browser-mode generated artifacts
 .vitest-attachments/

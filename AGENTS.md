@@ -1,8 +1,10 @@
-# Converse.js Agent Guidelines
+# Converse Agent Guidelines
 
-**Converse.js** is an XMPP chat client built with JavaScript and web tech.
-It has a plugin-based architecture, uses JSDoc TypeScript type definitions,
-Bootstrap 5 and Lit UI components.
+**Converse** is an XMPP chat client written in JavaScript, with JSDoc
+TypeScript type definitions. Its plugin-based headless core
+(`@converse/headless`) runs in the browser and in Node.js. Front ends sit on
+top of it: the web UI (Bootstrap 5 and Lit components), with a CLI and later
+a TUI in development.
 
 ## Monorepo
 
@@ -139,7 +141,7 @@ implemented. Don't explain how; the code and its comments document that.
 
 ### Plugin System
 
-Converse.js uses a **plugin-based architecture** powered by `pluggable.js`:
+Converse uses a **plugin-based architecture** powered by `pluggable.js`:
 
 - **Headless plugins** (`src/headless/plugins/`): Core XMPP logic, no UI
 - **UI plugins** (`src/plugins/`): Visual components that depend on headless
@@ -310,6 +312,22 @@ export default (model) => html`
     </div>
 `;
 ```
+
+### API design
+
+The integration API follows a design of short methods chained onto namespaces,
+so it reads as `api.<noun>.<verb>()`.
+
+- Use `api.user.get()`, not `api.getUser()`. Group methods by the thing they act on
+  (`api.chats`, `api.rooms`, `api.contacts`, `api.settings`), with short verbs: `get`,
+  `set`, `create`, `open`, `add`, `remove`.
+- Nest a namespace for a sub-resource rather than compounding the method name:
+  `api.disco.entities.get()`, `api.user.status.set()`, `api.microblog.feeds.get()`.
+- A compound name like `getActive` or `browseFeeds` usually means a namespace is missing
+  (`api.apps.active.get()`, `api.microblog.feeds.browse()`). Predicates (`is…`, `can…`)
+  are the usual exception.
+- A plugin adds its methods under its own namespace, not as loose top-level methods on
+  `api`. Exceptions exist, like `api.waitUntil()` and `api.sendIQ()`.
 
 ### API Usage Patterns
 

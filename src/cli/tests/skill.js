@@ -5,7 +5,8 @@
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { MAX_BODY_LENGTH } from '../format.js';
-import { HELP, unexpectedOptions } from '../help.js';
+import { COMMANDS } from '../commands/index.js';
+import { unexpectedOptions } from '../options.js';
 import pkg from '../package.json' with { type: 'json' };
 
 const SKILL = fs.readFileSync(new URL('../skill/SKILL.md', import.meta.url), 'utf8');
@@ -34,15 +35,15 @@ describe('The converse-cli agent skill', () => {
             const [first, second] = words[0] === 'help' ? words.slice(1) : words;
             if (first?.startsWith('<')) continue; // "help <command>"
 
-            const name = Object.hasOwn(HELP, `${first} ${second}`) ? `${first} ${second}` : first;
-            expect(Object.hasOwn(HELP, name), words.join(' ')).toBe(true);
+            const name = Object.hasOwn(COMMANDS, `${first} ${second}`) ? `${first} ${second}` : first;
+            expect(Object.hasOwn(COMMANDS, name), words.join(' ')).toBe(true);
 
             const end = words.indexOf('--');
             const options = (end === -1 ? words : words.slice(0, end))
                 .filter((w) => w.startsWith('--'))
                 .map((w) => w.slice(2));
             const values = Object.fromEntries(options.map((o) => [o, true]));
-            expect(unexpectedOptions(name, values), words.join(' ')).toEqual([]);
+            expect(unexpectedOptions(COMMANDS[name], values), words.join(' ')).toEqual([]);
         }
     });
 

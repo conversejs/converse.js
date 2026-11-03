@@ -32,13 +32,22 @@ export type Context = IO & {
     socket_path?: string; // The socket that request reached the daemon on
 };
 
-// How the help describes a command.
-export type CommandHelp = {
+// A command line option, as a command declares it. Declare one with flag() or option().
+export type Option = {
+    name: string; // The long name, without the dashes
+    type: 'boolean' | 'string'; // Whether it takes a value
+    value?: string; // How help shows the value it takes, such as "<n>"
+    short?: string; // The one-letter name, if it has one
+    help: string; // What it does
+};
+
+// A command: what help says about it, and what it does.
+export type Command = {
     summary: string; // One line, for the overview
     description: string; // Paragraphs, separated by blank lines
     args?: [string, string][]; // Each argument, and what it is
-    // Each option, with its value if it takes one, such as "--limit <n>", and what it does
-    options?: [string, string][];
+    options?: Option[];
     exits?: number[]; // The exit codes besides those every command has
     examples: string[];
+    run(ctx: Context): number | Promise<number>; // Resolves to the exit code
 };

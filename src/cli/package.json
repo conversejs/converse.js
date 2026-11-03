@@ -13,6 +13,7 @@
     "*.js",
     "*.ts",
     "bin/",
+    "commands/",
     "skill/"
   ],
   "scripts": {

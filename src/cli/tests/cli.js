@@ -4,7 +4,7 @@ import { loadConfig } from '@converse/daemon/client';
 import { createAccount, JID } from '../../daemon/tests/account.js';
 import { EXIT } from '../exit-codes.js';
 import pkg from '../package.json' with { type: 'json' };
-import { HELP } from '../help.js';
+import { COMMANDS } from '../commands/index.js';
 import { main } from '../cli.js';
 import { run } from './run.js';
 
@@ -46,7 +46,7 @@ describe('converse-cli', () => {
     });
 
     it("documents every command's arguments, options, exit codes and examples", async () => {
-        for (const name of Object.keys(HELP)) {
+        for (const name of Object.keys(COMMANDS)) {
             const words = name.split(' ');
             const asked = await capture(account.env, 'help', ...words);
             expect(asked.code, name).toBe(EXIT.OK);
@@ -54,7 +54,7 @@ describe('converse-cli', () => {
 
             const { stdout } = asked;
             expect(stdout.startsWith(`Usage: converse-cli ${name}`), name).toBe(true);
-            HELP[name].args?.forEach(([arg]) => expect(stdout, name).toContain(`\n  ${arg}`));
+            COMMANDS[name].args?.forEach(([arg]) => expect(stdout, name).toContain(`\n  ${arg}`));
             expect(stdout, name).toMatch(/\nOptions:\n {2}(--\w|-h)/);
             expect(stdout, name).toMatch(/\nExit codes:\n {2}0 {3}ok\n/);
             expect(stdout, name).toMatch(

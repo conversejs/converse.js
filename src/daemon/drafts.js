@@ -56,7 +56,7 @@ export function createDraftStore(file) {
 /**
  * Makes the drafts for every send path, so that they're made one way: stored,
  * delivered to the owner unless the mode holds them, audited and announced.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof createDraftStore>} deps.drafts
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
@@ -101,7 +101,7 @@ export function createDrafter(_converse, { drafts, audit, events, owner, mode })
  * The `drafts.*` methods. Listing and showing drafts is for full access, and
  * in "as_user" mode for restricted access too (see daemon.js). Rejecting one
  * only drops it. Sending one is for full access in "as_user" mode alone.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof createDraftStore>} deps.drafts
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
@@ -219,7 +219,7 @@ export function draftMethods(_converse, { drafts, audit, events, owner, mode }) 
 /**
  * Does what a draft says, as the user: sends it, or applies it to the message
  * it acts on.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {import('./types').Draft} draft
  * @returns {Promise<import('./types').MessageDTO>}
  */
@@ -246,7 +246,7 @@ async function deliver(_converse, draft) {
 }
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} id
  * @param {string} jid - The bare JID of the conversation
  * @returns {Promise<import('./types').MessageDTO|null>}

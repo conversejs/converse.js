@@ -20,18 +20,18 @@ const ARRIVED = 'daemon_arrived';
 /** @param {import('@converse/headless').ChatBox} box - A chat or a room */
 const isRoom = (box) => box.get('type') === constants.CHATROOMS_TYPE;
 
-/** @param {import('@converse/headless').Message} message */
+/** @param {import('@converse/headless').BaseMessage} message */
 const isIncoming = (message) => message.get('sender') !== 'me';
 
 /**
  * A message from before arrivals were marked counts as arrived before any cursor.
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @returns {number}
  */
 const arrivalOf = (message) => message.get(ARRIVED) ?? 0;
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {ReturnType<typeof import('./cursors.js').createCursors>} cursors
  */
 export function inboxMethods(_converse, cursors) {
@@ -138,7 +138,7 @@ export function inboxMethods(_converse, cursors) {
  * conversation. That's what read cursors go by, rather than the message's
  * own time, which can be earlier than a message already read: one caught up
  * from the archive after a reconnect, or one the server delivered late.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {ReturnType<typeof import('./cursors.js').createCursors>} cursors
  */
 function markArrivals(_converse, cursors) {
@@ -149,7 +149,7 @@ function markArrivals(_converse, cursors) {
         const { messages } = box;
         if (!messages) return;
 
-        messages.on('add', (/** @type {import('@converse/headless').Message} */ message) => {
+        messages.on('add', (/** @type {import('@converse/headless').BaseMessage} */ message) => {
             // Until the conversation's messages are read from storage, what's
             // added comes from there: it arrived before, and keeps its mark.
             if (!messages.fetched?.isResolved) return;
@@ -166,7 +166,7 @@ function markArrivals(_converse, cursors) {
  * after its cursor, or every one without a cursor. Either way, only from the
  * consumer's first sight of the account onwards, so that history paged in
  * from the archive isn't news.
- * @param {import('@converse/headless').Message[]} messages - Oldest first
+ * @param {import('@converse/headless').BaseMessage[]} messages - Oldest first
  * @param {import('./types').Cursor|undefined} cursor
  * @param {string} since - ISO 8601
  */

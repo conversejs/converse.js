@@ -16,7 +16,7 @@ const EVENT_TYPES = ['message', 'draft'];
 const DIRECTIONS = ['incoming', 'outgoing'];
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} options
  * @param {import('./types').Mode} options.mode - Which decides who may see drafts
  */
@@ -58,7 +58,7 @@ export function createEvents(_converse, { mode }) {
     /**
      * The bare JID of whoever sent a room message, which the room reveals
      * only to some, so it may be null.
-     * @param {import('@converse/headless').Message} message
+     * @param {import('@converse/headless').BaseMessage} message
      * @param {import('./types').MessageDTO} dto
      * @returns {string|null}
      */
@@ -73,7 +73,7 @@ export function createEvents(_converse, { mode }) {
      * Calls each subscription of `type` whose filter accepts the event. Ends
      * the ones that were made to take only one.
      * @param {import('./types').Subscription['type']} type
-     * @param {import('./types').MessageDTO} dto - What the filters are matched against
+     * @param {import('./types').FilteredMessage} dto - What the filters are matched against
      * @param {Record<string, unknown>} fields - The event's own fields
      * @param {import('./types').EventSender} sender - Who sent it, for the from and mention filters
      */
@@ -94,12 +94,10 @@ export function createEvents(_converse, { mode }) {
          * @param {import('./types').Draft} draft
          */
         publishDraft(action, draft) {
+            /** @type {import('./types').FilteredMessage} */
             const as_message = {
-                id: draft.id,
                 conversation: draft.to,
-                from: ownJID(),
                 direction: 'outgoing',
-                time: draft.created,
                 body: 'body' in draft ? draft.body : null,
             };
             const sender = { sender: ownJID(), own_name: Strophe.getNodeFromJid(ownJID()) };
@@ -119,7 +117,7 @@ export function createEvents(_converse, { mode }) {
              *  else by our JID's name
              * @param {boolean} [params.once] - End the subscription after the first event
              * @param {import('./types').Client} client
-             * @returns {{ subscription: number }}
+             * @returns {Promise<{ subscription: number }>}
              */
             async 'events.subscribe'(params, client) {
                 const { type, filter, once } = await parseSubscription(_converse, params);
@@ -161,7 +159,7 @@ export function createEvents(_converse, { mode }) {
 }
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} params
  * @returns {Promise<{ type: import('./types').Subscription['type'], filter: import('./types').EventFilter, once: boolean }>}
  */
@@ -193,7 +191,7 @@ async function parseSubscription(
 
 /**
  * @param {import('./types').EventFilter} filter
- * @param {import('./types').MessageDTO} message
+ * @param {import('./types').FilteredMessage} message
  * @param {import('./types').EventSender} sender
  */
 function matches({ conversation, from, direction, mention }, message, { sender, own_name }) {

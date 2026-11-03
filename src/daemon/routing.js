@@ -6,7 +6,7 @@
 import { ERRORS, RPCError } from './protocol.js';
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof import('./policy.js').createPolicy>} deps.policy
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
@@ -19,11 +19,12 @@ export function createSendRouter(_converse, { policy, audit, mode }) {
      * @param {import('./types').Client} client
      * @param {string} to - The bare JID of the conversation
      * @param {Object} routes
-     * @param {(routing?: import('./types').Routing) => Promise<import('./types').SendResult>} routes.direct
+     * @param {import('./types').SendRoute} routes.direct
      * @param {(routing: import('./types').Routing) => Promise<import('./types').SendResult>} [routes.draft]
      * @param {Error} [routes.cannot_draft]
      * @param {import('./types').AuditEntry['action']} [routes.action]
      * @param {boolean} [routes.consume=true] - Whether an allowed route spends rate-limit capacity
+     * @returns {Promise<import('./types').SendResult>}
      */
     return async function routeSend(client, to, { direct, draft, cannot_draft, action, consume = true }) {
         if (client.access === 'full') return direct();
@@ -32,7 +33,7 @@ export function createSendRouter(_converse, { policy, audit, mode }) {
         if (room && !room.isEntered()) throw notJoined(to);
 
         const verdict = policy[consume ? 'admit' : 'check'](to, { room: !!room });
-        if (!verdict.allowed) {
+        if (verdict.allowed === false) {
             audit.record({
                 consumer: client.consumer,
                 to,

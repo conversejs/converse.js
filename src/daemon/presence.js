@@ -11,7 +11,7 @@ import { ERRORS, RPCError } from './protocol.js';
 export const SHOW_VALUES = ['online', 'chat', 'away', 'xa', 'dnd'];
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {import('./types').Config} deps.config
  */

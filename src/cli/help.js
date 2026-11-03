@@ -35,15 +35,23 @@ const LOOKUP_EXITS = [EXIT.NOT_FOUND, EXIT.AMBIGUOUS];
 /** The exit codes of a command whose send policy decides. */
 const SEND_EXITS = [...LOOKUP_EXITS, EXIT.REFUSED, EXIT.DRAFT];
 
+/** @type {[string, string]} */
 const CONTACT = ['<contact>', 'A JID, or the name of a contact on your roster'];
+/** @type {[string, string]} */
 const TARGET = ['<contact|room>', 'A JID or roster name, or the JID of a room you have joined'];
+/** @type {[string, string]} */
 const ROOM = ['<room>', "The room's JID, such as lobby@conference.example.org"];
+/** @type {[string, string]} */
 const MESSAGE_ID = ['<id>', 'A message id, as read, inbox, search or wait printed it'];
+/** @type {[string, string]} */
 const FULL = ['--full', `Don't truncate bodies longer than ${MAX_BODY_LENGTH} characters`];
+/** @type {[string, string]} */
 const DRAFT_ID = ['<id>', 'The draft id, as drafts list or the send that made it printed it'];
+/** @type {[string, string]} */
 const IN_CONVERSATION = ['--conversation <contact|room>', 'Look for the message only in this conversation'];
 
 /** Options every command takes. */
+/** @type {[string, string][]} */
 const GLOBAL_OPTIONS = [
     ['--account <name>', 'Use this account, not the default one. CONVERSE_ACCOUNT=<name> does the same'],
     ['--json', 'Print the JSON the daemon returned instead of text: one object per line for lists'],
@@ -436,6 +444,7 @@ export const HELP = {
 };
 
 /** What `help` itself is, for the overview. */
+/** @type {[string, string]} */
 const HELP_COMMAND = ['help [command]', "Show a command's arguments, options, exit codes and examples"];
 
 /**
@@ -521,6 +530,7 @@ function exitTable(codes) {
  * @param {string|null} [socket_path] - The socket `CONVERSE_SOCKET` names, if it's set
  */
 export function overview(config_dir, socket_path = null) {
+    /** @type {[string, string][]} */
     const commands = Object.entries(HELP).map(([name, { args = [], summary }]) => [
         [name, ...args.map(([arg]) => arg)].join(' '),
         summary,

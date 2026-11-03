@@ -42,7 +42,7 @@ export class ScheduledMessages extends Collection {
      * @param {ScheduledMessage[]} _models
      * @param {Object} options
      * @param {import('@converse/skeletor').PersistentStorage} options.storage
-     * @param {(scheduled: ScheduledMessage) => Promise<{ park?: Record<string, unknown>, retry?: boolean }|void>} options.on_due
+     * @param {(scheduled: ScheduledMessage) => Promise<{ park?: Record<string, unknown>, retry?: boolean }|undefined>} options.on_due
      * @param {number} [options.retry_delay]
      * @param {number} [options.max_failures]
      */
@@ -187,7 +187,7 @@ export class ScheduledMessages extends Collection {
 /**
  * Keeps the account's scheduled messages for as long as its session lasts,
  * and dispatches them while connected.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {ScheduledMessages['on_due']} on_due
  */
 export function createScheduler(_converse, on_due) {

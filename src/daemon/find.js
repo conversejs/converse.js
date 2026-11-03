@@ -9,10 +9,10 @@ import { ERRORS, RPCError } from './protocol.js';
 /**
  * Finds a message by its id, or a unique prefix of it, among those held for
  * one conversation, or for all of them.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} id
  * @param {string} [jid] - The bare JID of the conversation to look in
- * @returns {Promise<import('@converse/headless').Message>}
+ * @returns {Promise<import('@converse/headless').BaseMessage>}
  */
 export async function findTarget(_converse, id, jid) {
     if (typeof id !== 'string' || !id) {
@@ -26,9 +26,9 @@ export async function findTarget(_converse, id, jid) {
 /**
  * The conversations held locally, with their messages fetched: the one with
  * `jid`, or every one.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} [jid] - The bare JID of the conversation
- * @returns {Promise<(import('@converse/headless').ChatBox|import('@converse/headless').ChatRoom)[]>}
+ * @returns {Promise<(import('@converse/headless').ChatBox|import('@converse/headless').MUC)[]>}
  */
 export async function heldConversations(_converse, jid) {
     const { api } = _converse;
@@ -41,7 +41,7 @@ export async function heldConversations(_converse, jid) {
 
 /**
  * Like {@link findTarget}, for a message that must be one we sent.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} id
  * @param {string|undefined} jid - The bare JID of the conversation to look in, else all of them
  * @param {string} verb - What's to be done to it, for the error message
@@ -51,8 +51,8 @@ export async function findOwn(_converse, id, jid, verb) {
 }
 
 /**
- * @param {import('@converse/headless').Message} message - Found by the id given
- * @param {string} id
+ * @param {import('@converse/headless').BaseMessage} message - Found by the id given
+ * @param {unknown} id - As it was given
  * @param {string} verb
  */
 export function ownedBy(message, id, verb) {
@@ -66,7 +66,7 @@ export function ownedBy(message, id, verb) {
 }
 
 /**
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @param {string} id - The id it was asked for by
  */
 export function notRetracted(message, id) {
@@ -83,7 +83,7 @@ export function notRetracted(message, id) {
  * msgid, and can choose one that another message has. So a message is looked
  * for by its archive id first, and one found by an id that more than one
  * message has isn't taken.
- * @param {import('@converse/headless').Message[]} messages
+ * @param {import('@converse/headless').BaseMessage[]} messages
  * @param {string} id
  * @param {string} [where] - Where the messages are from, for the error message
  */

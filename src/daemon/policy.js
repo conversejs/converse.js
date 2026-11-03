@@ -29,6 +29,7 @@ export function createPolicy({ mode, owner, policy, paths }, { now = () => Date.
 
     /**
      * The limit each kind of target is held to, and the rule that names it.
+     * @type {Record<'contact'|'room', { max: number, key: string, rule: import('./types').PolicyRule }>}
      */
     const limits = {
         contact: {
@@ -51,7 +52,7 @@ export function createPolicy({ mode, owner, policy, paths }, { now = () => Date.
      * allowlists let it through at all.
      * @param {string} jid
      * @param {boolean} room
-     * @returns {{ allowed: true, route: 'direct'|'draft', kind: 'contact'|'room' } | { allowed: false, rule: string, message: string }}
+     * @returns {{ allowed: true, route: import('./types').Route, kind: 'contact'|'room' } | import('./types').Refusal}
      */
     function routeOf(jid, room) {
         if (room) {
@@ -84,7 +85,7 @@ export function createPolicy({ mode, owner, policy, paths }, { now = () => Date.
          * @param {string} jid - The bare JID of the recipient, or of the room
          * @param {Object} [target]
          * @param {boolean} [target.room] - Whether the JID is a room
-         * @returns {{ allowed: true, route: 'direct'|'draft' } | { allowed: false, rule: string, message: string }}
+         * @returns {import('./types').Verdict}
          */
         admit(jid, { room = false } = {}) {
             return decide(jid, room, true);
@@ -105,6 +106,12 @@ export function createPolicy({ mode, owner, policy, paths }, { now = () => Date.
         },
     };
 
+    /**
+     * @param {string} jid
+     * @param {boolean} room
+     * @param {boolean} consume
+     * @returns {import('./types').Verdict}
+     */
     function decide(jid, room, consume) {
         const verdict = routeOf(jid, room);
         if (!verdict.allowed) return verdict;
@@ -140,10 +147,11 @@ export function createPolicy({ mode, owner, policy, paths }, { now = () => Date.
 }
 
 /**
- * @param {string} rule - Names the rule that refused the send
+ * @param {import('./types').PolicyRule} rule - Names the rule that refused the send
  * @param {string} message - What to do about it
  * @param {Object} [options]
  * @param {boolean} [options.transient=false] - Whether the same send is let through later
+ * @returns {import('./types').Refusal}
  */
 function refused(rule, message, { transient = false } = {}) {
     return { allowed: false, rule, message, transient };

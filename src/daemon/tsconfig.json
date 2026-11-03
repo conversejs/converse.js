@@ -1,0 +1,25 @@
+{
+  // Type-checks the daemon, which runs on Node. Nothing is emitted: the
+  // package ships its sources, and its types.ts.
+  "include": ["**/*.js", "**/*.ts"],
+  "exclude": ["tests/**/*"],
+  "compilerOptions": {
+    "target": "es2024",
+    "module": "esnext",
+    // As Node resolves packages, through their "node" export condition, but
+    // without asking for file extensions on `import('./types')`.
+    "moduleResolution": "bundler",
+    "customConditions": ["node"],
+    "lib": ["es2024"],
+    "types": ["node"],
+
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  }
+}

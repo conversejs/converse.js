@@ -9,7 +9,7 @@ const { Strophe } = converse.env;
 
 /**
  * The ids a message can be addressed by, its DTO id first.
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  */
 export function getIDs(message) {
     return [message.getArchiveID(), message.get('origin_id'), message.get('msgid')].filter(Boolean);
@@ -17,14 +17,14 @@ export function getIDs(message) {
 
 /**
  * A message in a room is one a room's occupants exchange, not a chat.
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  */
 export function isRoomMessage(message) {
     return message.get('type') === 'groupchat';
 }
 
 /**
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @returns {string} The bare JID of the conversation the message is in
  */
 export const conversationOf = (message) => message.collection.chatbox.get('jid');
@@ -39,7 +39,7 @@ export function toConversationDTO(jid, contact) {
 }
 
 /**
- * @param {import('@converse/headless').ChatRoom} room
+ * @param {import('@converse/headless').MUC} room
  * @returns {import('./types').ConversationDTO}
  */
 export function toRoomDTO(room) {
@@ -47,7 +47,7 @@ export function toRoomDTO(room) {
 }
 
 /**
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @param {string} conversation - Bare JID of the conversation
  * @param {string} own_jid
  * @returns {import('./types').MessageDTO}
@@ -57,6 +57,7 @@ export function toMessageDTO(message, conversation, own_jid) {
     const id = getIDs(message)[0];
     const retracted = message.isRetracted();
     const undecryptable = isUndecryptable(message);
+    /** @type {Omit<import('./types').MessageDTO, 'id'|'conversation'|'from'|'nick'>} */
     const rest = {
         direction: outgoing ? 'outgoing' : 'incoming',
         time: message.get('time'),
@@ -82,7 +83,7 @@ export function toMessageDTO(message, conversation, own_jid) {
 }
 
 /**
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @returns {import('./types').MessageDTO['status']}
  */
 function getStatus(message) {
@@ -93,7 +94,7 @@ function getStatus(message) {
 /**
  * A send that didn't go out. Headless keeps it, with the reason, so that it can
  * be shown and sent again.
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  */
 export function isFailedSend(message) {
     return message.get('send_status') === 'failed';
@@ -101,7 +102,7 @@ export function isFailedSend(message) {
 
 /**
  * The text a message says: its plaintext if it was encrypted, else its body.
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @returns {string|undefined}
  */
 export function getText(message) {
@@ -112,7 +113,7 @@ export function getText(message) {
  * How a message was encrypted, and whether it could be read. Null for a plain
  * message. A message that couldn't be decrypted is kept, with its reason, so
  * that it doesn't read as a gap in the conversation.
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @returns {import('./types').Encryption|null}
  */
 function getEncryption(message) {
@@ -130,7 +131,7 @@ function getEncryption(message) {
  * keys them by reactor instead, and in a room by whatever identifies the
  * occupant best, so a room's reactors are named here the way a room message's
  * sender is: by occupant JID, where the occupant can be found.
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @returns {Record<string, string[]>}
  */
 function getReactions(message) {
@@ -147,7 +148,7 @@ function getReactions(message) {
 }
 
 /**
- * @param {import('@converse/headless').ChatRoom} room
+ * @param {import('@converse/headless').MUC} room
  * @param {string} key - An occupant id, a bare JID, or already an occupant JID
  */
 function toOccupantJID(room, key) {
@@ -161,7 +162,7 @@ function toOccupantJID(room, key) {
  * The DTO id of the message a reply answers, if we hold it, so that it can be
  * found in what `read` shows. Otherwise the id the reply gave, which is the
  * best there is.
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @returns {string|null}
  */
 function getReplyTarget(message) {

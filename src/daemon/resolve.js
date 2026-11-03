@@ -30,7 +30,7 @@ export function parseJID(value, name) {
  * is a name, and must match exactly one contact or room: a name matching
  * none, or several, is refused rather than guessed at. A JID that is also the
  * name of some other contact is refused too, since the text could mean either.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} value
  * @param {string} name - The parameter's name, for the error message.
  * @returns {Promise<string>} The bare JID
@@ -64,10 +64,10 @@ export async function resolveJID(_converse, value, name) {
 /**
  * What a command takes for a room: a JID, or the name of a room the daemon
  * knows. Unlike {@link resolveJID}, a contact's name doesn't count.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} value
  * @param {string} name - The parameter's name, for the error message.
- * @returns {Promise<string>} The bare JID of the room
+ * @returns {string} The bare JID of the room
  */
 export function resolveRoomJID(_converse, value, name) {
     const text = typeof value === 'string' ? value.trim() : '';
@@ -94,7 +94,7 @@ export function resolveRoomJID(_converse, value, name) {
  * Refuses a JID that is also the name of another contact, since the text could
  * mean either. Without a connection there's no roster to check, so the JID is
  * taken as it is.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} jid - The bare JID the text parses to
  * @param {string} text - What the client typed
  * @returns {Promise<string>}
@@ -115,7 +115,7 @@ async function checkJIDIsNotAName(_converse, jid, text) {
 /**
  * Whether the roster has been loaded. Headless loads it when the daemon first
  * connects, so until then, waiting for it, as `api.contacts.get` does, never ends.
- * @param {import('@converse/headless').ConversePrivateGlobal['api']} api
+ * @param {import('./types').ConversePrivateGlobal['api']} api
  */
 export function rosterLoaded(api) {
     // `waitUntil` hands back the open promise itself, which says whether it has settled.
@@ -124,7 +124,7 @@ export function rosterLoaded(api) {
 }
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal['api']} api
+ * @param {import('./types').ConversePrivateGlobal['api']} api
  * @param {string} what - What needs the roster, for the error message
  */
 export function requireRoster(api, what) {
@@ -138,7 +138,7 @@ export function requireRoster(api, what) {
 }
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
  */
 function requireConnection(_converse, text) {
@@ -153,7 +153,7 @@ function requireConnection(_converse, text) {
 
 /**
  * The contacts and rooms a name matches, by JID, without duplicates.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
  * @returns {Promise<{jid: string, name: string|null}[]>}
  */
@@ -166,7 +166,7 @@ async function matchNames(_converse, text) {
 
 /**
  * The rooms the daemon knows whose name is the text, ignoring case.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
  * @returns {{jid: string, name: string|null}[]}
  */

@@ -119,7 +119,7 @@ function settledStatus(room) {
  * Rejoins the rooms the daemon is meant to be in, all at once, so a room that
  * doesn't answer doesn't hold up the rest. Called once it has logged in. A
  * room that can't be rejoined is logged and left for another time.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {ReturnType<typeof createRoomStore>} store
  */
 export async function rejoinRooms(_converse, store) {
@@ -141,7 +141,7 @@ export async function rejoinRooms(_converse, store) {
 }
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {import('./types').Config} deps.config
  * @param {ReturnType<typeof import('./policy.js').createPolicy>} deps.policy
@@ -234,7 +234,7 @@ export function roomMethods(_converse, { config, policy, store }) {
          * @returns {Promise<{ conversation: import('./types').ConversationDTO, was_in: boolean }>}
          */
         async 'rooms.leave'({ room }, client) {
-            const jid = await resolveRoomJID(_converse, room, 'room');
+            const jid = resolveRoomJID(_converse, room, 'room');
             checkAccess(client, jid);
             const model = await api.rooms.get(jid);
             const entered = model?.isEntered() ?? false;
@@ -256,7 +256,7 @@ export function roomMethods(_converse, { config, policy, store }) {
          * @returns {Promise<{ occupants: import('./types').OccupantDTO[] }>}
          */
         async 'rooms.occupants'({ room }) {
-            const jid = await resolveRoomJID(_converse, room, 'room');
+            const jid = resolveRoomJID(_converse, room, 'room');
             const model = await api.rooms.get(jid);
             if (!model?.isEntered()) {
                 throw new RPCError(ERRORS.NOT_FOUND, `We aren't in ${jid}, so we can't see who is in it.`);

@@ -121,7 +121,7 @@ export interface MessagesAware {
     getReferencedMessage(reply_to_id: string): BaseMessage | undefined;
     takeReplyAttributes(attrs?: MessageAttributes): Pick<MessageAttributes, 'reply_to_id' | 'reply_to'>;
     addReplyFallback(attrs: MessageAttributes): MessageAttributes;
-    sendMessage(attrs?: any): Promise<BaseMessage>;
+    sendMessage(attrs?: any, options?: { replying_to?: BaseMessage; correcting?: BaseMessage }): Promise<BaseMessage>;
     retractOwnMessage(message: BaseMessage): void;
     sendFiles(files: File[] | FileList): Promise<BaseMessage[]>;
     setEditable(attrs: any, send_time: string): void;

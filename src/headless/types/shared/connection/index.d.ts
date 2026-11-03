@@ -127,7 +127,7 @@ export class MockConnection extends Connection {
     /** @returns {InstanceType<typeof import('strophe.js').Strophe.SASLSHA256>} */
     get _sasl_mechanism(): InstanceType<typeof import("strophe.js").Strophe.SASLSHA256>;
     _processRequest(): void;
-    sendIQ(iq: any, callback: any, errback: any): string;
+    sendIQ(iq: any, callback: any, errback: any, timeout: any): string;
     send(stanza: any): void;
 }
 export {};

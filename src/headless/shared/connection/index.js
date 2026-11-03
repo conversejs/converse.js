@@ -545,11 +545,11 @@ export class MockConnection extends Connection {
         // Don't attempt to send out stanzas
     }
 
-    sendIQ(iq, callback, errback) {
+    sendIQ(iq, callback, errback, timeout) {
         iq = iq.tree?.() ?? iq;
 
         this.IQ_stanzas.push(iq);
-        const id = super.sendIQ(iq, callback, errback);
+        const id = super.sendIQ(iq, callback, errback, timeout);
         this.IQ_ids.push(id);
         return id;
     }

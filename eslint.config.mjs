@@ -295,4 +295,11 @@ export default defineConfig([{
             }],
         }],
     },
+}, {
+    // The core rule takes the parameters of a method signature in a type for
+    // unused variables. @typescript-eslint/no-unused-vars checks these files.
+    files: ["**/*.ts"],
+    rules: {
+        "no-unused-vars": "off",
+    },
 }]);

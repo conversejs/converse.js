@@ -5,7 +5,7 @@
  * under our name.
  * @module @converse/daemon/presence
  */
-import { ERRORS, RPCError } from './protocol.js';
+import { ERRORS, RPCError, requireConnected } from './protocol.js';
 
 /** The availability values a client may set. */
 export const SHOW_VALUES = ['online', 'chat', 'away', 'xa', 'dnd'];
@@ -42,13 +42,7 @@ export function presenceMethods(_converse, { config }) {
             if (message !== undefined && typeof message !== 'string') {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"message" must be text.');
             }
-            if (!api.connection.connected()) {
-                throw new RPCError(
-                    ERRORS.NOT_CONNECTED,
-                    "The daemon is not connected to the server, so your presence wasn't changed. " +
-                        'Check "daemon.status", then try again.',
-                );
-            }
+            requireConnected(api, "your presence wasn't changed");
 
             await api.user.status.set(show, message);
             // Report what headless made of it, which is what contacts will see.

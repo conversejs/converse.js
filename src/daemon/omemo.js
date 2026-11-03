@@ -10,7 +10,7 @@
  * @module @converse/daemon/omemo
  */
 import { api, constants, u } from '@converse/headless';
-import { ERRORS, RPCError } from './protocol.js';
+import { ERRORS, RPCError, requireConnected } from './protocol.js';
 import { resolveJID } from './resolve.js';
 
 const { TRUSTED, UNDECIDED, UNTRUSTED } = constants;
@@ -87,13 +87,7 @@ export function omemoMethods(_converse) {
      * @returns {Promise<string>}
      */
     async function ready() {
-        if (!api.connection.connected()) {
-            throw new RPCError(
-                ERRORS.NOT_CONNECTED,
-                "The daemon isn't connected to the server, so OMEMO devices can't be read. " +
-                    'Check "daemon.status", then try again.',
-            );
-        }
+        requireConnected(_converse.api, "OMEMO devices can't be read");
         if (!api.omemo) {
             throw new RPCError(ERRORS.INTERNAL_ERROR, "OMEMO isn't available in this daemon.");
         }

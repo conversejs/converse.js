@@ -6,7 +6,7 @@
 import { u } from '@converse/headless';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
-import { ownMessagesOnly } from './send.js';
+import { checkMessage, ownMessagesOnly } from './send.js';
 import { createScheduler } from './scheduler.js';
 
 /**
@@ -33,7 +33,7 @@ export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
      */
     async function schedule({ to, body, reply_to, correct, at }, client) {
         const jid = await resolveJID(_converse, to, 'to');
-        validateMessage(body, reply_to, correct);
+        checkMessage(body, reply_to, correct, 'schedule');
         const send_at = futureTime(at);
         const add = () => addSchedule({ to: jid, body, reply_to, correct, send_at }, client);
         return routeSend(client, jid, {
@@ -129,18 +129,6 @@ function canManage(client, scheduled) {
     if (client.access === 'full') return true;
     const { metadata = {} } = scheduled.toJSON();
     return metadata.access === 'restricted' && !!client.consumer && metadata.consumer === client.consumer;
-}
-
-function validateMessage(body, reply_to, correct) {
-    if (typeof body !== 'string' || !body.trim()) {
-        throw new RPCError(ERRORS.INVALID_PARAMS, 'There is nothing to schedule: "body" is empty.');
-    }
-    if (reply_to !== undefined && correct !== undefined) {
-        throw new RPCError(
-            ERRORS.INVALID_PARAMS,
-            'A message either replies or corrects: pass one of "reply_to" and "correct".',
-        );
-    }
 }
 
 function futureTime(value) {

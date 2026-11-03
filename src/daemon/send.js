@@ -6,7 +6,7 @@
 import { converse } from '@converse/headless';
 import { toMessageDTO } from './dto.js';
 import { notRetracted } from './find.js';
-import { ERRORS, RPCError } from './protocol.js';
+import { ERRORS, RPCError, requireConnected } from './protocol.js';
 import { notJoined } from './routing.js';
 
 const { u } = converse.env;
@@ -25,7 +25,7 @@ const { u } = converse.env;
  */
 export async function sendMessage(_converse, jid, body, targets = {}, attributes = {}) {
     const { api } = _converse;
-    if (!api.connection.connected()) throw notConnected();
+    requireConnected(api, 'nothing was sent');
 
     const room = await api.rooms.get(jid);
     if (room) {
@@ -63,7 +63,7 @@ async function send(chatbox, attrs, targets) {
  */
 export async function retractMessage(_converse, message, id) {
     notRetracted(message, id);
-    if (!_converse.api.connection.connected()) throw notConnected();
+    requireConnected(_converse.api, 'nothing was sent');
 
     const chatbox = message.collection.chatbox;
     await chatbox.retractOwnMessage(message);
@@ -88,7 +88,7 @@ export async function retractMessage(_converse, message, id) {
  */
 export async function sendReaction(_converse, message, reaction, remove) {
     const { api } = _converse;
-    if (!api.connection.connected()) throw notConnected();
+    requireConnected(api, 'nothing was sent');
 
     const chatbox = message.collection.chatbox;
     const mine = message.get('reactions')?.[u.reactions.getOwnReactionJID(chatbox)] ?? [];
@@ -167,9 +167,21 @@ const UNSENT = {
     unexpected: 'Nothing was sent, for an unexpected reason. Try again.',
 };
 
-export function notConnected() {
-    return new RPCError(
-        ERRORS.NOT_CONNECTED,
-        'The daemon is not connected to the server, so nothing was sent. Check "daemon.status", then try again.',
-    );
+/**
+ * Refuses a message there's nothing in, or that both replies and corrects.
+ * @param {unknown} body
+ * @param {unknown} reply_to
+ * @param {unknown} correct
+ * @param {string} verb - What would be done with it, such as "send" or "schedule"
+ */
+export function checkMessage(body, reply_to, correct, verb) {
+    if (typeof body !== 'string' || !body.trim()) {
+        throw new RPCError(ERRORS.INVALID_PARAMS, `There is nothing to ${verb}: "body" is empty.`);
+    }
+    if (reply_to !== undefined && correct !== undefined) {
+        throw new RPCError(
+            ERRORS.INVALID_PARAMS,
+            'A message either replies or corrects: pass one of "reply_to" and "correct".',
+        );
+    }
 }

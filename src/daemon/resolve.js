@@ -7,7 +7,7 @@
  * @module @converse/daemon/resolve
  */
 import { constants, converse } from '@converse/headless';
-import { ERRORS, RPCError } from './protocol.js';
+import { ERRORS, RPCError, requireConnected } from './protocol.js';
 
 const { Strophe, u } = converse.env;
 const { CHATROOMS_TYPE } = constants;
@@ -113,6 +113,18 @@ async function checkJIDIsNotAName(_converse, jid, text) {
 }
 
 /**
+ * Names are looked up in the roster and the rooms, which only the server can supply.
+ * @param {import('./types').ConversePrivateGlobal} _converse
+ * @param {string} text
+ */
+function requireConnection(_converse, text) {
+    requireConnected(
+        _converse.api,
+        `the name "${text}" can't be looked up in your contacts and rooms. Use a JID instead`,
+    );
+}
+
+/**
  * Whether the roster has been loaded. Headless loads it when the daemon first
  * connects, so until then, waiting for it, as `api.contacts.get` does, never ends.
  * @param {import('./types').ConversePrivateGlobal['api']} api
@@ -133,20 +145,6 @@ export function requireRoster(api, what) {
             ERRORS.NOT_CONNECTED,
             `${what} needs your contacts, which the daemon loads when it first connects, and it hasn't ` +
                 'connected yet. Check "daemon.status", then try again.',
-        );
-    }
-}
-
-/**
- * @param {import('./types').ConversePrivateGlobal} _converse
- * @param {string} text
- */
-function requireConnection(_converse, text) {
-    if (!_converse.api.connection.connected()) {
-        throw new RPCError(
-            ERRORS.NOT_CONNECTED,
-            `"${text}" is a name, and names are looked up in your contacts and rooms, which needs the daemon to be ` +
-                'connected. Check "daemon.status", then try again, or use the JID.',
         );
     }
 }

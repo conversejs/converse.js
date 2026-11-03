@@ -6,11 +6,11 @@
  * module decides what a match, or the lack of one, means for the request.
  * @module @converse/daemon/resolve
  */
-import { constants, converse } from '@converse/headless';
-import { ERRORS, RPCError, requireConnected } from './protocol.js';
+import { api, converse } from '@converse/headless';
+import { ERRORS, RPCError } from './protocol.js';
+import { requireConnected } from './session.js';
 
 const { Strophe, u } = converse.env;
-const { CHATROOMS_TYPE } = constants;
 
 /**
  * @param {unknown} value
@@ -30,22 +30,21 @@ export function parseJID(value, name) {
  * is a name, and must match exactly one contact or room: a name matching
  * none, or several, is refused rather than guessed at. A JID that is also the
  * name of some other contact is refused too, since the text could mean either.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} value
  * @param {string} name - The parameter's name, for the error message.
  * @returns {Promise<string>} The bare JID
  */
-export async function resolveJID(_converse, value, name) {
+export async function resolveJID(value, name) {
     const text = typeof value === 'string' ? value.trim() : '';
     if (!text) {
         throw new RPCError(ERRORS.INVALID_PARAMS, `"${name}" must be a JID, or the name of a contact or room.`);
     }
-    if (u.isValidJID(text)) return checkJIDIsNotAName(_converse, parseJID(text, name), text);
+    if (u.isValidJID(text)) return checkJIDIsNotAName(parseJID(text, name), text);
 
     // Names are looked up in the roster and the rooms, which only the server can supply.
-    requireConnection(_converse, text);
+    requireConnection(text);
 
-    const matches = await matchNames(_converse, text);
+    const matches = await matchNames(text);
     if (matches.length === 1) return matches[0].jid.toLowerCase();
     if (matches.length === 0) {
         throw new RPCError(
@@ -65,20 +64,19 @@ export async function resolveJID(_converse, value, name) {
 /**
  * What a command takes for a room: a JID, or the name of a room the daemon
  * knows. Unlike {@link resolveJID}, a contact's name doesn't count.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} value
  * @param {string} name - The parameter's name, for the error message.
- * @returns {string} The bare JID of the room
+ * @returns {Promise<string>} The bare JID of the room
  */
-export function resolveRoomJID(_converse, value, name) {
+export async function resolveRoomJID(value, name) {
     const text = typeof value === 'string' ? value.trim() : '';
     if (!text) {
         throw new RPCError(ERRORS.INVALID_PARAMS, `"${name}" must be the JID of a room, or the name of one you know.`);
     }
     if (u.isValidJID(text)) return parseJID(text, name);
 
-    requireConnection(_converse, text);
-    const matches = roomsNamed(_converse, text);
+    requireConnection(text);
+    const matches = await roomsNamed(text);
     if (matches.length === 1) return matches[0].jid;
     if (matches.length === 0) {
         throw new RPCError(
@@ -95,15 +93,14 @@ export function resolveRoomJID(_converse, value, name) {
  * Refuses a JID that is also the name of another contact, since the text could
  * mean either. Without a connection there's no roster to check, so the JID is
  * taken as it is.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} jid - The bare JID the text parses to
  * @param {string} text - What the client typed
  * @returns {Promise<string>}
  */
-async function checkJIDIsNotAName(_converse, jid, text) {
-    if (!_converse.api.connection.connected()) return jid;
+async function checkJIDIsNotAName(jid, text) {
+    if (!api.connection.connected()) return jid;
 
-    const named = (await _converse.api.contacts.resolve({ name: text })).filter((match) => match.jid !== jid);
+    const named = (await api.contacts.resolve({ name: text })).filter((match) => match.jid !== jid);
     if (named.length === 0) return jid;
 
     throw new RPCError(
@@ -115,65 +112,33 @@ async function checkJIDIsNotAName(_converse, jid, text) {
 
 /**
  * Names are looked up in the roster and the rooms, which only the server can supply.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
  */
-function requireConnection(_converse, text) {
-    requireConnected(
-        _converse.api,
-        `the name "${text}" can't be looked up in your contacts and rooms. Use a JID instead`,
-    );
-}
-
-/**
- * Whether the roster has been loaded. Headless loads it when the daemon first
- * connects, so until then, waiting for it, as `api.contacts.get` does, never ends.
- * @param {import('./types').ConversePrivateGlobal['api']} api
- */
-export function rosterLoaded(api) {
-    // `waitUntil` hands back the open promise itself, which says whether it has settled.
-    const fetched = /** @type {{ isResolved?: boolean }|null} */ (api.waitUntil('rosterContactsFetched'));
-    return !!fetched?.isResolved;
-}
-
-/**
- * @param {import('./types').ConversePrivateGlobal['api']} api
- * @param {string} what - What needs the roster, for the error message
- */
-export function requireRoster(api, what) {
-    if (!rosterLoaded(api)) {
-        throw new RPCError(
-            ERRORS.NOT_CONNECTED,
-            `${what} needs your contacts, which the daemon loads when it first connects, and it hasn't ` +
-                'connected yet. Check "daemon.status", then try again.',
-            { see: ['daemon.status'] },
-        );
-    }
+function requireConnection(text) {
+    requireConnected(`the name "${text}" can't be looked up in your contacts and rooms. Use a JID instead`);
 }
 
 /**
  * The contacts and rooms a name matches, by JID, without duplicates.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
  * @returns {Promise<{jid: string, name: string|null}[]>}
  */
-async function matchNames(_converse, text) {
-    const contacts = await _converse.api.contacts.resolve({ name: text });
+async function matchNames(text) {
+    const contacts = await api.contacts.resolve({ name: text });
     const by_jid = new Map(contacts.map((match) => [match.jid, match]));
-    for (const room of roomsNamed(_converse, text)) by_jid.set(room.jid, room);
+    for (const room of await roomsNamed(text)) by_jid.set(room.jid, room);
     return [...by_jid.values()];
 }
 
 /**
  * The rooms the daemon knows whose name is the text, ignoring case.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
- * @returns {{jid: string, name: string|null}[]}
+ * @returns {Promise<{jid: string, name: string|null}[]>}
  */
-function roomsNamed(_converse, text) {
+async function roomsNamed(text) {
     const wanted = text.toLowerCase();
-    return _converse.state.chatboxes
-        .filter((box) => box.get('type') === CHATROOMS_TYPE)
+    const rooms = /** @type {import('@converse/headless').MUC[]} */ (await api.rooms.get());
+    return rooms
         .filter((room) => (room.get('name') ?? '').trim().toLowerCase() === wanted)
         .map((room) => ({ jid: room.get('jid'), name: room.get('name').trim() }));
 }

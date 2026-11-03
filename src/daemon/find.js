@@ -2,25 +2,25 @@
  * Finding the messages that a request names by id.
  * @module @converse/daemon/find
  */
-import { conversationOf, getIDs } from './dto.js';
+import { api } from '@converse/headless';
+import { conversationOf, getID, getIDs } from './dto.js';
 import { isMessage } from './history.js';
 import { ERRORS, RPCError } from './protocol.js';
 
 /**
  * Finds a message by its id, or a unique prefix of it, among those held for
  * one conversation, or for all of them.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} id
  * @param {string} [jid] - The bare JID of the conversation to look in
  * @returns {Promise<import('@converse/headless').BaseMessage>}
  */
-export async function findTarget(_converse, id, jid) {
+export async function findTarget(id, jid) {
     if (typeof id !== 'string' || !id) {
         throw new RPCError(ERRORS.INVALID_PARAMS, 'A message id must be one that "messages.list" gave.', {
             see: ['messages.list'],
         });
     }
-    const messages = (await heldConversations(_converse, jid)).flatMap((c) => c.messages.models.filter(isMessage));
+    const messages = (await heldConversations(jid)).flatMap((c) => c.messages.models.filter(isMessage));
     const where = jid ? 'in this conversation' : 'in any conversation';
     return findMessage(messages, id, where);
 }
@@ -28,12 +28,10 @@ export async function findTarget(_converse, id, jid) {
 /**
  * The conversations held locally, with their messages fetched: the one with
  * `jid`, or every one.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} [jid] - The bare JID of the conversation
  * @returns {Promise<(import('@converse/headless').ChatBox|import('@converse/headless').MUC)[]>}
  */
-export async function heldConversations(_converse, jid) {
-    const { api } = _converse;
+export async function heldConversations(jid) {
     const chatboxes = jid
         ? [(await api.rooms.get(jid)) ?? (await api.chats.get(jid))].filter(Boolean)
         : [...((await api.chats.get()) ?? []), ...((await api.rooms.get()) ?? [])];
@@ -43,13 +41,12 @@ export async function heldConversations(_converse, jid) {
 
 /**
  * Like {@link findTarget}, for a message that must be one we sent.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} id
  * @param {string|undefined} jid - The bare JID of the conversation to look in, else all of them
  * @param {string} verb - What's to be done to it, for the error message
  */
-export async function findOwn(_converse, id, jid, verb) {
-    return ownedBy(await findTarget(_converse, id, jid), id, verb);
+export async function findOwn(id, jid, verb) {
+    return ownedBy(await findTarget(id, jid), id, verb);
 }
 
 /**
@@ -95,15 +92,15 @@ export function findMessage(messages, id, where = 'in this conversation') {
     if (exact.length === 1) return exact[0];
     if (exact.length > 1) {
         throw new RPCError(ERRORS.AMBIGUOUS, `More than one message has the id "${id}" ${where}.`, {
-            candidates: exact.map((m) => `${getIDs(m)[0]} in ${conversationOf(m)}`),
+            candidates: exact.map((m) => `${getID(m)} in ${conversationOf(m)}`),
         });
     }
 
-    const matches = id ? messages.filter((m) => getIDs(m)[0]?.startsWith(id)) : [];
+    const matches = id ? messages.filter((m) => getID(m)?.startsWith(id)) : [];
     if (matches.length === 1) return matches[0];
     if (matches.length > 1) {
         throw new RPCError(ERRORS.AMBIGUOUS, `More than one message has an id starting with "${id}".`, {
-            candidates: matches.map((m) => getIDs(m)[0]),
+            candidates: matches.map(getID),
         });
     }
     throw new RPCError(ERRORS.NOT_FOUND, `No message with id "${id}" ${where}.`);

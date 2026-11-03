@@ -4,6 +4,7 @@
  */
 import { converse } from '@converse/headless';
 import { isUndecryptable } from './history.js';
+import { ownJID } from './session.js';
 
 const { Strophe } = converse.env;
 
@@ -14,6 +15,12 @@ const { Strophe } = converse.env;
 export function getIDs(message) {
     return [message.getArchiveID(), message.get('origin_id'), message.get('msgid')].filter(Boolean);
 }
+
+/**
+ * @param {import('@converse/headless').BaseMessage} message
+ * @returns {string|undefined} The id its DTO has
+ */
+export const getID = (message) => getIDs(message)[0];
 
 /**
  * A message in a room is one a room's occupants exchange, not a chat.
@@ -48,13 +55,12 @@ export function toRoomDTO(room) {
 
 /**
  * @param {import('@converse/headless').BaseMessage} message
- * @param {string} conversation - Bare JID of the conversation
- * @param {string} own_jid
  * @returns {import('./types').MessageDTO}
  */
-export function toMessageDTO(message, conversation, own_jid) {
+export function toMessageDTO(message) {
+    const conversation = conversationOf(message);
     const outgoing = message.get('sender') === 'me';
-    const id = getIDs(message)[0];
+    const id = getID(message);
     const retracted = message.isRetracted();
     const undecryptable = isUndecryptable(message);
     /** @type {Omit<import('./types').MessageDTO, 'id'|'conversation'|'from'|'nick'>} */
@@ -78,7 +84,7 @@ export function toMessageDTO(message, conversation, own_jid) {
         const from = message.get('from');
         return { id, conversation, from, nick: message.get('nick') ?? Strophe.getResourceFromJid(from), ...rest };
     }
-    const from = outgoing ? own_jid : Strophe.getBareJidFromJid(message.get('from'));
+    const from = outgoing ? ownJID() : Strophe.getBareJidFromJid(message.get('from'));
     return { id, conversation, from, nick: null, ...rest };
 }
 
@@ -170,5 +176,5 @@ function getReplyTarget(message) {
     if (!reply_to_id) return null;
 
     const target = message.collection?.chatbox?.getReferencedMessage(reply_to_id);
-    return target ? getIDs(target)[0] : reply_to_id;
+    return target ? getID(target) : reply_to_id;
 }

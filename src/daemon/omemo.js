@@ -10,8 +10,9 @@
  * @module @converse/daemon/omemo
  */
 import { api, constants, u } from '@converse/headless';
-import { ERRORS, RPCError, requireConnected } from './protocol.js';
+import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
+import { ownJID, requireConnected } from './session.js';
 
 const { TRUSTED, UNDECIDED, UNTRUSTED } = constants;
 
@@ -23,11 +24,8 @@ const TRUST_NAMES = { [TRUSTED]: 'trusted', [UNTRUSTED]: 'untrusted', [UNDECIDED
 const TRUST_VALUES = { trusted: TRUSTED, untrusted: UNTRUSTED, undecided: UNDECIDED };
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  */
-export function omemoMethods(_converse) {
-    const ownJID = () => _converse.session.get('bare_jid');
-
+export function omemoMethods() {
     return {
         /**
          * The OMEMO devices of a conversation's people, or of ours when given the
@@ -38,7 +36,7 @@ export function omemoMethods(_converse) {
          * @returns {Promise<import('./types').DeviceList>}
          */
         async 'omemo.devices.list'({ conversation }) {
-            const jid = await resolveJID(_converse, conversation, 'conversation');
+            const jid = await resolveJID(conversation, 'conversation');
             const own_id = await ready();
             const list = await api.omemo.devicelists.get(jid, true);
             const own = jid === ownJID();
@@ -63,7 +61,7 @@ export function omemoMethods(_converse) {
          * @returns {Promise<import('./types').DeviceDTO>}
          */
         async 'omemo.devices.trust'({ conversation, device, trust }) {
-            const jid = await resolveJID(_converse, conversation, 'conversation');
+            const jid = await resolveJID(conversation, 'conversation');
             if (!Object.hasOwn(TRUST_VALUES, trust)) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"trust" must be "trusted", "untrusted" or "undecided".');
             }
@@ -88,12 +86,11 @@ export function omemoMethods(_converse) {
      * @returns {Promise<string>}
      */
     async function ready() {
-        requireConnected(_converse.api, "OMEMO devices can't be read");
+        requireConnected("OMEMO devices can't be read");
         if (!api.omemo) {
             throw new RPCError(ERRORS.INTERNAL_ERROR, "OMEMO isn't available in this daemon.");
         }
-        await api.waitUntil('OMEMOInitialized');
-        return String(_converse.state.omemo_store.get('device_id'));
+        return String(await api.omemo.getDeviceID());
     }
 }
 

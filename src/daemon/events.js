@@ -4,11 +4,12 @@
  * the connection that made them and end with it.
  * @module @converse/daemon/events
  */
-import { converse } from '@converse/headless';
+import { api, converse } from '@converse/headless';
 import { mayCall } from './access.js';
 import { isRoomMessage, toMessageDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
+import { ownJID } from './session.js';
 
 const { Strophe } = converse.env;
 
@@ -16,14 +17,10 @@ const EVENT_TYPES = ['message', 'draft'];
 const DIRECTIONS = ['incoming', 'outgoing'];
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} options
  * @param {import('./types').Mode} options.mode - Which decides who may see drafts
  */
-export function createEvents(_converse, { mode }) {
-    const { api } = _converse;
-    const ownJID = () => _converse.session.get('bare_jid');
-
+export function createEvents({ mode }) {
     let next_id = 1;
     /** @type {Map<number, import('./types').Subscription>} */
     const subscriptions = new Map();
@@ -45,7 +42,7 @@ export function createEvents(_converse, { mode }) {
     function publish(chatbox, message) {
         if (message.get('is_archived')) return;
 
-        const dto = toMessageDTO(message, chatbox.get('jid'), ownJID());
+        const dto = toMessageDTO(message);
         const room = isRoomMessage(message);
         const sender = {
             sender: room ? roomSender(message, dto) : dto.from,
@@ -120,7 +117,7 @@ export function createEvents(_converse, { mode }) {
              * @returns {Promise<{ subscription: number }>}
              */
             async 'events.subscribe'(params, client) {
-                const { type, filter, once } = await parseSubscription(_converse, params);
+                const { type, filter, once } = await parseSubscription(params);
                 // A draft event carries the whole draft, so it's for those who may see the drafts.
                 if (type === 'draft' && !mayCall('drafts.list', client.access, mode)) {
                     throw new RPCError(
@@ -160,14 +157,10 @@ export function createEvents(_converse, { mode }) {
 }
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} params
  * @returns {Promise<{ type: import('./types').Subscription['type'], filter: import('./types').EventFilter, once: boolean }>}
  */
-async function parseSubscription(
-    _converse,
-    { type = 'message', conversation, from, direction, mention = false, once = false },
-) {
+async function parseSubscription({ type = 'message', conversation, from, direction, mention = false, once = false }) {
     if (!EVENT_TYPES.includes(type)) {
         throw new RPCError(ERRORS.INVALID_PARAMS, `"type" must be one of: ${EVENT_TYPES.join(', ')}.`);
     }
@@ -180,9 +173,8 @@ async function parseSubscription(
     return {
         type,
         filter: {
-            conversation:
-                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation'),
-            from: from === undefined ? undefined : await resolveJID(_converse, from, 'from'),
+            conversation: conversation === undefined ? undefined : await resolveJID(conversation, 'conversation'),
+            from: from === undefined ? undefined : await resolveJID(from, 'from'),
             direction,
             mention,
         },

@@ -1,6 +1,3 @@
-// Headless exports its private global, but not the global's class.
-export type ConversePrivateGlobal = typeof import('@converse/headless')._converse;
-
 export type Paths = {
     config: string; // The account configuration file
     runtime_dir: string; // Owner-only directory holding the full access socket and the pidfile

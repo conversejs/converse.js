@@ -5,19 +5,18 @@
  * under our name.
  * @module @converse/daemon/presence
  */
-import { ERRORS, RPCError, requireConnected } from './protocol.js';
+import { api } from '@converse/headless';
+import { ERRORS, RPCError } from './protocol.js';
+import { requireConnected } from './session.js';
 
 /** The availability values a client may set. */
 export const SHOW_VALUES = ['online', 'chat', 'away', 'xa', 'dnd'];
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {import('./types').Config} deps.config
  */
-export function presenceMethods(_converse, { config }) {
-    const { api } = _converse;
-
+export function presenceMethods({ config }) {
     return {
         /**
          * Sets our availability, and optionally our status message. Without a
@@ -42,13 +41,13 @@ export function presenceMethods(_converse, { config }) {
             if (message !== undefined && typeof message !== 'string') {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"message" must be text.');
             }
-            requireConnected(api, "your presence wasn't changed");
+            requireConnected("your presence wasn't changed");
 
             await api.user.status.set(show, message);
             // Report what headless made of it, which is what contacts will see.
             return {
                 show: await api.user.status.get(),
-                status_message: _converse.state.profile.get('status_message') || null,
+                status_message: (await api.user.status.message.get()) || null,
             };
         },
     };

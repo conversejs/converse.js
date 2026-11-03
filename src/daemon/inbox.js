@@ -6,10 +6,10 @@
  * @module @converse/daemon/inbox
  */
 import { isMessage } from './history.js';
-import { constants } from '@converse/headless';
+import { _converse, api, constants } from '@converse/headless';
 import { isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
-import { rosterLoaded } from './resolve.js';
+import { rosterLoaded } from './session.js';
 
 /**
  * The message attribute holding when the daemon got the message, as a mark
@@ -31,14 +31,10 @@ const isIncoming = (message) => message.get('sender') !== 'me';
 const arrivalOf = (message) => message.get(ARRIVED) ?? 0;
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {ReturnType<typeof import('./cursors.js').createCursors>} cursors
  */
-export function inboxMethods(_converse, cursors) {
-    const { api } = _converse;
-    const ownJID = () => _converse.session.get('bare_jid');
-
-    markArrivals(_converse, cursors);
+export function inboxMethods(cursors) {
+    markArrivals(cursors);
 
     /**
      * The name of the consumer making a request. Its first request sets its
@@ -70,7 +66,7 @@ export function inboxMethods(_converse, cursors) {
             if (last) {
                 const conversation = isRoom(chat)
                     ? toRoomDTO(chat)
-                    : toConversationDTO(jid, rosterLoaded(api) ? await api.contacts.get(jid) : null);
+                    : toConversationDTO(jid, rosterLoaded() ? await api.contacts.get(jid) : null);
                 surveyed.push({ jid, conversation, messages, last_activity: last.get('time') });
             }
         }
@@ -125,7 +121,7 @@ export function inboxMethods(_converse, cursors) {
                     cursors.get(consumer, c.jid)?.arrived ?? 0,
                 );
                 cursors.set(consumer, c.jid, { arrived });
-                const incoming = unseen.filter(isIncoming).map((m) => toMessageDTO(m, c.jid, ownJID()));
+                const incoming = unseen.filter(isIncoming).map(toMessageDTO);
                 if (incoming.length) conversations.push({ conversation: c.conversation, messages: incoming });
             }
             return { conversations };
@@ -138,10 +134,9 @@ export function inboxMethods(_converse, cursors) {
  * conversation. That's what read cursors go by, rather than the message's
  * own time, which can be earlier than a message already read: one caught up
  * from the archive after a reconnect, or one the server delivered late.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {ReturnType<typeof import('./cursors.js').createCursors>} cursors
  */
-function markArrivals(_converse, cursors) {
+function markArrivals(cursors) {
     const { chatboxes } = _converse.state;
 
     /** @param {import('@converse/headless').ChatBox} box */

@@ -16,13 +16,12 @@ const CONTENT_TYPE = 'application/octet-stream';
 const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
  * @param {ReturnType<typeof import('./drafts.js').createDrafter>} deps.queueDraft
  */
-export function fileMethods(_converse, { routeSend, audit, queueDraft }) {
+export function fileMethods({ routeSend, audit, queueDraft }) {
     return {
         /**
          * @param {{ to: string, name: string, content: string }} params - `content` is base64
@@ -31,12 +30,12 @@ export function fileMethods(_converse, { routeSend, audit, queueDraft }) {
          */
         async 'files.upload'(params, client) {
             const upload = checkUpload(params);
-            const jid = await resolveJID(_converse, params.to, 'to');
+            const jid = await resolveJID(params.to, 'to');
             return routeSend(client, jid, {
                 action: 'upload',
                 direct: async (routing) => {
                     const uploaded = await uploadContents(upload);
-                    const message = await sendMessage(_converse, jid, uploaded.url, {}, { oob_url: uploaded.url });
+                    const message = await sendMessage(jid, uploaded.url, {}, { oob_url: uploaded.url });
                     audit.record({
                         consumer: client.consumer,
                         to: jid,

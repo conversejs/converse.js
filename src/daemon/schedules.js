@@ -10,14 +10,13 @@ import { checkMessage, ownMessagesOnly } from './send.js';
 import { createScheduler } from './scheduler.js';
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {(params: Object, client: import('./types').Client) => Promise<import('./types').SendResult>} deps.sendNow
  * @param {import('./types').Mode} deps.mode
  */
-export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
-    const scheduler = createScheduler(_converse, onDue);
+export function scheduleMethods({ routeSend, sendNow, mode }) {
+    const scheduler = createScheduler(onDue);
 
     /**
      * Holds a message to send at a later time. The send policy decides now
@@ -32,7 +31,7 @@ export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
      * @returns {Promise<import('./types').SendResult>}
      */
     async function schedule({ to, body, reply_to, correct, at }, client) {
-        const jid = await resolveJID(_converse, to, 'to');
+        const jid = await resolveJID(to, 'to');
         checkMessage(body, reply_to, correct, 'schedule');
         const send_at = futureTime(at);
         const add = () => addSchedule({ to: jid, body, reply_to, correct, send_at }, client);

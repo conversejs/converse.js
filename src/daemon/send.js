@@ -3,18 +3,18 @@
  * errors that a send which didn't go out is reported with.
  * @module @converse/daemon/send
  */
-import { converse } from '@converse/headless';
+import { api, converse } from '@converse/headless';
 import { toMessageDTO } from './dto.js';
 import { notRetracted } from './find.js';
-import { ERRORS, RPCError, requireConnected } from './protocol.js';
+import { ERRORS, RPCError } from './protocol.js';
 import { notJoined } from './routing.js';
+import { requireConnected } from './session.js';
 
 const { u } = converse.env;
 
 /**
  * Sends a message from the account. Restricted connections only reach this
  * where the policy routes a send directly.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} jid - Bare JID
  * @param {string} body
  * @param {Object} [targets] - Messages of the same conversation
@@ -23,20 +23,19 @@ const { u } = converse.env;
  * @param {Object} [attributes] - More outgoing message attributes, such as an XEP-0066 URL
  * @returns {Promise<import('./types').MessageDTO>}
  */
-export async function sendMessage(_converse, jid, body, targets = {}, attributes = {}) {
-    const { api } = _converse;
-    requireConnected(api, 'nothing was sent');
+export async function sendMessage(jid, body, targets = {}, attributes = {}) {
+    requireConnected('nothing was sent');
 
     const room = await api.rooms.get(jid);
     if (room) {
         if (!room.isEntered()) throw notJoined(jid);
         const message = await send(room, { body, ...attributes }, targets);
-        return toMessageDTO(message, jid, _converse.session.get('bare_jid'));
+        return toMessageDTO(message);
     }
     const chat = await api.chats.get(jid, {}, true);
     await chat.initialized;
     const message = await send(chat, { body, ...attributes }, targets);
-    return toMessageDTO(message, jid, _converse.session.get('bare_jid'));
+    return toMessageDTO(message);
 }
 
 /**
@@ -56,14 +55,13 @@ async function send(chatbox, attrs, targets) {
 
 /**
  * Retracts one of our messages (XEP-0424).
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {import('@converse/headless').BaseMessage} message - One of ours
  * @param {string} id - The id it was asked for by, for the error messages
  * @returns {Promise<import('./types').MessageDTO>} The message, retracted
  */
-export async function retractMessage(_converse, message, id) {
+export async function retractMessage(message, id) {
     notRetracted(message, id);
-    requireConnected(_converse.api, 'nothing was sent');
+    requireConnected('nothing was sent');
 
     const chatbox = message.collection.chatbox;
     await chatbox.retractOwnMessage(message);
@@ -74,27 +72,25 @@ export async function retractMessage(_converse, message, id) {
             `The room didn't confirm the retraction of "${id}", so it may not have happened. Try again.`,
         );
     }
-    return toMessageDTO(message, chatbox.get('jid'), _converse.session.get('bare_jid'));
+    return toMessageDTO(message);
 }
 
 /**
  * Gives a message a reaction (XEP-0444), or withdraws one, keeping the other
  * reactions we gave it.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {import('@converse/headless').BaseMessage} message
  * @param {string} reaction - An emoji
  * @param {boolean} remove - Whether to withdraw it
  * @returns {Promise<import('./types').MessageDTO>} The message reacted to
  */
-export async function sendReaction(_converse, message, reaction, remove) {
-    const { api } = _converse;
-    requireConnected(api, 'nothing was sent');
+export async function sendReaction(message, reaction, remove) {
+    requireConnected('nothing was sent');
 
     const chatbox = message.collection.chatbox;
     const mine = message.get('reactions')?.[u.reactions.getOwnReactionJID(chatbox)] ?? [];
     const emojis = remove ? mine.filter((e) => e !== reaction) : [...new Set([...mine, reaction])];
     await api.reactions.send(message, emojis);
-    return toMessageDTO(message, chatbox.get('jid'), _converse.session.get('bare_jid'));
+    return toMessageDTO(message);
 }
 
 /**
@@ -118,8 +114,8 @@ export async function attempt(send) {
  * @param {import('@converse/headless').ChatBox|import('@converse/headless').MUC} chatbox
  * @param {import('@converse/headless').BaseMessage} message
  */
-export async function resendUnencrypted(_converse, chatbox, message) {
-    const { handled } = await _converse.api.hook('resendFailedMessageUnencrypted', chatbox, {
+export async function resendUnencrypted(chatbox, message) {
+    const { handled } = await api.hook('resendFailedMessageUnencrypted', chatbox, {
         message,
         handled: false,
     });

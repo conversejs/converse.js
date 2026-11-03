@@ -3,7 +3,8 @@
  * while the daemon runs, which suits it, being always on, unlike a browser.
  * @module @converse/daemon/scheduler
  */
-import { Collection, Model, log, u } from '@converse/headless';
+import { Collection, Model, api, log, u } from '@converse/headless';
+import { ownJID } from './session.js';
 
 const MAX_TIMEOUT = 2 ** 31 - 1;
 const RETRY_DELAY = 30_000;
@@ -47,6 +48,7 @@ export class ScheduledMessages extends Collection {
      * @param {number} [options.max_failures]
      */
     initialize(_models, options) {
+        // Orders the listing. Which is due next is worked out from retries too, in #next().
         this.comparator = 'send_at';
         this.storage = options.storage;
         this.on_due = options.on_due;
@@ -187,17 +189,15 @@ export class ScheduledMessages extends Collection {
 /**
  * Keeps the account's scheduled messages for as long as its session lasts,
  * and dispatches them while connected.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {ScheduledMessages['on_due']} on_due
  */
-export function createScheduler(_converse, on_due) {
-    const { api } = _converse;
+export function createScheduler(on_due) {
     let ready = Promise.withResolvers();
     /** @type {ScheduledMessages|null} */
     let schedules = null;
 
     api.listen.on('userSessionInitialized', async () => {
-        const bare_jid = _converse.session.get('bare_jid');
+        const bare_jid = ownJID();
         schedules = new ScheduledMessages([], {
             storage: u.createStore(`converse.scheduled-messages-${bare_jid}`),
             on_due,

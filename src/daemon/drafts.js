@@ -8,6 +8,7 @@
  * file, so they survive a restart.
  * @module @converse/daemon/drafts
  */
+import { api } from '@converse/headless';
 import { withdrawalNotice, draftNotice } from './notices.js';
 import { toMessageDTO } from './dto.js';
 import { findOwn, findTarget } from './find.js';
@@ -56,7 +57,6 @@ export function createDraftStore(file) {
 /**
  * Makes the drafts for every send path, so that they're made one way: stored,
  * delivered to the owner unless the mode holds them, audited and announced.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof createDraftStore>} deps.drafts
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
@@ -64,7 +64,7 @@ export function createDraftStore(file) {
  * @param {string} deps.owner - Bare JID of the user
  * @param {import('./types').Mode} deps.mode
  */
-export function createDrafter(_converse, { drafts, audit, events, owner, mode }) {
+export function createDrafter({ drafts, audit, events, owner, mode }) {
     /**
      * @param {import('./types').Client} client
      * @param {{ to: string } & import('./types').DraftAction} attrs
@@ -77,7 +77,7 @@ export function createDrafter(_converse, { drafts, audit, events, owner, mode })
         // Acting as the user, there's no other account to deliver it to: it waits for approval.
         if (mode !== 'as_user') {
             try {
-                await sendMessage(_converse, owner, draftNotice(added, target));
+                await sendMessage(owner, draftNotice(added, target));
             } catch (e) {
                 // Without the owner's copy, the draft would be one nobody can see, so it's dropped.
                 drafts.remove(added.id);
@@ -101,7 +101,6 @@ export function createDrafter(_converse, { drafts, audit, events, owner, mode })
  * The `drafts.*` methods. Listing and showing drafts is for full access, and
  * in "as_user" mode for restricted access too (see daemon.js). Rejecting one
  * only drops it. Sending one is for full access in "as_user" mode alone.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof createDraftStore>} deps.drafts
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
@@ -109,7 +108,7 @@ export function createDrafter(_converse, { drafts, audit, events, owner, mode })
  * @param {string} deps.owner - Bare JID of the user
  * @param {import('./types').Mode} deps.mode
  */
-export function draftMethods(_converse, { drafts, audit, events, owner, mode }) {
+export function draftMethods({ drafts, audit, events, owner, mode }) {
     /** The drafts being sent right now, so that one can't be sent twice. */
     const sending = new Set();
 
@@ -143,7 +142,7 @@ export function draftMethods(_converse, { drafts, audit, events, owner, mode }) 
          */
         async 'drafts.get'({ id }) {
             const draft = find(id);
-            return { draft, target: 'target' in draft ? await findHeld(_converse, draft.target, draft.to) : null };
+            return { draft, target: 'target' in draft ? await findHeld(draft.target, draft.to) : null };
         },
 
         /**
@@ -169,7 +168,7 @@ export function draftMethods(_converse, { drafts, audit, events, owner, mode }) 
             sending.add(id);
             let message;
             try {
-                message = await deliver(_converse, draft);
+                message = await deliver(draft);
             } finally {
                 sending.delete(id);
             }
@@ -211,8 +210,8 @@ export function draftMethods(_converse, { drafts, audit, events, owner, mode }) 
                 mode,
             });
             events.publishDraft('rejected', draft);
-            if (mode !== 'as_user' && _converse.api.connection.connected()) {
-                await sendMessage(_converse, owner, withdrawalNotice(id));
+            if (mode !== 'as_user' && api.connection.connected()) {
+                await sendMessage(owner, withdrawalNotice(id));
             }
             return { draft };
         },
@@ -222,41 +221,39 @@ export function draftMethods(_converse, { drafts, audit, events, owner, mode }) 
 /**
  * Does what a draft says, as the user: sends it, or applies it to the message
  * it acts on.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {import('./types').Draft} draft
  * @returns {Promise<import('./types').MessageDTO>}
  */
-async function deliver(_converse, draft) {
+async function deliver(draft) {
     const { to } = draft;
     switch (draft.action) {
         case 'retract':
-            return retractMessage(_converse, await findOwn(_converse, draft.target, to, 'retract'), draft.target);
+            return retractMessage(await findOwn(draft.target, to, 'retract'), draft.target);
         case 'react':
-            return sendReaction(_converse, await findTarget(_converse, draft.target, to), draft.body, draft.remove);
+            return sendReaction(await findTarget(draft.target, to), draft.body, draft.remove);
         case 'reply':
-            return sendMessage(_converse, to, draft.body, {
-                replying_to: await findTarget(_converse, draft.target, to),
+            return sendMessage(to, draft.body, {
+                replying_to: await findTarget(draft.target, to),
             });
         case 'correct':
-            return sendMessage(_converse, to, draft.body, {
-                correcting: await findOwn(_converse, draft.target, to, 'correct'),
+            return sendMessage(to, draft.body, {
+                correcting: await findOwn(draft.target, to, 'correct'),
             });
         case 'upload':
-            return sendMessage(_converse, to, draft.body, {}, { oob_url: draft.body });
+            return sendMessage(to, draft.body, {}, { oob_url: draft.body });
         default:
-            return sendMessage(_converse, to, draft.body);
+            return sendMessage(to, draft.body);
     }
 }
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} id
  * @param {string} jid - The bare JID of the conversation
  * @returns {Promise<import('./types').MessageDTO|null>}
  */
-async function findHeld(_converse, id, jid) {
+async function findHeld(id, jid) {
     try {
-        return toMessageDTO(await findTarget(_converse, id, jid), jid, _converse.session.get('bare_jid'));
+        return toMessageDTO(await findTarget(id, jid));
     } catch (e) {
         if (e instanceof RPCError && e.code === ERRORS.NOT_FOUND) return null;
         throw e;

@@ -2,7 +2,7 @@
  * Searching messages, in the server's archive or among those held locally.
  * @module @converse/daemon/search
  */
-import { log } from '@converse/headless';
+import { api, log } from '@converse/headless';
 import { getText } from './dto.js';
 import { heldConversations } from './find.js';
 import { isMessage } from './history.js';
@@ -12,30 +12,27 @@ import { isMessage } from './history.js';
  * server's full-text search of its archive is used where the server offers
  * it. Otherwise, or if the server's search fails, the messages held locally
  * are searched.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
  * @param {string|undefined} jid - The bare JID of the conversation to search, else every one
  * @param {number} limit
  * @returns {Promise<{ method: 'server'|'local', messages: import('@converse/headless').BaseMessage[] }>}
  */
-export async function searchMessages(_converse, text, jid, limit) {
-    const found = await searchServer(_converse, text, jid, limit);
+export async function searchMessages(text, jid, limit) {
+    const found = await searchServer(text, jid, limit);
     if (found) return { method: 'server', messages: found };
 
-    return { method: 'local', messages: await searchLocal(_converse, text, jid, limit) };
+    return { method: 'local', messages: await searchLocal(text, jid, limit) };
 }
 
 /**
  * The matches for `text` that the server's archive holds, or null where the
  * server can't search it. A search that fails is logged, and is treated the same.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
  * @param {string|undefined} jid - The bare JID of the conversation to search, else every one
  * @param {number} limit
  * @returns {Promise<import('@converse/headless').BaseMessage[]|null>}
  */
-async function searchServer(_converse, text, jid, limit) {
-    const { api } = _converse;
+async function searchServer(text, jid, limit) {
     if (!api.connection.connected()) return null;
     try {
         // Created, so that each match is held, and its id works with the other commands.
@@ -50,15 +47,14 @@ async function searchServer(_converse, text, jid, limit) {
 /**
  * The newest `limit` messages held locally whose text has every word of `text`,
  * oldest first.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
  * @param {string|undefined} jid - The bare JID of the conversation to search, else every one
  * @param {number} limit
  * @returns {Promise<import('@converse/headless').BaseMessage[]>}
  */
-async function searchLocal(_converse, text, jid, limit) {
+async function searchLocal(text, jid, limit) {
     const words = fold(text).split(/\s+/);
-    return (await heldConversations(_converse, jid))
+    return (await heldConversations(jid))
         .flatMap((c) => c.messages.models.filter(isMessage))
         .filter((m) => !m.isRetracted())
         .filter((m) => {

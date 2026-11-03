@@ -3,18 +3,16 @@
  * read, upload, or send its content.
  * @module @converse/daemon/routing
  */
+import { api } from '@converse/headless';
 import { ERRORS, RPCError } from './protocol.js';
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof import('./policy.js').createPolicy>} deps.policy
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
  * @param {import('./types').Mode} deps.mode
  */
-export function createSendRouter(_converse, { policy, audit, mode }) {
-    const { api } = _converse;
-
+export function createSendRouter({ policy, audit, mode }) {
     /**
      * @param {import('./types').Client} client
      * @param {string} to - The bare JID of the conversation

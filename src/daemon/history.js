@@ -9,7 +9,8 @@
  * message held.
  * @module @converse/daemon/history
  */
-import { _converse, api, converse, MAMPlaceholderMessage } from '@converse/headless';
+import { api, converse, MAMPlaceholderMessage } from '@converse/headless';
+import { ownJID } from './session.js';
 
 const { Strophe, u } = converse.env;
 
@@ -73,7 +74,7 @@ export async function getPage(chat, { limit, before, since }) {
  * @param {string} jid
  */
 export async function hasArchivedMessages(jid) {
-    const own_jid = _converse.session.get('bare_jid');
+    const own_jid = ownJID();
     if (!api.connection.connected() || !(await api.disco.supports(Strophe.NS.MAM, own_jid))) {
         return false;
     }

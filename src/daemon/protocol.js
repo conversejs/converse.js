@@ -72,18 +72,3 @@ export class RPCError extends Error {
         this.data = data;
     }
 }
-
-/**
- * Refuses what needs the server while the daemon isn't connected to it.
- * @param {{ connection: { connected(): boolean } }} api - Headless's
- * @param {string} consequence - What didn't happen because of it, such as "nothing was sent"
- */
-export function requireConnected(api, consequence) {
-    if (!api.connection.connected()) {
-        throw new RPCError(
-            ERRORS.NOT_CONNECTED,
-            `The daemon isn't connected to the server, so ${consequence}. Check "daemon.status", then try again.`,
-            { see: ['daemon.status'] },
-        );
-    }
-}

@@ -2,13 +2,14 @@
  * The `messages.*` methods.
  * @module @converse/daemon/messages
  */
-import { converse } from '@converse/headless';
-import { conversationOf, getIDs, isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.js';
+import { api, converse } from '@converse/headless';
+import { getID, isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.js';
 import { findMessage, findOwn, findTarget, notRetracted, ownedBy } from './find.js';
 import { getPage, hasArchivedMessages } from './history.js';
-import { ERRORS, RPCError, requireConnected } from './protocol.js';
-import { resolveJID, rosterLoaded } from './resolve.js';
+import { ERRORS, RPCError } from './protocol.js';
+import { resolveJID } from './resolve.js';
 import { searchMessages } from './search.js';
+import { requireConnected, rosterLoaded } from './session.js';
 import {
     attempt,
     checkMessage,
@@ -25,7 +26,6 @@ const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 1000;
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
@@ -33,9 +33,7 @@ const MAX_LIMIT = 1000;
  * @param {import('./types').Mode} deps.mode
  * @param {boolean} deps.allow_unencrypted_resend - Whether the owner may send a failed send in the clear
  */
-export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, allow_unencrypted_resend }) {
-    const { api } = _converse;
-    const ownJID = () => _converse.session.get('bare_jid');
+export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unencrypted_resend }) {
     // Acting as the user, a draft waits for the user's approval, and is then
     // sent as it was asked for. So corrections, retractions and withdrawn
     // reactions can be drafted too. Elsewhere the owner sends a draft by hand,
@@ -54,7 +52,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
          * @returns {Promise<import('./types').MessageList>}
          */
         async 'messages.list'({ conversation, limit = DEFAULT_LIMIT, before, since }) {
-            const jid = await resolveJID(_converse, conversation, 'conversation');
+            const jid = await resolveJID(conversation, 'conversation');
             if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, `"limit" must be a whole number from 1 to ${MAX_LIMIT}.`);
             }
@@ -72,13 +70,13 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                 });
                 return {
                     conversation: toRoomDTO(room),
-                    messages: messages.map((m) => toMessageDTO(m, jid, ownJID())),
+                    messages: messages.map(toMessageDTO),
                 };
             }
 
             let chat = await api.chats.get(jid);
             // Without the roster, which only a first connection loads, nobody is known to be a contact.
-            const contact = rosterLoaded(api) ? await api.contacts.get(jid) : null;
+            const contact = rosterLoaded() ? await api.contacts.get(jid) : null;
             if (!chat) {
                 // Opening a conversation just to look would leave it behind,
                 // so for a stranger check the archive has something first.
@@ -109,7 +107,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
             });
             return {
                 conversation: toConversationDTO(jid, contact),
-                messages: messages.map((m) => toMessageDTO(m, jid, ownJID())),
+                messages: messages.map(toMessageDTO),
             };
         },
 
@@ -131,12 +129,11 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
             if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, `"limit" must be a whole number from 1 to ${MAX_LIMIT}.`);
             }
-            const jid =
-                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
+            const jid = conversation === undefined ? undefined : await resolveJID(conversation, 'conversation');
             const text = query.trim();
 
-            const { method, messages } = await searchMessages(_converse, text, jid, limit);
-            return { method, messages: messages.map((m) => toMessageDTO(m, conversationOf(m), ownJID())) };
+            const { method, messages } = await searchMessages(text, jid, limit);
+            return { method, messages: messages.map(toMessageDTO) };
         },
 
         /**
@@ -160,18 +157,17 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                     see: ['schedules.create'],
                 });
             }
-            const jid = await resolveJID(_converse, to, 'to');
+            const jid = await resolveJID(to, 'to');
             checkMessage(body, reply_to, correct, 'send');
-            const replying_to = reply_to === undefined ? undefined : await findTarget(_converse, reply_to, jid);
+            const replying_to = reply_to === undefined ? undefined : await findTarget(reply_to, jid);
             /** @type {import('./types').SendRoute} */
             const send = async (routing) => {
-                const correcting =
-                    correct === undefined ? undefined : await findOwn(_converse, correct, jid, 'correct');
+                const correcting = correct === undefined ? undefined : await findOwn(correct, jid, 'correct');
                 // Taken before the send: a correction gets a new origin-id, which can change the message's id.
                 const target = replying_to ?? correcting;
                 /** @type {{ action?: 'reply'|'correct', target?: string }} */
-                const action = target ? { action: replying_to ? 'reply' : 'correct', target: getIDs(target)[0] } : {};
-                const dto = await sendMessage(_converse, jid, body, { replying_to, correcting });
+                const action = target ? { action: replying_to ? 'reply' : 'correct', target: getID(target) } : {};
+                const dto = await sendMessage(jid, body, { replying_to, correcting });
                 audit.record({
                     consumer: client.consumer,
                     to: jid,
@@ -183,10 +179,9 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                 return { outcome: 'sent', message: dto };
             };
             const draft = async (routing) => {
-                const correcting =
-                    correct === undefined ? undefined : await findOwn(_converse, correct, jid, 'correct');
+                const correcting = correct === undefined ? undefined : await findOwn(correct, jid, 'correct');
                 const target_model = replying_to ?? correcting;
-                const target = target_model ? toMessageDTO(target_model, jid, ownJID()) : null;
+                const target = target_model ? toMessageDTO(target_model) : null;
                 /** @type {import('./types').DraftAction} */
                 const action = target
                     ? { action: replying_to ? 'reply' : 'correct', body, target: target.id }
@@ -212,21 +207,20 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
          * @returns {Promise<import('./types').SendResult>}
          */
         async 'messages.retract'({ id, conversation }, client) {
-            const jid =
-                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
-            const found = await findTarget(_converse, id, jid);
+            const jid = conversation === undefined ? undefined : await resolveJID(conversation, 'conversation');
+            const found = await findTarget(id, jid);
             const to = found.collection.chatbox.get('jid');
             /** @type {import('./types').SendRoute} */
             const retract = async (routing) => {
                 const message = ownedBy(found, id, 'retract');
-                const target = getIDs(message)[0];
-                const dto = await retractMessage(_converse, message, id);
+                const target = getID(message);
+                const dto = await retractMessage(message, id);
                 audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'retract', target, ...routing });
                 return { outcome: 'sent', message: dto };
             };
             const draft = (routing) => {
                 const message = notRetracted(ownedBy(found, id, 'retract'), id);
-                const target = toMessageDTO(message, to, ownJID());
+                const target = toMessageDTO(message);
                 return queueDraft(client, { to, action: 'retract', target: target.id }, routing, target);
             };
             return routeSend(client, to, {
@@ -254,21 +248,20 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
             if (typeof remove !== 'boolean') {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"remove" must be true or false.');
             }
-            const reaction = await toEmoji(_converse, emoji);
-            const jid =
-                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
-            const message = await findTarget(_converse, id, jid);
+            const reaction = await toEmoji(emoji);
+            const jid = conversation === undefined ? undefined : await resolveJID(conversation, 'conversation');
+            const message = await findTarget(id, jid);
             const chatbox = message.collection.chatbox;
             const to = chatbox.get('jid');
             /** @type {import('./types').SendRoute} */
             const react = async (routing) => {
-                const dto = await sendReaction(_converse, message, reaction, remove);
-                const target = getIDs(message)[0];
+                const dto = await sendReaction(message, reaction, remove);
+                const target = getID(message);
                 audit.record({ consumer: client.consumer, to, outcome: 'sent', action: 'react', target, ...routing });
                 return { outcome: 'sent', message: dto };
             };
             const draft = (routing) => {
-                const target = toMessageDTO(message, to, ownJID());
+                const target = toMessageDTO(message);
                 return queueDraft(
                     client,
                     { to, action: 'react', body: reaction, target: target.id, remove: !!remove },
@@ -310,17 +303,16 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                         'to true in the daemon config.',
                 );
             }
-            const jid =
-                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
-            const message = failedSendOf(await findTarget(_converse, id, jid), id, 'sent again');
-            requireConnected(api, 'nothing was sent');
+            const jid = conversation === undefined ? undefined : await resolveJID(conversation, 'conversation');
+            const message = failedSendOf(await findTarget(id, jid), id, 'sent again');
+            requireConnected('nothing was sent');
 
             const chatbox = message.collection.chatbox;
             const to = chatbox.get('jid');
             await attempt(() =>
-                unencrypted ? resendUnencrypted(_converse, chatbox, message) : chatbox.resendFailedMessage(message),
+                unencrypted ? resendUnencrypted(chatbox, message) : chatbox.resendFailedMessage(message),
             );
-            const dto = toMessageDTO(message, to, ownJID());
+            const dto = toMessageDTO(message);
             audit.record({
                 consumer: client.consumer,
                 to,
@@ -342,11 +334,10 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
          * @returns {Promise<{ message: import('./types').MessageDTO }>} The message as it was
          */
         async 'messages.discard'({ id, conversation }) {
-            const jid =
-                conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
-            const message = failedSendOf(await findTarget(_converse, id, jid), id, 'discarded');
+            const jid = conversation === undefined ? undefined : await resolveJID(conversation, 'conversation');
+            const message = failedSendOf(await findTarget(id, jid), id, 'discarded');
             const chatbox = message.collection.chatbox;
-            const dto = toMessageDTO(message, chatbox.get('jid'), ownJID());
+            const dto = toMessageDTO(message);
             chatbox.discardFailedMessage(message);
             return { message: dto };
         },
@@ -356,11 +347,10 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
 /**
  * A reaction is a single emoji (XEP-0444). A shortname such as ":thumbsup:"
  * is turned into the emoji it names.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} emoji
  * @returns {Promise<string>}
  */
-async function toEmoji(_converse, emoji) {
+async function toEmoji(emoji) {
     const invalid = () =>
         new RPCError(
             ERRORS.INVALID_PARAMS,
@@ -368,7 +358,7 @@ async function toEmoji(_converse, emoji) {
         );
     if (typeof emoji !== 'string') throw invalid();
 
-    await _converse.api.emojis.initialize();
+    await api.emojis.initialize();
     const text = u.emojis.shortnamesToUnicode(emoji.trim());
     if (!(/^\p{RGI_Emoji}$/v).test(text)) throw invalid();
 

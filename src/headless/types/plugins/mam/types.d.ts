@@ -20,4 +20,10 @@ export type MAMQueryResult = {
     complete?: boolean;
     error?: Error;
 };
+export type ArchivePageOptions = {
+    limit: number;
+    before?: BaseMessage;
+    since?: number;
+    filter?: (message: BaseMessage) => boolean;
+};
 //# sourceMappingURL=types.d.ts.map

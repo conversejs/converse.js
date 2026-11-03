@@ -203,6 +203,30 @@ declare namespace _default {
             messages: import("../../shared/message.js").default[];
             complete: boolean;
         } | null>;
+        /**
+         * A page of a conversation's history, newest last, taken from the
+         * messages held locally and, where those fall short, from the archive.
+         *
+         * A stretch of history that was never fetched (marked by a
+         * {@link MAMPlaceholderMessage}) is fetched when the page reaches it, and
+         * so is the history before the oldest message held. Once the archive has
+         * nothing older, it isn't asked again for that conversation.
+         *
+         * @method _converse.api.archive.page
+         * @param {import('../chat/model').default|import('../muc/muc').default} chat
+         * @param {import('./types').ArchivePageOptions} options
+         * @returns {Promise<import('../../shared/message').default[]>} Oldest first. Fewer than
+         *  `limit` when the history runs out, or the archive can't be reached.
+         *
+         * @example
+         * // The 20 messages before `message`, but none older than a day
+         * const messages = await api.archive.page(chat, {
+         *     limit: 20,
+         *     before: message,
+         *     since: Date.now() - 24 * 60 * 60 * 1000,
+         * });
+         */
+        function page(chat: import("../chat/model").default | import("../muc/muc").default, options: import("./types").ArchivePageOptions): Promise<import("../../shared/message").default[]>;
     }
 }
 export default _default;

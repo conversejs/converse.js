@@ -29,3 +29,12 @@ export type MAMQueryResult = {
     complete?: boolean;
     error?: Error;
 };
+
+// The options that can be passed in to the api.archive.page method
+export type ArchivePageOptions = {
+    limit: number; // How many messages the page has, at most
+    before?: BaseMessage; // A message held in the conversation: the page ends before it
+    since?: number; // Milliseconds since the epoch: the page has no messages older than this
+    // Which messages count towards the page. Placeholders for unfetched history never do.
+    filter?: (message: BaseMessage) => boolean;
+};

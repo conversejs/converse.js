@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { converse } from '@converse/headless';
 import { JID, startDaemon } from './harness.js';
 
@@ -35,13 +35,15 @@ describe('Inbox and conversations', () => {
      * Delivers a message from `from`, and waits until the daemon has stored it.
      * @param {string} from
      * @param {string} body
+     * @param {string} [sent] - When it was sent, if the server delivered it late (ISO 8601)
      */
-    async function receive(from, body) {
+    async function receive(from, body, sent) {
         const { promise, resolve } = Promise.withResolvers();
         daemon.api.listen.once('message', resolve);
         daemon.receive(stx`
             <message xmlns="jabber:client" from="${from}/balcony" to="${JID}" type="chat" id="${u.getUniqueId()}">
                 <body>${body}</body>
+                ${sent ? stx`<delay xmlns="urn:xmpp:delay" from="capulet.lit" stamp="${sent}"/>` : ''}
             </message>`);
         await promise;
     }
@@ -133,5 +135,61 @@ describe('Inbox and conversations', () => {
 
         const { conversations } = await claude.request('conversations.list');
         expect(conversations[0]).toMatchObject({ jid: JULIET, unread: 0 });
+    });
+
+    it('reports a message that arrives after a read, though it was sent before what was read', async () => {
+        await receive(JULIET, 'six');
+        const { conversations: read } = await claude.request('inbox.read');
+        expect(read.map((g) => bodies(g))).toEqual([['six']]);
+        const { messages } = await daemon.api.chats.get(JULIET);
+        const timeOf = (body) => Date.parse(messages.findWhere({ body }).get('time'));
+
+        // Sent between messages already read, as the archive or a slow server can deliver it.
+        const sent = new Date((timeOf('one') + timeOf('six')) / 2).toISOString();
+        await receive(JULIET, 'late', sent);
+        expect(timeOf('late')).toBeLessThan(timeOf('six'));
+
+        const { conversations: summaries } = await claude.request('conversations.list');
+        expect(summaries[0]).toMatchObject({ jid: JULIET, unread: 1 });
+        const { conversations } = await claude.request('inbox.read');
+        expect(conversations.map((g) => bodies(g))).toEqual([['late']]);
+        expect(conversations[0].messages[0].time).toBe(sent);
+        expect(await claude.request('inbox.read')).toEqual({ conversations: [] });
+    });
+});
+
+describe('Inbox and history from the archive', () => {
+    let daemon, client;
+
+    afterEach(async () => {
+        client?.close();
+        await daemon?.stop();
+    });
+
+    it("doesn't report history paged in from the archive as unread", async () => {
+        const archive = ['a1', 'a2', 'a3'].map((id, i) => ({
+            id,
+            from: JULIET,
+            to: 'romeo@montague.lit',
+            body: `Old ${i + 1}`,
+            time: new Date(Date.UTC(2026, 0, 1, 10, i)).toISOString(),
+        }));
+        daemon = await startDaemon({ roster: [{ jid: JULIET, name: 'Juliet Capulet' }], archive });
+        client = await daemon.connect({ consumer: 'claude' });
+        expect(await client.request('inbox.read')).toEqual({ conversations: [] });
+
+        const { promise, resolve } = Promise.withResolvers();
+        daemon.api.listen.once('message', resolve);
+        daemon.receive(stx`
+            <message xmlns="jabber:client" from="${JULIET}/balcony" to="${JID}" type="chat" id="${u.getUniqueId()}">
+                <body>New</body>
+            </message>`);
+        await promise;
+        const { conversations } = await client.request('inbox.read');
+        expect(conversations.map((g) => g.messages.map((m) => m.body))).toEqual([['New']]);
+
+        const { messages } = await client.request('messages.list', { conversation: JULIET, limit: 10 });
+        expect(messages.map((m) => m.body)).toEqual(['Old 1', 'Old 2', 'Old 3', 'New']);
+        expect(await client.request('inbox.read')).toEqual({ conversations: [] });
     });
 });

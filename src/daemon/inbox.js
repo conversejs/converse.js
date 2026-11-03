@@ -11,8 +11,24 @@ import { isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.
 import { ERRORS, RPCError } from './protocol.js';
 import { rosterLoaded } from './resolve.js';
 
+/**
+ * The message attribute holding when the daemon got the message, as a mark
+ * from `cursors.nextArrival`. Kept with the message, so that it outlives a restart.
+ */
+const ARRIVED = 'daemon_arrived';
+
 /** @param {import('@converse/headless').ChatBox} box - A chat or a room */
 const isRoom = (box) => box.get('type') === constants.CHATROOMS_TYPE;
+
+/** @param {import('@converse/headless').Message} message */
+const isIncoming = (message) => message.get('sender') !== 'me';
+
+/**
+ * A message from before arrivals were marked counts as arrived before any cursor.
+ * @param {import('@converse/headless').Message} message
+ * @returns {number}
+ */
+const arrivalOf = (message) => message.get(ARRIVED) ?? 0;
 
 /**
  * @param {import('@converse/headless').ConversePrivateGlobal} _converse
@@ -21,6 +37,8 @@ const isRoom = (box) => box.get('type') === constants.CHATROOMS_TYPE;
 export function inboxMethods(_converse, cursors) {
     const { api } = _converse;
     const ownJID = () => _converse.session.get('bare_jid');
+
+    markArrivals(_converse, cursors);
 
     /**
      * The name of the consumer making a request. Its first request sets its
@@ -34,10 +52,11 @@ export function inboxMethods(_converse, cursors) {
     };
 
     /**
-     * Every 1:1 chat with messages in it, most recent first. All the awaits
-     * happen here. What the consumer has seen is worked out after them, in
-     * the same tick as the caller moves its cursors, so that two reads from
-     * one consumer can't both return the same message.
+     * Every chat and room with messages in it, most recent first. All the
+     * awaits happen here. What the consumer has seen is worked out after
+     * them, in the same tick as the caller moves its cursors, so that two
+     * reads from one consumer can't both return the same message. The
+     * messages stay models: only those a caller returns become DTOs.
      */
     async function survey() {
         const surveyed = [];
@@ -46,17 +65,16 @@ export function inboxMethods(_converse, cursors) {
             await chat.messages.fetched;
             const jid = chat.get('jid');
             // A failed send never went out, so it isn't news, and it isn't the conversation's activity.
-            const messages = chat.messages.models
-                .filter((m) => isMessage(m) && !isFailedSend(m))
-                .map((m) => toMessageDTO(m, jid, ownJID()));
-            if (messages.length) {
+            const messages = chat.messages.models.filter((m) => isMessage(m) && !isFailedSend(m));
+            const last = messages.at(-1);
+            if (last) {
                 const conversation = isRoom(chat)
                     ? toRoomDTO(chat)
                     : toConversationDTO(jid, rosterLoaded(api) ? await api.contacts.get(jid) : null);
-                surveyed.push({ jid, conversation, messages, last: messages.at(-1) });
+                surveyed.push({ jid, conversation, messages, last_activity: last.get('time') });
             }
         }
-        return surveyed.sort((a, b) => Date.parse(b.last.time) - Date.parse(a.last.time));
+        return surveyed.sort((a, b) => Date.parse(b.last_activity) - Date.parse(a.last_activity));
     }
 
     /**
@@ -80,8 +98,8 @@ export function inboxMethods(_converse, cursors) {
             return {
                 conversations: surveyed.map((c) => ({
                     ...c.conversation,
-                    unread: unseenFor(consumer, c).filter((m) => m.direction === 'incoming').length,
-                    last_activity: c.last.time,
+                    unread: unseenFor(consumer, c).filter(isIncoming).length,
+                    last_activity: c.last_activity,
                 })),
             };
         },
@@ -102,8 +120,12 @@ export function inboxMethods(_converse, cursors) {
             for (const c of surveyed) {
                 const unseen = unseenFor(consumer, c);
                 if (unseen.length === 0) continue;
-                cursors.set(consumer, c.jid, { id: c.last.id, time: c.last.time });
-                const incoming = unseen.filter((m) => m.direction === 'incoming');
+                const arrived = unseen.reduce(
+                    (max, m) => Math.max(max, arrivalOf(m)),
+                    cursors.get(consumer, c.jid)?.arrived ?? 0,
+                );
+                cursors.set(consumer, c.jid, { arrived });
+                const incoming = unseen.filter(isIncoming).map((m) => toMessageDTO(m, c.jid, ownJID()));
                 if (incoming.length) conversations.push({ conversation: c.conversation, messages: incoming });
             }
             return { conversations };
@@ -112,21 +134,48 @@ export function inboxMethods(_converse, cursors) {
 }
 
 /**
- * The messages after a cursor, oldest first. Without a cursor, that's every
- * message from the consumer's first sight of the account onwards. If the
- * message a cursor names is gone, it's the messages newer than the cursor's time.
- * @param {import('./types').MessageDTO[]} messages - Oldest first
+ * Marks each message with when the daemon got it, as it's added to its
+ * conversation. That's what read cursors go by, rather than the message's
+ * own time, which can be earlier than a message already read: one caught up
+ * from the archive after a reconnect, or one the server delivered late.
+ * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {ReturnType<typeof import('./cursors.js').createCursors>} cursors
+ */
+function markArrivals(_converse, cursors) {
+    const { chatboxes } = _converse.state;
+
+    /** @param {import('@converse/headless').ChatBox} box */
+    const watch = (box) => {
+        const { messages } = box;
+        if (!messages) return;
+
+        messages.on('add', (/** @type {import('@converse/headless').Message} */ message) => {
+            // Until the conversation's messages are read from storage, what's
+            // added comes from there: it arrived before, and keeps its mark.
+            if (!messages.fetched?.isResolved) return;
+            // Set, not saved: a new message is saved by whatever creates it, just after this.
+            if (message.get(ARRIVED) === undefined) message.set(ARRIVED, cursors.nextArrival());
+        });
+    };
+    chatboxes.forEach(watch);
+    chatboxes.on('add', watch);
+}
+
+/**
+ * The messages a consumer hasn't been given, oldest first: those that arrived
+ * after its cursor, or every one without a cursor. Either way, only from the
+ * consumer's first sight of the account onwards, so that history paged in
+ * from the archive isn't news.
+ * @param {import('@converse/headless').Message[]} messages - Oldest first
  * @param {import('./types').Cursor|undefined} cursor
  * @param {string} since - ISO 8601
  */
 function unseenIn(messages, cursor, since) {
-    if (!cursor) {
+    const since_ms = Date.parse(since);
+    return messages.filter(
         // Inclusive: a message can share the millisecond of the first sight.
-        return messages.filter((m) => Date.parse(m.time) >= Date.parse(since));
-    }
-    const index = messages.findIndex((m) => m.id === cursor.id);
-    if (index !== -1) return messages.slice(index + 1);
-    return messages.filter((m) => Date.parse(m.time) > Date.parse(cursor.time));
+        (m) => Date.parse(m.get('time')) >= since_ms && (!cursor || arrivalOf(m) > cursor.arrived),
+    );
 }
 
 /**

@@ -340,13 +340,13 @@ export type Event = { subscription: number } & (
 );
 
 /**
- * Where a consumer has read up to in one conversation: the last message it
- * has been shown there. `time` is a fallback if that message is no longer
- * stored.
+ * Where a consumer has read up to in one conversation: the arrival mark of
+ * the last message it has been given there. Arrival, not the message's time,
+ * so that a message that comes in late, with a time before what was read,
+ * is still news.
  */
 export type Cursor = {
-    id: string; // The message's DTO id
-    time: string; // ISO 8601
+    arrived: number; // An arrival mark, see `createCursors().nextArrival`
 };
 
 export type ConsumerCursors = {

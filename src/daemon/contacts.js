@@ -3,8 +3,10 @@
  * only read, so restricted connections may call them.
  * @module @converse/daemon/contacts
  */
+import { api } from '@converse/headless';
 import { ERRORS, RPCError } from './protocol.js';
-import { requireRoster, resolveJID } from './resolve.js';
+import { resolveJID } from './resolve.js';
+import { requireRoster } from './session.js';
 import { TIMED_OUT, withTimeout } from './timeout.js';
 
 /**
@@ -14,11 +16,8 @@ import { TIMED_OUT, withTimeout } from './timeout.js';
 const DISCO_TIMEOUT = 5000;
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  */
-export function contactMethods(_converse) {
-    const { api } = _converse;
-
+export function contactMethods() {
     return {
         /**
          * The roster, by name, with a query matching a contact's name or JID
@@ -31,7 +30,7 @@ export function contactMethods(_converse) {
             if (query !== undefined && typeof query !== 'string') {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"query" must be text.');
             }
-            requireRoster(api, 'Listing contacts');
+            requireRoster('Listing contacts');
             const wanted = (query ?? '').trim().toLowerCase();
             const contacts = (await api.contacts.get()).map(toContactSummary);
             const matching = contacts.filter(({ jid, name }) => `${name ?? ''} ${jid}`.toLowerCase().includes(wanted));
@@ -48,10 +47,10 @@ export function contactMethods(_converse) {
          * @returns {Promise<import('./types').ContactDetails>}
          */
         async 'contacts.whois'({ jid }) {
-            requireRoster(api, 'Looking someone up');
-            const bare_jid = await resolveJID(_converse, jid, 'jid');
-            const contact = _converse.state.roster.get(bare_jid);
-            const presence = _converse.state.presences?.get(bare_jid);
+            requireRoster('Looking someone up');
+            const bare_jid = await resolveJID(jid, 'jid');
+            const contact = await api.contacts.get(bare_jid);
+            const presence = await api.presences.get(bare_jid);
             const [vcard, resources] = await Promise.all([
                 fetchVCard(bare_jid),
                 Promise.all(

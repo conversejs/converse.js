@@ -147,26 +147,26 @@ async function serve(config, gid) {
         ...config.settings,
     });
 
-    const events = createEvents(_converse, { mode: config.mode });
+    const events = createEvents({ mode: config.mode });
     const policy = createPolicy(config);
     const audit = createAudit(paths.audit);
     const drafts = createDraftStore(paths.drafts);
     const rooms = createRoomStore(paths.rooms);
-    const routeSend = createSendRouter(_converse, { policy, audit, mode: config.mode });
-    const queueDraft = createDrafter(_converse, { drafts, audit, events, owner: config.owner, mode: config.mode });
+    const routeSend = createSendRouter({ policy, audit, mode: config.mode });
+    const queueDraft = createDrafter({ drafts, audit, events, owner: config.owner, mode: config.mode });
     // Headless sets up its client identity on connect, so the bot identity has to be set after that.
     api.listen.on('addClientFeatures', () => {
         api.disco.own.identities.clear();
         api.disco.own.identities.add(BOT_IDENTITY.category, BOT_IDENTITY.type, BOT_IDENTITY.name);
     });
-    const messages = messageMethods(_converse, {
+    const messages = messageMethods({
         routeSend,
         audit,
         queueDraft,
         mode: config.mode,
         allow_unencrypted_resend: config.allow_unencrypted_resend,
     });
-    const schedules = scheduleMethods(_converse, {
+    const schedules = scheduleMethods({
         routeSend,
         sendNow: messages['messages.send'],
         mode: config.mode,
@@ -174,13 +174,13 @@ async function serve(config, gid) {
     const methods = {
         ...messages,
         ...schedules.methods,
-        ...fileMethods(_converse, { routeSend, audit, queueDraft }),
-        ...draftMethods(_converse, { drafts, audit, events, owner: config.owner, mode: config.mode }),
-        ...inboxMethods(_converse, createCursors(paths.cursors)),
-        ...contactMethods(_converse),
-        ...presenceMethods(_converse, { config }),
-        ...omemoMethods(_converse),
-        ...roomMethods(_converse, { config, policy, store: rooms }),
+        ...fileMethods({ routeSend, audit, queueDraft }),
+        ...draftMethods({ drafts, audit, events, owner: config.owner, mode: config.mode }),
+        ...inboxMethods(createCursors(paths.cursors)),
+        ...contactMethods(),
+        ...presenceMethods({ config }),
+        ...omemoMethods(),
+        ...roomMethods({ config, policy, store: rooms }),
         ...events.methods,
         /** @returns {import('./types').Status} */
         'daemon.status': () => ({
@@ -219,7 +219,7 @@ async function serve(config, gid) {
 
     await api.user.login(`${config.jid}/${config.resource}`, password);
     // Not awaited: a room that takes a while to confirm mustn't hold up the socket.
-    rejoinRooms(_converse, rooms);
+    rejoinRooms(rooms);
 
     const { promise: stopped, resolve: resolveStopped } = Promise.withResolvers();
     let stopping;

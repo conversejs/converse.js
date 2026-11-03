@@ -7,10 +7,11 @@
  * rejoins them. Leaving on shutdown doesn't forget them: only `rooms.leave` does.
  * @module @converse/daemon/rooms
  */
-import { converse, log } from '@converse/headless';
+import { api, converse, log } from '@converse/headless';
 import { toRoomDTO } from './dto.js';
-import { ERRORS, RPCError, requireConnected } from './protocol.js';
+import { ERRORS, RPCError } from './protocol.js';
 import { parseJID, resolveRoomJID } from './resolve.js';
+import { requireConnected } from './session.js';
 import { readStateFile, writeStateFile } from './state-file.js';
 
 const { ROOMSTATUS } = converse;
@@ -120,14 +121,13 @@ function settledStatus(room) {
  * Rejoins the rooms the daemon is meant to be in, all at once, so a room that
  * doesn't answer doesn't hold up the rest. Called once it has logged in. A
  * room that can't be rejoined is logged and left for another time.
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {ReturnType<typeof createRoomStore>} store
  */
-export async function rejoinRooms(_converse, store) {
+export async function rejoinRooms(store) {
     await Promise.all(
         store.list().map(async ({ jid, nick }) => {
             try {
-                const room = await _converse.api.rooms.get(jid, { nick }, true);
+                const room = await api.rooms.get(jid, { nick }, true);
                 // A leave while we were getting the room means it's not to be rejoined.
                 if (!store.get(jid)) return;
 
@@ -142,15 +142,12 @@ export async function rejoinRooms(_converse, store) {
 }
 
 /**
- * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {import('./types').Config} deps.config
  * @param {ReturnType<typeof import('./policy.js').createPolicy>} deps.policy
  * @param {ReturnType<typeof createRoomStore>} deps.store
  */
-export function roomMethods(_converse, { config, policy, store }) {
-    const { api } = _converse;
-
+export function roomMethods({ config, policy, store }) {
     /**
      * Restricted access may join and leave only the rooms it's allowed to.
      * @param {import('./types').Client} client
@@ -185,7 +182,7 @@ export function roomMethods(_converse, { config, policy, store }) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"nick" must be a nickname.');
             }
             checkAccess(client, jid);
-            requireConnected(api, 'nothing was done');
+            requireConnected('nothing was done');
 
             const nickname = (nick ?? config.consumer).trim();
             const existing = await api.rooms.get(jid);
@@ -225,7 +222,7 @@ export function roomMethods(_converse, { config, policy, store }) {
          * @returns {Promise<{ conversation: import('./types').ConversationDTO, was_in: boolean }>}
          */
         async 'rooms.leave'({ room }, client) {
-            const jid = resolveRoomJID(_converse, room, 'room');
+            const jid = await resolveRoomJID(room, 'room');
             checkAccess(client, jid);
             const model = await api.rooms.get(jid);
             const entered = model?.isEntered() ?? false;
@@ -247,7 +244,7 @@ export function roomMethods(_converse, { config, policy, store }) {
          * @returns {Promise<{ occupants: import('./types').OccupantDTO[] }>}
          */
         async 'rooms.occupants'({ room }) {
-            const jid = resolveRoomJID(_converse, room, 'room');
+            const jid = await resolveRoomJID(room, 'room');
             const model = await api.rooms.get(jid);
             if (!model?.isEntered()) {
                 throw new RPCError(ERRORS.NOT_FOUND, `We aren't in ${jid}, so we can't see who is in it.`);
@@ -275,7 +272,7 @@ export function roomMethods(_converse, { config, policy, store }) {
                     '"service" must be the domain of a MUC service, such as "conference.capulet.lit".',
                 );
             }
-            requireConnected(api, 'nothing was done');
+            requireConnected('nothing was done');
             try {
                 return { rooms: await api.rooms.discover(service.trim(), { timeout: DISCOVER_TIMEOUT }) };
             } catch (e) {

@@ -3,18 +3,17 @@
  * @module @converse/daemon/daemon
  */
 import fs from 'node:fs/promises';
-import net from 'node:net';
 import path from 'node:path';
 import { _converse, api, converse, log } from '@converse/headless';
 import { checkMethodAccess } from './access.js';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
-import { getGroupId } from './groups.js';
 import { createCursors } from './cursors.js';
 import { createDispatcher } from './dispatch.js';
 import { createDrafter, createDraftStore, draftMethods } from './drafts.js';
 import { createEvents } from './events.js';
 import { fileMethods } from './files.js';
+import { getGroupId } from './groups.js';
 import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
 import { omemoMethods } from './omemo.js';
@@ -23,11 +22,11 @@ import { checkRuntimeDir, removeRecord, writeRecord } from './registry.js';
 import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
 import { claimPidfile } from './pidfile.js';
 import { createPolicy } from './policy.js';
-import { ERRORS, MAX_LINE_LENGTH } from './protocol.js';
 import { createSendRouter } from './routing.js';
 import { scheduleMethods } from './schedules.js';
 import { getPassword } from './secrets.js';
 import { TIMED_OUT, withTimeout } from './timeout.js';
+import { createLineBudget, listen, serveClient } from './transport.js';
 
 /**
  * How long shutdown waits for the server to see us leave before giving up.
@@ -39,22 +38,6 @@ const SHUTDOWN_TIMEOUT = 5000;
  * is a label for other clients to show, not a permission: it's self-declared.
  */
 const BOT_IDENTITY = { category: 'client', type: 'bot', name: 'Converse daemon' };
-
-/**
- * A line counts against {@link MAX_BUFFERED} only past this length, so that
- * ordinary requests are never held up by uploads.
- */
-const SMALL_LINE_LENGTH = 1024 * 1024;
-
-/**
- * How many bytes of large lines the daemon holds at once, across every
- * connection, from the first byte read until the request has been handled.
- * Without it, a client could open many connections and send each one a line
- * just under {@link MAX_LINE_LENGTH}.
- */
-const MAX_BUFFERED = 2 * MAX_LINE_LENGTH;
-
-let buffered = 0;
 
 /**
  * Starts the daemon for the configured account: claims its pidfile, logs in,
@@ -204,14 +187,19 @@ async function serve(config, gid) {
 
     const getJID = () => (api.connection.connected() ? _converse.session.get('jid') : null);
 
-    /** @type {Set<net.Socket>} */
+    /** @type {Set<import('node:net').Socket>} */
     const clients = new Set();
+    const budget = createLineBudget();
     /** @param {import('./types').Access} access */
     const onConnection = (access) => (socket) => {
         clients.add(socket);
         socket.on('close', () => clients.delete(socket));
         socket.on('error', (e) => log.debug(`Client socket error: ${e.message}`));
-        serveClient(socket, { access, config, methods, getJID, events });
+        serveClient(socket, budget, (notify) => {
+            const { client, handle } = createDispatcher({ access, config, methods, getJID, notify });
+            socket.once('close', () => events.forget(client));
+            return handle;
+        });
     };
     // Each access level has its own socket, so the level belongs to the connection.
     const servers = [
@@ -259,170 +247,10 @@ async function serve(config, gid) {
 }
 
 /**
- * Listens on a unix socket, readable and writable by its owner only, or also
- * by the group `gid` if one is given.
- * @param {string} socket_path
- * @param {(socket: net.Socket) => void} onConnection
- * @param {number|null} [gid]
- * @returns {Promise<net.Server>}
- */
-async function listen(socket_path, onConnection, gid = null) {
-    const server = net.createServer({ allowHalfOpen: true }, onConnection);
-    // A socket file left behind by a daemon that died isn't in use: the pidfile
-    // we hold says no other daemon is running.
-    await fs.rm(socket_path, { force: true });
-    await new Promise((resolve, reject) => {
-        server.once('error', (e) =>
-            reject(
-                /** @type {NodeJS.ErrnoException} */ (e).code === 'EINVAL'
-                    ? new Error(
-                          `Can't listen on ${socket_path}: the path is too long for a unix socket. ` +
-                              'Point XDG_RUNTIME_DIR, or "restricted_dir", at a shorter directory.',
-                          { cause: e },
-                      )
-                    : e,
-            ),
-        );
-        server.listen(socket_path, () => resolve(undefined));
-    });
-    if (gid === null) {
-        await fs.chmod(socket_path, 0o600);
-    } else {
-        await fs.chown(socket_path, -1, gid);
-        await fs.chmod(socket_path, 0o660);
-    }
-    return server;
-}
-
-/**
  * Leaves every joined MUC, then logs out, which sends unavailable presence.
  */
 async function leave() {
     const rooms = /** @type {any[]} */ (await api.rooms.get());
     await Promise.all(rooms.filter((room) => room.isEntered()).map((room) => room.leave()));
     await api.user.logout();
-}
-
-/**
- * Speaks JSON-RPC 2.0 to one client, one message per line. The first request
- * must be `hello`, which settles the protocol version.
- * @param {net.Socket} socket
- * @param {Object} context
- * @param {import('./types').Config} context.config
- * @param {import('./types').Access} context.access - The level of the socket this client connected to
- * @param {Record<string, (params: any, client: import('./types').Client) => unknown>} context.methods
- * @param {() => string|null} context.getJID
- * @param {ReturnType<typeof createEvents>} context.events
- */
-function serveClient(socket, { access, config, methods, getJID, events }) {
-    const send = (message) => socket.writable && socket.write(JSON.stringify({ jsonrpc: '2.0', ...message }) + '\n');
-    const { client, handle } = createDispatcher({
-        access,
-        config,
-        methods,
-        getJID,
-        notify: (params) => send({ method: 'event', params }),
-    });
-    socket.once('close', () => events.forget(client));
-
-    const onRefused = (code) => {
-        const message =
-            code === ERRORS.BUSY
-                ? 'The daemon is reading other large requests, so this one was refused and the connection ' +
-                  'closed. Try again once they are done.'
-                : `The request is longer than the ${MAX_LINE_LENGTH} bytes the daemon accepts, so it was ` +
-                  'refused and the connection closed.';
-        socket.end(JSON.stringify({ jsonrpc: '2.0', id: null, error: { code, message } }) + '\n');
-    };
-
-    // The server keeps a connection open after the client ends its side, so
-    // that a last request, such as one piped in without a newline, still gets
-    // its response. The connection is ended once every response is written.
-    let in_flight = 0;
-    let client_ended = false;
-    const endIfDone = () => client_ended && in_flight === 0 && socket.end();
-
-    readLines(socket, onRefused, async (line) => {
-        in_flight++;
-        try {
-            const { response, close } = await handle(line);
-            if (response) send(response);
-            if (close) socket.end();
-        } finally {
-            in_flight--;
-            endIfDone();
-        }
-    });
-    // After readLines' own listener, which hands on a last line without a newline.
-    socket.on('end', () => {
-        client_ended = true;
-        endIfDone();
-    });
-}
-
-/**
- * Calls `onLine` with each line `socket` sends, like `readline` does, but
- * without buffering a line past {@link MAX_LINE_LENGTH} bytes, or past what
- * {@link MAX_BUFFERED} has left: a client could otherwise make the daemon hold
- * as much as it cares to send. Then it calls `onRefused` with the error code
- * instead, and drops whatever else comes.
- * @param {net.Socket} socket
- * @param {(code: number) => void} onRefused
- * @param {(line: string) => Promise<void>} onLine
- */
-function readLines(socket, onRefused, onLine) {
-    /** @type {Buffer[]} */
-    let chunks = [];
-    let length = 0;
-    // What the line read so far counts against MAX_BUFFERED
-    let charged = 0;
-    let refused = false;
-
-    const refuse = (code) => {
-        refused = true;
-        chunks = [];
-        buffered -= charged;
-        charged = 0;
-        onRefused(code);
-    };
-
-    const emit = () => {
-        const line = Buffer.concat(chunks).toString('utf8');
-        const held = charged;
-        chunks = [];
-        length = 0;
-        charged = 0;
-        onLine(line.endsWith('\r') ? line.slice(0, -1) : line).finally(() => (buffered -= held));
-    };
-
-    socket.on('data', (/** @type {Buffer} */ data) => {
-        if (refused) return;
-
-        let start = 0;
-        for (;;) {
-            const end = data.indexOf(0x0a, start);
-            const piece = data.subarray(start, end === -1 ? data.length : end);
-            length += piece.length;
-            if (length > MAX_LINE_LENGTH) return refuse(ERRORS.INVALID_REQUEST);
-
-            const charge = Math.max(0, length - SMALL_LINE_LENGTH) - charged;
-            if (charge > 0) {
-                if (buffered + charge > MAX_BUFFERED) return refuse(ERRORS.BUSY);
-
-                buffered += charge;
-                charged += charge;
-            }
-            if (piece.length) chunks.push(piece);
-            if (end === -1) return;
-
-            emit();
-            start = end + 1;
-        }
-    });
-    socket.on('end', () => !refused && length && emit());
-    // A line cut off by the connection closing
-    socket.on('close', () => {
-        buffered -= charged;
-        charged = 0;
-    });
 }

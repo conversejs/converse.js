@@ -435,3 +435,17 @@ export type PresenceDTO = {
     show: string; // "online", "chat", "away", "xa" or "dnd"
     status_message: string | null;
 };
+
+/**
+ * How many bytes of large request lines are held at once, across every
+ * connection that shares it.
+ */
+export type LineBudget = {
+    held: number;
+};
+
+/**
+ * Handles one line a client sent: the response to send, without its `jsonrpc`
+ * member, or null for a notification; and whether to close the connection after it.
+ */
+export type RequestHandler = (line: string) => Promise<{ response: object | null; close: boolean }>;

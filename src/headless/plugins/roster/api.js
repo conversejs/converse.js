@@ -131,4 +131,26 @@ export default {
             return await roster.addContact(attributes, persist, subscribe, message);
         },
     },
+
+    /**
+     * @namespace _converse.api.presences
+     * @memberOf _converse.api
+     */
+    presences: {
+        /**
+         * The presence last received from a roster contact: their overall
+         * status, and each of their connected resources, in `resources`.
+         * Resolves to `undefined` for a JID we hold no presence for.
+         * @method _converse.api.presences.get
+         * @param {string} jid - A JID. Its resource, if it has one, is ignored.
+         * @returns {Promise<import('./presence').default|undefined>}
+         * @example
+         *      const presence = await api.presences.get('buddy@example.com');
+         *      const names = presence?.resources.map((r) => r.get('name')) ?? [];
+         */
+        async get(jid) {
+            await api.waitUntil('presencesInitialized');
+            return _converse.state.presences.get(Strophe.getBareJidFromJid(jid));
+        },
+    },
 };

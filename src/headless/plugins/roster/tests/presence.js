@@ -361,4 +361,27 @@ describe("A contact's cached presence", function () {
             expect(updated).not.toHaveBeenCalled();
         }),
     );
+
+    it(
+        'can be read through api.presences.get, by bare or full JID',
+        mock.initConverse(converse, [], {}, async (_converse) => {
+            const { api } = _converse;
+            await mock.waitForRoster(_converse, 'current');
+            const contact_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+
+            const stanza = stx`
+                <presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${contact_jid}/phone">
+                    <show>dnd</show>
+                    <priority>5</priority>
+                </presence>`;
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
+            const presence = await api.presences.get(`${contact_jid}/laptop`);
+            await u.waitUntil(() => presence.resources.length === 1);
+            expect(presence.getStatus()).toBe('dnd');
+            expect(presence.resources.get('phone').get('priority')).toBe(5);
+            expect(await api.presences.get(contact_jid)).toBe(presence);
+            expect(await api.presences.get('stranger@montague.lit')).toBeUndefined();
+        }),
+    );
 });

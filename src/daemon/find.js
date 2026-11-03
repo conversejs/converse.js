@@ -16,7 +16,9 @@ import { ERRORS, RPCError } from './protocol.js';
  */
 export async function findTarget(_converse, id, jid) {
     if (typeof id !== 'string' || !id) {
-        throw new RPCError(ERRORS.INVALID_PARAMS, 'A message id must be one that "messages.list" gave.');
+        throw new RPCError(ERRORS.INVALID_PARAMS, 'A message id must be one that "messages.list" gave.', {
+            see: ['messages.list'],
+        });
     }
     const messages = (await heldConversations(_converse, jid)).flatMap((c) => c.messages.models.filter(isMessage));
     const where = jid ? 'in this conversation' : 'in any conversation';

@@ -57,8 +57,8 @@ const EXIT_FOR_ERROR = {
 
 /**
  * The daemon's errors name the methods, or the program, that help, since its
- * clients aren't all this one. Those this CLI has a command for are shown as
- * that command.
+ * clients aren't all this one, and list them in `data.see`. Those this CLI has
+ * a command for are shown as that command.
  */
 const COMMAND_FOR = {
     'converse-daemon': 'converse-cli daemon start',
@@ -74,13 +74,17 @@ const COMMAND_FOR = {
 };
 
 /**
- * @param {string} message - From the daemon
+ * An error's message, with the methods it names, as its `data.see` lists
+ * them, shown as this CLI's commands. Nothing else in it is touched, such as
+ * a quoted value that happens to look like a method's name.
+ * @param {Error & { data?: unknown }} error
  * @returns {string}
  */
-const inCommands = (message) =>
-    message.replace(/"([a-z.-]+)"/g, (quoted, name) =>
-        Object.hasOwn(COMMAND_FOR, name) ? `"${COMMAND_FOR[name]}"` : quoted,
-    );
+function inCommands({ message, data }) {
+    const see = /** @type {{ see?: unknown }} */ (data ?? {}).see;
+    const names = Array.isArray(see) ? see.filter((name) => Object.hasOwn(COMMAND_FOR, name)) : [];
+    return names.reduce((text, name) => text.replaceAll(`"${name}"`, `"${COMMAND_FOR[name]}"`), message);
+}
 
 /** How the outcome of a send maps onto exit codes. */
 const EXIT_FOR_OUTCOME = {
@@ -179,7 +183,7 @@ function reportError(e, io) {
         io.err(`converse-cli: ${e.message} Run "converse-cli --help" for usage.\n`);
         return EXIT.ERROR;
     }
-    io.err(`converse-cli: ${inCommands(e.message)}\n`);
+    io.err(`converse-cli: ${inCommands(e)}\n`);
     if (e instanceof AccountError) {
         e.candidates.forEach((c) => io.err(`  ${c}\n`));
         return e.reason === 'ambiguous' ? EXIT.AMBIGUOUS : EXIT.NOT_FOUND;

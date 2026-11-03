@@ -90,6 +90,7 @@ export async function enter(room, nick) {
         `The room ${room.get('jid')} didn't confirm the join within ${JOIN_TIMEOUT / 1000} seconds. ` +
             'It may still let us in, and the daemon will try it again after a restart, until you ' +
             'leave it. Check "daemon.status", then try again.',
+        { see: ['daemon.status'] },
     );
 }
 

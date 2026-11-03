@@ -36,6 +36,17 @@ const SPAWN_TIMEOUT = 10000;
  */
 export class DaemonUnavailableError extends Error {
     name = 'DaemonUnavailableError';
+
+    /**
+     * @param {string} message
+     * @param {{ cause?: unknown, see?: string[] }} [options] - `see` names the programs or methods the
+     *  message quotes, as an {@link RPCError}'s `data.see` does
+     */
+    constructor(message, { see, ...options } = {}) {
+        super(message, options);
+        /** @type {{ see: string[] }|undefined} */
+        this.data = see ? { see } : undefined;
+    }
 }
 
 /**
@@ -87,7 +98,7 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
         if (!may_spawn) {
             throw new DaemonUnavailableError(
                 `The daemon for ${config.jid} isn't running. Start it with "converse-daemon".`,
-                { cause: e },
+                { cause: e, see: ['converse-daemon'] },
             );
         }
         socket = await spawnDaemon(config, socket_path, env);

@@ -53,6 +53,11 @@ export const ERRORS = {
 
 /**
  * A JSON-RPC error, as raised by a method handler or received by a client.
+ *
+ * An error whose message names the methods that help, such as "daemon.status",
+ * quotes each name, and lists them in `data.see`. A client with commands of
+ * its own for those methods shows them by name from there, rather than by
+ * guessing at the message's words.
  */
 export class RPCError extends Error {
     /**
@@ -78,6 +83,7 @@ export function requireConnected(api, consequence) {
         throw new RPCError(
             ERRORS.NOT_CONNECTED,
             `The daemon isn't connected to the server, so ${consequence}. Check "daemon.status", then try again.`,
+            { see: ['daemon.status'] },
         );
     }
 }

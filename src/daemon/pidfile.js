@@ -6,7 +6,7 @@
  * @module @converse/daemon/pidfile
  */
 import fs from 'node:fs/promises';
-import { isRunning } from './config.js';
+import { isRunning } from './registry.js';
 
 /** How often a claim is tried again after a stale pidfile was cleared, before giving up. */
 const MAX_ATTEMPTS = 3;

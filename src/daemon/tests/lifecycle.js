@@ -5,8 +5,8 @@ import readline from 'node:readline';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { converse } from '@converse/headless';
 import { ERRORS, PROTOCOL_VERSION } from '../protocol.js';
-import { findDaemon } from '../config.js';
 import { start } from '../daemon.js';
+import { findDaemon } from '../registry.js';
 import { JID, startDaemon } from './harness.js';
 
 const { Strophe, stx, u } = converse.env;

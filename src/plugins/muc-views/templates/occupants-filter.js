@@ -26,7 +26,7 @@ export default (el) => {
     return html`
         <form class="items-filter-form input-button-group ${ (!el.shouldBeVisible()) ? 'hidden' : 'fade-in' }"
               @submit=${ev => el.submitFilter(ev)}>
-            <div class="${is_overlay_mode ? '' : 'flex-nowrap'}">
+            <div class="${is_overlay_mode ? '' : 'd-flex flex-nowrap align-items-center'}">
                 <div class="filter-by d-flex flex-nowrap">
                     <converse-icon
                             size="1em"
@@ -41,13 +41,13 @@ export default (el) => {
                             data-type="state"
                             title="${title_status_filter}"></converse-icon>
                 </div>
-                <div class="btn-group">
+                <div class="btn-group ${ (filter_type === 'state') ? 'hidden' : '' }">
                     <input .value="${filter_text || ''}"
                         @keydown=${ev => el.liveFilter(ev)}
-                        class="items-filter form-control ${ (filter_type === 'state') ? 'hidden' : '' }"
+                        class="items-filter form-control"
                         placeholder="${i18n_placeholder}"/>
                     <converse-icon size="1em"
-                                   class="fa fa-times clear-input ${ (!filter_text || filter_type === 'state') ? 'hidden' : '' }"
+                                   class="fa fa-times clear-input ${ (!filter_text) ? 'hidden' : '' }"
                                    @click=${ev => el.clearFilter(ev)}>
                     </converse-icon>
                 </div>

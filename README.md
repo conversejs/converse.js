@@ -100,57 +100,91 @@ Comprehensive documentation is available at [conversejs.org/docs](https://conver
 Converse implements a wide range of XMPP Extensions (XEPs), making it one of the most protocol-compliant web clients available.
 
 <details>
-<summary><strong>View all supported XEPs (45+)</strong></summary>
+<!-- xeps:start -->
+<summary><strong>View all 74 supported XEPs and 5 RFCs</strong></summary>
 
-| XEP                                                   | Name                                            | Notes           |
-| ----------------------------------------------------- | ----------------------------------------------- | --------------- |
-| [RFC-7395](https://tools.ietf.org/html/rfc7395)       | XMPP Subprotocol for WebSocket                  |                 |
-| [XEP-0004](https://xmpp.org/extensions/xep-0004.html) | Data Forms                                      |                 |
-| [XEP-0030](https://xmpp.org/extensions/xep-0030.html) | Service Discovery                               |                 |
-| [XEP-0045](https://xmpp.org/extensions/xep-0045.html) | Multi-user Chat                                 |                 |
-| [XEP-0048](https://xmpp.org/extensions/xep-0048.html) | Bookmarks                                       |                 |
-| [XEP-0050](https://xmpp.org/extensions/xep-0050.html) | Ad-Hoc Commands                                 |                 |
-| [XEP-0054](https://xmpp.org/extensions/xep-0054.html) | VCard-temp                                      |                 |
-| [XEP-0059](https://xmpp.org/extensions/xep-0059.html) | Result Set Management                           |                 |
-| [XEP-0060](https://xmpp.org/extensions/xep-0060.html) | Publish-Subscribe                               | Limited support |
-| [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data                                |                 |
-| [XEP-0077](https://xmpp.org/extensions/xep-0077.html) | In-band Registration                            |                 |
-| [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications                        |                 |
-| [XEP-0115](https://xmpp.org/extensions/xep-0115.html) | Entity Capabilities                             |                 |
-| [XEP-0124](https://xmpp.org/extensions/xep-0124.html) | BOSH                                            |                 |
-| [XEP-0144](https://xmpp.org/extensions/xep-0144.html) | Roster Item Exchange                            |                 |
-| [XEP-0156](https://xmpp.org/extensions/xep-0156.html) | Discovering Alternative XMPP Connection Methods |                 |
-| [XEP-0163](https://xmpp.org/extensions/xep-0163.html) | Personal Eventing Protocol                      | Limited support |
-| [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Receipt                                 |                 |
-| [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management                               |                 |
-| [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping                                       |                 |
-| [XEP-0202](https://xmpp.org/extensions/xep-0202.html) | Entity Time                                     | 1:1 chats only  |
-| [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery                                |                 |
-| [XEP-0206](https://xmpp.org/extensions/xep-0206.html) | XMPP Over BOSH                                  |                 |
-| [XEP-0245](https://xmpp.org/extensions/xep-0245.html) | The /me Command                                 |                 |
-| [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations                          |                 |
-| [XEP-0280](https://xmpp.org/extensions/xep-0280.html) | Message Carbons                                 |                 |
-| [XEP-0297](https://xmpp.org/extensions/xep-0297.html) | Stanza Forwarding                               | Limited support |
-| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction                         |                 |
-| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management                      |                 |
-| [XEP-0316](https://xmpp.org/extensions/xep-0316.html) | MUC Eventing Protocol                           | Limited support |
-| [XEP-0317](https://xmpp.org/extensions/xep-0317.html) | Hats                                            | Limited support |
-| [XEP-0333](https://xmpp.org/extensions/xep-0333.html) | Chat Markers                                    | Limited support |
-| [XEP-0352](https://xmpp.org/extensions/xep-0352.html) | Client State Indication                         |                 |
-| [XEP-0357](https://xmpp.org/extensions/xep-0357.html) | Push Notifications                              |                 |
-| [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs                    |                 |
-| [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload                                |                 |
-| [XEP-0372](https://xmpp.org/extensions/xep-0372.html) | References                                      |                 |
-| [XEP-0382](https://xmpp.org/extensions/xep-0382.html) | Spoiler Messages                                |                 |
-| [XEP-0384](https://xmpp.org/extensions/xep-0384.html) | OMEMO Encryption                                |                 |
-| [XEP-0393](https://xmpp.org/extensions/xep-0393.html) | Message Styling                                 |                 |
-| [XEP-0422](https://xmpp.org/extensions/xep-0422.html) | Message Fastening                               | Limited support |
-| [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retractions                             |                 |
-| [XEP-0425](https://xmpp.org/extensions/xep-0425.html) | Message Moderation                              |                 |
-| [XEP-0437](https://xmpp.org/extensions/xep-0437.html) | Room Activity Indicators                        |                 |
-| [XEP-0453](https://xmpp.org/extensions/xep-0453.html) | DOAP Usage in XMPP                              |                 |
-| [XEP-0454](https://xmpp.org/extensions/xep-0454.html) | OMEMO Media Sharing                             |                 |
-| [XEP-0461](https://xmpp.org/extensions/xep-0461.html) | Message Replies                                 |                 |
+| Spec | Name | Status | Since | Notes |
+| --- | --- | --- | --- | --- |
+| [RFC 6120](https://www.rfc-editor.org/info/rfc6120) | XMPP: Core |  |  |  |
+| [RFC 6121](https://www.rfc-editor.org/info/rfc6121) | XMPP: Instant Messaging and Presence |  |  |  |
+| [RFC 6122](https://www.rfc-editor.org/info/rfc6122) | XMPP: Address Format |  |  |  |
+| [RFC 7395](https://www.rfc-editor.org/info/rfc7395) | XMPP Subprotocol for WebSocket |  |  |  |
+| [RFC 7590](https://www.rfc-editor.org/info/rfc7590) | Use of Transport Layer Security (TLS) in XMPP |  |  |  |
+| [XEP-0004](https://xmpp.org/extensions/xep-0004.html) | Data Forms | Complete |  |  |
+| [XEP-0030](https://xmpp.org/extensions/xep-0030.html) | Service Discovery | Complete | 0.8.2 |  |
+| [XEP-0045](https://xmpp.org/extensions/xep-0045.html) | Multi-User Chat | Complete |  |  |
+| [XEP-0048](https://xmpp.org/extensions/xep-0048.html) | Bookmarks | Complete | 2.0.1 |  |
+| [XEP-0050](https://xmpp.org/extensions/xep-0050.html) | Ad-Hoc Commands | Complete | 7.0.0 |  |
+| [XEP-0054](https://xmpp.org/extensions/xep-0054.html) | vcard-temp | Complete |  |  |
+| [XEP-0059](https://xmpp.org/extensions/xep-0059.html) | Result Set Management | Complete |  |  |
+| [XEP-0060](https://xmpp.org/extensions/xep-0060.html) | Publish-Subscribe | Complete |  |  |
+| [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data | Complete | 4.0.0 |  |
+| [XEP-0077](https://xmpp.org/extensions/xep-0077.html) | In-Band Registration | Complete | 0.8.5 |  |
+| [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | Complete |  |  |
+| [XEP-0092](https://xmpp.org/extensions/xep-0092.html) | Software Version | Complete |  |  |
+| [XEP-0115](https://xmpp.org/extensions/xep-0115.html) | Entity Capabilities | Complete |  |  |
+| [XEP-0122](https://xmpp.org/extensions/xep-0122.html) | Data Forms Validation | Partial |  | basic string field sub-type usage |
+| [XEP-0124](https://xmpp.org/extensions/xep-0124.html) | Bidirectional-streams Over Synchronous HTTP (BOSH) | Complete |  |  |
+| [XEP-0144](https://xmpp.org/extensions/xep-0144.html) | Roster Item Exchange | Complete |  |  |
+| [XEP-0147](https://xmpp.org/extensions/xep-0147.html) | XMPP URI Scheme Query Components | Partial |  | Clicking an xmpp: URI dispatches the feasible query actions: message, join, roster (add a contact), subscribe/unsubscribe and remove. vCard, ad-hoc command, disco, register and file-transfer query types are not handled. Converse can also be registered as the browser's handler for the xmpp: URI scheme, so that links clicked outside Converse are dispatched the same way. |
+| [XEP-0153](https://xmpp.org/extensions/xep-0153.html) | vCard-Based Avatars | Complete | 11.0.0 |  |
+| [XEP-0156](https://xmpp.org/extensions/xep-0156.html) | Discovering Alternative XMPP Connection Methods | Complete | 6.0.0 |  |
+| [XEP-0163](https://xmpp.org/extensions/xep-0163.html) | Personal Eventing Protocol | Complete |  |  |
+| [XEP-0166](https://xmpp.org/extensions/xep-0166.html) | Jingle | Partial |  | Used for one-to-one audio calls. Adding, modifying or removing contents, and replacing transports, are refused. |
+| [XEP-0167](https://xmpp.org/extensions/xep-0167.html) | Jingle RTP Sessions | Partial |  | Audio only, no video. Informational session-info payloads (ringing, mute, hold) are acknowledged but neither acted upon nor sent. |
+| [XEP-0172](https://xmpp.org/extensions/xep-0172.html) | User Nickname | Complete |  |  |
+| [XEP-0176](https://xmpp.org/extensions/xep-0176.html) | Jingle ICE-UDP Transport Method | Complete |  | UDP candidates only, trickled, with ICE restarts. |
+| [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Delivery Receipts | Complete |  |  |
+| [XEP-0191](https://xmpp.org/extensions/xep-0191.html) | Blocking Command | Complete | 11.0.0 |  |
+| [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | Complete | 5.0.0 |  |
+| [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | Complete |  |  |
+| [XEP-0202](https://xmpp.org/extensions/xep-0202.html) | Entity Time | Partial |  | 1:1 chats only, no MUC occupant support |
+| [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery | Complete |  |  |
+| [XEP-0206](https://xmpp.org/extensions/xep-0206.html) | XMPP Over BOSH | Complete |  |  |
+| [XEP-0215](https://xmpp.org/extensions/xep-0215.html) | External Service Discovery | Partial |  | STUN and TURN servers are discovered for calls, and credentials are requested for restricted ones. Pushed service updates are not handled. |
+| [XEP-0223](https://xmpp.org/extensions/xep-0223.html) | Persistent Storage of Private Data via PubSub | Complete |  |  |
+| [XEP-0245](https://xmpp.org/extensions/xep-0245.html) | The /me Command | Complete |  |  |
+| [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations | Complete | 0.8.2 |  |
+| [XEP-0277](https://xmpp.org/extensions/xep-0277.html) | Microblogging over XMPP | Partial |  | Authoring geolocation is not implemented. |
+| [XEP-0280](https://xmpp.org/extensions/xep-0280.html) | Message Carbons | Complete | 0.8.0 |  |
+| [XEP-0293](https://xmpp.org/extensions/xep-0293.html) | Jingle RTP Feedback Negotiation | Complete |  |  |
+| [XEP-0294](https://xmpp.org/extensions/xep-0294.html) | Jingle RTP Header Extensions Negotiation | Complete |  |  |
+| [XEP-0297](https://xmpp.org/extensions/xep-0297.html) | Stanza Forwarding | Complete |  |  |
+| [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | Complete | 4.0.0 |  |
+| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | Complete | 0.9.5 |  |
+| [XEP-0317](https://xmpp.org/extensions/xep-0317.html) | Hats | Complete |  |  |
+| [XEP-0319](https://xmpp.org/extensions/xep-0319.html) | Last User Interaction in Presence | Complete | 4.0.5 |  |
+| [XEP-0320](https://xmpp.org/extensions/xep-0320.html) | Use of DTLS-SRTP in Jingle Sessions | Complete |  |  |
+| [XEP-0330](https://xmpp.org/extensions/xep-0330.html) | Pubsub Subscription | Partial |  | The follow-list backing the "Social" app: publishing and retracting entries on the user's own subscription node as they follow and unfollow, reading a contact's list of followed feeds, and live multi-device synchronisation of the user's own list (a follow or unfollow on one device propagates to the others via a +notify subscription). The followers side is not exposed. |
+| [XEP-0333](https://xmpp.org/extensions/xep-0333.html) | Displayed Markers | Partial | 4.1.1 |  |
+| [XEP-0338](https://xmpp.org/extensions/xep-0338.html) | Jingle Grouping Framework | Complete |  |  |
+| [XEP-0339](https://xmpp.org/extensions/xep-0339.html) | Source-Specific Media Attributes in Jingle | Complete |  |  |
+| [XEP-0352](https://xmpp.org/extensions/xep-0352.html) | Client State Indication | Complete | 0.9.4 |  |
+| [XEP-0353](https://xmpp.org/extensions/xep-0353.html) | Jingle Message Initiation | Partial |  | We do not propose again to resume a call of our own after a reconnection or reload, so only the peer can migrate a call. |
+| [XEP-0357](https://xmpp.org/extensions/xep-0357.html) | Push Notifications | Complete | 4.0.0 |  |
+| [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | Complete |  |  |
+| [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | Complete | 4.0.0 |  |
+| [XEP-0371](https://xmpp.org/extensions/xep-0371.html) | Jingle ICE Transport Method | Complete |  |  |
+| [XEP-0372](https://xmpp.org/extensions/xep-0372.html) | References | Complete |  |  |
+| [XEP-0382](https://xmpp.org/extensions/xep-0382.html) | Spoiler messages | Complete | 3.3.3 |  |
+| [XEP-0384](https://xmpp.org/extensions/xep-0384.html) | OMEMO Encryption | Complete | 4.0.0 |  |
+| [XEP-0392](https://xmpp.org/extensions/xep-0392.html) | Consistent Color Generation | Complete | 11.0.0 |  |
+| [XEP-0393](https://xmpp.org/extensions/xep-0393.html) | Message Styling | Complete | 8.0.0 |  |
+| [XEP-0402](https://xmpp.org/extensions/xep-0402.html) | PEP Native Bookmarks | Complete | 11.0.0 |  |
+| [XEP-0410](https://xmpp.org/extensions/xep-0410.html) | MUC Self-Ping (Schrödinger's Chat) | Complete | 5.0.0 |  |
+| [XEP-0420](https://xmpp.org/extensions/xep-0420.html) | Stanza Content Encryption | Complete | 14.0.0 |  |
+| [XEP-0421](https://xmpp.org/extensions/xep-0421.html) | Occupant identifiers for semi-anonymous MUCs | Complete |  |  |
+| [XEP-0422](https://xmpp.org/extensions/xep-0422.html) | Message Fastening | Complete |  |  |
+| [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | Complete | 6.0.0 |  |
+| [XEP-0425](https://xmpp.org/extensions/xep-0425.html) | Moderated Message Retraction | Complete | 6.0.0 |  |
+| [XEP-0431](https://xmpp.org/extensions/xep-0431.html) | Full Text Search in MAM | Complete |  |  |
+| [XEP-0437](https://xmpp.org/extensions/xep-0437.html) | Room Activity Indicators | Complete | 8.0.0 |  |
+| [XEP-0444](https://xmpp.org/extensions/xep-0444.html) | Message Reactions | Complete | 13.0.0 |  |
+| [XEP-0454](https://xmpp.org/extensions/xep-0454.html) | OMEMO Media sharing | Complete | 8.0.0 |  |
+| [XEP-0461](https://xmpp.org/extensions/xep-0461.html) | Message Replies | Complete |  |  |
+| [XEP-0469](https://xmpp.org/extensions/xep-0469.html) | Bookmark Pinning | Complete | 15.0.0 | Pinned groupchats are shown at the top of the list of open groupchats. Pinned bookmarks of groupchats that aren't open aren't shown. |
+| [XEP-0472](https://xmpp.org/extensions/xep-0472.html) | Pubsub Social Feed | Partial |  | Microblog profile of the Pubsub Social Feed: the social-feed discovery feature and Base-profile node config used by the "Social" app. Gallery-profile nodes are rendered (consume-only, as an image grid); creating/hosting gallery nodes is not implemented. |
+<!-- xeps:end -->
 
 </details>
 

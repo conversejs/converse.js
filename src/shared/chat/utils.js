@@ -161,14 +161,18 @@ export function getHats(message) {
 }
 
 export function getTonedEmojis() {
-    if (!converse.emojis.toned) {
+    if (!converse.emojis?.toned) {
+        const people = converse.emojis?.json?.people;
+        if (!people) {
+            return [];
+        }
         converse.emojis.toned = u.unique(
-            Object.values(converse.emojis.json.people)
+            Object.values(people)
                 .filter((person) => person.sn.includes('_tone'))
                 .map((person) => person.sn.replace(/_tone[1-5]/, '')),
         );
     }
-    return converse.emojis.toned;
+    return converse.emojis?.toned ?? [];
 }
 
 /**

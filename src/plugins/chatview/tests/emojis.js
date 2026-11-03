@@ -131,6 +131,34 @@ describe('Emojis', function () {
         );
 
         it(
+            'does not crash if emoji metadata failed to load (#4132)',
+            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+                const original_json = converse.emojis.json;
+                const original_toned = converse.emojis.toned;
+                try {
+                    converse.emojis.json = {};
+                    delete converse.emojis.toned;
+
+                    const contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                    await mock.waitForRoster(_converse, 'current');
+                    await mock.openControlBox(_converse);
+                    await mock.openChatBoxFor(_converse, contact_jid);
+                    const view = _converse.chatboxviews.get(contact_jid);
+                    const toolbar = await u.waitUntil(() => view.querySelector('converse-chat-toolbar'));
+
+                    // Opening the emoji picker should not throw TypeError
+                    toolbar.querySelector('.toggle-emojis').click();
+                    const dropdown = await u.waitUntil(() => view.querySelector('converse-emoji-dropdown'));
+                    expect(dropdown).toBeDefined();
+                    expect(dropdown.querySelector('.dropdown-menu').classList.contains('show')).toBe(true);
+                } finally {
+                    converse.emojis.json = original_json;
+                    converse.emojis.toned = original_toned;
+                }
+            }),
+        );
+
+        it(
             'renders the popular category with recently used emojis',
             mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
                 await mock.waitForRoster(_converse, 'current', 1);

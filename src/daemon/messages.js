@@ -5,7 +5,7 @@
 import { api, converse } from '@converse/headless';
 import { getID, isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.js';
 import { findMessage, findOwn, findTarget, notRetracted, ownedBy } from './find.js';
-import { getPage, hasArchivedMessages } from './history.js';
+import { hasArchivedMessages, isMessage } from './history.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 import { searchMessages } from './search.js';
@@ -63,11 +63,7 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
 
             const room = await api.rooms.get(jid);
             if (room) {
-                const messages = await getPage(room, {
-                    limit,
-                    since: since_ms,
-                    before: before === undefined ? undefined : (models) => findMessage(models, before),
-                });
+                const messages = await readPage(room, { limit, before, since: since_ms });
                 return {
                     conversation: toRoomDTO(room),
                     messages: messages.map(toMessageDTO),
@@ -100,11 +96,7 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
                 await chat.initialized;
             }
 
-            const messages = await getPage(chat, {
-                limit,
-                since: since_ms,
-                before: before === undefined ? undefined : (models) => findMessage(models, before),
-            });
+            const messages = await readPage(chat, { limit, before, since: since_ms });
             return {
                 conversation: toConversationDTO(jid, contact),
                 messages: messages.map(toMessageDTO),
@@ -342,6 +334,21 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
             return { message: dto };
         },
     };
+}
+
+/**
+ * A page of a conversation's messages, ending before the message with the id
+ * `before`, if given.
+ * @param {import('@converse/headless').ChatBox|import('@converse/headless').MUC} chat
+ * @param {Object} options
+ * @param {number} options.limit
+ * @param {string} [options.before] - The id of a message held in the conversation
+ * @param {number} [options.since] - Milliseconds since the epoch
+ */
+async function readPage(chat, { limit, before, since }) {
+    await chat.messages.fetched;
+    const end = before === undefined ? undefined : findMessage(chat.messages.models.filter(isMessage), before);
+    return api.archive.page(chat, { limit, before: end, since, filter: isMessage });
 }
 
 /**

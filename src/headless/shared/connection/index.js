@@ -486,7 +486,7 @@ export class MockConnection extends Connection {
                 '</stream:features>',
         ).firstElementChild;
 
-        // @ts-ignore
+        // @ts-expect-error Only the BOSH transport has _processRequest, but the mock stubs it out regardless
         this._proto._processRequest = () => {};
         // Record the unavailable presence that a graceful disconnect sends,
         // as a real transport would put it on the wire.
@@ -535,13 +535,12 @@ export class MockConnection extends Connection {
     }
 
     /** @returns {InstanceType<typeof import('strophe.js').Strophe.SASLSHA256>} */
-    // @ts-ignore
+    // @ts-expect-error Overrides the _sasl_mechanism property with a getter
     get _sasl_mechanism() {
         return new Strophe.SASLSHA256();
     }
 
     _processRequest() {
-        // eslint-disable-line class-methods-use-this
         // Don't attempt to send out stanzas
     }
 

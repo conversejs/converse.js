@@ -1,6 +1,5 @@
 import _converse from '../_converse.js';
 import log from '@converse/log';
-import { Strophe } from 'strophe.js';
 
 export default {
     /**

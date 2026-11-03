@@ -33,7 +33,7 @@ export default (el) => {
         class="controlbox-padded items-filter-form input-button-group ${!el.shouldBeVisible() ? 'hidden' : 'fade-in'}"
         @submit=${(/** @type {Event} */ ev) => el.submitFilter(ev)}
     >
-        <div class="flex-nowrap">
+        <div class="d-flex flex-nowrap align-items-center">
             <div class="filter-by d-flex flex-nowrap">
                 <converse-icon
                     size="1em"
@@ -57,16 +57,16 @@ export default (el) => {
                     title="${title_status_filter}"
                 ></converse-icon>
             </div>
-            <div class="btn-group">
+            <div class="btn-group ${filter_type === 'state' ? 'hidden' : ''}">
                 <input
                     .value="${filter_text || ''}"
                     @keydown=${(/** @type {Event} */ ev) => el.liveFilter(ev)}
-                    class="items-filter form-control ${filter_type === 'state' ? 'hidden' : ''}"
+                    class="items-filter form-control"
                     placeholder="${i18n_placeholder}"
                 />
                 <converse-icon
                     size="1em"
-                    class="fa fa-times clear-input ${!filter_text || filter_type === 'state' ? 'hidden' : ''}"
+                    class="fa fa-times clear-input ${!filter_text ? 'hidden' : ''}"
                     @click=${(/** @type {Event} */ ev) => el.clearFilter(ev)}
                 >
                 </converse-icon>

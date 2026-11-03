@@ -36,6 +36,8 @@
   `max_voice_message_duration`, `voice_message_bitrate` and `voice_message_mime_type` settings,
   and the `voice_message` key of `visible_toolbar_buttons`.
 - feat: 1:1 audio calls over Jingle ([XEP-0167](https://xmpp.org/extensions/xep-0167.html)), set up with Jingle Message Initiation ([XEP-0353](https://xmpp.org/extensions/xep-0353.html)) and STUN/TURN discovery via [XEP-0215](https://xmpp.org/extensions/xep-0215.html). Adds the `call_ice_servers` setting, and the `call` key of `visible_toolbar_buttons` now shows the audio call button in 1:1 chats (on by default).
+- fix(rosterview): The contacts and occupants filters show their icons and text input on one line,
+  with the input taking up the remaining width.
 - fix(chatview): The contact's name and status message in a chat header were painted the same
   colour as the header itself.
 - fix(chatview): Show the contact's status message in the chat header again. It was read off the

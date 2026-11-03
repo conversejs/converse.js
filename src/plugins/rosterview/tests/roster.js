@@ -351,6 +351,36 @@ describe('The Contacts Roster', function () {
         );
 
         it(
+            'shows its type icons and its input on one line',
+            mock.initConverse(converse, [], {}, async function (_converse) {
+                await mock.openControlBox(_converse);
+                await mock.waitForRoster(_converse, 'current');
+                const rosterview = document.querySelector('converse-roster');
+                (await u.waitUntil(() => rosterview.querySelector('.toggle-filter'))).click();
+
+                const form = await u.waitUntil(() => rosterview.querySelector('.items-filter-form'));
+                const icons = form.querySelector('.filter-by');
+                const input = form.querySelector('.items-filter');
+                const row = (/** @type {Element} */ el) => {
+                    const { top, bottom } = el.getBoundingClientRect();
+                    return (top + bottom) / 2;
+                };
+                // The input sits beside the icons and takes up the rest of the line.
+                expect(Math.abs(row(icons) - row(input))).toBeLessThan(5);
+                expect(input.getBoundingClientRect().left).toBeGreaterThanOrEqual(icons.getBoundingClientRect().right);
+                expect(input.getBoundingClientRect().width).toBeGreaterThan(form.clientWidth / 2);
+
+                // In status mode the select takes the input's place, without an empty gap before it.
+                /** @type {HTMLElement} */ (form.querySelector('converse-icon[data-type="state"]')).click();
+                const select = form.querySelector('select.state-type');
+                await u.waitUntil(() => u.isVisible(select));
+                expect(u.isVisible(form.querySelector('.btn-group'))).toBe(false);
+                expect(Math.abs(row(icons) - row(select))).toBeLessThan(5);
+                expect(select.getBoundingClientRect().left - icons.getBoundingClientRect().right).toBeLessThan(10);
+            }),
+        );
+
+        it(
             'can be used to filter the contacts shown',
             mock.initConverse(converse, [], { 'roster_groups': true }, async function (_converse) {
                 await mock.openControlBox(_converse);

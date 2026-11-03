@@ -5,8 +5,8 @@ converse-list-filter {
     .items-filter-form {
         width: 100%;
 
-        .button-group {
-            padding: 0.2em;
+        .btn-group {
+            flex-grow: 1;
         }
 
         converse-icon {
@@ -32,10 +32,6 @@ converse-list-filter {
 
 .converse-overlayed  {
     .items-filter-form {
-        .button-group {
-            padding: 0.1em;
-        }
-
         converse-icon {
             padding: 0.15em;
         }

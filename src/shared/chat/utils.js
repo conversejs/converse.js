@@ -161,18 +161,7 @@ export function getHats(message) {
 }
 
 export function getTonedEmojis() {
-    if (!converse.emojis.toned) {
-        // A `loadEmojis` hook may remove the `people` category, and it's absent when emoji.json failed to load.
-        const people = converse.emojis.json?.people;
-        if (!people) return [];
-
-        converse.emojis.toned = u.unique(
-            Object.values(people)
-                .filter((person) => person.sn.includes('_tone'))
-                .map((person) => person.sn.replace(/_tone[1-5]/, '')),
-        );
-    }
-    return converse.emojis.toned;
+    return converse.emojis.toned ?? [];
 }
 
 /**

@@ -1,6 +1,7 @@
 import log from '@converse/log';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
+import { unique } from '../../utils/array.js';
 
 /** @type {(() => Promise<object>)|null} */
 let _json_loader = null;
@@ -82,6 +83,12 @@ const emojis = {
             converse.emojis.list = Object.values(converse.emojis.by_sn);
             converse.emojis.list.sort((a, b) => (a.sn < b.sn ? -1 : a.sn > b.sn ? 1 : 0));
             converse.emojis.shortnames = converse.emojis.list.map((m) => m.sn);
+            // Skin tone variants are in the `people` category, which a `loadEmojis` hook may remove.
+            converse.emojis.toned = unique(
+                Object.values(json.people ?? {})
+                    .filter((person) => person.sn.includes('_tone'))
+                    .map((person) => person.sn.replace(/_tone[1-5]/, '')),
+            );
             // Sort by length descending for the regex so longer shortnames
             // match before shorter ones.
             const getShortNames = () =>

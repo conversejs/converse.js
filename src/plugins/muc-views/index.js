@@ -66,15 +66,6 @@ converse.plugins.add('converse-muc-views', {
             });
         }
 
-        api.listen.on('clearsession', () => {
-            const view = _converse.chatboxviews.get('controlbox');
-            if (view && view.roomspanel) {
-                view.roomspanel.model.destroy();
-                view.roomspanel.remove();
-                delete view.roomspanel;
-            }
-        });
-
         api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
         api.listen.on('confirmDirectMUCInvitation', confirmDirectMUCInvitation);
     },

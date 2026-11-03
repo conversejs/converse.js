@@ -25,7 +25,7 @@ const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 1000;
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit
@@ -148,6 +148,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
          * @param {string} [params.reply_to] - The id of a message in the conversation that this replies to
          * @param {string} [params.correct] - The id of one of our messages in the conversation, which
          *  this replaces. Only "as_user" mode drafts a correction. Elsewhere it's only sent directly.
+         * @param {unknown} [params.at] - Refused: a later send is for "schedules.create"
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>}
          */
@@ -167,11 +168,13 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                 );
             }
             const replying_to = reply_to === undefined ? undefined : await findTarget(_converse, reply_to, jid);
+            /** @type {import('./types').SendRoute} */
             const send = async (routing) => {
                 const correcting =
                     correct === undefined ? undefined : await findOwn(_converse, correct, jid, 'correct');
                 // Taken before the send: a correction gets a new origin-id, which can change the message's id.
                 const target = replying_to ?? correcting;
+                /** @type {{ action?: 'reply'|'correct', target?: string }} */
                 const action = target ? { action: replying_to ? 'reply' : 'correct', target: getIDs(target)[0] } : {};
                 const dto = await sendMessage(_converse, jid, body, { replying_to, correcting });
                 audit.record({
@@ -218,6 +221,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                 conversation === undefined ? undefined : await resolveJID(_converse, conversation, 'conversation');
             const found = await findTarget(_converse, id, jid);
             const to = found.collection.chatbox.get('jid');
+            /** @type {import('./types').SendRoute} */
             const retract = async (routing) => {
                 const message = ownedBy(found, id, 'retract');
                 const target = getIDs(message)[0];
@@ -261,6 +265,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
             const message = await findTarget(_converse, id, jid);
             const chatbox = message.collection.chatbox;
             const to = chatbox.get('jid');
+            /** @type {import('./types').SendRoute} */
             const react = async (routing) => {
                 const dto = await sendReaction(_converse, message, reaction, remove);
                 const target = getIDs(message)[0];
@@ -356,7 +361,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
 /**
  * A reaction is a single emoji (XEP-0444). A shortname such as ":thumbsup:"
  * is turned into the emoji it names.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {unknown} emoji
  * @returns {Promise<string>}
  */
@@ -376,7 +381,7 @@ async function toEmoji(_converse, emoji) {
 }
 
 /**
- * @param {import('@converse/headless').Message} message - Found by the id given
+ * @param {import('@converse/headless').BaseMessage} message - Found by the id given
  * @param {string} id
  * @param {string} verb - What's to be done to it, for the error message
  */

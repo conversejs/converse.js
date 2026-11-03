@@ -14,7 +14,7 @@ import { TIMED_OUT, withTimeout } from './timeout.js';
 const DISCO_TIMEOUT = 5000;
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  */
 export function contactMethods(_converse) {
     const { api } = _converse;

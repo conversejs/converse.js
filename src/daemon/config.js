@@ -258,11 +258,13 @@ function parseSockets(raw, config_path) {
             throw new Error(`"${key}" in ${config_path} must be an absolute path.`);
         }
     }
-    return sockets.socket === null && sockets.restricted_socket === null ? null : sockets;
+    if (sockets.socket === null && sockets.restricted_socket === null) return null;
+
+    return /** @type {import('./types').Sockets} */ (sockets);
 }
 
 /**
- * @param {unknown} raw - The "policy" object from the config file, if any
+ * @param {Record<string, any>|undefined} raw - The "policy" object from the config file, if any
  * @param {string} config_path
  * @param {import('./types').Mode} mode
  * @returns {import('./types').Policy}

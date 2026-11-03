@@ -10,7 +10,7 @@ import { ownMessagesOnly } from './send.js';
 import { createScheduler } from './scheduler.js';
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {(params: Object, client: import('./types').Client) => Promise<import('./types').SendResult>} deps.sendNow
@@ -46,6 +46,11 @@ export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
         });
     }
 
+    /**
+     * @param {{ to: string, body: string, reply_to?: string, correct?: string, send_at: string }} params
+     * @param {import('./types').Client} client
+     * @returns {Promise<import('./types').SendResult>}
+     */
     async function addSchedule(params, client) {
         const schedules = await scheduler.get();
         const scheduled = await schedules.schedule({

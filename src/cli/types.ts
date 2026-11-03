@@ -17,6 +17,12 @@ export type Options = {
     timeout?: string; // Seconds
     account?: string; // The account's name, which picks its daemon
     all?: boolean; // Every account's, for "daemon status"
+    'reply-to'?: string; // The id of the message a send replies to
+    correct?: string; // The id of our message a send corrects
+    at?: string; // When a send is scheduled for
+    unencrypted?: boolean; // Resend without encryption
+    remove?: boolean; // Withdraw a reaction
+    nick?: string; // The nickname to join a room with
 };
 
 export type Context = IO & {

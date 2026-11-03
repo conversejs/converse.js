@@ -32,10 +32,10 @@ const exhausted = new WeakSet();
  * @param {import('@converse/headless').ChatBox} chat
  * @param {Object} options
  * @param {number} options.limit
- * @param {(messages: import('@converse/headless').Message[]) => import('@converse/headless').Message} [options.before]
+ * @param {(messages: import('@converse/headless').BaseMessage[]) => import('@converse/headless').BaseMessage} [options.before]
  *  Finds the message the page ends before, or throws.
  * @param {number} [options.since] - Milliseconds since the epoch
- * @returns {Promise<import('@converse/headless').Message[]>} Oldest first
+ * @returns {Promise<import('@converse/headless').BaseMessage[]>} Oldest first
  */
 export async function getPage(chat, { limit, before, since }) {
     await chat.messages.fetched;
@@ -116,7 +116,7 @@ function collect(chat, { limit, before, since }) {
 }
 
 /**
- * @param {import('@converse/headless').Message} model
+ * @param {import('@converse/headless').BaseMessage} model
  */
 export function isMessage(model) {
     if (model instanceof MAMPlaceholderMessage) return false;
@@ -129,7 +129,7 @@ export function isMessage(model) {
 /**
  * Fetches the archive's page of history from before the oldest message held.
  * @param {import('@converse/headless').ChatBox} chat
- * @param {import('@converse/headless').Message} [oldest]
+ * @param {import('@converse/headless').BaseMessage} [oldest]
  */
 function fetchOlder(chat, oldest) {
     const archive_id = oldest?.getArchiveID();
@@ -145,7 +145,7 @@ function fetchOlder(chat, oldest) {
 
 /**
  * Whether a message arrived OMEMO-encrypted and couldn't be decrypted.
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  */
 export function isUndecryptable(message) {
     return !!message.get('is_error') && message.get('error_type') === 'Decryption';

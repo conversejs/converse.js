@@ -16,13 +16,14 @@ import { resolveJID } from './resolve.js';
 const { TRUSTED, UNDECIDED, UNTRUSTED } = constants;
 
 /** How a device's trust is named in the protocol, by headless's value for it. */
+/** @type {Record<number, import('./types').DeviceDTO['trust']>} */
 const TRUST_NAMES = { [TRUSTED]: 'trusted', [UNTRUSTED]: 'untrusted', [UNDECIDED]: 'undecided' };
 
 /** The reverse of {@link TRUST_NAMES}, for a trust state the client asks for. */
 const TRUST_VALUES = { trusted: TRUSTED, untrusted: UNTRUSTED, undecided: UNDECIDED };
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  */
 export function omemoMethods(_converse) {
     const ownJID = () => _converse.session.get('bare_jid');

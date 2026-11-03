@@ -16,7 +16,7 @@ const CONTENT_TYPE = 'application/octet-stream';
 const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
 
 /**
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {Object} deps
  * @param {ReturnType<typeof import('./routing.js').createSendRouter>} deps.routeSend
  * @param {ReturnType<typeof import('./audit.js').createAudit>} deps.audit

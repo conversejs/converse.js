@@ -230,6 +230,7 @@ export class Client {
     #pending = new Map();
     /** @type {Set<(params: import('./types').Event) => void>} */
     #listeners = new Set();
+    /** @type {PromiseWithResolvers<never>} */
     #closed = Promise.withResolvers();
     #is_closed = false;
 

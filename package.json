@@ -72,8 +72,9 @@
     "test:daemon": "vitest run --project daemon",
     "test:prosody": "vitest run --project prosody",
     "test:headless:browser": "vitest --project headless --browser.headless=false",
-    "types": "tsc -p ./src/log/tsconfig.json && tsc -p ./src/headless/tsconfig.json && tsc",
-    "types:check": "tsc --noEmit",
+    "types": "tsc -p ./src/log/tsconfig.json && tsc -p ./src/headless/tsconfig.json && tsc && npm run types:node",
+    "types:node": "tsc -p ./src/daemon && tsc -p ./src/cli",
+    "types:check": "tsc --noEmit && npm run types:node",
     "watch": "concurrently \"npm run watch:headless\" \"npm run watch:main\"",
     "watch:headless": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.headless.js --mode=development",
     "watch:main": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.build.js --mode=development"

@@ -272,7 +272,7 @@ async function listen(socket_path, onConnection, gid = null) {
     await new Promise((resolve, reject) => {
         server.once('error', (e) =>
             reject(
-                e.code === 'EINVAL'
+                /** @type {NodeJS.ErrnoException} */ (e).code === 'EINVAL'
                     ? new Error(
                           `Can't listen on ${socket_path}: the path is too long for a unix socket. ` +
                               'Point XDG_RUNTIME_DIR, or "restricted_dir", at a shorter directory.',

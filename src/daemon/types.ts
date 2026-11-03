@@ -1,3 +1,6 @@
+// Headless exports its private global, but not the global's class.
+export type ConversePrivateGlobal = typeof import('@converse/headless')._converse;
+
 export type Paths = {
     config: string; // The account configuration file
     runtime_dir: string; // Owner-only directory holding the full access socket and the pidfile
@@ -243,6 +246,18 @@ export type DraftAction =
     | { action: 'react'; body: string; target: string; remove: boolean } // The body is the emoji. Remove withdraws it
     | { action: 'upload'; body: string }; // The body is the uploaded file's URL, shared as a file
 
+// The send policy's rules, each of which can refuse a restricted send.
+export type PolicyRule = 'allowlist' | 'room_allowlist' | 'rate_conversation' | 'rate_room' | 'rate_overall';
+
+// A transient refusal lets the same send through later: a rate limit's window moves on.
+export type Refusal = { allowed: false; rule: PolicyRule; message: string; transient: boolean };
+
+// Whether the send policy lets a restricted send through, and by which route.
+export type Verdict = { allowed: true; route: Route } | Refusal;
+
+// Carries out a send directly, or as the given route.
+export type SendRoute = (routing?: Routing) => Promise<SendResult>;
+
 /**
  * What a send came to. A refused send says which rule refused it, and what to
  * do about it. A draft was not sent: in "owner_only" and "bot" modes its text
@@ -251,11 +266,7 @@ export type DraftAction =
 export type SendResult =
     | { outcome: 'sent'; message: MessageDTO }
     | { outcome: 'scheduled'; schedule: ScheduleDTO }
-    | {
-          outcome: 'refused';
-          rule: 'allowlist' | 'rate_conversation' | 'room_allowlist' | 'rate_room' | 'rate_overall';
-          message: string;
-      }
+    | { outcome: 'refused'; rule: PolicyRule; message: string; transient: boolean }
     | { outcome: 'draft'; draft_id: string };
 
 export type ScheduleDTO = {
@@ -307,6 +318,9 @@ export type Client = {
     consumer: string | null; // Set by `hello`: the configured consumer on a restricted connection
     notify(_params: Record<string, unknown>): void; // Sends an `event` notification
 };
+
+// What an event's filters look at: a message, or a draft read as one.
+export type FilteredMessage = Pick<MessageDTO, 'conversation' | 'direction' | 'body'>;
 
 export type EventFilter = {
     conversation?: string; // Bare JID

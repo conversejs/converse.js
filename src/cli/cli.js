@@ -109,7 +109,7 @@ export async function main(argv, io) {
     }
     const { values, positionals } = parsed;
     // The account goes to the daemon this starts, too.
-    if (values.account !== undefined) io = { ...io, env: { ...io.env, CONVERSE_ACCOUNT: values.account } };
+    if (typeof values.account === 'string') io = { ...io, env: { ...io.env, CONVERSE_ACCOUNT: values.account } };
 
     if (values.version) {
         io.out(`${pkg.version}\n`);
@@ -186,7 +186,7 @@ function reportError(e, io) {
     }
     if (e instanceof RPCError) {
         /** @type {string[]} */
-        const candidates = e.data?.candidates ?? [];
+        const candidates = /** @type {{ candidates?: string[] }} */ (e.data)?.candidates ?? [];
         candidates.forEach((c) => io.err(`  ${c}\n`));
         return EXIT_FOR_ERROR[e.code] ?? EXIT.ERROR;
     }
@@ -296,7 +296,7 @@ const SEARCHED = {
     local: "Searched the messages held locally, as the server's full-text search wasn't available.",
 };
 
-/** @type {Record<string, (ctx: import('./types').Context) => Promise<number>>} */
+/** @type {Record<string, (ctx: import('./types').Context) => number|Promise<number>>} */
 const COMMANDS = {
     async read(ctx) {
         const { options, out, err } = ctx;
@@ -355,7 +355,7 @@ const COMMANDS = {
         if (args.length === 0) throw new UsageError('Expected a JID to send to.');
         const [to, ...words] = args;
         const body = words.length ? words.join(' ') : await readStdin(ctx);
-        /** @type {import('@converse/daemon/types').SendResult} */
+        /** @type {{ to: string, body: string, reply_to?: string, correct?: string }} */
         const params = { to, body, reply_to: options['reply-to'], correct: options.correct };
         const result = await (options.at === undefined
             ? request(ctx, 'messages.send', params)
@@ -524,7 +524,7 @@ const COMMANDS = {
 
     async conversations(ctx) {
         const { options, out, err } = ctx;
-        /** @type {import('@converse/daemon/types').ConversationSummary[]} */
+        /** @type {{ conversations: import('@converse/daemon/types').ConversationSummary[] }} */
         const { conversations } = await request(ctx, 'conversations.list');
         if (options.json) {
             conversations.forEach((c) => out(formatJSON(c)));
@@ -750,7 +750,7 @@ async function waitForMessage(client, filter, seconds) {
     const { promise, resolve, reject } = Promise.withResolvers();
     const timer = setTimeout(() => resolve(null), seconds * 1000);
     // The subscription is this connection's only one, so its events are ours.
-    client.onEvent(({ message }) => resolve(message));
+    client.onEvent((event) => event.type === 'message' && resolve(event.message));
     client.closed.catch(reject);
     try {
         await client.request('events.subscribe', { ...filter, once: true });

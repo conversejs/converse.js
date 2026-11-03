@@ -12,11 +12,11 @@ import { isMessage } from './history.js';
  * server's full-text search of its archive is used where the server offers
  * it. Otherwise, or if the server's search fails, the messages held locally
  * are searched.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
- * @param {string} [jid] - The bare JID of the conversation to search, else every one
+ * @param {string|undefined} jid - The bare JID of the conversation to search, else every one
  * @param {number} limit
- * @returns {Promise<{ method: 'server'|'local', messages: import('@converse/headless').Message[] }>}
+ * @returns {Promise<{ method: 'server'|'local', messages: import('@converse/headless').BaseMessage[] }>}
  */
 export async function searchMessages(_converse, text, jid, limit) {
     const found = await searchServer(_converse, text, jid, limit);
@@ -28,11 +28,11 @@ export async function searchMessages(_converse, text, jid, limit) {
 /**
  * The matches for `text` that the server's archive holds, or null where the
  * server can't search it. A search that fails is logged, and is treated the same.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
- * @param {string} [jid] - The bare JID of the conversation to search, else every one
+ * @param {string|undefined} jid - The bare JID of the conversation to search, else every one
  * @param {number} limit
- * @returns {Promise<import('@converse/headless').Message[]|null>}
+ * @returns {Promise<import('@converse/headless').BaseMessage[]|null>}
  */
 async function searchServer(_converse, text, jid, limit) {
     const { api } = _converse;
@@ -50,11 +50,11 @@ async function searchServer(_converse, text, jid, limit) {
 /**
  * The newest `limit` messages held locally whose text has every word of `text`,
  * oldest first.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} text
- * @param {string} [jid] - The bare JID of the conversation to search, else every one
+ * @param {string|undefined} jid - The bare JID of the conversation to search, else every one
  * @param {number} limit
- * @returns {Promise<import('@converse/headless').Message[]>}
+ * @returns {Promise<import('@converse/headless').BaseMessage[]>}
  */
 async function searchLocal(_converse, text, jid, limit) {
     const words = fold(text).split(/\s+/);

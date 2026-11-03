@@ -14,12 +14,12 @@ const { u } = converse.env;
 /**
  * Sends a message from the account. Restricted connections only reach this
  * where the policy routes a send directly.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
+ * @param {import('./types').ConversePrivateGlobal} _converse
  * @param {string} jid - Bare JID
  * @param {string} body
  * @param {Object} [targets] - Messages of the same conversation
- * @param {import('@converse/headless').Message} [targets.replying_to]
- * @param {import('@converse/headless').Message} [targets.correcting] - One of ours
+ * @param {import('@converse/headless').BaseMessage} [targets.replying_to]
+ * @param {import('@converse/headless').BaseMessage} [targets.correcting] - One of ours
  * @param {Object} [attributes] - More outgoing message attributes, such as an XEP-0066 URL
  * @returns {Promise<import('./types').MessageDTO>}
  */
@@ -46,7 +46,7 @@ export async function sendMessage(_converse, jid, body, targets = {}, attributes
  * @param {import('@converse/headless').ChatBox|import('@converse/headless').MUC} chatbox
  * @param {Object} attrs
  * @param {Object} targets
- * @returns {Promise<import('@converse/headless').Message>}
+ * @returns {Promise<import('@converse/headless').BaseMessage>}
  */
 async function send(chatbox, attrs, targets) {
     const message = await attempt(() => chatbox.sendMessage(attrs, targets));
@@ -56,8 +56,8 @@ async function send(chatbox, attrs, targets) {
 
 /**
  * Retracts one of our messages (XEP-0424).
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
- * @param {import('@converse/headless').Message} message - One of ours
+ * @param {import('./types').ConversePrivateGlobal} _converse
+ * @param {import('@converse/headless').BaseMessage} message - One of ours
  * @param {string} id - The id it was asked for by, for the error messages
  * @returns {Promise<import('./types').MessageDTO>} The message, retracted
  */
@@ -80,8 +80,8 @@ export async function retractMessage(_converse, message, id) {
 /**
  * Gives a message a reaction (XEP-0444), or withdraws one, keeping the other
  * reactions we gave it.
- * @param {import('@converse/headless').ConversePrivateGlobal} _converse
- * @param {import('@converse/headless').Message} message
+ * @param {import('./types').ConversePrivateGlobal} _converse
+ * @param {import('@converse/headless').BaseMessage} message
  * @param {string} reaction - An emoji
  * @param {boolean} remove - Whether to withdraw it
  * @returns {Promise<import('./types').MessageDTO>} The message reacted to
@@ -116,7 +116,7 @@ export async function attempt(send) {
  * Sends a failed send again in the clear. Headless only does this for a message
  * that was refused for encryption, and says so by not handling the request.
  * @param {import('@converse/headless').ChatBox|import('@converse/headless').MUC} chatbox
- * @param {import('@converse/headless').Message} message
+ * @param {import('@converse/headless').BaseMessage} message
  */
 export async function resendUnencrypted(_converse, chatbox, message) {
     const { handled } = await _converse.api.hook('resendFailedMessageUnencrypted', chatbox, {

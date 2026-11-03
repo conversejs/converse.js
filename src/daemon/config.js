@@ -228,7 +228,6 @@ export function loadConfig(env = process.env) {
         account: account.name,
         jid,
         owner,
-        password: raw.password,
         websocket_url: raw.websocket_url,
         resource: raw.resource || DEFAULT_RESOURCE,
         consumer: raw.consumer || DEFAULT_CONSUMER,
@@ -511,13 +510,16 @@ export async function getGroupId(group) {
 /**
  * The account password: from the config file if it has one, otherwise from
  * the system keyring (libsecret's `secret-tool` on Linux, `security` on
- * macOS), under service "converse" and the bare JID as account.
+ * macOS), under service "converse" and the bare JID as account. The file is
+ * read again here, rather than kept in the loaded config, so that the
+ * password goes no further than the login.
  * @param {import('./types').Config} config
  * @param {NodeJS.ProcessEnv} [env]
  * @returns {Promise<string>}
  */
 export async function getPassword(config, env = process.env) {
-    if (config.password) return config.password;
+    const { password: in_file } = JSON.parse(fs.readFileSync(config.paths.config, 'utf8'));
+    if (typeof in_file === 'string' && in_file) return in_file;
 
     const [cmd, args, store_hint] =
         process.platform === 'darwin'

@@ -74,7 +74,6 @@ export type Config = {
     account: string; // The account's name
     jid: string; // Bare JID of the agent's account, which is the user's own in "as_user" mode
     owner: string; // Bare JID of the user, to whom drafts are delivered. The same as jid in "as_user" mode
-    password?: string; // Unset means: look in the system keyring
     websocket_url?: string;
     resource: string;
     consumer: string; // The name a full access client goes by unless it gives another, and every restricted client's

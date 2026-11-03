@@ -56,7 +56,6 @@ describe('The account configuration', () => {
             account: 'default',
             jid: 'romeo@montague.lit',
             owner: 'benvolio@montague.lit',
-            password: undefined,
             websocket_url: 'wss://montague.lit/ws',
             resource: 'agent',
             consumer: 'agent',
@@ -273,6 +272,8 @@ describe('The account configuration', () => {
         await writeConfig({ jid: 'romeo@montague.lit', password: 'from-config' });
         await installKeyring('romeo@montague.lit', 'from-keyring');
         expect(await getPassword(loadConfig(env), env)).toBe('from-config');
+        // Read for the login only, never kept in the config.
+        expect(loadConfig(env)).not.toHaveProperty('password');
     });
 
     it('otherwise takes the password from the system keyring', async () => {

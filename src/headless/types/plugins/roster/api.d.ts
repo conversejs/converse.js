@@ -79,6 +79,20 @@ declare namespace _default {
          */
         function add(attributes: import("./types").RosterContactAttributes, persist?: boolean, subscribe?: boolean, message?: string): Promise<import("./contact").default>;
     }
+    namespace presences {
+        /**
+         * The presence last received from a roster contact: their overall
+         * status, and each of their connected resources, in `resources`.
+         * Resolves to `undefined` for a JID we hold no presence for.
+         * @method _converse.api.presences.get
+         * @param {string} jid - A JID. Its resource, if it has one, is ignored.
+         * @returns {Promise<import('./presence').default|undefined>}
+         * @example
+         *      const presence = await api.presences.get('buddy@example.com');
+         *      const names = presence?.resources.map((r) => r.get('name')) ?? [];
+         */
+        function get(jid: string): Promise<import("./presence").default | undefined>;
+    }
 }
 export default _default;
 //# sourceMappingURL=api.d.ts.map

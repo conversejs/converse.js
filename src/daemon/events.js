@@ -127,6 +127,7 @@ export function createEvents(_converse, { mode }) {
                         ERRORS.ACCESS_DENIED,
                         'Draft events are only available where "drafts.list" is: at full access, or at ' +
                             'restricted access in "as_user" mode.',
+                        { see: ['drafts.list'] },
                     );
                 }
                 const subscription = next_id++;

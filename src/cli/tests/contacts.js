@@ -46,6 +46,15 @@ describe('converse-cli contacts', () => {
         expect(stderr).toContain('converse-cli contacts');
     });
 
+    it("shows the commands an error points at, but not a value of the user's that looks like one", async () => {
+        const { code, stderr } = await run(daemon.env, 'whois', 'drafts.list');
+        expect(code).toBe(EXIT.NOT_FOUND);
+        expect(stderr).toBe(
+            'converse-cli: No contact or room is called "drafts.list". Check the spelling, or list your ' +
+                'contacts with "converse-cli contacts".\n',
+        );
+    });
+
     it('refuses presence from restricted access, which is what the CLI uses, and says how to allow it', async () => {
         const { code, stderr } = await run(daemon.env, 'presence', 'set', 'dnd', 'In a meeting');
         expect(code).toBe(EXIT.ERROR);

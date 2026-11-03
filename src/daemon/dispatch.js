@@ -58,7 +58,7 @@ export function createDispatcher({ access, config, methods, getJID, notify }) {
                     `This daemon speaks protocol version ${PROTOCOL_VERSION} but the client asked for ` +
                         `${params?.protocol}. Upgrade whichever is older; to restart the daemon, ` +
                         `stop it with "daemon.stop".`,
-                    { protocol: PROTOCOL_VERSION },
+                    { protocol: PROTOCOL_VERSION, see: ['daemon.stop'] },
                 );
             }
             hello = {

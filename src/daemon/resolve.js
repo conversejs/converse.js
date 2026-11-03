@@ -52,6 +52,7 @@ export async function resolveJID(_converse, value, name) {
             ERRORS.NOT_FOUND,
             `No contact or room is called "${text}". Check the spelling, or list your contacts ` +
                 'with "contacts.list".',
+            { see: ['contacts.list'] },
         );
     }
     throw new RPCError(
@@ -145,6 +146,7 @@ export function requireRoster(api, what) {
             ERRORS.NOT_CONNECTED,
             `${what} needs your contacts, which the daemon loads when it first connects, and it hasn't ` +
                 'connected yet. Check "daemon.status", then try again.',
+            { see: ['daemon.status'] },
         );
     }
 }

@@ -88,6 +88,7 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
                         ERRORS.NOT_CONNECTED,
                         `There's no conversation with ${jid} stored locally, and the daemon isn't connected ` +
                             'to the server to look in its archive. Check "daemon.status", then try again.',
+                        { see: ['daemon.status'] },
                     );
                 }
                 if (!contact && !(await hasArchivedMessages(jid))) {
@@ -155,7 +156,9 @@ export function messageMethods(_converse, { routeSend, audit, queueDraft, mode, 
         async 'messages.send'({ to, body, reply_to, correct, at }, client) {
             // Refused, rather than ignored, which would send now what was meant for later.
             if (at !== undefined) {
-                throw new RPCError(ERRORS.INVALID_PARAMS, '"at" is for "schedules.create", which sends it later.');
+                throw new RPCError(ERRORS.INVALID_PARAMS, '"at" is for "schedules.create", which sends it later.', {
+                    see: ['schedules.create'],
+                });
             }
             const jid = await resolveJID(_converse, to, 'to');
             checkMessage(body, reply_to, correct, 'send');
@@ -383,6 +386,7 @@ function failedSendOf(message, id, verb) {
             ERRORS.NOT_FOUND,
             `Message "${id}" isn't a failed send, so it can't be ${verb}. "messages.list" gives a failed ` +
                 'send the status "failed".',
+            { see: ['messages.list'] },
         );
     }
     return message;

@@ -61,5 +61,6 @@ export function notJoined(jid) {
     return new RPCError(
         ERRORS.NOT_FOUND,
         `We aren't in ${jid}, so the message wasn't sent. Join it first with "rooms.join".`,
+        { see: ['rooms.join'] },
     );
 }

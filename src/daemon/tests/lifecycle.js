@@ -113,7 +113,7 @@ describe('The daemon', () => {
                     message:
                         `This daemon speaks protocol version ${PROTOCOL_VERSION} but the client asked for 99. ` +
                         'Upgrade whichever is older; to restart the daemon, stop it with "daemon.stop".',
-                    data: { protocol: PROTOCOL_VERSION },
+                    data: { protocol: PROTOCOL_VERSION, see: ['daemon.stop'] },
                 },
             },
         ]);

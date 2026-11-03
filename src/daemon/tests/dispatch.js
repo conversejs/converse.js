@@ -70,7 +70,7 @@ describe('The JSON-RPC dispatcher', () => {
         const { handle } = dispatcher();
         const { response, close } = await handle(request('hello', { protocol: PROTOCOL_VERSION + 1 }));
         expect(response.error.code).toBe(ERRORS.PROTOCOL_MISMATCH);
-        expect(response.error.data).toEqual({ protocol: PROTOCOL_VERSION });
+        expect(response.error.data).toEqual({ protocol: PROTOCOL_VERSION, see: ['daemon.stop'] });
         expect(close).toBe(true);
     });
 

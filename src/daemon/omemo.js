@@ -75,6 +75,7 @@ export function omemoMethods(_converse) {
                     ERRORS.NOT_FOUND,
                     `${jid} has no OMEMO device ${JSON.stringify(String(device))}. ` +
                         'List their devices with "omemo.devices.list", then try again.',
+                    { see: ['omemo.devices.list'] },
                 );
             }
             model.save('trusted', TRUST_VALUES[trust]);

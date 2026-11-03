@@ -68,6 +68,7 @@ function checkUpload(params) {
             ERRORS.INVALID_PARAMS,
             `"files.upload" takes the file's "name" and base64 "content", not a "path": ` +
                 `the daemon doesn't read files for its clients.`,
+            { see: ['files.upload'] },
         );
     }
     const { content } = params;

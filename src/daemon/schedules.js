@@ -112,6 +112,7 @@ export function scheduleMethods(_converse, { routeSend, sendNow, mode }) {
                     throw new RPCError(
                         ERRORS.NOT_FOUND,
                         `No scheduled message with id "${id}". List them with "schedules.list".`,
+                        { see: ['schedules.list'] },
                     );
                 }
                 return { schedule: toScheduleDTO(await schedules.cancel(id)) };

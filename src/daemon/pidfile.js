@@ -16,11 +16,11 @@ const MAX_ATTEMPTS = 3;
  * stale and gets replaced.
  * @param {string} pidfile
  * @param {Object} options
- * @param {string} options.jid - The account's JID, for the error
+ * @param {string} options.account - The account's name, for the error
  * @param {number} [options.pid] - The process taking it
  * @throws {Error} When a running daemon holds it
  */
-export async function claimPidfile(pidfile, { jid, pid = process.pid }) {
+export async function claimPidfile(pidfile, { account, pid = process.pid }) {
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         if (await create(pidfile, pid)) return;
 
@@ -30,11 +30,14 @@ export async function claimPidfile(pidfile, { jid, pid = process.pid }) {
 
         const holder = parseInt(text, 10);
         if (isRunning(holder)) {
-            throw new Error(`A daemon for ${jid} is already running (pid ${holder}). Stop it with "daemon.stop".`);
+            throw new Error(
+                `A daemon for the account "${account}" is already running (pid ${holder}). ` +
+                    'Stop it with "daemon.stop".',
+            );
         }
         await removeStale(pidfile, text, pid);
     }
-    throw new Error(`Couldn't take ${pidfile}: other daemons for ${jid} kept taking it. Try again.`);
+    throw new Error(`Couldn't take ${pidfile}: other daemons for the account "${account}" kept taking it. Try again.`);
 }
 
 /**

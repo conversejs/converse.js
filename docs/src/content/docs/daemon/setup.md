@@ -47,8 +47,8 @@ running, the agent's commands fail with exit code 7, saying so.
 
 The restricted socket is the file `sock` in a directory of its own, so that a
 sandbox can be given that directory alone. By default the directory is
-`$XDG_RUNTIME_DIR/converse/<jid>.restricted/` (a hash of the JID, for a long
-one). `"restricted_dir"` in the config puts it elsewhere. When the daemon
+`$XDG_RUNTIME_DIR/converse/<account>.restricted/` (a hash of the account's
+name, for a long one). `"restricted_dir"` in the config puts it elsewhere. When the daemon
 restarts, it makes a new socket file in the same directory, so a sandbox bound
 to the directory, or another user, can carry on without being restarted. Give
 each account a directory of its own.
@@ -70,7 +70,7 @@ container, or your agent's own sandbox) that can't see the daemon's files:
 With bubblewrap, for example (the agent's own files and tools need mounting too):
 
 ```sh
-restricted="$XDG_RUNTIME_DIR/converse/agent@example.org.restricted"
+restricted="$XDG_RUNTIME_DIR/converse/default.restricted"
 bwrap \
     --ro-bind /usr /usr --symlink usr/bin /bin --symlink usr/lib /lib \
     --proc /proc --dev /dev --tmpfs /tmp \
@@ -249,8 +249,8 @@ only the restricted socket to give an agent on another machine restricted
 access and nothing more.
 
 On the daemon's host, `converse-cli daemon status` ends with the socket it
-reached. The full access socket is `$XDG_RUNTIME_DIR/converse/<jid>.sock`, and
-the restricted one is `sock` in the directory `<jid>.restricted/` beside it, or
+reached. The full access socket is `$XDG_RUNTIME_DIR/converse/<account>.sock`,
+and the restricted one is `sock` in the directory `<account>.restricted/` beside it, or
 in `restricted_dir` if the config names one (see
 [Where the daemon keeps its files](#where-the-daemon-keeps-its-files)).
 
@@ -268,8 +268,8 @@ tunnel, which would otherwise make SSH refuse to listen:
 
 ```sh
 ssh -N -o StreamLocalBindUnlink=yes \
-    -L "$XDG_RUNTIME_DIR/converse-tunnel/full.sock:/run/user/1000/converse/agent@example.org.sock" \
-    -L "$XDG_RUNTIME_DIR/converse-tunnel/restricted.sock:/run/user/1000/converse/agent@example.org.restricted/sock" \
+    -L "$XDG_RUNTIME_DIR/converse-tunnel/full.sock:/run/user/1000/converse/default.sock" \
+    -L "$XDG_RUNTIME_DIR/converse-tunnel/restricted.sock:/run/user/1000/converse/default.restricted/sock" \
     daemon-host.example.org
 ```
 
@@ -305,7 +305,7 @@ Forward the restricted socket alone, and give the agent a config that names only
 
 ```sh
 ssh -N -o StreamLocalBindUnlink=yes \
-    -L "$XDG_RUNTIME_DIR/converse-tunnel/restricted.sock:/run/user/1000/converse/agent@example.org.restricted/sock" \
+    -L "$XDG_RUNTIME_DIR/converse-tunnel/restricted.sock:/run/user/1000/converse/default.restricted/sock" \
     daemon-host.example.org
 ```
 
@@ -341,7 +341,7 @@ Description=Tunnel to the Converse daemon on daemon-host
 [Service]
 ExecStartPre=/usr/bin/mkdir -m 700 -p %t/converse-tunnel
 ExecStart=/usr/bin/ssh -N -o StreamLocalBindUnlink=yes -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes \
-    -L %t/converse-tunnel/full.sock:/run/user/1000/converse/agent@example.org.sock \
+    -L %t/converse-tunnel/full.sock:/run/user/1000/converse/default.sock \
     daemon-host.example.org
 Restart=always
 RestartSec=5
@@ -355,24 +355,25 @@ WantedBy=default.target
 
 ## Where the daemon keeps its files
 
-Logs and state go in `~/.local/state/converse/` (or
-`$XDG_STATE_HOME/converse/`), with one set of files per account:
+Logs and state go in `~/.local/state/converse/accounts/<account>/` (or
+`$XDG_STATE_HOME/converse/accounts/<account>/`), where `<account>` is the name
+of the account's config file without `.json`. Everything is kept under that
+name, so changing the account's JID leaves its files where they are:
 
-- `<jid>.log` is what the daemon did, including why it failed to start. When
+- `daemon.log` is what the daemon did, including why it failed to start. When
   the daemon won't start, the CLI's error names this file.
-- `<jid>.audit.jsonl` has one line for every send, draft and refusal, with the
+- `audit.jsonl` has one line for every send, draft and refusal, with the
   client that asked for it, the mode and the route. Read it to check what an
   agent sent.
-- The inbox cursors, drafts and joined rooms are kept beside them, so they
-  survive a restart.
-- The account's database (its roster, message history and OMEMO keys) is in
-  `accounts/<name>/`, so that daemons running side by side never share one. The settings'
-  `storage_path` puts it elsewhere.
+- `cursors.json`, `drafts.json` and `rooms.json` hold the inbox cursors, the
+  drafts and the joined rooms, so that they survive a restart.
+- `converse.db` is the account's database: its roster, message history, OMEMO
+  keys and scheduled messages. The settings' `storage_path` puts it elsewhere.
 
 The full access socket and the pidfile go in `$XDG_RUNTIME_DIR/converse/`, or,
 without `XDG_RUNTIME_DIR`, in a `converse-<uid>` directory in the system's
 temporary directory. The directory is readable only by the daemon user. The
-restricted socket is in a directory of its own, `<jid>.restricted/` inside it,
+restricted socket is in a directory of its own, `<account>.restricted/` inside it,
 unless `restricted_dir` puts it elsewhere (see step 2).
 
 ## Modes

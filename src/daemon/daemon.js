@@ -9,7 +9,7 @@ import { _converse, api, converse, log } from '@converse/headless';
 import { checkMethodAccess } from './access.js';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
-import { checkRuntimeDir, findDaemon, getGroupId, getPassword } from './config.js';
+import { checkRuntimeDir, daemonsIn, findDaemon, getGroupId, getPassword } from './config.js';
 import { createCursors } from './cursors.js';
 import { createDispatcher } from './dispatch.js';
 import { createDrafter, createDraftStore, draftMethods } from './drafts.js';
@@ -79,7 +79,7 @@ export async function start(config) {
     // mkdir leaves an existing directory alone, whoever made it, and whatever its mode.
     checkRuntimeDir(paths.runtime_dir, { check_mode: false });
     await fs.chmod(paths.runtime_dir, 0o700);
-    await claimPidfile(paths.pidfile, { jid: config.jid });
+    await claimPidfile(paths.pidfile, { account: config.account });
     try {
         await writeRecord(config);
         const gid = await prepareRestrictedDir(config);
@@ -427,16 +427,16 @@ function readLines(socket, onRefused, onLine) {
 
 /**
  * Leaves a record of this daemon under its account's name, so that clients
- * find it by name: a daemon outlives a change to its config's JID. Another
- * daemon still running for the account, under another JID, is refused.
+ * find it by name. A daemon already running for the same JID under another
+ * account is refused: logged in twice, each would knock the other off.
  * @param {import('./types').Config} config
  */
 async function writeRecord(config) {
     const { account, jid, paths } = config;
-    const running = findDaemon(config);
-    if (running && running.pid !== process.pid) {
+    const running = daemonsIn(paths.runtime_dir).find((d) => d.jid === jid && d.account !== account);
+    if (running) {
         throw new Error(
-            `A daemon for the account "${account}" is already running, as ${running.jid} (pid ${running.pid}). ` +
+            `A daemon for ${jid} is already running, for the account "${running.account}" (pid ${running.pid}). ` +
                 'Stop it with "daemon.stop".',
         );
     }

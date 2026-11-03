@@ -2,15 +2,9 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import {
-    AccountError,
-    checkRuntimeDir,
-    findDaemon,
-    getPassword,
-    listAccounts,
-    listDaemons,
-    loadConfig,
-} from '../config.js';
+import { AccountError, listAccounts, loadConfig } from '../config.js';
+import { checkRuntimeDir, findDaemon, listDaemons } from '../registry.js';
+import { getPassword } from '../secrets.js';
 
 describe('The account configuration', () => {
     let dir, env;

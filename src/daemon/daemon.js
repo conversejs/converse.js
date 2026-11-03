@@ -9,7 +9,7 @@ import { _converse, api, converse, log } from '@converse/headless';
 import { checkMethodAccess } from './access.js';
 import { createAudit } from './audit.js';
 import { contactMethods } from './contacts.js';
-import { checkRuntimeDir, daemonsIn, findDaemon, getGroupId, getPassword } from './config.js';
+import { getGroupId } from './groups.js';
 import { createCursors } from './cursors.js';
 import { createDispatcher } from './dispatch.js';
 import { createDrafter, createDraftStore, draftMethods } from './drafts.js';
@@ -19,12 +19,14 @@ import { inboxMethods } from './inbox.js';
 import { messageMethods } from './messages.js';
 import { omemoMethods } from './omemo.js';
 import { presenceMethods } from './presence.js';
+import { checkRuntimeDir, removeRecord, writeRecord } from './registry.js';
 import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
 import { claimPidfile } from './pidfile.js';
 import { createPolicy } from './policy.js';
 import { ERRORS, MAX_LINE_LENGTH } from './protocol.js';
 import { createSendRouter } from './routing.js';
 import { scheduleMethods } from './schedules.js';
+import { getPassword } from './secrets.js';
 import { TIMED_OUT, withTimeout } from './timeout.js';
 
 /**
@@ -423,45 +425,4 @@ function readLines(socket, onRefused, onLine) {
         buffered -= charged;
         charged = 0;
     });
-}
-
-/**
- * Leaves a record of this daemon under its account's name, so that clients
- * find it by name. A daemon already running for the same JID under another
- * account is refused: logged in twice, each would knock the other off.
- * @param {import('./types').Config} config
- */
-async function writeRecord(config) {
-    const { account, jid, paths } = config;
-    const running = daemonsIn(paths.runtime_dir).find((d) => d.jid === jid && d.account !== account);
-    if (running) {
-        throw new Error(
-            `A daemon for ${jid} is already running, for the account "${running.account}" (pid ${running.pid}). ` +
-                'Stop it with "daemon.stop".',
-        );
-    }
-    /** @type {import('./types').DaemonRecord} */
-    const record = {
-        account,
-        jid,
-        pid: process.pid,
-        started: new Date().toISOString(),
-        socket: paths.socket,
-        restricted_socket: paths.restricted_socket,
-        pidfile: paths.pidfile,
-        log: paths.log,
-    };
-    await fs.mkdir(path.dirname(paths.record), { recursive: true, mode: 0o700 });
-    // Written whole, then renamed, so that a client never reads half of it.
-    const tmp = `${paths.record}.${process.pid}`;
-    await fs.writeFile(tmp, JSON.stringify(record) + '\n', { mode: 0o600 });
-    await fs.rename(tmp, paths.record);
-}
-
-/**
- * Removes this daemon's record, and leaves another daemon's alone.
- * @param {import('./types').Config} config
- */
-async function removeRecord(config) {
-    if (findDaemon(config)?.pid === process.pid) await fs.rm(config.paths.record, { force: true });
 }

@@ -10,19 +10,13 @@ import net from 'node:net';
 import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
-import { findDaemon, getSocketFromEnv, loadConfig } from './config.js';
+import { getSocketFromEnv, loadConfig } from './config.js';
 import { pidfileHolder } from './pidfile.js';
 import { PROTOCOL_VERSION, RPCError } from './protocol.js';
+import { findDaemon } from './registry.js';
 
-export {
-    AccountError,
-    getConfigDir,
-    getConfigPath,
-    getSocketFromEnv,
-    listAccounts,
-    listDaemons,
-    loadConfig,
-} from './config.js';
+export { AccountError, getConfigDir, getConfigPath, getSocketFromEnv, listAccounts, loadConfig } from './config.js';
+export { listDaemons } from './registry.js';
 
 const DAEMON_BIN = fileURLToPath(new URL('./bin/converse-daemon.js', import.meta.url));
 

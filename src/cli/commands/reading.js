@@ -3,11 +3,27 @@
  * @module @converse/cli/commands/reading
  */
 import { connect } from '@converse/daemon/client';
+import { ERRORS, RPCError } from '@converse/daemon/protocol';
 import { accessFor, parseLimit, request, takeOne, UsageError } from '../context.js';
 import { EXIT } from '../exit-codes.js';
-import { formatConversation, formatJSON, formatMessage, parseSince } from '../format.js';
+import { formatConversation, formatEvent, formatJSON, formatMessage, parseSince } from '../format.js';
 import { flag, option } from '../options.js';
+import { stream } from '../stream.js';
 import { FULL, LOOKUP_EXITS, TARGET } from './shared.js';
+
+const FROM = option(
+    'from',
+    '<contact>',
+    "Only messages from this contact. In a room, only where the room shows the sender's JID",
+);
+/** The longest a timer can wait, in milliseconds. */
+const MAX_TIMEOUT = 2 ** 31 - 1;
+
+const CONVERSATION = option('conversation', '<contact|room>', 'Only messages in this conversation or room');
+const MENTION = flag(
+    'mention',
+    "Only messages that name you, as a whole word: your nickname in a room, else your JID's name",
+);
 
 /** @type {Record<string, import('../types').Command>} */
 export const READING_COMMANDS = {
@@ -169,16 +185,9 @@ export const READING_COMMANDS = {
             'To wait for the answer to a send, start wait before the send, in the background, so ' +
             'that an answer quicker than the next command is not missed.',
         options: [
-            option(
-                'from',
-                '<contact>',
-                "Only messages from this contact. In a room, only where the room shows the sender's JID",
-            ),
-            option('conversation', '<contact|room>', 'Only messages in this conversation or room'),
-            flag(
-                'mention',
-                "Only messages that name you, as a whole word: your nickname in a room, else your JID's name",
-            ),
+            FROM,
+            CONVERSATION,
+            MENTION,
             option('timeout', '<s>', 'Give up after this many seconds (default 60)'),
             FULL,
         ],
@@ -218,7 +227,160 @@ export const READING_COMMANDS = {
             return EXIT.OK;
         },
     },
+    watch: {
+        summary: 'Print each incoming message as it arrives, until stopped',
+        description:
+            'Stay connected and print each incoming message that matches as it arrives, one line ' +
+            'each, until stopped with Ctrl-C (exit 0) or the daemon goes away (exit 7). Messages in ' +
+            'the rooms you have joined count too. Each line is the JID of the conversation, then the ' +
+            'message as inbox prints it. With --json, each line is one event: {"type": "message", ' +
+            '"message": {...}}. A one-line notice on stderr says what is watched.\n\n' +
+            "A message watch printed isn't marked seen, so a later inbox shows it again. With " +
+            '--inbox, watch first prints what inbox would, then streams, and marks each message it ' +
+            'prints seen: started again after it stopped with Ctrl-C, or as the daemon went away, it ' +
+            'carries on where it stopped, repeating and missing nothing, and inbox shows none of it ' +
+            'again. A message is marked seen as the daemon sends it, though, so if watch is killed, or ' +
+            'what reads its output stops early (as head does), what it was sent but had not printed ' +
+            'yet is lost. Use it for a watch that runs for long.\n\n' +
+            'Made for a harness that wakes an agent on each line a background command prints. For ' +
+            'one answer, use wait instead.',
+        options: [
+            FROM,
+            CONVERSATION,
+            MENTION,
+            flag(
+                'inbox',
+                "First print the messages you haven't seen, as inbox does, and mark each message printed " +
+                    'seen. Not with --from or --mention, which would mark what they leave out seen too',
+            ),
+            option(
+                'batch',
+                '<s>',
+                'Print what arrives within this many seconds of a first message together, in one write',
+            ),
+            flag(
+                'drafts',
+                'Also print each draft as it is queued, sent or rejected, where drafts list is allowed. ' +
+                    'Of the filters, only --conversation applies to them',
+            ),
+            FULL,
+        ],
+        exits: LOOKUP_EXITS,
+        examples: [
+            'converse-cli watch --inbox',
+            'converse-cli watch --conversation lobby@conference.example.org --mention --batch 10',
+            "converse-cli watch --json | jq -r '.message.body'",
+        ],
+        async run(ctx) {
+            const { options, err, env } = ctx;
+            let batch = 0;
+            if (options.batch !== undefined) {
+                batch = Number(options.batch);
+                // Above what a timer can wait, Node waits 1 ms instead.
+                if (!(batch > 0 && batch * 1000 <= MAX_TIMEOUT)) {
+                    throw new UsageError(`--batch "${options.batch}" isn't a number of seconds, up to 24 days.`);
+                }
+            }
+            if (options.inbox && (options.from !== undefined || options.mention)) {
+                throw new UsageError(
+                    "--inbox can't be used with --from or --mention: the messages they leave out would be " +
+                        'marked seen too.',
+                );
+            }
+            const format = (event) => formatEvent(event, { json: options.json, full: options.full });
+
+            const client = await connect({ env, access: accessFor(env) });
+            /** @type {number[]} */
+            let subscriptions = [];
+            try {
+                await stream(client, {
+                    async subscribe() {
+                        const watching = await subscribeWatch(client, options);
+                        subscriptions = watching.subscriptions;
+                        err(watchNotice(options));
+                        return watching.caught_up.map(format).join('');
+                    },
+                    unsubscribe: () =>
+                        Promise.all(
+                            subscriptions.map((subscription) => client.request('events.unsubscribe', { subscription })),
+                        ),
+                    format,
+                    write: ctx.out,
+                    batch,
+                    signal: ctx.stopSignal?.(),
+                });
+            } finally {
+                client.close();
+            }
+            return EXIT.OK;
+        },
+    },
 };
+
+/**
+ * Makes the subscriptions `watch` prints the events of.
+ * @param {import('@converse/daemon/client').Client} client
+ * @param {import('../types').Options} options
+ * @returns {Promise<{ subscriptions: number[], caught_up: import('@converse/daemon/types').Event[] }>}
+ *  The subscriptions made, and with --inbox, the unseen messages, to print before what's live
+ */
+async function subscribeWatch(client, { from, conversation, mention, drafts, inbox }) {
+    const subscriptions = [];
+    // First, as it may be refused: after the inbox's, that would lose its catch-up, marked seen.
+    if (drafts) {
+        // Drafts are ours, so whom they're from, and whether they name us, says nothing.
+        const { subscription } = await client.request('events.subscribe', { type: 'draft', conversation });
+        subscriptions.push(subscription);
+    }
+    if (!inbox) {
+        const filter = { from, conversation, mention: !!mention, direction: 'incoming' };
+        const { subscription } = await client.request('events.subscribe', filter);
+        return { subscriptions: [...subscriptions, subscription], caught_up: [] };
+    }
+    const { subscription, conversations } = await subscribeInbox(client, conversation);
+    const caught_up = conversations
+        .flatMap(({ messages }) => messages)
+        .map((message) => ({ subscription, type: /** @type {const} */ ('message'), message }));
+    return { subscriptions: [...subscriptions, subscription], caught_up };
+}
+
+/**
+ * The notice on stderr that says what `watch` is watching.
+ * @param {import('../types').Options} options
+ */
+function watchNotice({ from, conversation, mention, drafts, inbox }) {
+    const what = [
+        'incoming messages',
+        from && `from ${from}`,
+        conversation && `in ${conversation}`,
+        mention && 'that mention you',
+        drafts && (conversation ? 'and drafts to it' : 'and drafts'),
+    ].filter(Boolean);
+    const seen = inbox ? 'Each message printed is marked seen' : 'Nothing is marked seen';
+    return `Watching for ${what.join(' ')}. ${seen}. Stop with Ctrl-C.\n`;
+}
+
+/**
+ * Subscribes to this consumer's inbox, which a daemon from before `watch`
+ * doesn't offer.
+ * @param {import('@converse/daemon/client').Client} client
+ * @param {string} [conversation]
+ * @returns {Promise<import('@converse/daemon/types').InboxSubscription>}
+ */
+async function subscribeInbox(client, conversation) {
+    try {
+        return await client.request('inbox.subscribe', { conversation });
+    } catch (e) {
+        if (e.code !== ERRORS.METHOD_NOT_FOUND) throw e;
+
+        throw new RPCError(
+            e.code,
+            "The daemon running is older than this converse-cli, and can't mark what watch prints seen, " +
+                'as --inbox needs. Restart it with "daemon.stop", and run watch again.',
+            { see: ['daemon.stop'] },
+        );
+    }
+}
 
 /** What `search` says it searched, as the first line of its output. */
 const SEARCHED = {

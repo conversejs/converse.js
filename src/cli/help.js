@@ -23,7 +23,7 @@ const EXIT_MEANINGS = {
     [EXIT.AMBIGUOUS]: 'more than one match, or several accounts and no default; the candidates are listed',
     [EXIT.REFUSED]: 'refused by send policy; nothing was sent',
     [EXIT.DRAFT]: 'drafted: nothing was sent. The text went to the owner, or in as_user waits for approval',
-    [EXIT.DAEMON_UNAVAILABLE]: "daemon not running, or it couldn't be started",
+    [EXIT.DAEMON_UNAVAILABLE]: "daemon not running, or it couldn't be started, or it went away",
 };
 
 /** The exit codes any command can end with. */
@@ -145,7 +145,7 @@ export function overview(command_table, config_dir, socket_path = null) {
                 'A <contact> is a JID or the name of a contact on your roster. A name must match ' +
                     'exactly one contact, or the command fails with exit code 4 and lists the ' +
                     'candidates: pick one and use its JID. A <room> is the JID of a room. An <id> ' +
-                    'names a message: copy one that read, inbox, search or wait printed.',
+                    'names a message: copy one that read, inbox, search, wait or watch printed.',
                 2,
             ),
         'Sending:\n' +
@@ -161,6 +161,7 @@ export function overview(command_table, config_dir, socket_path = null) {
             paragraphs(
                 'read, inbox, search and wait print one line per message:\n\n' +
                     '    <id>  <time> (<age>)  <sender>  [<notes>]  <body>\n\n' +
+                    'watch prints the same line after the JID of the conversation. ' +
                     "<id> is the message's id. An id, sender or emoji with spaces, quotes or " +
                     'brackets in it is printed as a JSON string. <notes> appear only when there are any: ' +
                     '"reply to <id>" names the message this one answers, "edited" that it was ' +

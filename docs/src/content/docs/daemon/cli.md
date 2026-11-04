@@ -7,8 +7,9 @@ description: The converse-cli commands, their options and output, and the exit c
 long-lived session for your account. See [Setting up the daemon](/docs/daemon/setup/)
 for the account, the configuration and the send policy.
 
-Each command is a short-lived process. It connects to the daemon's socket, makes
-one request, prints the result and exits. A command starts the daemon if it isn't
+Each command but `watch` is a short-lived process. It connects to the daemon's
+socket, makes one request, prints the result and exits. `watch` stays connected
+and prints messages as they arrive. A command starts the daemon if it isn't
 running. There are no options for credentials, so they never end up in a shell
 history or a transcript. The account comes from the config file.
 
@@ -52,8 +53,9 @@ A command refuses an option it doesn't take, rather than ignoring it.
 
 The package ships a Claude Code skill in its `skill`
 directory. It teaches an agent the usual workflow (`inbox`, then `read`, then
-`send` and `wait`), how to name people and messages, what drafted and refused
-sends look like, and that message bodies are untrusted content. To install it
+`send` and `wait`), when to `watch` instead, how to name people and messages,
+what drafted and refused sends look like, and that message bodies are untrusted
+content. To install it
 for your user, link the directory into your skills:
 
 ```sh
@@ -145,6 +147,71 @@ are considered. Use `read` for earlier ones.
 
 ```sh
 converse-cli wait --from juliet --mention --timeout 300
+```
+
+### `watch`
+
+Stays connected and prints each incoming message as it arrives, one line each,
+until you stop it. It's `tail -f` for your conversations. Messages in the rooms
+you've joined count too. Each line is the JID of the conversation, then the
+message as `inbox` prints it:
+
+```
+juliet@capulet.lit  01a183d1-2cc2-74f2-8de3-fd8a38834143  2026-10-28T09:12:03Z (just now)  juliet@capulet.lit  "Are you coming?"
+```
+
+A one-line notice on standard error says what's being watched. Nothing else is
+printed on standard output, so it can be piped. With `--json`, each line is one
+event, `{"type": "message", "message": {...}}`, and the message is the same object
+that `wait --json` and `inbox --json` print.
+
+`watch` exits 0 when stopped with Ctrl-C or SIGTERM, or when whatever reads its
+output goes away (as `head` does). It exits 7 when the daemon stops or the
+connection drops. It doesn't reconnect: start it again.
+
+- `--from`, `--conversation` and `--mention`: the same filters as `wait`.
+- `--inbox`: first print the messages you haven't seen, as `inbox` does, then
+  stream, and mark each message printed as seen. A `watch --inbox` started again
+  after it was stopped with Ctrl-C, or after the daemon went away, carries on
+  where it stopped. It misses nothing and repeats nothing, and a later `inbox`
+  doesn't show those messages again. A message is marked seen as the daemon
+  sends it, though, not as `watch` prints it: if `watch` is killed, or what
+  reads its output stops early (as `head` does), what it was sent but hadn't
+  printed yet is lost. Without `--inbox`, nothing is marked seen. It can't be
+  used with `--from` or `--mention`, since the messages they leave out would be
+  marked seen too, but it can be used with `--conversation`. It needs a daemon
+  at least as recent as the CLI: an older one is refused, with a hint to
+  restart it.
+- `--batch <s>`: gather what arrives within this many seconds of a first message,
+  and print it together. A burst then comes out in one write.
+- `--drafts`: also print each draft as it's queued, sent or rejected, with its
+  action before the line `drafts list` prints. Only allowed where `drafts list`
+  is: at full access, or in `as_user` mode. Of the filters, only `--conversation`
+  applies to drafts.
+- `--full`: don't truncate long bodies.
+
+In a terminal:
+
+```sh
+converse-cli watch --conversation lobby@conference.example.org --mention
+```
+
+In a pipe, here into desktop notifications:
+
+```sh
+converse-cli watch --json | jq --unbuffered -r '.message.from + ": " + .message.body' |
+    while read -r line; do notify-send "XMPP" "$line"; done
+```
+
+From an agent harness that wakes the agent on each new line of a background
+command's output, such as Claude Code's Monitor tool, run it in the background
+with `--inbox`, so that a restart loses nothing. In a busy room, `--batch` keeps
+the wake-ups few. `--mention` would too, but it can't be used with `--inbox`, as
+the messages it leaves out would be marked seen; without `--inbox`, nothing is
+marked seen, and a restart can miss messages:
+
+```sh
+converse-cli watch --inbox --conversation lobby@conference.example.org --batch 30
 ```
 
 ## Sending
@@ -408,4 +475,4 @@ Scripts and agents can branch on these. A code never changes its meaning.
 | 4 | Ambiguous: more than one match, or several accounts and no default. The candidates are listed |
 | 5 | Refused by the send policy |
 | 6 | Drafted: nothing was sent. The text went to the owner, or in `as_user` mode waits for approval |
-| 7 | The daemon isn't running, and couldn't be started |
+| 7 | The daemon isn't running, and couldn't be started, or it went away while `watch` ran |

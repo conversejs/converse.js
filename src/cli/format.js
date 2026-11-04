@@ -105,6 +105,29 @@ export function formatMessage(message, { full = false, now = new Date(), convers
 }
 
 /**
+ * One event of a stream, as `watch` prints it. A message is printed as
+ * `inbox` prints one, after the JID of its conversation, since a stream isn't
+ * grouped under headers. A draft is printed as `drafts list` prints one,
+ * after what became of it. With `json`, the event's own fields, as one line:
+ * the subscription it came from means nothing outside the connection.
+ * @param {import('@converse/daemon/types').Event} event
+ * @param {Object} options
+ * @param {boolean} [options.json]
+ * @param {boolean} [options.full] - Don't truncate the body.
+ * @param {Date} [options.now]
+ */
+export function formatEvent(event, { json = false, full = false, now = new Date() } = {}) {
+    if (event.type === 'draft') {
+        const { type, action, draft } = event;
+        return json ? formatJSON({ type, action, draft }) : `${action}  ${formatDraft(draft, { full, now })}`;
+    }
+    const { type, message } = event;
+    return json
+        ? formatJSON({ type, message })
+        : `${escapeInvisible(token(message.conversation))}  ${formatMessage(message, { full, now })}`;
+}
+
+/**
  * One draft, on one line: its id, when it was queued, who it's for, and its body.
  * @param {import('@converse/daemon/types').Draft} draft
  * @param {Object} options

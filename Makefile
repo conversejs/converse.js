@@ -245,6 +245,12 @@ types:: node_modules
 check-workspace-versions: node_modules
 	node scripts/check-workspace-versions.mjs
 
+.PHONY: check-headless-package
+check-headless-package: node_modules
+	@# The package ships its bundled .d.ts, which isn't committed
+	npm run types:headless
+	node scripts/check-headless-package.mjs
+
 .PHONY: readme-xeps
 readme-xeps:
 	node scripts/readme-xeps.mjs
@@ -258,7 +264,7 @@ eslint: node_modules
 	npm run lint
 
 .PHONY: check
-check: check-workspace-versions check-readme-xeps eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
+check: check-workspace-versions check-headless-package check-readme-xeps eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
 	npm run types
 	npm run test:all
 

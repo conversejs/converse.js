@@ -19,6 +19,20 @@ class ChatBoxes extends Collection {
     }
 
     /**
+     * Leaves out the stored chats that their type says not to create (see
+     * `shouldCreate` on {@link ChatBoxBase}), before they're created.
+     * @param {any} resp
+     */
+    parse(resp) {
+        if (!Array.isArray(resp)) return resp;
+
+        return resp.filter((attrs) => {
+            const ChatBox = attrs?.type && api.chatboxes.registry.get(attrs.type);
+            return ChatBox?.shouldCreate?.(attrs) ?? true;
+        });
+    }
+
+    /**
      * @param {Collection} collection
      */
     onChatBoxesFetched(collection) {

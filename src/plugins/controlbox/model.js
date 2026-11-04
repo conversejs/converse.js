@@ -3,6 +3,11 @@ import { _converse, api, converse, constants, Model } from '@converse/headless';
 const { dayjs } = converse.env;
 const { CONTROLBOX_TYPE } = constants;
 
+/** The controlbox has no place in embedded view mode with a single chat. */
+function isRelevant() {
+    return !(api.settings.get('view_mode') === 'embedded' && api.settings.get('singleton'));
+}
+
 /**
  * The ControlBox is the section of the chat that contains the open groupchats,
  * bookmarks and roster.
@@ -23,12 +28,17 @@ class ControlBox extends Model {
         };
     }
 
+    /**
+     * Whether the controlbox is to be created, when it's restored from storage.
+     * @returns {boolean}
+     */
+    static shouldCreate() {
+        return isRelevant();
+    }
+
     validate(attrs) {
         if (attrs.type === CONTROLBOX_TYPE) {
-            if (api.settings.get('view_mode') === 'embedded' && api.settings.get('singleton')) {
-                return 'Controlbox not relevant in embedded view mode';
-            }
-            return;
+            return isRelevant() ? undefined : 'Controlbox not relevant in embedded view mode';
         }
         return _converse.state.ChatBox.prototype.validate.call(this, attrs);
     }

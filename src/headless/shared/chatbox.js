@@ -9,6 +9,24 @@ import ModelWithMessages from './model-with-messages.js';
 const { u } = converse.env;
 
 /**
+ * Why a chat with these attributes isn't allowed, if it isn't.
+ * @param {import('@converse/skeletor').ModelAttributes} attrs
+ * @returns {string|undefined}
+ */
+function whyInvalid(attrs) {
+    if (!attrs.jid) {
+        return 'Ignored ChatBox without JID';
+    }
+    const room_jids = api.settings.get('auto_join_rooms').map((s) => (s instanceof Object ? s.jid : s));
+    const auto_join = api.settings.get('auto_join_private_chats').concat(room_jids);
+    if (api.settings.get('singleton') && !auto_join.includes(attrs.jid) && !api.settings.get('auto_join_on_invite')) {
+        const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
+        log.warn(msg);
+        return msg;
+    }
+}
+
+/**
  * Base class for all chat boxes. Provides common methods.
  */
 export default class ChatBoxBase extends ModelWithMessages(Model) {
@@ -27,21 +45,22 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
         this.set({ 'box_id': `box-${jid}` });
     }
 
+    /**
+     * Whether a chat with these attributes is to be created, when it's
+     * restored from storage. Asked before the chat exists, since a chat sets
+     * itself up as soon as it's made, and a MUC joins.
+     * @param {import('@converse/skeletor').ModelAttributes} attrs
+     * @returns {boolean}
+     */
+    static shouldCreate(attrs) {
+        return !whyInvalid(attrs);
+    }
+
+    /**
+     * @param {import('@converse/skeletor').ModelAttributes} attrs
+     */
     validate(attrs) {
-        if (!attrs.jid) {
-            return 'Ignored ChatBox without JID';
-        }
-        const room_jids = api.settings.get('auto_join_rooms').map((s) => (s instanceof Object ? s.jid : s));
-        const auto_join = api.settings.get('auto_join_private_chats').concat(room_jids);
-        if (
-            api.settings.get('singleton') &&
-            !auto_join.includes(attrs.jid) &&
-            !api.settings.get('auto_join_on_invite')
-        ) {
-            const msg = `${attrs.jid} is not allowed because singleton is true and it's not being auto_joined`;
-            log.warn(msg);
-            return msg;
-        }
+        return whyInvalid(attrs);
     }
 
     /**

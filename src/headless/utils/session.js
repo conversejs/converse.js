@@ -1,5 +1,5 @@
 /**
- * @typedef {module:shared-api-public.ConversePrivateGlobal} ConversePrivateGlobal
+ * @typedef {import('../shared/_converse.js').ConversePrivateGlobal} ConversePrivateGlobal
  */
 import log from "@converse/log";
 import { getOpenPromise } from '@converse/openpromise';

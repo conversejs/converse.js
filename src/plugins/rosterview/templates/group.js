@@ -8,7 +8,7 @@ import { toggleGroup } from '../utils.js';
 const { isUniView } = u;
 
 /**
- * @param {import('@converse/headless/types/plugins/roster/contact').default} contact
+ * @param {import('@converse/headless').RosterContact} contact
  */
 function renderContact(contact) {
     const jid = contact.get('jid');

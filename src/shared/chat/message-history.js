@@ -8,7 +8,7 @@ import './message.js';
 
 export default class MessageHistory extends CustomElement {
     /**
-     * @typedef {import('@converse/headless/types/plugins/chat/message').default} Message
+     * @typedef {import('@converse/headless').Message} Message
      */
 
     constructor() {

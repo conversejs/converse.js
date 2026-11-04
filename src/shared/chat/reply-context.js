@@ -27,7 +27,7 @@ export default class ReplyContext extends CustomElement {
 
     /**
      * Get the message being replied to, if this message is a reply.
-     * @returns {import('@converse/headless/types/shared/message').default|undefined}
+     * @returns {import('@converse/headless').BaseMessage|undefined}
      */
     getRepliedMessage() {
         return this.model_with_messages?.getReferencedMessage(this.model.get('reply_to_id'));

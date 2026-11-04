@@ -106,7 +106,8 @@ version:
 
 release-checkout:
 	git clone git@github.com:conversejs/converse.js.git --depth 1 --branch $(BRANCH) release-$(BRANCH)
-	cd release-$(BRANCH) && make dist
+	@# The bundled .d.ts files in dist/ aren't committed, so generate them for the packages.
+	cd release-$(BRANCH) && make dist && npm run types
 
 .PHONY: publish
 publish:
@@ -240,17 +241,6 @@ types:: node_modules
 ########################################################################
 ## Tests
 
-.PHONY: check-git-clean
-check-git-clean:
-	@# `npm run types` rewrites every .d.ts, so the index holds stale stat info
-	@# even for files whose content did not change. Refresh it first, otherwise
-	@# diff-index reports differences that `git status` does not see.
-	@git update-index --refresh -q >/dev/null || true
-	@if ! git diff-index --quiet HEAD -- src/types src/headless/types; then \
-		echo "Error: uncommitted type changes. Please include all type changes in your commit"; \
-		exit 1; \
-	fi
-
 .PHONY: check-workspace-versions
 check-workspace-versions: node_modules
 	node scripts/check-workspace-versions.mjs
@@ -270,7 +260,6 @@ eslint: node_modules
 .PHONY: check
 check: check-workspace-versions check-readme-xeps eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
 	npm run types
-	make check-git-clean
 	npm run test:all
 
 ########################################################################

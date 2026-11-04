@@ -1,4 +1,4 @@
-import { RSMQueryOptions } from 'shared/types';
+import { RSMQueryOptions } from '../../shared/types';
 import { RSM } from '../../shared/rsm';
 import BaseMessage from '../../shared/message';
 

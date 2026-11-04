@@ -6,7 +6,7 @@ import { isMobileViewport } from 'shared/chat/utils.js';
 const { CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE, CONNECTION_STATUS } = constants;
 
 /**
- * @param {import('@converse/headless/types/shared/chatbox').default} c
+ * @param {import('@converse/headless').ChatBoxBase} c
  */
 function shouldShowChat(c) {
     const is_minimized = api.settings.get('view_mode') === 'overlayed' && c.get('hidden');

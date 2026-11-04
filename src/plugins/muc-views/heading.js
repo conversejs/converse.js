@@ -12,7 +12,7 @@ import './styles/muc-head.scss';
 
 export default class MUCHeading extends CustomElement {
     /**
-     * @typedef {import('@converse/headless/types/plugins/muc/occupant').default} MUCOccupant
+     * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
      */
 
     async initialize () {

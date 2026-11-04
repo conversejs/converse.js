@@ -273,4 +273,7 @@ export function getURLRanges(string) {
     return ranges;
 }
 
-export default Object.assign(u, { getURLRanges });
+// Typed explicitly: the inferred type of `u` can't be named in a declaration file.
+/** @type {typeof u & { getURLRanges: typeof getURLRanges }} */
+const utils = Object.assign(u, { getURLRanges });
+export default utils;

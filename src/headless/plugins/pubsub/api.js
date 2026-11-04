@@ -189,7 +189,7 @@ export default {
                 const e = await parseErrorStanza(iq);
                 if (
                     e?.name === 'conflict' &&
-                    /** @type {import('shared/errors').StanzaError} */ (e).extra[Strophe.NS.PUBSUB_ERROR] ===
+                    /** @type {import('../../shared/errors.js').StanzaError} */ (e).extra[Strophe.NS.PUBSUB_ERROR] ===
                         'precondition-not-met'
                 ) {
                     try {

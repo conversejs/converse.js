@@ -1,4 +1,4 @@
-import { ChannelSearchItem } from '@converse/headless/types/plugins/muc/types';
+import type { ChannelSearchItem } from '@converse/headless';
 import { AutoCompleteData } from 'shared/autocomplete/types';
 
 export type MUCInvitationObj = { contact: any; jid: string; reason: string };

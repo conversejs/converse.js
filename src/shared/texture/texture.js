@@ -45,7 +45,7 @@ const { addMediaURLsOffset, getMediaURLsMetadata } = u;
  */
 export class Texture extends String {
     /**
-     * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
+     * @typedef {import('@converse/headless').MediaURLMetadata} MediaURLMetadata
      */
 
     /**

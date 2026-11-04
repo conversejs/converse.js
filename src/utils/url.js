@@ -33,7 +33,7 @@ export function isDomainAllowed(url, setting) {
 /**
  * Accepts a {@link MediaURLData} object and then checks whether its domain is
  * allowed for rendering in the chat.
- * @param {import('@converse/headless/types/utils/types').MediaURLMetadata} o
+ * @param {import('@converse/headless').MediaURLMetadata} o
  * @returns {boolean}
  */
 export function isMediaURLDomainAllowed(o) {

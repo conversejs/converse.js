@@ -1,5 +1,5 @@
 /**
- * @typedef {module:shared.converse.ConversePrivateGlobal} ConversePrivateGlobal
+ * @typedef {import('../shared/_converse.js').ConversePrivateGlobal} ConversePrivateGlobal
  */
 import { BrowserStorage, Model } from '@converse/skeletor';
 import _converse from '../shared/_converse.js';

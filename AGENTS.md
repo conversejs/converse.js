@@ -40,8 +40,7 @@ details you cannot read off `package.json`:
 - `npm run serve` serves static files on http://localhost:8080, searching upwards for a
   free port if that one is taken. Pass a port with `npm run serve -- -p 8000`.
 - `npm run serve-tls` is the HTTPS equivalent and needs a certificate and key in `certs/`.
-- `make check` is what CI runs: lint, `npm run types`, a check that the generated types are
-  committed, and all tests. Slow, use sparingly.
+- `make check` is what CI runs: lint, `npm run types` and all tests. Slow, use sparingly.
 
 ### Testing
 
@@ -127,9 +126,16 @@ Formatting is set by `.prettierrc`. Naming conventions:
 - **Logging**: use `log.debug/info/warn/error`, not `console`. Outside `src/headless/`, import `log` from `@converse/headless`, never `@converse/log` directly (that bundles a second logger)
 - **Line endings**: LF
 
-Types are JSDoc annotations in `.js` files. `npm run types` regenerates the `.d.ts` files
-under `src/types/` and `src/headless/types/`, which are committed: include them in the
-commit when a change alters them. Bare imports such as `shared/components/element.js`
+Types are JSDoc annotations in `.js` files. `npm run types` emits per-file `.d.ts` files
+under `src/types/` and `src/headless/types/` (gitignored) and bundles each package's into
+one file with rollup-plugin-dts: `src/headless/dist/converse-headless.d.ts` and
+`dist/converse.d.ts`. `npm run types:check` type-checks without writing anything. The UI
+checks against the headless source; the daemon and CLI check against the headless bundle,
+as consumers see it. The bundle only contains what the entry point exports, so a type that
+UI code or plugins need from headless has to be exported from `src/headless/index.js` (a
+top-level `@typedef` there is enough); import it as `import('@converse/headless').Name`,
+never from a `@converse/headless/types/...` subpath. Likewise, UI types that plugins need
+are exported from `src/index.js`. Bare imports such as `shared/components/element.js`
 resolve through the catch-all `paths` entry of each `tsconfig.json`, not through
 `baseUrl`. Side-effect imports of stylesheets are covered by the ambient `*.scss`
 declaration in `src/shared/styles/scss.d.ts`.

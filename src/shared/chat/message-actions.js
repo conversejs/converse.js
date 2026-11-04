@@ -12,7 +12,7 @@ const { CHATROOMS_TYPE } = constants;
 
 class MessageActions extends CustomElement {
     /**
-     * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
+     * @typedef {import('@converse/headless').MediaURLMetadata} MediaURLMetadata
      */
 
     static get properties() {

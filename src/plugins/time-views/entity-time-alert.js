@@ -105,7 +105,7 @@ export default class EntityTimeAlert extends CustomElement {
 
     /**
      * What we know about the contact's local time at this instant.
-     * @returns {import('@converse/headless/types/plugins/time/types').ContactTime|null}
+     * @returns {import('@converse/headless').ContactTime|null}
      */
     getContactTime() {
         // Optional, because `strict_plugin_dependencies` is off by default and

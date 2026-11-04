@@ -1,5 +1,5 @@
 /**
- * @typedef {module:shared-api-public.ConversePrivateGlobal} ConversePrivateGlobal
+ * @typedef {import('../_converse.js').ConversePrivateGlobal} ConversePrivateGlobal
  */
 import { sprintf } from 'sprintf-js';
 import dayjs from 'dayjs';
@@ -77,7 +77,7 @@ const env = /** @type {import('./types').ConverseEnv} */ {
  * @global
  * @namespace converse
  */
-const converse = Object.assign(/** @type {ConversePrivateGlobal} */ (globalThis).converse || {}, {
+const converse = Object.assign(/** @type {any} */ (globalThis).converse || {}, {
     CHAT_STATES,
 
     keycodes: KEYCODES,

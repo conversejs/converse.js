@@ -1,5 +1,5 @@
 /**
- * @typedef {import('@converse/headless/types/plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('@converse/headless').MUCMessageAttributes} MUCMessageAttributes
  * @typedef {import('@converse/headless').RosterContact} RosterContact
  * @typedef {import('@converse/headless').PubSubMessage} PubSubMessage
  * @typedef {{ feedJid: string, node: string, itemId: string }} PostRef
@@ -19,7 +19,7 @@ converse.env.Favico = Favico;
 let favicon;
 
 /**
- * @param {import('@converse/headless/types/shared/chatbox').default} [chatbox] - The chat the message was received in
+ * @param {import('@converse/headless').ChatBoxBase} [chatbox] - The chat the message was received in
  * @returns {boolean}
  */
 export function isMessageToHiddenChat(chatbox) {
@@ -121,7 +121,7 @@ export async function shouldNotifyOfGroupMessage(attrs) {
 
 /**
  * Is this a XEP-0316 MEP notification for which we should notify the user?
- * @param {import('@converse/headless/types/plugins/muc/types').MEPMessageAttributes} attrs
+ * @param {import('@converse/headless').MEPMessageAttributes} attrs
  */
 async function shouldNotifyOfMEPMessage(attrs) {
     if (!attrs.from_muc) {

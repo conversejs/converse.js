@@ -17,7 +17,7 @@ export function isMobileViewport() {
 }
 
 /**
- * @param {import('@converse/headless/types/shared/chatbox').default} model
+ * @param {import('@converse/headless').ChatBoxBase} model
  */
 export function getChatStyle(model) {
     if (isMobileViewport()) return '';

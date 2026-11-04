@@ -12,22 +12,19 @@
   "exports": {
     ".": {
       "node": {
-        "types": "./types/index-node.d.ts",
+        "types": "./dist/converse-headless.d.ts",
         "import": "./index-node.js"
       },
       "import": {
-        "types": "./types/index.d.ts",
+        "types": "./dist/converse-headless.d.ts",
         "default": "./dist/converse-headless.js"
       }
     },
     "./node": {
-      "types": "./types/index-node.d.ts",
+      "types": "./dist/converse-headless.d.ts",
       "import": "./index-node.js"
     },
-    "./dist/*": "./dist/*",
-    "./types/*": {
-      "types": "./types/*.d.ts"
-    }
+    "./dist/*": "./dist/*"
   },
   "imports": {
     "#sizzle": {
@@ -36,20 +33,20 @@
     }
   },
   "main": "./dist/converse-headless.js",
-  "types": "./types/index.d.ts",
+  "types": "./dist/converse-headless.d.ts",
   "files": [
     "README.md",
     "dist/",
     "./**/*.html",
     "./**/*.js",
     "./**/*.ts",
-    "./**/*.ts.map",
     "./**/*.json",
     "./**/*.md",
     "./**/*.po",
     "./**/*.pot",
     "./**/*.scss",
-    "./**/*.svg"
+    "./**/*.svg",
+    "!types/**"
   ],
   "keywords": [
     "converse.js",
@@ -69,7 +66,7 @@
     "test": "cd ../.. && vitest run --project headless",
     "test:browser": "cd ../.. && vitest --project headless --browser.headless=false",
     "test:node": "cd ../.. && vitest run --project headless-node",
-    "types": "tsc -p tsconfig.json"
+    "types": "cd ../.. && npm run types:headless"
   },
   "bugs": {
     "url": "https://github.com/conversejs/converse.js/issues"

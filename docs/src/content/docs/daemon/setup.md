@@ -366,7 +366,11 @@ name, so changing the account's JID leaves its files where they are:
   client that asked for it, the mode and the route. Read it to check what an
   agent sent.
 - `cursors.json`, `drafts.json` and `rooms.json` hold the inbox cursors, the
-  drafts and the joined rooms, so that they survive a restart.
+  drafts and the joined rooms, so that they survive a restart. The daemon
+  joins only the rooms in `rooms.json`. It leaves the account's bookmarks
+  alone: it doesn't join the rooms they list, and it doesn't bookmark the rooms
+  it joins, which your other clients would then join too. Set
+  `"allow_bookmarks": true` in the settings to have it use them.
 - `converse.db` is the account's database: its roster, message history, OMEMO
   keys and scheduled messages. The settings' `storage_path` puts it elsewhere.
 

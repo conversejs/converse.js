@@ -21,7 +21,7 @@ export function setCryptoLoader(loader) {
  */
 function loadFromAssetDirectory() {
     // @ts-expect-error - resolved at runtime from dist/, not source
-    return import(/* webpackIgnore: true */ './libomemo.esm.min.js');
+    return import(/* webpackIgnore: true */ /* @vite-ignore */ './libomemo.esm.min.js');
 }
 
 /**

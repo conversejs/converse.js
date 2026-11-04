@@ -57,11 +57,13 @@ node_modules
 !.agents/skills/
 .agents/skills/*
 !.agents/skills/codereview-conversejs/
+!.agents/skills/converse-cli
 .prompts/
 .claude/*
 !.claude/skills/
 .claude/skills/*
 !.claude/skills/codereview-conversejs
+!.claude/skills/converse-cli
 
 # Vitest browser-mode generated artifacts
 .vitest-attachments/

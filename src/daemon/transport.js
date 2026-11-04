@@ -5,6 +5,7 @@
  */
 import fs from 'node:fs/promises';
 import net from 'node:net';
+import { log } from '@converse/headless';
 import { ERRORS, MAX_LINE_LENGTH } from './protocol.js';
 
 /**
@@ -71,12 +72,16 @@ export async function listen(socket_path, onConnection, gid = null) {
  * goes to the handler `open` returns, and each response goes back.
  * @param {net.Socket} socket
  * @param {import('./types').LineBudget} budget - Shared by every connection
- * @param {(notify: (params: unknown) => void) => import('./types').RequestHandler} open - Makes the
- *     client's handler, given a way to send it events
+ * @param {(notify: (params: unknown) => void, writable: () => boolean) => import('./types').RequestHandler} open -
+ *     Makes the client's handler, given a way to send it events, and a way to tell whether an event
+ *     sent now can still be written
  */
 export function serveClient(socket, budget, open) {
     const send = (message) => socket.writable && socket.write(JSON.stringify({ jsonrpc: '2.0', ...message }) + '\n');
-    const handle = open((params) => send({ method: 'event', params }));
+    const handle = open(
+        (params) => send({ method: 'event', params }),
+        () => socket.writable,
+    );
 
     const onRefused = (code) => {
         const message =
@@ -98,8 +103,16 @@ export function serveClient(socket, budget, open) {
     readLines(socket, budget, onRefused, async (line) => {
         in_flight++;
         try {
-            const { response, close } = await handle(line);
+            const { response, close, after = [] } = await handle(line);
             if (response) send(response);
+            // The response is written, so an error here can only be logged.
+            for (const fn of after) {
+                try {
+                    fn();
+                } catch (e) {
+                    log.error(`Failed after replying to a request: ${e.message}`);
+                }
+            }
             if (close) socket.end();
         } finally {
             in_flight--;

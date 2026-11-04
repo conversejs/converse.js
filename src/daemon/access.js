@@ -32,6 +32,7 @@ const METHOD_ACCESS = {
     'events.unsubscribe': 'restricted',
     'files.upload': 'restricted',
     'inbox.read': 'restricted',
+    'inbox.subscribe': 'restricted',
     'messages.discard': 'full',
     'messages.list': 'restricted',
     'messages.react': 'restricted',

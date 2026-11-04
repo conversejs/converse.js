@@ -4,7 +4,7 @@
  * the connection that made them and end with it.
  * @module @converse/daemon/events
  */
-import { api, converse } from '@converse/headless';
+import { api, converse, log } from '@converse/headless';
 import { mayCall } from './access.js';
 import { isRoomMessage, toMessageDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
@@ -50,6 +50,16 @@ export function createEvents({ mode }) {
             own_name: room ? chatbox.get('nick') : Strophe.getNodeFromJid(ownJID()),
         };
         notify('message', dto, { message: dto }, sender);
+        for (const sub of subscriptions.values()) {
+            if (!('listener' in sub)) continue;
+
+            // Called from a hook: a listener's error mustn't break the hook's chain.
+            try {
+                sub.listener(chatbox, message, dto);
+            } catch (e) {
+                log.error(`A message listener failed: ${e.message}`);
+            }
+        }
     }
 
     /**
@@ -69,20 +79,62 @@ export function createEvents({ mode }) {
     /**
      * Calls each subscription of `type` whose filter accepts the event. Ends
      * the ones that were made to take only one.
-     * @param {import('./types').Subscription['type']} type
+     * @param {import('./types').EventType} type
      * @param {import('./types').FilteredMessage} dto - What the filters are matched against
      * @param {Record<string, unknown>} fields - The event's own fields
      * @param {import('./types').EventSender} sender - Who sent it, for the from and mention filters
      */
     function notify(type, dto, fields, sender) {
         for (const [subscription, sub] of subscriptions) {
-            if (sub.type !== type || !matches(sub.filter, dto, sender)) continue;
+            if (!('filter' in sub) || sub.type !== type || !matches(sub.filter, dto, sender)) continue;
+
             sub.client.notify({ subscription, type, ...fields });
             if (sub.once) subscriptions.delete(subscription);
         }
     }
 
+    /**
+     * @param {import('./types').Subscription} sub
+     * @returns {number} The subscription
+     */
+    function subscribe(sub) {
+        // Its connection closed while the method awaited, so `forget` has already run, and wouldn't end it.
+        if (sub.client.closed) throw new Error('The connection closed.');
+
+        const subscription = next_id++;
+        subscriptions.set(subscription, sub);
+        return subscription;
+    }
+
     return {
+        /**
+         * Subscribes a client to every live message, for another module's
+         * method, such as one that streams a consumer's inbox. Each is given
+         * to `listener`, unfiltered, and only what it passes to `send` is
+         * sent. The subscription ends with the client's connection, or with
+         * `events.unsubscribe`, as any other does.
+         * @param {import('./types').Client} client
+         * @param {import('./types').MessageListener} listener
+         * @returns {{
+         *  subscription: number,
+         *  send: (message: import('./types').MessageDTO) => void,
+         *  deliverable: () => boolean,
+         *  end: () => void,
+         * }} `deliverable` says whether what's sent now still reaches the client
+         */
+        listen(client, listener) {
+            const subscription = subscribe({ client, listener });
+            const deliverable = () => subscriptions.has(subscription) && !client.closed && client.writable();
+            return {
+                subscription,
+                send(message) {
+                    if (deliverable()) client.notify({ subscription, type: 'message', message });
+                },
+                deliverable,
+                end: () => subscriptions.delete(subscription),
+            };
+        },
+
         /**
          * Announces a draft to draft subscribers. A draft is an outgoing
          * message from us, so the filters read it as one: the conversation
@@ -127,9 +179,7 @@ export function createEvents({ mode }) {
                         { see: ['drafts.list'] },
                     );
                 }
-                const subscription = next_id++;
-                subscriptions.set(subscription, { client, type, filter, once });
-                return { subscription };
+                return { subscription: subscribe({ client, type, filter, once }) };
             },
 
             /**
@@ -158,7 +208,7 @@ export function createEvents({ mode }) {
 
 /**
  * @param {Object} params
- * @returns {Promise<{ type: import('./types').Subscription['type'], filter: import('./types').EventFilter, once: boolean }>}
+ * @returns {Promise<{ type: import('./types').EventType, filter: import('./types').EventFilter, once: boolean }>}
  */
 async function parseSubscription({ type = 'message', conversation, from, direction, mention = false, once = false }) {
     if (!EVENT_TYPES.includes(type)) {

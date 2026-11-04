@@ -5,7 +5,15 @@
  * headless keeps and which no consumer touches.
  * @module @converse/daemon/cursors
  */
+import { log } from '@converse/headless';
 import { readStateFile, writeStateFile } from './state-file.js';
+
+/**
+ * How long a change waits to be saved, so that a burst of them, as a busy
+ * room moves a streaming consumer's cursor, is one write. A crash loses at
+ * most this much: a cursor behind gives a message again, but misses none.
+ */
+const SAVE_DELAY = 250;
 
 /**
  * @param {string} file - Where the cursors are kept, in the account's state directory
@@ -13,7 +21,24 @@ import { readStateFile, writeStateFile } from './state-file.js';
 export function createCursors(file) {
     /** @type {import('./types').CursorState} */
     const state = readStateFile(file, { consumers: {} }, 'the read cursors');
-    const save = () => writeStateFile(file, state);
+    /** @type {ReturnType<typeof setTimeout>|null} */
+    let pending = null;
+    const flush = () => {
+        if (!pending) return;
+
+        clearTimeout(pending);
+        pending = null;
+        // Saved from a timer, or as the daemon stops, so there's no caller to tell.
+        // The next change tries again.
+        try {
+            writeStateFile(file, state);
+        } catch (e) {
+            log.error(`Couldn't save the read cursors to ${file}: ${e.message}`);
+        }
+    };
+    const save = () => {
+        pending ??= setTimeout(flush, SAVE_DELAY);
+    };
 
     // Starts above every cursor, so that a message arriving after a read is
     // after its cursor, even if the clock has gone back since.
@@ -74,5 +99,8 @@ export function createCursors(file) {
             last_arrival = Math.max(Date.now(), last_arrival + 1);
             return last_arrival;
         },
+
+        /** Saves what hasn't been yet, as the daemon stops. */
+        flush,
     };
 }

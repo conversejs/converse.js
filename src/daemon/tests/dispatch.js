@@ -124,8 +124,34 @@ describe('The JSON-RPC dispatcher', () => {
         await handle(hello());
         await handle(request('daemon.status', { a: 1 }));
         await handle(request('daemon.status'));
-        expect(status).toHaveBeenNthCalledWith(1, { a: 1 }, client);
-        expect(status).toHaveBeenNthCalledWith(2, {}, client);
+        const call = { afterReply: expect.any(Function) };
+        expect(status).toHaveBeenNthCalledWith(1, { a: 1 }, client, call);
+        expect(status).toHaveBeenNthCalledWith(2, {}, client, call);
+    });
+
+    it('hands back, unrun, what a method asks to run once its response is written', async () => {
+        const first = vi.fn();
+        const second = vi.fn();
+        const { handle } = dispatcher({
+            methods: {
+                'daemon.status': (_params, _client, call) => {
+                    call.afterReply(first);
+                    call.afterReply(second);
+                    return 'done';
+                },
+                'daemon.stop': (_params, _client, call) => {
+                    call.afterReply(first);
+                    throw new RPCError(ERRORS.CONFLICT, 'No.');
+                },
+            },
+        });
+        await handle(hello());
+        const { response, after } = await handle(request('daemon.status'));
+        expect(response).toEqual({ id: 1, result: 'done' });
+        expect(after).toEqual([first, second]);
+        expect(first).not.toHaveBeenCalled();
+        // A method that fails has nothing to follow its answer up with.
+        expect((await handle(request('daemon.stop'))).after).toBeUndefined();
     });
 
     it("passes on an RPCError, and hides other errors' kind behind INTERNAL_ERROR", async () => {

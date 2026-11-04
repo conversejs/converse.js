@@ -11,16 +11,17 @@ import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
  * @param {Object} context
  * @param {import('./types').Access} context.access - The level of the socket the client connected to
  * @param {Pick<import('./types').Config, 'consumer'|'mode'>} context.config
- * @param {Record<string, (params: any, client: import('./types').Client) => unknown>} context.methods
+ * @param {Record<string, (params: any, client: import('./types').Client, call: import('./types').Call) => unknown>} context.methods
  * @param {() => string|null} context.getJID
  * @param {(params: unknown) => void} context.notify - Sends the client an event
+ * @param {() => boolean} [context.writable] - Whether an event sent now can still be written
  */
-export function createDispatcher({ access, config, methods, getJID, notify }) {
+export function createDispatcher({ access, config, methods, getJID, notify, writable = () => true }) {
     /** @type {import('./types').Hello|null} */
     let hello = null;
 
     /** @type {import('./types').Client} */
-    const client = { access, consumer: null, notify };
+    const client = { access, consumer: null, notify, writable, closed: false };
 
     /**
      * The consumer a client is, from the name it asks for. A restricted
@@ -50,7 +51,7 @@ export function createDispatcher({ access, config, methods, getJID, notify }) {
         return name;
     };
 
-    const call = (method, params) => {
+    const call = (method, params, after) => {
         if (method === 'hello') {
             if (params?.protocol !== PROTOCOL_VERSION) {
                 throw new RPCError(
@@ -83,14 +84,15 @@ export function createDispatcher({ access, config, methods, getJID, notify }) {
                 `"${method}" is only available at full access, and this connection is restricted.`,
             );
         }
-        return methods[method](params ?? {}, client);
+        return methods[method](params ?? {}, client, { afterReply: (fn) => after.push(fn) });
     };
 
     /**
      * Handles one line the client sent.
      * @param {string} line
-     * @returns {Promise<{ response: Object|null, close: boolean }>} The response to send, without
-     *  its `jsonrpc` member, or null for a notification; and whether to close the connection after it
+     * @returns {ReturnType<import('./types').RequestHandler>} The response to send, without its
+     *  `jsonrpc` member, or null for a notification; whether to close the connection after it; and
+     *  what the method asked to run once it's written
      */
     const handle = async (line) => {
         let request;
@@ -109,10 +111,12 @@ export function createDispatcher({ access, config, methods, getJID, notify }) {
                 close: false,
             };
         }
+        /** @type {(() => void)[]} */
+        const after = [];
         try {
-            const result = await call(method, params);
+            const result = await call(method, params, after);
             // A request without an id is a notification, which gets no response.
-            return { response: id === null ? null : { id, result }, close: false };
+            return { response: id === null ? null : { id, result }, close: false, after };
         } catch (e) {
             const { code, message, data } =
                 e instanceof RPCError ? e : { code: ERRORS.INTERNAL_ERROR, message: e.message, data: undefined };

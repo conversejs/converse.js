@@ -74,7 +74,11 @@
   "dependencies": {
     "@converse/log": "^0.1.0",
     "@converse/openpromise": "^0.0.5",
-    "@converse/skeletor": "^4.0.0",
+    "@converse/skeletor": "^4.0.2",
+    "@types/lodash": "^4.17.27",
+    "@types/lodash-es": "^4.17.12",
+    "@types/sdp-transform": "^3.0.0",
+    "@types/sizzle": "^2.3.8",
     "dayjs": "^1.11.8",
     "filesize": "^11.0.13",
     "he": "^1.2.0",

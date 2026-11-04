@@ -27,6 +27,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         // When re-attaching to an existing session we don't need to again send out a presence stanza,
         // because it's as if "we never left" (see onConnectStatusChanged).
         this.send_initial_presence = true;
+        /** @type {import('lodash-es').DebouncedFunc<() => Promise<any>>} */
         this.debouncedReconnect = debounce(this.reconnect, 3000);
     }
 

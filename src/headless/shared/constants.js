@@ -68,6 +68,7 @@ export const CHATROOMS_TYPE = 'chatroom';
 export const HEADLINES_TYPE = 'headline';
 export const CONTROLBOX_TYPE = 'controlbox';
 
+/** @type {Record<number, string>} */
 export const CONNECTION_STATUS = {};
 CONNECTION_STATUS[Strophe.Status.ATTACHED] = 'ATTACHED';
 CONNECTION_STATUS[Strophe.Status.AUTHENTICATING] = 'AUTHENTICATING';

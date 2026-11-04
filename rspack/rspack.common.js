@@ -65,7 +65,8 @@ export default {
                         loader: 'sass-loader',
                         options: {
                             sassOptions: {
-                                silenceDeprecations: ['color-functions', 'global-builtin', 'import', 'mixed-decls'],
+                                quietDeps: true,
+                                silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
                                 includePaths: [
                                     path.resolve(__dirname, '../node_modules/'),
                                     path.resolve(__dirname, '../src/'),

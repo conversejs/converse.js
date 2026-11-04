@@ -88,6 +88,7 @@ const buildConfig = (_env, argv) => {
                             options: {
                                 sassOptions: {
                                     style: 'expanded',
+                                    quietDeps: true,
                                     silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
                                     includePaths: [
                                         path.resolve(__dirname, '../node_modules/'),

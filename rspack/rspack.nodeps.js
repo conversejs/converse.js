@@ -47,7 +47,8 @@ export default merge(common, {
                         options: {
                             api: 'modern-compiler',
                             sassOptions: {
-                                silenceDeprecations: ['color-functions', 'global-builtin', 'import', 'mixed-decls'],
+                                quietDeps: true,
+                                silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
                                 includePaths: [path.resolve(__dirname, '../node_modules/')],
                             },
                         },

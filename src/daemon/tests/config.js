@@ -4,7 +4,7 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { AccountError, listAccounts, loadConfig } from '../config.js';
 import { checkRuntimeDir, findDaemon, listDaemons } from '../registry.js';
-import { getPassword } from '../secrets.js';
+import { getPassword, getRoomPasswords } from '../secrets.js';
 
 describe('The account configuration', () => {
     let dir, env;
@@ -65,6 +65,7 @@ describe('The account configuration', () => {
                 rate_limit: { per_conversation: 5, per_room: 2, overall: 20, window: 60 },
                 presence: false,
             },
+            rooms: [],
             settings: {},
             paths: {
                 config: path.join(dir, 'converse', 'accounts', 'default.json'),
@@ -268,6 +269,60 @@ describe('The account configuration', () => {
         expect(await getPassword(loadConfig(env), env)).toBe('from-config');
         // Read for the login only, never kept in the config.
         expect(loadConfig(env)).not.toHaveProperty('password');
+    });
+
+    it('lists the rooms to be in, and keeps their passwords out of the config', async () => {
+        await writeConfig({
+            jid: 'romeo@montague.lit',
+            rooms: {
+                'Garden@Conference.Montague.lit': { password: 'rosemary' },
+                'hall@conference.montague.lit': { password: 'thyme' },
+                'orchard@conference.montague.lit': {},
+            },
+        });
+        const config = loadConfig(env);
+        expect(config.rooms).toEqual([
+            'garden@conference.montague.lit',
+            'hall@conference.montague.lit',
+            'orchard@conference.montague.lit',
+        ]);
+        expect(JSON.stringify(config)).not.toMatch(/rosemary|thyme/);
+        expect(getRoomPasswords(config)).toEqual(
+            new Map([
+                ['garden@conference.montague.lit', 'rosemary'],
+                ['hall@conference.montague.lit', 'thyme'],
+            ]),
+        );
+    });
+
+    it('refuses a "rooms" map it cannot use', async () => {
+        const cases = [
+            [['garden@conference.montague.lit'], 'must map room JIDs to their settings'],
+            [{ garden: {} }, 'must be keyed by room JIDs, and "garden" isn\'t one'],
+            [{ 'garden@conference.montague.lit': true }, 'must be an object'],
+            [{ 'garden@conference.montague.lit': { password: '' } }, 'must be the room\'s password'],
+            [{ 'garden@conference.montague.lit': { autojoin: true } }, 'can only have a "password", not "autojoin"'],
+            [{ 'Garden@conference.montague.lit': {}, 'garden@conference.montague.lit ': {} }, 'more than once'],
+        ];
+        const load = () => loadConfig(env);
+        for (const [rooms, message] of cases) {
+            await writeConfig({ jid: 'romeo@montague.lit', rooms });
+            expect(load).toThrow(message);
+        }
+    });
+
+    it('checks the room passwords again when it reads them, in case the file changed', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', rooms: { 'garden@conference.montague.lit': {} } });
+        const config = loadConfig(env);
+        await writeConfig({ jid: 'romeo@montague.lit', rooms: { 'garden@conference.montague.lit': null } });
+        expect(() => getRoomPasswords(config)).toThrow('must be an object');
+    });
+
+    it('trims the consumer name, which is also the nickname in rooms', async () => {
+        await writeConfig({ jid: 'romeo@montague.lit', consumer: ' bot ' });
+        expect(loadConfig(env).consumer).toBe('bot');
+        await writeConfig({ jid: 'romeo@montague.lit', consumer: '  ' });
+        expect(loadConfig(env).consumer).toBe('agent');
     });
 
     it('otherwise takes the password from the system keyring', async () => {

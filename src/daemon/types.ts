@@ -86,6 +86,7 @@ export type Config = {
     // The sockets a client reaches the daemon on, when the config names them. Null for the derived ones.
     sockets: Sockets | null;
     policy: Policy;
+    rooms: string[]; // The rooms the daemon is to be in, from "rooms" in the config file
     settings: Record<string, unknown>; // Passed through to converse.initialize
     paths: Paths;
 };

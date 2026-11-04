@@ -184,6 +184,21 @@ account, see [Several accounts](#several-accounts).
 - `policy.rooms` lists the rooms the agent may join, leave and send to. In
   `owner_only` and `as_user` modes a send to one of them is a draft. In `bot`
   mode it goes out directly.
+- `rooms` lists the rooms the daemon is to be in, mapped to what it needs to
+  join them. It joins each one on every start, as `consumer`, even after a
+  `rooms leave`. Take a room out of `rooms` to stop joining it. `password` is
+  the room's password, sent on every join and rejoin, so the agent never needs
+  it. Only the daemon reads it, as with the account's password, but headless
+  keeps it with the room in the daemon's state directory. A room without a
+  password maps to `{}`. Being in a room still doesn't let a restricted agent
+  send there: list it in `policy.rooms` too.
+
+  ```json
+  "rooms": {
+      "team@conference.example.org": { "password": "…" },
+      "lobby@conference.example.org": {}
+  }
+  ```
 - `policy.presence` (default `false`) lets a restricted agent change your
   availability and status message with `converse-cli presence set`. Full access
   can always do it.
@@ -367,7 +382,7 @@ name, so changing the account's JID leaves its files where they are:
   agent sent.
 - `cursors.json`, `drafts.json` and `rooms.json` hold the inbox cursors, the
   drafts and the joined rooms, so that they survive a restart. The daemon
-  joins only the rooms in `rooms.json`. It leaves the account's bookmarks
+  joins only the rooms in `rooms.json` and under `rooms` in the config. It leaves the account's bookmarks
   alone: it doesn't join the rooms they list, and it doesn't bookmark the rooms
   it joins, which your other clients would then join too. Set
   `"allow_bookmarks": true` in the settings to have it use them.

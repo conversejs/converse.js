@@ -1,11 +1,12 @@
 /**
- * The account's password, for the daemon's login. Only the daemon imports
- * this: a client never touches the password.
+ * The account's password, for the daemon's login, and the passwords of the
+ * rooms it joins. Only the daemon imports this: a client never touches them.
  * @module @converse/daemon/secrets
  */
 import { execFile } from 'node:child_process';
 import fs from 'node:fs';
 import { promisify } from 'node:util';
+import { parseRooms } from './config.js';
 
 /**
  * The account password: from the config file if it has one, otherwise from
@@ -44,4 +45,17 @@ export async function getPassword(config, env = process.env) {
         `No password for ${config.jid}. Store one in the system keyring with "${store_hint}", ` +
             `or set "password" in ${config.paths.config}.`,
     );
+}
+
+/**
+ * The passwords of the rooms that have one under "rooms" in the config file,
+ * by room JID. Read from the file, as the account password is, so that they
+ * stay out of the loaded config, and checked again, since the file may have
+ * changed since {@link loadConfig} read it.
+ * @param {import('./types').Config} config
+ * @returns {Map<string, string>}
+ */
+export function getRoomPasswords(config) {
+    const { rooms } = JSON.parse(fs.readFileSync(config.paths.config, 'utf8'));
+    return parseRooms(rooms, config.paths.config).passwords;
 }

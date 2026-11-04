@@ -217,6 +217,7 @@ export function loadConfig(env = process.env) {
     }
 
     const sockets = parseSockets(raw, config_path);
+    const { rooms } = parseRooms(raw.rooms, config_path);
 
     const allow_unencrypted_resend = raw.allow_unencrypted_resend ?? false;
     if (typeof allow_unencrypted_resend !== 'boolean') {
@@ -229,7 +230,7 @@ export function loadConfig(env = process.env) {
         owner,
         websocket_url: raw.websocket_url,
         resource: raw.resource || DEFAULT_RESOURCE,
-        consumer: raw.consumer || DEFAULT_CONSUMER,
+        consumer: (typeof raw.consumer === 'string' && raw.consumer.trim()) || DEFAULT_CONSUMER,
         // The access level the CLI connects at. Restricted unless the user says otherwise.
         access,
         mode,
@@ -237,6 +238,7 @@ export function loadConfig(env = process.env) {
         socket_group: socket_group?.trim() ?? null,
         sockets,
         policy: parsePolicy(raw.policy, config_path, mode),
+        rooms,
         settings: raw.settings ?? {},
         paths: getPaths(account, env, restricted_dir),
     };
@@ -259,6 +261,55 @@ function parseSockets(raw, config_path) {
     if (sockets.socket === null && sockets.restricted_socket === null) return null;
 
     return /** @type {import('./types').Sockets} */ (sockets);
+}
+
+/**
+ * Checks the "rooms" map: the rooms the daemon is to be in, whatever a client
+ * says, each with its password if it has one. {@link loadConfig} keeps only
+ * the rooms, so that the passwords stay out of the loaded config, as the
+ * account's does. Only the daemon reads them (see {@link getRoomPasswords}).
+ * @param {unknown} raw - The "rooms" object from the config file, if any
+ * @param {string} config_path
+ * @returns {{ rooms: string[], passwords: Map<string, string> }} The rooms'
+ *  JIDs, and their passwords by room JID
+ */
+export function parseRooms(raw, config_path) {
+    const rooms = [];
+    const passwords = new Map();
+    if (raw === undefined) return { rooms, passwords };
+
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+        throw new Error(`"rooms" in ${config_path} must map room JIDs to their settings.`);
+    }
+    const seen = new Set();
+    for (const [key, room] of Object.entries(raw)) {
+        const jid = key.trim().toLowerCase();
+        if (!BARE_JID.test(jid)) {
+            throw new Error(`"rooms" in ${config_path} must be keyed by room JIDs, and "${key}" isn't one.`);
+        }
+        if (seen.has(jid)) {
+            throw new Error(`"rooms" in ${config_path} lists ${jid} more than once.`);
+        }
+        seen.add(jid);
+        if (room === null || typeof room !== 'object' || Array.isArray(room)) {
+            throw new Error(
+                `"rooms.${key}" in ${config_path} must be an object: {} for a room without a password, ` +
+                    'or {"password": "…"}.',
+            );
+        }
+        const unknown = Object.keys(room).filter((name) => name !== 'password');
+        if (unknown.length) {
+            throw new Error(
+                `"rooms.${key}" in ${config_path} can only have a "password", not "${unknown.join('", "')}".`,
+            );
+        }
+        if (room.password !== undefined && !(typeof room.password === 'string' && room.password)) {
+            throw new Error(`"rooms.${key}.password" in ${config_path} must be the room's password.`);
+        }
+        rooms.push(jid);
+        if (room.password) passwords.set(jid, room.password);
+    }
+    return { rooms, passwords };
 }
 
 /**

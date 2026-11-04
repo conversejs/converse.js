@@ -48,6 +48,7 @@ export async function eventually(fn, { timeout = 10000, what = 'the condition' }
  * @param {import('../types').Mode} [options.mode] - How the account acts, from the config file
  * @param {string} [options.owner] - The owner's bare JID. Defaults to an account no test uses.
  * @param {Record<string, unknown>} [options.settings] - More headless settings
+ * @param {Record<string, { password?: string }>} [options.rooms] - The rooms the daemon is to be in, from the config file
  */
 export async function startDaemon(
     account,
@@ -58,6 +59,7 @@ export async function startDaemon(
         mode,
         owner = 'benvolio@montague.lit',
         settings = {},
+        rooms,
     } = {},
 ) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-prosody-test-'));
@@ -79,6 +81,7 @@ export async function startDaemon(
             settings: { discover_connection_methods: false, loglevel: 'info', ...settings },
             ...(policy ? { policy } : {}),
             ...(mode ? { mode } : {}),
+            ...(rooms ? { rooms } : {}),
         }),
     );
     const log = path.join(env.XDG_STATE_HOME, 'converse', 'accounts', 'default', 'daemon.log');
@@ -104,6 +107,8 @@ export async function startDaemon(
         jid: account.jid,
         /** The environment the daemon's config and sockets live in, for running the CLI against it. */
         env,
+        /** The account's config file, for a spec to change between restarts. */
+        config_path: path.join(env.XDG_CONFIG_HOME, 'converse', 'accounts', 'default.json'),
         /**
          * @param {string} method
          * @param {Object} [params]

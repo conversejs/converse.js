@@ -385,8 +385,9 @@ Restricted access may join only the rooms listed in `policy.rooms`.
 
 ### `rooms leave <room>`
 
-Leaves a room, and forgets it. Restricted access may leave only the rooms listed
-in `policy.rooms`.
+Leaves a room, and forgets it. A room under `rooms` in the config is joined
+again on the next start. Restricted access may leave only the rooms listed in
+`policy.rooms`.
 
 ### `rooms occupants <room>`
 

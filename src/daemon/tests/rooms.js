@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { converse } from '@converse/headless';
+import { _converse, converse } from '@converse/headless';
 import { createPolicy } from '../policy.js';
 import { ERRORS } from '../protocol.js';
 import { createRoomStore } from '../rooms.js';
@@ -246,6 +246,136 @@ describe('Joining and leaving, with rooms stored from an earlier run', () => {
         await daemon.refuseRoom(TOMB);
         await expect(joining).rejects.toMatchObject({ code: ERRORS.JOIN_REFUSED });
         expect(stored()).not.toContainEqual(expect.objectContaining({ jid: TOMB }));
+    });
+});
+
+describe('Rooms from the config, with their passwords', () => {
+    let daemon, restricted, full;
+    const stored = () => JSON.parse(fs.readFileSync(daemon.config.paths.rooms, 'utf8')).rooms;
+
+    /**
+     * The join presences sent to a room, oldest first.
+     * @param {string} room
+     */
+    const joins = (room) =>
+        daemon.connection.sent_stanzas.filter(
+            (s) => s.nodeName === 'presence' && s.getAttribute('to') === `${room}/agent` && !s.getAttribute('type'),
+        );
+
+    /**
+     * The password the latest join presence to a room carried, if any.
+     * @param {string} room
+     */
+    const sentPassword = (room) => joins(room).at(-1)?.querySelector('x password')?.textContent;
+
+    beforeAll(async () => {
+        daemon = await startDaemon({
+            policy: { rooms: [GARDEN, HALL, TOMB] },
+            rooms: [{ jid: ORCHARD, nick: 'agent' }],
+            room_config: {
+                [GARDEN]: { password: 'rosemary' },
+                [HALL]: {},
+                [ORCHARD]: { password: 'sage' },
+            },
+        });
+        restricted = await daemon.connect({ access: 'restricted' });
+        full = await daemon.connect({ access: 'full' });
+    });
+
+    afterAll(async () => {
+        restricted?.close();
+        full?.close();
+        await daemon?.stop();
+    });
+
+    it('rejoins a room stored from an earlier run with its password', async () => {
+        await daemon.enterRoom(ORCHARD);
+        expect(sentPassword(ORCHARD)).toBe('sage');
+    });
+
+    it('joins the rooms in the config on start, with their passwords, without storing them', async () => {
+        await daemon.enterRoom(GARDEN);
+        await daemon.enterRoom(HALL);
+        expect(sentPassword(GARDEN)).toBe('rosemary');
+        expect(sentPassword(HALL)).toBeUndefined();
+        // Kept on the room, so that headless sends it again when it rejoins by itself.
+        expect((await daemon.api.rooms.get(GARDEN)).get('password')).toBe('rosemary');
+        expect(stored()).toEqual([{ jid: ORCHARD, nick: 'agent' }]);
+    });
+
+    it('sends the configured password when a client joins, without being given it', async () => {
+        await restricted.request('rooms.leave', { room: GARDEN });
+        const joining = restricted.request('rooms.join', { room: GARDEN });
+        await u.waitUntil(() => joins(GARDEN).length === 2);
+        await daemon.enterRoom(GARDEN);
+        await joining;
+        expect(sentPassword(GARDEN)).toBe('rosemary');
+        // Under the default nickname, a room in the config needn't be stored.
+        expect(stored()).toEqual([{ jid: ORCHARD, nick: 'agent' }]);
+    });
+
+    it("doesn't store a room in the config that gives us another nickname", async () => {
+        await restricted.request('rooms.leave', { room: HALL });
+        const joining = restricted.request('rooms.join', { room: HALL });
+        await u.waitUntil(() => joins(HALL).length === 2);
+        await daemon.enterRoom(HALL, 'agent', 'agent (bot)');
+        expect(await joining).toMatchObject({ nick: 'agent (bot)' });
+        // The config says to be in it, under the default nickname, whatever the room calls us.
+        expect(stored()).toEqual([{ jid: ORCHARD, nick: 'agent' }]);
+    });
+
+    it('says to check the config when a room asks for a password', async () => {
+        const joining = restricted.request('rooms.join', { room: TOMB });
+        await daemon.refuseRoom(TOMB, 'agent', 'not-authorized');
+        await expect(joining).rejects.toMatchObject({
+            code: ERRORS.JOIN_REFUSED,
+            message: expect.stringContaining('the one under "rooms" in the config is missing or wrong'),
+        });
+    });
+
+    it('clears a password the room kept from before, when the config has none for it', async () => {
+        const vault = 'vault@conference.montague.lit';
+        // A room got with a password, which the config doesn't have, and that doesn't let us in.
+        const model = await daemon.api.rooms.get(vault, { nick: 'agent', password: 'stale' }, true);
+        await daemon.refuseRoom(vault);
+        await u.waitUntil(() => model.session.get('connection_status') === ROOMSTATUS.BANNED);
+
+        const joining = full.request('rooms.join', { room: vault });
+        await u.waitUntil(() => joins(vault).length === 2);
+        expect(sentPassword(vault)).toBeUndefined();
+        expect(model.get('password')).toBeUndefined();
+        await daemon.enterRoom(vault);
+        await joining;
+    });
+
+    it('joins a room in the config again after a restart, even if it was left', async () => {
+        await full.request('rooms.leave', { room: GARDEN });
+
+        await daemon.restart();
+        await daemon.enterRoom(GARDEN);
+        expect(sentPassword(GARDEN)).toBe('rosemary');
+        expect(stored().map(({ jid }) => jid)).not.toContain(GARDEN);
+    });
+
+    it('stops joining a room once it is taken out of the config', async () => {
+        await daemon.restart({ room_config: { [ORCHARD]: { password: 'sage' } } });
+        // The stored room is rejoined, which shows that the start got that far.
+        await daemon.enterRoom(ORCHARD);
+        expect(joins(GARDEN)).toEqual([]);
+        expect(joins(HALL)).toEqual([]);
+    });
+
+    it("has headless restore none of the rooms it isn't meant to be in", () => {
+        // Under the MockConnection, headless clears its cache when it logs out,
+        // so the restart above had no rooms to restore. These are stored rooms
+        // handed to headless the way it restores them.
+        const stored = (jid) => ({ type: 'chatroom', jid, id: jid, nick: 'agent' });
+        const { chatboxes } = _converse.state;
+        expect(chatboxes.parse([stored(GARDEN), stored(ORCHARD)]).map(({ jid }) => jid)).toEqual([ORCHARD]);
+
+        chatboxes.set([stored(GARDEN)], { add: true, parse: true });
+        expect(chatboxes.get(GARDEN)).toBeUndefined();
+        expect(joins(GARDEN)).toEqual([]);
     });
 });
 

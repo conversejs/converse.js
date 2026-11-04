@@ -19,12 +19,12 @@ import { messageMethods } from './messages.js';
 import { omemoMethods } from './omemo.js';
 import { presenceMethods } from './presence.js';
 import { checkRuntimeDir, removeRecord, writeRecord } from './registry.js';
-import { createRoomStore, rejoinRooms, roomMethods } from './rooms.js';
+import { createJoins, createRoomStore, limitRoomsTo, rejoinRooms, roomMethods, withConfigRooms } from './rooms.js';
 import { claimPidfile } from './pidfile.js';
 import { createPolicy } from './policy.js';
 import { createSendRouter } from './routing.js';
 import { scheduleMethods } from './schedules.js';
-import { getPassword } from './secrets.js';
+import { getPassword, getRoomPasswords } from './secrets.js';
 import { TIMED_OUT, withTimeout } from './timeout.js';
 import { createLineBudget, listen, serveClient } from './transport.js';
 
@@ -124,6 +124,7 @@ async function prepareRestrictedDir({ paths, socket_group }) {
 async function serve(config, gid) {
     const { paths } = config;
     const password = await getPassword(config);
+    const room_passwords = getRoomPasswords(config);
     const started = new Date();
 
     await converse.initialize({
@@ -142,7 +143,9 @@ async function serve(config, gid) {
     const policy = createPolicy(config);
     const audit = createAudit(paths.audit);
     const drafts = createDraftStore(paths.drafts);
-    const rooms = createRoomStore(paths.rooms);
+    const rooms = withConfigRooms(createRoomStore(paths.rooms), config.rooms, config.consumer);
+    const joining = createJoins();
+    limitRoomsTo(rooms, joining);
     const cursors = createCursors(paths.cursors);
     const routeSend = createSendRouter({ policy, audit, mode: config.mode });
     const queueDraft = createDrafter({ drafts, audit, events, owner: config.owner, mode: config.mode });
@@ -172,7 +175,7 @@ async function serve(config, gid) {
         ...contactMethods(),
         ...presenceMethods({ config }),
         ...omemoMethods(),
-        ...roomMethods({ config, policy, store: rooms }),
+        ...roomMethods({ config, policy, store: rooms, passwords: room_passwords, joining }),
         ...events.methods,
         /** @returns {import('./types').Status} */
         'daemon.status': () => ({
@@ -219,7 +222,7 @@ async function serve(config, gid) {
 
     await api.user.login(`${config.jid}/${config.resource}`, password);
     // Not awaited: a room that takes a while to confirm mustn't hold up the socket.
-    rejoinRooms(rooms);
+    rejoinRooms(rooms, room_passwords, joining);
 
     const { promise: stopped, resolve: resolveStopped } = Promise.withResolvers();
     let stopping;

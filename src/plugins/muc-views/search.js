@@ -46,7 +46,7 @@ export function getAutoCompleteList(query) {
 
 /**
  * Renders a groupchat found by searching, together with its number of participants.
- * @param {import('shared/autocomplete/suggestion').default<import('@converse/headless/types/plugins/muc/types').ChannelSearchItem>} suggestion
+ * @param {import('shared/autocomplete/suggestion').default<import('@converse/headless').ChannelSearchItem>} suggestion
  * @param {string} query
  */
 export function tplRoomSuggestion(suggestion, query) {

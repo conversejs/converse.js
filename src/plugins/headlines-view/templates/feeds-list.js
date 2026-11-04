@@ -6,7 +6,7 @@ const { HEADLINES_TYPE } = constants;
 
 /**
  * @param {import('../feed-list').HeadlinesFeedsList} el
- * @param {import('@converse/headless/types/plugins/headlines/feed').default} feed
+ * @param {import('@converse/headless').HeadlinesFeed} feed
  */
 function tplHeadlinesFeedsListItem(el, feed) {
     const open_title = __('Click to open this server message');

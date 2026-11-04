@@ -23,7 +23,10 @@
     // catch-all entry, which replaces the `baseUrl` that TypeScript 6 deprecates.
     "paths": {
       "@converse/log": ["./src/log/types/index.d.ts"],
-      "@converse/headless": ["./src/headless/types/index.d.ts"],
+      // The headless source, so that nothing has to be built first and the UI is
+      // never checked against stale output. The daemon and CLI check against the
+      // bundle, as consumers see it.
+      "@converse/headless": ["./src/headless/index.js"],
       "@converse/skeletor": ["./node_modules/@converse/skeletor/dist/skeletor.d.ts"],
       "*": ["./src/*"]
     },

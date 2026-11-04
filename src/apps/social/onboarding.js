@@ -99,7 +99,7 @@ export default class SocialOnboarding extends CustomElement {
 
     /**
      * @param {MouseEvent} ev
-     * @param {import('@converse/headless/types/plugins/roster/contact').default} contact
+     * @param {import('@converse/headless').RosterContact} contact
      */
     showUserModal(ev, contact) {
         ev.preventDefault();

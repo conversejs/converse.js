@@ -4,8 +4,8 @@
  * @license Mozilla Public License (MPLv2)
  */
 /**
- * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
- * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ * @typedef {import('@converse/headless').BaseMessage} BaseMessage
+ * @typedef {import('@converse/headless').ChatBoxOrMUC} ChatBoxOrMUC
  */
 import { html } from 'lit';
 import { _converse, api, u, EmojiPicker } from '@converse/headless';

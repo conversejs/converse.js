@@ -12,7 +12,7 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./src/types/index.d.ts",
+        "types": "./dist/converse.d.ts",
         "default": "./dist/converse.js"
       }
     },
@@ -20,7 +20,7 @@
     "./shared/*": "./src/shared/*",
     "./src/*": "./src/*"
   },
-  "types": "./src/types/index.d.ts",
+  "types": "./dist/converse.d.ts",
   "browser": "dist/converse.js",
   "main": "dist/converse.js",
   "files": [
@@ -35,7 +35,6 @@
     "src/**/*.html",
     "src/**/*.js",
     "src/**/*.ts",
-    "src/**/*.ts.map",
     "src/**/*.json",
     "src/**/*.md",
     "src/**/*.po",
@@ -47,6 +46,7 @@
     "!src/daemon/**",
     "!src/headless/**",
     "!src/log/**",
+    "!src/types/**",
     "3rdparty/*.js"
   ],
   "scripts": {
@@ -57,7 +57,7 @@
     "build:website-css": "sass --quiet --load-path=node_modules src/shared/styles/website.scss dist/website.css",
     "build:website-min-css": "npm run build:website-css && npx clean-css-cli dist/website.css > dist/website.min.css",
     "cdn": "ASSET_PATH=https://cdn.conversejs.org/dist/ npm run build",
-    "clean": "rm -rf node_modules dist *.zip src/headless/dist src/headless/node_modules",
+    "clean": "rm -rf node_modules dist *.zip src/headless/dist src/headless/node_modules src/types src/headless/types",
     "dev": "DROP_DEBUGGER=false npm run dev:headless && npm run dev:main",
     "dev:headless": "DROP_DEBUGGER=false npm run build:headless -- --mode=development",
     "dev:main": "DROP_DEBUGGER=false rspack build --config rspack/rspack.build.js --mode=development && npm run build:converse-min-css",
@@ -77,9 +77,11 @@
     "test:daemon": "vitest run --project daemon",
     "test:prosody": "vitest run --project prosody",
     "test:headless:browser": "vitest --project headless --browser.headless=false",
-    "types": "tsc -p ./src/log/tsconfig.json && tsc -p ./src/headless/tsconfig.json && tsc && npm run types:node",
+    "types": "tsc -p ./src/log/tsconfig.json && npm run types:headless && npm run types:ui && npm run types:node",
+    "types:headless": "rm -rf src/headless/types && tsc -p ./src/headless/tsconfig.json && rollup -c rollup.types.config.js --configPackage headless",
+    "types:ui": "rm -rf src/types && tsc && rollup -c rollup.types.config.js --configPackage ui",
     "types:node": "tsc -p ./src/daemon && tsc -p ./src/cli",
-    "types:check": "tsc --noEmit && npm run types:node",
+    "types:check": "tsc --noEmit -p ./src/log/tsconfig.json && tsc --noEmit -p ./src/headless/tsconfig.json && tsc --noEmit",
     "watch": "concurrently \"npm run watch:headless\" \"npm run watch:main\"",
     "watch:headless": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.headless.js --mode=development",
     "watch:main": "DROP_DEBUGGER=false rspack --watch --config rspack/rspack.build.js --mode=development"
@@ -140,6 +142,8 @@
     "po2json": "1.0.0-beta-3",
     "postcss": "^8.4.16",
     "postcss-loader": "^8.1.1",
+    "rollup": "^4.67.5",
+    "rollup-plugin-dts": "^6.5.1",
     "sass": "^1.86.2",
     "sass-loader": "^17.0.0",
     "semver": "^7.8.5",

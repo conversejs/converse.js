@@ -10,7 +10,7 @@ import { getShareableLink } from 'shared/xmpp-uri.js';
 const { Strophe } = converse.env;
 
 /**
- * @param {import('@converse/headless/types/plugins/roster/contact').default} [contact]
+ * @param {import('@converse/headless').RosterContact} [contact]
  */
 function getPrettySubscription(contact) {
     const s = contact?.get('subscription');

@@ -23,6 +23,15 @@
   `https://cdn.jsdelivr.net/npm/@converse/headless@<version>/dist/converse-headless.min.js`
   instead of `.../npm/converse.js@<version>/src/headless/dist/converse-headless.min.js`.
   `https://cdn.conversejs.org/<version>/src/headless/dist/converse-headless.min.js` is unchanged.
+- **Breaking:** `@converse/headless` and `converse.js` each publish their type declarations as
+  one bundled file (`dist/converse-headless.d.ts` and `dist/converse.d.ts`) instead of a
+  `types/` folder of per-file declarations. The `@converse/headless/types/*` subpaths are gone:
+  import types from the entry point instead, for example `import('@converse/headless').MUC` or
+  `import type { MUCMessageAttributes } from '@converse/headless'`. The per-file UI declarations
+  under `converse.js/src/types/` are no longer published either: `converse.js` exports the types
+  of the classes plugins get from `_converse.exports` (`CustomElement`, `BaseModal`, `Popover` and
+  `Toast`), for example `import type { BaseModal } from 'converse.js'`. Generated types are no
+  longer committed to git, so an install from a git branch has no types (just as it has no `dist/`).
 - #194: Full support for XEP-0115: Entity capabilities.
 - #1247: Register Converse as the browser's handler for `xmpp:` links.
 - With `enable_url_routing` on, an `xmpp:` link handed over by the browser now opens its chat or

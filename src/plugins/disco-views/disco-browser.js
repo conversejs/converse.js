@@ -43,7 +43,7 @@ class DiscoBrowser extends CustomElement {
     }
 
     /**
-     * @param {import('@converse/headless/types/plugins/disco/entity').default} i
+     * @param {import('@converse/headless').DiscoEntity} i
      */
     renderItem(i) {
         return html`${i.get('name') ? `${i.get('name')} <${i.get('jid')}>` : `${i.get('jid')}`}`;
@@ -51,7 +51,7 @@ class DiscoBrowser extends CustomElement {
 
     /**
      * @param {MouseEvent} ev
-     * @param {import('@converse/headless/types/plugins/disco/entity').default} identity
+     * @param {import('@converse/headless').DiscoEntity} identity
      */
     addEntityJID(ev, identity) {
         ev.preventDefault();

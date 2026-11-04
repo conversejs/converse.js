@@ -25,7 +25,7 @@ export function isPinnedExtension(e) {
 }
 
 /**
- * @returns {import('shared/types').StorageKeys}
+ * @returns {import('../../shared/types').StorageKeys}
  */
 export function getStorageKeys() {
     const { session } = _converse;

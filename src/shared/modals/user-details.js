@@ -68,7 +68,7 @@ export default class UserDetailsModal extends BaseModal {
     }
 
     /**
-     * @param {import('@converse/headless/types/plugins/roster/contact').default} contact
+     * @param {import('@converse/headless').RosterContact} contact
      */
     registerContactEventHandlers(contact) {
         if (!contact) return; // happens during tests

@@ -23,7 +23,7 @@ converse.plugins.add('converse-pubsub', {
             'parseErrorStanza',
             /**
              * @param {Element} stanza
-             * @param {import('shared/types.js').ErrorExtra} extra
+             * @param {import('../../shared/types.js').ErrorExtra} extra
              */
             (stanza, extra) => {
                 const pubsub_err = sizzle(`error [xmlns="${Strophe.NS.PUBSUB_ERROR}"]`, stanza).pop();

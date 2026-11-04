@@ -14,7 +14,7 @@ const ACTION_MAP = {
     complete: __('Complete'),
 };
 
-/** @type {Record<import('@converse/headless/types/plugins/adhoc/types').AdHocCommandNoteType, string>} */
+/** @type {Record<import('@converse/headless').AdHocCommandNoteType, string>} */
 const NOTE_ALERT_MAP = {
     'info': 'primary',
     'warn': 'secondary',

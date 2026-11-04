@@ -175,7 +175,7 @@ export function onMouseUp(ev) {
 }
 
 /**
- * @param {import('@converse/headless/types/shared/chatbox').default} chatbox
+ * @param {import('@converse/headless').ChatBoxBase} chatbox
  * @param {boolean} should_destroy
  */
 export function shouldDestroyOnClose(chatbox, should_destroy) {

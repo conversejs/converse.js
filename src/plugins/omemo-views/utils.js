@@ -1,9 +1,9 @@
 /**
  * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
- * @typedef {import('@converse/headless/types/shared/types').MessageAttributes} MessageAttributes
- * @typedef {import('@converse/headless/types/plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('@converse/headless').MessageAttributes} MessageAttributes
+ * @typedef {import('@converse/headless').MUCMessageAttributes} MUCMessageAttributes
  * @typedef {import('@converse/headless').ChatBox} ChatBox
- * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
+ * @typedef {import('@converse/headless').BaseMessage} BaseMessage
  */
 import { html } from 'lit';
 import { __ } from 'i18n';
@@ -239,13 +239,13 @@ export function onChatComponentInitialized(el) {
  * Generate the displayable fingerprints for a contact's devices for a single
  * OMEMO version.
  * @param {string} jid
- * @param {import('@converse/headless/types/plugins/omemo/types').OMEMOVersion} [version]
+ * @param {import('@converse/headless').OMEMOVersion} [version]
  */
 async function generateFingerprintsForVersion(jid, version) {
     const devices = await u.omemo.getDevicesForContact(jid, version);
     return Promise.all(
         devices.map(
-            /** @param {import('@converse/headless/types/plugins/omemo/device').default} d */
+            /** @param {import('@converse/headless').Device} d */
             (d) => u.omemo.generateFingerprint(d),
         ),
     );

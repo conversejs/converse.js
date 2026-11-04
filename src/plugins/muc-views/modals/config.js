@@ -8,7 +8,7 @@ const { sizzle, u } = converse.env;
 
 export default class MUCConfigModal extends BaseModal {
     /**
-     * @typedef {import('@converse/headless/types/plugins/vcard/types').VCardData} VCardData
+     * @typedef {import('@converse/headless').VCardData} VCardData
      */
 
     constructor (options) {

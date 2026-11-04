@@ -313,6 +313,10 @@ export type Client = {
     access: Access; // Set by the socket the connection arrived on
     consumer: string | null; // Set by `hello`: the configured consumer on a restricted connection
     notify(_params: Record<string, unknown>): void; // Sends an `event` notification
+    // Whether an event sent now can still be written. False once the daemon has ended the
+    // connection, before it has closed.
+    writable(): boolean;
+    closed: boolean; // Set once the connection has closed
 };
 
 // What an event's filters look at: a message, or a draft read as one.
@@ -334,12 +338,28 @@ export type EventSender = {
     own_name: string | null; // The name we're addressed by: our nickname in a room, else our JID's name
 };
 
-export type Subscription = {
-    client: Client;
-    type: 'message' | 'draft';
-    filter: EventFilter;
-    once: boolean; // Ends after the first event it sends
-};
+export type EventType = 'message' | 'draft';
+
+/**
+ * What a client subscribed to: the events a filter matches, made with
+ * `events.subscribe`, or each live message, given to another module's
+ * listener, which sends what it chooses, as `inbox.subscribe` does.
+ */
+export type Subscription = { client: Client } & (
+    | {
+          type: EventType;
+          filter: EventFilter;
+          once: boolean; // Ends after the first event it sends
+      }
+    | { listener: MessageListener }
+);
+
+/** Told of each message as it's stored, unless it came from the archive. */
+export type MessageListener = (
+    _chatbox: import('@converse/headless').ChatBox,
+    _message: import('@converse/headless').BaseMessage,
+    _dto: MessageDTO,
+) => void;
 
 /**
  * The `event` notifications a client receives once it has subscribed. A draft
@@ -387,6 +407,11 @@ export type InboxGroup = {
 
 export type Inbox = {
     conversations: InboxGroup[]; // Most recent activity first
+};
+
+// What `inbox.subscribe` answers: the inbox so far, and the subscription that streams the rest.
+export type InboxSubscription = Inbox & {
+    subscription: number;
 };
 
 /**
@@ -448,4 +473,15 @@ export type LineBudget = {
  * Handles one line a client sent: the response to send, without its `jsonrpc`
  * member, or null for a notification; and whether to close the connection after it.
  */
-export type RequestHandler = (line: string) => Promise<{ response: object | null; close: boolean }>;
+export type RequestHandler = (line: string) => Promise<{
+    response: object | null;
+    close: boolean;
+    after?: (() => void)[]; // To run once the response is written, in order
+}>;
+
+// The request a method is answering, as the dispatcher passes it.
+export type Call = {
+    // Runs `fn` once the response is written, before anything sent after it, such as events.
+    // Not for a method that fails.
+    afterReply(_fn: () => void): void;
+};

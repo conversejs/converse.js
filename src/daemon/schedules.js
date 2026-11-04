@@ -79,6 +79,9 @@ export function scheduleMethods({ routeSend, sendNow, mode }) {
             access: metadata.access ?? 'restricted',
             consumer: metadata.consumer ?? null,
             notify: () => {},
+            // It has no connection, so nothing sent to it is written.
+            writable: () => false,
+            closed: false,
         };
         const result = await sendNow({ to, body, reply_to: metadata.reply_to, correct: metadata.correct }, client);
         if (result.outcome !== 'refused') return;

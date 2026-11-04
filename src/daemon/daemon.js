@@ -139,6 +139,7 @@ async function serve(config, gid) {
     const audit = createAudit(paths.audit);
     const drafts = createDraftStore(paths.drafts);
     const rooms = createRoomStore(paths.rooms);
+    const cursors = createCursors(paths.cursors);
     const routeSend = createSendRouter({ policy, audit, mode: config.mode });
     const queueDraft = createDrafter({ drafts, audit, events, owner: config.owner, mode: config.mode });
     // Headless sets up its client identity on connect, so the bot identity has to be set after that.
@@ -163,7 +164,7 @@ async function serve(config, gid) {
         ...schedules.methods,
         ...fileMethods({ routeSend, audit, queueDraft }),
         ...draftMethods({ drafts, audit, events, owner: config.owner, mode: config.mode }),
-        ...inboxMethods(createCursors(paths.cursors)),
+        ...inboxMethods(cursors, events),
         ...contactMethods(),
         ...presenceMethods({ config }),
         ...omemoMethods(),
@@ -197,9 +198,12 @@ async function serve(config, gid) {
         clients.add(socket);
         socket.on('close', () => clients.delete(socket));
         socket.on('error', (e) => log.debug(`Client socket error: ${e.message}`));
-        serveClient(socket, budget, (notify) => {
-            const { client, handle } = createDispatcher({ access, config, methods, getJID, notify });
-            socket.once('close', () => events.forget(client));
+        serveClient(socket, budget, (notify, writable) => {
+            const { client, handle } = createDispatcher({ access, config, methods, getJID, notify, writable });
+            socket.once('close', () => {
+                client.closed = true;
+                events.forget(client);
+            });
             return handle;
         });
     };
@@ -230,6 +234,7 @@ async function serve(config, gid) {
                 // Still clean up below: a daemon left with its pidfile behind blocks the next one.
                 log.error(`Couldn't leave cleanly: ${e.message}`);
             } finally {
+                cursors.flush();
                 await fs.rm(paths.socket, { force: true });
                 await fs.rm(paths.restricted_socket, { force: true });
                 await removeRecord(config);

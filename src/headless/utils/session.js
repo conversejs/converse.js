@@ -1,6 +1,3 @@
-/**
- * @typedef {import('../shared/_converse.js').ConversePrivateGlobal} ConversePrivateGlobal
- */
 import log from "@converse/log";
 import { getOpenPromise } from '@converse/openpromise';
 import { settings_api } from '../shared/settings/api.js';
@@ -23,7 +20,7 @@ export function isTestEnv () {
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @param {string} name
  */
 export function replacePromise (_converse, name) {
@@ -42,7 +39,7 @@ export function replacePromise (_converse, name) {
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @returns {boolean}
  */
 export function shouldClearCache (_converse) {
@@ -53,7 +50,8 @@ export function shouldClearCache (_converse) {
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
+ * @returns {Promise<import('../shared/_converse.js').ConversePrivateGlobal>}
  */
 export async function tearDown (_converse) {
     const { api } = _converse;
@@ -63,7 +61,7 @@ export async function tearDown (_converse) {
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  */
 export function clearSession (_converse) {
     if (shouldClearCache(_converse)) {

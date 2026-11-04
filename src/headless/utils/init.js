@@ -1,6 +1,3 @@
-/**
- * @typedef {import('../shared/_converse.js').ConversePrivateGlobal} ConversePrivateGlobal
- */
 import { BrowserStorage, Model } from '@converse/skeletor';
 import _converse from '../shared/_converse.js';
 import debounce from 'lodash-es/debounce.js';
@@ -18,7 +15,7 @@ import { isPersistableModel } from './object.js';
 
 /**
  * Initializes the plugins for the Converse instance.
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @fires _converse#pluginsInitialized - Triggered once all plugins have been initialized.
  * @memberOf _converse
  */
@@ -58,7 +55,7 @@ export function initPlugins(_converse) {
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  */
 export async function initClientConfig(_converse) {
     /* The client config refers to configuration of the client which is
@@ -87,7 +84,7 @@ export async function initClientConfig(_converse) {
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  */
 export async function initSessionStorage(_converse) {
     if (!IS_BROWSER) {
@@ -122,7 +119,7 @@ async function useExtensionDriver(driver) {
 
 /**
  * Initializes persistent storage
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @param {string} store_name - The name of the store.
  * @param {string} [key="persistent"] - The key for `_converse.storage`.
  * @returns {Promise<void>} Resolves once the extension storage driver is in use.
@@ -167,7 +164,7 @@ export async function initPersistentStorage(_converse, store_name, key = 'persis
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @param {string} jid
  */
 function saveJIDtoSession(_converse, jid) {
@@ -224,7 +221,7 @@ export async function setUserJID(jid) {
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @param {string} jid
  */
 export async function initSession(_converse, jid) {
@@ -263,7 +260,7 @@ export async function initSession(_converse, jid) {
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  */
 export function registerGlobalEventHandlers(_converse) {
     /**
@@ -276,7 +273,7 @@ export function registerGlobalEventHandlers(_converse) {
 }
 
 /**
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  */
 function unregisterGlobalEventHandlers(_converse) {
     _converse.api.trigger('unregisteredGlobalEventHandlers');
@@ -285,7 +282,7 @@ function unregisterGlobalEventHandlers(_converse) {
 /**
  * Make sure everything is reset in case this is a subsequent call to
  * converse.initialize (happens during tests).
- * @param {ConversePrivateGlobal} _converse
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  */
 export async function cleanup(_converse) {
     const { api } = _converse;

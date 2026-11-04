@@ -1,7 +1,7 @@
 import { Builder, Strophe } from 'strophe.js';
 import { Collection, FetchOrCreateOptions, Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
-import type { DebouncedFunc } from 'lodash';
+import type { DebouncedFunc } from 'lodash-es';
 import BaseMessage from './message';
 import VCard from '../plugins/vcard/vcard';
 import RosterContact from '../plugins/roster/contact';

@@ -112,6 +112,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         });
         if (this.get('closed')) return;
 
+        /** @type {import('lodash-es').DebouncedFunc<() => Promise<void>>} */
         this.debouncedRejoin = debounce(this.rejoin, 250);
 
         this.initOccupants();

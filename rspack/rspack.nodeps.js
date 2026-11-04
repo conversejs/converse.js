@@ -21,7 +21,13 @@ export default merge(common, {
         rules: [
             {
                 test: /\.js$/,
+                // `/src/` also matches dependencies under `node_modules/*/src/`.
+                // Keep downleveling those: xgettext stops extracting strings at
+                // syntax it doesn't understand. mediabunny is excluded because
+                // swc miscompiles its labeled loops to ES5, and it holds no
+                // translatable strings.
                 include: /src/,
+                exclude: /mediabunny/,
                 use: {
                     loader: 'builtin:swc-loader',
                     options: {

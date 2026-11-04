@@ -1,7 +1,8 @@
 /**
- * converse-cli: a short-lived command line client of the Converse daemon.
+ * converse-cli: a command line client of the Converse daemon.
  * Each invocation connects to the daemon's socket (starting the daemon if
- * it isn't running), makes its request, prints the result and exits.
+ * it isn't running), makes its request, prints the result and exits. `watch`
+ * alone stays connected, printing what arrives until it's stopped.
  *
  * There are deliberately no options for credentials: they'd end up in shell
  * history and agent transcripts. The account comes from its config file,

@@ -3,6 +3,7 @@
  * agent's inbox after a restart shows only what came since its last read.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { start } from '../../cli/tests/run.js';
 import { eventually, registerAccount, startDaemon } from './real-server.js';
 
 describe('Read cursors on a real Prosody', () => {
@@ -68,5 +69,28 @@ describe('Read cursors on a real Prosody', () => {
         const bodies = await inboxBodies();
         expect(bodies).toContain(body);
         expect(bodies).not.toContain('Before the restart');
+    });
+
+    it('starts watch --inbox with what was sent while no watch ran, then streams what comes', async () => {
+        await inboxBodies();
+        await romeo.request('messages.send', { to: juliet.jid, body: 'While nobody watched' });
+        await storedFromRomeo('While nobody watched');
+
+        const watch = start(juliet.env, 'watch', '--inbox', '--json');
+        await watch.until(({ stdout }) => stdout.includes('While nobody watched'), 20000);
+        await romeo.request('messages.send', { to: juliet.jid, body: 'While watched' });
+        await watch.until(({ stdout }) => stdout.includes('While watched'), 20000);
+
+        const { code, stdout } = await watch.stop();
+        expect(code).toBe(0);
+        const events = stdout
+            .trim()
+            .split('\n')
+            .map((line) => JSON.parse(line));
+        expect(events.map((e) => [e.message.from, e.message.body])).toEqual([
+            [romeo.jid, 'While nobody watched'],
+            [romeo.jid, 'While watched'],
+        ]);
+        expect(await inboxBodies()).toEqual([]);
     });
 });

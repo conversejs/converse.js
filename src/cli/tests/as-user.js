@@ -11,7 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { converse } from '@converse/headless';
 import { JID, startDaemon } from '../../daemon/tests/harness.js';
 import { EXIT } from '../exit-codes.js';
-import { run } from './run.js';
+import { run, start } from './run.js';
 
 const { Strophe, stx } = converse.env;
 
@@ -138,5 +138,24 @@ describe('converse-cli drafts, in as_user mode', () => {
             expect(code).toBe(EXIT.NOT_FOUND);
             expect(stderr).toContain('No draft with id "d1"');
         }
+    });
+
+    it('watches the drafts as they are queued and rejected, with --drafts', async () => {
+        const watch = start(daemon.env, 'watch', '--drafts');
+        await watch.started();
+        expect(watch.output.stderr).toBe(
+            'Watching for incoming messages and drafts. Nothing is marked seen. Stop with Ctrl-C.\n',
+        );
+        expect((await run(daemon.env, 'send', JULIET, 'Anon, good nurse')).code).toBe(EXIT.DRAFT);
+        await watch.until(({ stdout }) => stdout.includes('queued'));
+        expect((await run(daemon.env, 'drafts', 'reject', 'd3')).code).toBe(EXIT.OK);
+        await watch.until(({ stdout }) => stdout.includes('rejected'));
+
+        const { code, stdout } = await watch.stop();
+        expect(code).toBe(EXIT.OK);
+        expect(stdout.split('\n').filter(Boolean)).toEqual([
+            expect.stringMatching(/^queued {2}d3 {2}\S+ \(just now\) {2}to juliet@capulet\.lit {2}"Anon, good nurse"$/),
+            expect.stringMatching(/^rejected {2}d3 {2}.*"Anon, good nurse"$/),
+        ]);
     });
 });

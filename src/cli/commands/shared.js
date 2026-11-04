@@ -20,7 +20,7 @@ export const TARGET = ['<contact|room>', 'A JID or roster name, or the JID of a 
 /** @type {[string, string]} */
 export const ROOM = ['<room>', "The room's JID, such as lobby@conference.example.org"];
 /** @type {[string, string]} */
-export const MESSAGE_ID = ['<id>', 'A message id, as read, inbox, search or wait printed it'];
+export const MESSAGE_ID = ['<id>', 'A message id, as read, inbox, search, wait or watch printed it'];
 /** @type {[string, string]} */
 export const DRAFT_ID = ['<id>', 'The draft id, as drafts list or the send that made it printed it'];
 

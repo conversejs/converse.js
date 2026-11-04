@@ -3,6 +3,9 @@ export type IO = {
     err(text: string): void; // Errors, and what to do about them
     env: NodeJS.ProcessEnv;
     stdin?: NodeJS.ReadStream; // Where `send` reads a body given no text
+    // Aborts when the user stops the command: Ctrl-C, SIGTERM, or a closed stdout. Only a
+    // command that runs until stopped asks for it, since asking keeps those from ending the process.
+    stopSignal?(): AbortSignal;
 };
 
 export type Options = {
@@ -15,6 +18,9 @@ export type Options = {
     conversation?: string;
     mention?: boolean;
     timeout?: string; // Seconds
+    batch?: string; // Seconds a stream gathers events for, before printing them together
+    drafts?: boolean; // Stream draft events too
+    inbox?: boolean; // Stream the inbox: catch up first, and mark what's printed seen
     account?: string; // The account's name, which picks its daemon
     all?: boolean; // Every account's, for "daemon status"
     'reply-to'?: string; // The id of the message a send replies to

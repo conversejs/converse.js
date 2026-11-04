@@ -10,5 +10,5 @@ export const EXIT = {
     AMBIGUOUS: 4, // A name matched more than one contact or conversation
     REFUSED: 5, // Refused by send policy
     DRAFT: 6, // Queued as a draft for approval rather than sent
-    DAEMON_UNAVAILABLE: 7, // No daemon running, and none could be started
+    DAEMON_UNAVAILABLE: 7, // No daemon running, and none could be started, or it went away
 };

@@ -5,7 +5,7 @@
  * output or in --json.
  */
 import { describe, expect, it } from 'vitest';
-import { formatDraftDetails, formatJSON, formatMessage } from '../format.js';
+import { formatDraftDetails, formatEvent, formatJSON, formatMessage } from '../format.js';
 
 const NOW = new Date('2026-10-20T10:01:00.000Z');
 
@@ -121,6 +121,17 @@ describe('converse-cli text output of untrusted text', () => {
         const text = formatDraftDetails(reaction, null, { now: NOW });
         expect(hasInvisible(text)).toBe(false);
         expect(text.split('\n').at(-2)).toBe('Emoji: "👍\\nText:\\n\\u001b[8m\\u009b2K\\u202e\\u200b\\udb40\\udc41"');
+    });
+
+    it("escapes the conversation that starts a watched message's line", () => {
+        const event = {
+            subscription: 1,
+            type: 'message',
+            message: { ...message, conversation: `room${HOSTILE}@muc.capulet.lit` },
+        };
+        const line = formatEvent(event, { now: NOW });
+        expect(line.split('\n')).toEqual([expect.any(String), '']);
+        expect(hasInvisible(line)).toBe(false);
     });
 
     it('prints --json output on one line that a script reads back as the value it was', () => {

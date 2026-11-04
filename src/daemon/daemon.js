@@ -131,6 +131,10 @@ async function serve(config, gid) {
         storage_path: paths.storage,
         // Leaving a room mustn't lose its messages: those of an OMEMO room can't be fetched again.
         muc_clear_messages_on_leave: false,
+        // The daemon decides which rooms it's in, from its own store. Bookmarks
+        // would join the account's bookmarked rooms, and bookmark every room
+        // it joins, for the account's other clients to join too.
+        allow_bookmarks: false,
         ...config.settings,
     });
 

@@ -9,7 +9,80 @@ import { MUC_DOMAIN, WEBSOCKET_URL } from '../../../tests/prosody/server.js';
 import { ERRORS } from '../protocol.js';
 import { eventually, registerAccount, startDaemon } from './real-server.js';
 
-const { Strophe, $pres } = converse.env;
+const { Strophe, $pres, stx } = converse.env;
+const NS_BOOKMARKS = 'urn:xmpp:bookmarks:1';
+
+/**
+ * Logs in to an account as a plain XMPP client.
+ * @param {{ jid: string, password: string }} account
+ * @param {string} resource
+ * @returns {Promise<import('strophe.js').Connection>}
+ */
+async function login(account, resource) {
+    const conn = new Strophe.Connection(WEBSOCKET_URL);
+    await new Promise((resolve, reject) => {
+        conn.connect(`${account.jid}/${resource}`, account.password, (status) => {
+            if (status === Strophe.Status.CONNECTED) resolve(undefined);
+            if (status === Strophe.Status.AUTHFAIL || status === Strophe.Status.CONNFAIL) {
+                reject(new Error(`${resource} couldn't connect (status ${status})`));
+            }
+        });
+    });
+    return conn;
+}
+
+/**
+ * The account's bookmarks (XEP-0402), as another of its clients sees them.
+ * @param {{ jid: string, password: string }} account
+ */
+async function bookmarksOf(account) {
+    const conn = await login(account, 'bookmarks');
+
+    /** @param {import('strophe.js').Builder} iq */
+    const sendIQ = (iq) => new Promise((resolve, reject) => conn.sendIQ(iq.tree(), resolve, reject));
+
+    return {
+        /** The JIDs of the bookmarked rooms. None if the node doesn't exist yet. */
+        async rooms() {
+            const result = await sendIQ(
+                stx`<iq type="get" xmlns="jabber:client">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}"><items node="${NS_BOOKMARKS}"/></pubsub>
+                </iq>`,
+            ).catch((e) => e);
+            return [...result.querySelectorAll('item')].map((item) => item.getAttribute('id'));
+        },
+        /**
+         * Bookmarks a room, to be joined by the account's clients.
+         * @param {string} room
+         * @param {string} nick
+         */
+        add(room, nick) {
+            return sendIQ(
+                stx`<iq type="set" xmlns="jabber:client">
+                    <pubsub xmlns="${Strophe.NS.PUBSUB}">
+                        <publish node="${NS_BOOKMARKS}">
+                            <item id="${room}">
+                                <conference xmlns="${NS_BOOKMARKS}" autojoin="true"><nick>${nick}</nick></conference>
+                            </item>
+                        </publish>
+                        <publish-options>
+                            <x xmlns="jabber:x:data" type="submit">
+                                <field var="FORM_TYPE" type="hidden">
+                                    <value>${Strophe.NS.PUBSUB}#publish-options</value>
+                                </field>
+                                <field var="pubsub#persist_items"><value>true</value></field>
+                                <field var="pubsub#max_items"><value>max</value></field>
+                                <field var="pubsub#send_last_published_item"><value>never</value></field>
+                                <field var="pubsub#access_model"><value>whitelist</value></field>
+                            </x>
+                        </publish-options>
+                    </pubsub>
+                </iq>`,
+            );
+        },
+        disconnect: () => conn.disconnect(),
+    };
+}
 
 /**
  * Joins a room as a plain XMPP client, and records every presence the room
@@ -185,6 +258,61 @@ describe('Rooms on a real Prosody', () => {
         expect(conversations.map((c) => c.jid)).not.toContain(room);
         expect(watcher.presences.slice(before_restart).filter(({ from }) => from === `${room}/juliet`)).toEqual([]);
         await expect(juliet.request('rooms.occupants', { room })).rejects.toMatchObject({
+            code: ERRORS.NOT_FOUND,
+        });
+    });
+});
+
+describe('Bookmarks on a real Prosody', () => {
+    // Romeo's daemon has the default settings. Juliet's has bookmarks turned
+    // on, and shows what Romeo's would do with them, so that a check of
+    // Romeo's can't pass just because it looked too soon.
+    let romeo, juliet, romeo_bookmarks, juliet_bookmarks;
+    const newRoom = () => `bookmarked-${crypto.randomUUID().slice(0, 8)}@${MUC_DOMAIN}`;
+
+    beforeAll(async () => {
+        const [romeo_account, juliet_account] = await Promise.all([
+            registerAccount('romeo'),
+            registerAccount('juliet'),
+        ]);
+        [romeo, juliet] = await Promise.all([
+            startDaemon(romeo_account),
+            startDaemon(juliet_account, { settings: { allow_bookmarks: true } }),
+        ]);
+        [romeo_bookmarks, juliet_bookmarks] = await Promise.all([
+            bookmarksOf(romeo_account),
+            bookmarksOf(juliet_account),
+        ]);
+    });
+
+    afterAll(async () => {
+        romeo_bookmarks?.disconnect();
+        juliet_bookmarks?.disconnect();
+        await Promise.all([romeo?.stop(), juliet?.stop()]);
+    });
+
+    it('bookmarks none of the rooms it joins', async () => {
+        const room = newRoom();
+        await romeo.requestFull('rooms.join', { room });
+        await juliet.requestFull('rooms.join', { room, nick: 'juliet' });
+
+        await eventually(async () => (await juliet_bookmarks.rooms()).includes(room), {
+            what: "the room in Juliet's bookmarks",
+        });
+        expect(await romeo_bookmarks.rooms()).not.toContain(room);
+    });
+
+    it("doesn't join the rooms the account's bookmarks say to join", async () => {
+        // A room each, so that neither waits on a room the other has just created.
+        const [romeo_room, juliet_room] = [newRoom(), newRoom()];
+        await Promise.all([romeo_bookmarks.add(romeo_room, 'romeo'), juliet_bookmarks.add(juliet_room, 'juliet')]);
+        await Promise.all([romeo.restart(), juliet.restart()]);
+
+        await eventually(
+            async () => (await juliet.request('rooms.occupants', { room: juliet_room })).occupants.length,
+            { what: 'Juliet to join the room she bookmarked' },
+        );
+        await expect(romeo.request('rooms.occupants', { room: romeo_room })).rejects.toMatchObject({
             code: ERRORS.NOT_FOUND,
         });
     });

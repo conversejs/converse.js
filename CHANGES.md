@@ -9,6 +9,7 @@
 - feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
 - The unused `errors.UserFacingError` class is removed.
 - `@converse/log` is bumped to 0.1.0, because its API changed to variadic `log(level, ...args)` and `debug(...args)` without a version bump.
+- `strophe.js` is bumped to 6.0.0, whose types resolve under `"moduleResolution": "nodenext"`.
 - fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
 - Projects can bundle `dist/converse.js` themselves: it no longer pulls all of `dist/` into a
   webpack build. Serve `dist/chunkjs/` and `dist/libomemo.esm.min.js` next to your bundle.

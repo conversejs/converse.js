@@ -424,7 +424,9 @@ export function roomMethods({ config, policy, store, passwords, joining }) {
             if (!model?.isEntered()) {
                 throw new RPCError(ERRORS.NOT_FOUND, `We aren't in ${jid}, so we can't see who is in it.`);
             }
-            const occupants = model.occupants.models.map((occupant) => ({
+            // A members-only room also lists its absent members, who have no nickname there.
+            const present = model.occupants.models.filter((occupant) => occupant.get('presence') === 'online');
+            const occupants = present.map((occupant) => ({
                 nick: occupant.get('nick'),
                 jid: occupant.get('jid') ?? null,
                 role: occupant.get('role') || 'none',

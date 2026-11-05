@@ -98,3 +98,32 @@ describe('OMEMO on a real Prosody', () => {
         expect(frames.some((frame) => frame.includes(secret) || frame.includes(reply))).toBe(false);
     });
 });
+
+describe('OMEMO devices on a real Prosody', () => {
+    const daemons = [];
+
+    afterAll(async () => {
+        await Promise.all(daemons.map((daemon) => daemon.stop()));
+    });
+
+    it('finds the devices of someone who had published none when last asked', async () => {
+        const [romeo_account, juliet_account] = await Promise.all([
+            registerAccount('omemo-early-romeo'),
+            registerAccount('omemo-late-juliet'),
+        ]);
+        const devicesOf = (daemon, jid) =>
+            daemon.requestFull('omemo.devices.list', { conversation: jid }).then(({ devices }) => devices);
+
+        const romeo = await startDaemon(romeo_account, { settings: { omemo_default: true } });
+        daemons.push(romeo);
+        // Juliet has no device yet. Nor do they share a presence subscription, so
+        // the server won't tell Romeo when she publishes one.
+        expect(await devicesOf(romeo, juliet_account.jid)).toEqual([]);
+
+        const juliet = await startDaemon(juliet_account, { settings: { omemo_default: true } });
+        daemons.push(juliet);
+        await eventually(async () => (await devicesOf(romeo, juliet.jid)).length > 0, {
+            what: "Juliet's OMEMO devices to reach Romeo",
+        });
+    });
+});

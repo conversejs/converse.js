@@ -177,7 +177,13 @@ describe('Rooms on a real Prosody', () => {
             },
         );
 
+        const before_restart = watcher.presences.length;
         await juliet.restart();
+        // Headless joins every room it restores as the daemon starts. Once its rooms are loaded, one
+        // it doesn't hold can't be joined: the room has messages, so it would be listed if it held it.
+        const { conversations } = await juliet.request('conversations.list');
+        expect(conversations.map((c) => c.jid)).not.toContain(room);
+        expect(watcher.presences.slice(before_restart).filter(({ from }) => from === `${room}/juliet`)).toEqual([]);
         await expect(juliet.request('rooms.occupants', { room })).rejects.toMatchObject({
             code: ERRORS.NOT_FOUND,
         });

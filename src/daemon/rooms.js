@@ -118,6 +118,62 @@ function settledStatus(room) {
 }
 
 /**
+ * Leaves a room, and drops it from headless's own store, which otherwise
+ * joins every room it holds as the daemon starts. Its messages are kept, as
+ * the daemon starts headless with `muc_clear_messages_on_leave` off: those of
+ * an OMEMO room couldn't be read again from the archive.
+ * @param {import('@converse/headless').MUC} room
+ */
+function forget(room) {
+    const jid = room.get('jid');
+    const closed = room.close().finally(() => {
+        if (forgetting.get(jid) === closed) forgetting.delete(jid);
+    });
+    forgetting.set(jid, closed);
+    return closed;
+}
+
+/**
+ * Forgets a room once a join of it has settled, without hiding why the join
+ * failed, if it did, behind a failure to close the room.
+ * @param {import('@converse/headless').MUC} room
+ */
+async function forgetAfterJoin(room) {
+    try {
+        await forget(room);
+    } catch (e) {
+        log.error(`Couldn't forget ${room.get('jid')}: ${e.message}`);
+    }
+}
+
+/**
+ * The rooms being forgotten, by JID. Until one is closed, headless still holds
+ * it, so a join made meanwhile would get the room that's being closed.
+ * @type {Map<string, Promise<void>>}
+ */
+const forgetting = new Map();
+
+/**
+ * Gets a room, once any leave of it has finished closing it.
+ * @param {string} jid
+ * @param {Object} [attrs]
+ * @param {boolean} [create]
+ * @returns {Promise<import('@converse/headless').MUC|undefined>}
+ */
+async function getRoom(jid, attrs, create) {
+    await forgetting.get(jid)?.catch(() => {});
+    return api.rooms.get(jid, attrs, create);
+}
+
+/**
+ * The rooms a join is under way in. One left meanwhile is forgotten once the
+ * join settles, by whatever made it: forgotten before, while headless may
+ * still be sending the join, the join could reach the room after the leave.
+ * @type {WeakSet<import('@converse/headless').MUC>}
+ */
+const joining = new WeakSet();
+
+/**
  * Rejoins the rooms the daemon is meant to be in, all at once, so a room that
  * doesn't answer doesn't hold up the rest. Called once it has logged in. A
  * room that can't be rejoined is logged and left for another time.
@@ -127,13 +183,18 @@ export async function rejoinRooms(store) {
     await Promise.all(
         store.list().map(async ({ jid, nick }) => {
             try {
-                const room = await api.rooms.get(jid, { nick }, true);
+                const room = await getRoom(jid, { nick }, true);
                 // A leave while we were getting the room means it's not to be rejoined.
                 if (!store.get(jid)) return;
 
-                await enter(room, nick);
-                // Or a leave while the room was letting us in.
-                if (!store.get(jid)) await room.leave();
+                joining.add(room);
+                try {
+                    await enter(room, nick);
+                } finally {
+                    joining.delete(room);
+                    // A leave while the room was letting us in.
+                    if (!store.get(jid)) await forgetAfterJoin(room);
+                }
             } catch (e) {
                 log.warn(`Couldn't rejoin ${jid}: ${e.message}`);
             }
@@ -185,12 +246,13 @@ export function roomMethods({ config, policy, store }) {
             requireConnected('nothing was done');
 
             const nickname = (nick ?? config.consumer).trim();
-            const existing = await api.rooms.get(jid);
+            const existing = await getRoom(jid);
             // Getting a room we're in with a nickname would overwrite the one we have there.
-            const model = existing?.isEntered() ? existing : await api.rooms.get(jid, { nick: nickname }, true);
+            const model = existing?.isEntered() ? existing : await getRoom(jid, { nick: nickname }, true);
             if (!model.isEntered()) {
                 const before = store.get(jid);
                 store.add(jid, nickname);
+                joining.add(model);
                 try {
                     await enter(model, nickname);
                 } catch (e) {
@@ -199,10 +261,12 @@ export function roomMethods({ config, policy, store }) {
                         else store.remove(jid);
                     }
                     throw e;
+                } finally {
+                    joining.delete(model);
+                    // Turned down, or left while the room was letting us in, which is the last word.
+                    if (!store.get(jid)) await forgetAfterJoin(model);
                 }
                 if (!store.get(jid)) {
-                    // A leave came while the room was letting us in, and it's the last word.
-                    await model.leave();
                     throw new RPCError(ERRORS.NOT_FOUND, `${jid} was left while we were joining it.`);
                 }
             }
@@ -224,13 +288,14 @@ export function roomMethods({ config, policy, store }) {
         async 'rooms.leave'({ room }, client) {
             const jid = await resolveRoomJID(room, 'room');
             checkAccess(client, jid);
-            const model = await api.rooms.get(jid);
+            const model = await getRoom(jid);
             const entered = model?.isEntered() ?? false;
             if (!entered && !store.get(jid)) {
                 throw new RPCError(ERRORS.NOT_FOUND, `We aren't in ${jid}, so there is nothing to leave.`);
             }
-            if (entered) await model.leave();
             store.remove(jid);
+            // A join under way forgets the room once it settles.
+            if (model && !joining.has(model)) await forget(model);
             return {
                 conversation: model ? toRoomDTO(model) : { jid, type: 'groupchat', name: null },
                 was_in: entered,

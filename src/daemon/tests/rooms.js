@@ -6,10 +6,10 @@ import { converse } from '@converse/headless';
 import { createPolicy } from '../policy.js';
 import { ERRORS } from '../protocol.js';
 import { createRoomStore } from '../rooms.js';
-import { startDaemon } from './harness.js';
+import { JID, startDaemon } from './harness.js';
 
 const { ROOMSTATUS } = converse;
-const { u } = converse.env;
+const { stx, u } = converse.env;
 
 const GARDEN = 'garden@conference.montague.lit';
 const HALL = 'hall@conference.montague.lit';
@@ -125,10 +125,24 @@ describe('Joining and leaving, with rooms stored from an earlier run', () => {
                     s.getAttribute('type') === 'unavailable',
             ),
         );
+        // Nor does headless keep it, as it would join it again as the daemon starts.
+        await expect.poll(() => daemon.api.rooms.get(HALL)).toBeFalsy();
     });
 
     it('keeps the nickname it has in a room it is already in, and says so', async () => {
+        const sent = daemon.connection.sent_stanzas.length;
         const joining = full.request('rooms.join', { room: ORCHARD });
+        // This join's presence, not the one from the first time in.
+        await u.waitUntil(() =>
+            daemon.connection.sent_stanzas
+                .slice(sent)
+                .some(
+                    (s) =>
+                        s.nodeName === 'presence' &&
+                        s.getAttribute('to') === `${ORCHARD}/agent` &&
+                        !s.getAttribute('type'),
+                ),
+        );
         await daemon.enterRoom(ORCHARD, 'agent');
         expect(await joining).toMatchObject({ nick: 'agent' });
 
@@ -144,6 +158,94 @@ describe('Joining and leaving, with rooms stored from an earlier run', () => {
         await daemon.refuseRoom(TOMB);
         await expect(joining).rejects.toMatchObject({ code: ERRORS.JOIN_REFUSED });
         expect(stored()).toEqual([{ jid: ORCHARD, nick: 'agent' }]);
+        expect(await daemon.api.rooms.get(TOMB)).toBeFalsy();
+    });
+
+    it('drops a room it leaves from headless, so a restart does not join it, but keeps its messages', async () => {
+        const orchard = await daemon.api.rooms.get(ORCHARD);
+        daemon.receive(stx`
+            <message xmlns="jabber:client" from="${ORCHARD}/juliet" to="${JID}" type="groupchat"
+                    id="${u.getUniqueId()}">
+                <body>Before the leave</body>
+            </message>`);
+        await u.waitUntil(() => orchard.messages.findWhere({ body: 'Before the leave' }));
+
+        expect(await full.request('rooms.leave', { room: ORCHARD })).toMatchObject({ was_in: true });
+        expect(await daemon.api.rooms.get(ORCHARD)).toBeFalsy();
+        expect(stored()).toEqual([]);
+
+        // An OMEMO room's messages couldn't be fetched from the archive again, so they're kept.
+        const sent = daemon.connection.sent_stanzas.length;
+        const joining = full.request('rooms.join', { room: ORCHARD });
+        // This join's presence, not the one from the first time in.
+        await u.waitUntil(() =>
+            daemon.connection.sent_stanzas
+                .slice(sent)
+                .some(
+                    (s) =>
+                        s.nodeName === 'presence' &&
+                        s.getAttribute('to') === `${ORCHARD}/agent` &&
+                        !s.getAttribute('type'),
+                ),
+        );
+        await daemon.enterRoom(ORCHARD, 'agent');
+        await joining;
+        const again = await daemon.api.rooms.get(ORCHARD);
+        await again.messages.fetched;
+        expect(again.messages.findWhere({ body: 'Before the leave' })).toBeTruthy();
+    });
+
+    it('joins a room afresh when asked to while a leave is still closing it', async () => {
+        const orchard = await daemon.api.rooms.get(ORCHARD);
+        const { promise: gate, resolve: open } = Promise.withResolvers();
+        const close = orchard.close.bind(orchard);
+        const closing = vi.spyOn(orchard, 'close').mockImplementation(async (...args) => {
+            await gate;
+            return close(...args);
+        });
+
+        const leaving = full.request('rooms.leave', { room: ORCHARD });
+        await u.waitUntil(() => closing.mock.calls.length > 0);
+        const sent = daemon.connection.sent_stanzas.length;
+        const joining = full.request('rooms.join', { room: ORCHARD });
+        // Answered after the join has been taken up, since the requests are handled in order.
+        await full.request('daemon.status');
+        open();
+        expect(await leaving).toMatchObject({ was_in: true });
+
+        // A new join, of a new room: not the one the leave closed.
+        await u.waitUntil(() =>
+            daemon.connection.sent_stanzas
+                .slice(sent)
+                .some(
+                    (s) =>
+                        s.nodeName === 'presence' &&
+                        s.getAttribute('to') === `${ORCHARD}/agent` &&
+                        !s.getAttribute('type'),
+                ),
+        );
+        await daemon.enterRoom(ORCHARD, 'agent');
+        expect(await joining).toMatchObject({ nick: 'agent' });
+        const again = await daemon.api.rooms.get(ORCHARD);
+        expect(again).not.toBe(orchard);
+        expect(again.isEntered()).toBe(true);
+        expect(stored()).toContainEqual({ jid: ORCHARD, nick: 'agent' });
+    });
+
+    it("says why a room turned a join down, even if the room then can't be closed", async () => {
+        const sent = daemon.connection.sent_stanzas.length;
+        const joining = full.request('rooms.join', { room: TOMB });
+        await u.waitUntil(() =>
+            daemon.connection.sent_stanzas
+                .slice(sent)
+                .some((s) => s.nodeName === 'presence' && s.getAttribute('to') === `${TOMB}/agent`),
+        );
+        const tomb = await daemon.api.rooms.get(TOMB);
+        vi.spyOn(tomb, 'close').mockRejectedValueOnce(new Error('The connection was lost'));
+
+        await daemon.refuseRoom(TOMB);
+        await expect(joining).rejects.toMatchObject({ code: ERRORS.JOIN_REFUSED });
+        expect(stored()).not.toContainEqual(expect.objectContaining({ jid: TOMB }));
     });
 });
 

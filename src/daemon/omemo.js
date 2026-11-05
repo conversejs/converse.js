@@ -24,6 +24,19 @@ const TRUST_NAMES = { [TRUSTED]: 'trusted', [UNTRUSTED]: 'untrusted', [UNDECIDED
 const TRUST_VALUES = { trusted: TRUSTED, untrusted: UNTRUSTED, undecided: UNDECIDED };
 
 /**
+ * The device list of a JID. Headless asks the server for one only once, and
+ * waits for a pubsub notification to learn of any change. One whose owner had
+ * published no devices yet stays empty, as the server sends no notifications
+ * without a presence subscription, so an empty one is asked for again.
+ * @param {string} jid
+ */
+async function getDeviceList(jid) {
+    const list = await api.omemo.devicelists.get(jid, true);
+    if (!list.devices.length) await list.fetchDevices(true);
+    return list;
+}
+
+/**
  */
 export function omemoMethods() {
     return {
@@ -38,7 +51,7 @@ export function omemoMethods() {
         async 'omemo.devices.list'({ conversation }) {
             const jid = await resolveJID(conversation, 'conversation');
             const own_id = await ready();
-            const list = await api.omemo.devicelists.get(jid, true);
+            const list = await getDeviceList(jid);
             const own = jid === ownJID();
             const devices = await Promise.all(
                 list.devices.models.map((device) => toDeviceDTO(device, { own, own_id })),
@@ -66,7 +79,7 @@ export function omemoMethods() {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"trust" must be "trusted", "untrusted" or "undecided".');
             }
             const own_id = await ready();
-            const list = await api.omemo.devicelists.get(jid, true);
+            const list = await getDeviceList(jid);
             const model = list.devices.models.find((d) => String(d.get('id')) === String(device));
             if (!model) {
                 throw new RPCError(

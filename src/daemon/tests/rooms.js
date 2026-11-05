@@ -150,6 +150,14 @@ describe('Joining and leaving, with rooms stored from an earlier run', () => {
         expect(stored()).toEqual([{ jid: ORCHARD, nick: 'agent' }]);
     });
 
+    it('lists only who is in the room, not the absent members of a members-only room', async () => {
+        const orchard = await daemon.api.rooms.get(ORCHARD);
+        // As headless adds them from the member list: a JID and an affiliation, but no nickname.
+        orchard.occupants.create({ jid: 'juliet@capulet.lit', affiliation: 'member' });
+        const { occupants } = await full.request('rooms.occupants', { room: ORCHARD });
+        expect(occupants.map(({ nick }) => nick)).toEqual(['agent']);
+    });
+
     it('remembers a room before the room confirms the join, and forgets it if the room turns it down', async () => {
         const joining = full.request('rooms.join', { room: TOMB });
         // Remembered while the join is unconfirmed, so a late confirmation is still rejoined after a restart.

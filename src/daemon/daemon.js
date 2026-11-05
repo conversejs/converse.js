@@ -129,6 +129,8 @@ async function serve(config, gid) {
     await converse.initialize({
         websocket_url: config.websocket_url,
         storage_path: paths.storage,
+        // Leaving a room mustn't lose its messages: those of an OMEMO room can't be fetched again.
+        muc_clear_messages_on_leave: false,
         ...config.settings,
     });
 

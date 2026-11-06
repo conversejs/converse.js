@@ -94,6 +94,7 @@ export default defineConfig({
                 // extend the root config: those setup files inject stylesheets
                 // and a Jasmine compatibility layer that only make sense in a
                 // page, and the aliases point at the browser bundles.
+                extends: false,
                 root: abs('src/headless'),
                 test: {
                     name: 'headless-node',
@@ -116,6 +117,7 @@ export default defineConfig({
                 // export condition resolves to the source tree, so they need no
                 // headless rebuild. Not extending the root config, for the same
                 // reasons as `headless-node` above.
+                extends: false,
                 root: abs('src'),
                 test: {
                     name: 'daemon',
@@ -137,6 +139,7 @@ export default defineConfig({
                 // Docker (tests/prosody), which the global setup starts if it
                 // isn't running. Kept out of `test:all`, which mustn't need
                 // Docker: run them with `npm run test:prosody`.
+                extends: false,
                 root: abs('src'),
                 test: {
                     name: 'prosody',

@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { page, userEvent } from '@vitest/browser/context';
+import { page, userEvent } from 'vitest/browser';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 

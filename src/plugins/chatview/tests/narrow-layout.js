@@ -1,4 +1,4 @@
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 

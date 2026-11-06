@@ -238,26 +238,129 @@ For example: [src/plugins/chatview/templates](https://github.com/conversejs/conv
 
 You can modify HTML markup that Converse generates by modifying these files.
 
-### Use module resolution to modify templates without changing the original files
+### Replace templates in your own build, without changing the original files
 
-Generally, what we recommend when creating a modified version of Converse for a project or customer is to create a new JavaScript package with its own `package.json` and add `converse.js` as a dependency (e.g. via `npm install --save converse.js`) to the `package.json`.
+To customise Converse for a project or customer, we recommend creating a new JavaScript
+package with its own `package.json` and adding `converse.js` as a dependency. Your bundler
+can then swap individual templates for your own files.
 
-Then you can use your build tool's module resolution features to replace template paths with your own modified files.
+This needs `converse.js` 15.0.0 or later, and you have to bundle Converse **from its
+source**. Importing `converse.js` gives you the prebuilt `dist/converse.js`, which already
+has every template compiled into it, so there are no template imports left for your
+bundler to replace.
 
-For example, if you're using Webpack, you can use [webpack aliases](https://webpack.js.org/configuration/resolve/#resolvealias) to resolve template paths to your own custom templates:
+Install Converse and the loaders that its source needs:
 
-```javascript
-// webpack.config.js
-resolve: {
-    extensions: ['.js'],
-    alias: {
-      './message-body.js': path.resolve(__dirname, 'path/to/my/custom/message-body.js'),
-      './templates/message.js': path.resolve(__dirname, 'path/to/my/custom/chat_message.js'),
-    }
-}
+```bash
+npm install converse.js
+npm install --save-dev @rspack/core @rspack/cli po-loader sass sass-loader css-loader style-loader
 ```
 
-If you're using other build tools like Rollup or Vite, they have similar module resolution features that can be used for the same purpose.
+Import the source entry point instead of the package:
+
+```javascript
+// src/main.js
+import converse from 'converse.js/src/index.js';
+
+converse.initialize({
+    // your settings
+});
+```
+
+Then copy the template you want to change into your project, for example
+`node_modules/converse.js/src/plugins/controlbox/templates/loginform.js`, and edit the
+copy. Relative imports in the copy won't resolve from its new location, so rewrite them as
+paths from Converse's `src` directory: `'../constants.js'` becomes
+`'plugins/controlbox/constants.js'`.
+
+This Rspack configuration builds Converse from source and replaces the login form template:
+
+```javascript
+// rspack.config.js
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { rspack } from '@rspack/core';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CONVERSE_SRC = path.resolve(__dirname, 'node_modules/converse.js/src');
+
+export default {
+    entry: './src/main.js',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'main.js',
+        publicPath: 'auto',
+    },
+    resolve: {
+        // Converse's source imports its own modules by paths such as 'shared/...'
+        modules: ['node_modules', CONVERSE_SRC],
+    },
+    module: {
+        rules: [
+            {
+                // The translations
+                test: /LC_MESSAGES[\\/]converse\.po$/,
+                type: 'json',
+                use: [{ loader: 'po-loader', options: { format: 'jed', domain: 'converse' } }],
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    'style-loader',
+                    { loader: 'css-loader', options: { url: false } },
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sassOptions: {
+                                loadPaths: [path.resolve(__dirname, 'node_modules'), CONVERSE_SRC],
+                                quietDeps: true,
+                                silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
+                            },
+                        },
+                    },
+                ],
+            },
+        ],
+    },
+    plugins: [
+        // Match on the template's full path: several plugins have a template with the
+        // same file name, for example `templates/message.js`.
+        new rspack.NormalModuleReplacementPlugin(
+            /plugins[\\/]controlbox[\\/]templates[\\/]loginform\.js$/,
+            path.resolve(__dirname, 'src/templates/loginform.js')
+        ),
+        new rspack.CopyRspackPlugin({
+            patterns: [
+                { from: path.join(CONVERSE_SRC, '../dist/webfonts'), to: 'webfonts' },
+                {
+                    from: path.resolve(__dirname, 'node_modules/@converse/headless/dist/libomemo.esm.min.js'),
+                    to: '.',
+                },
+            ],
+        }),
+    ],
+};
+```
+
+With webpack the configuration is the same. Import `webpack` instead of `rspack`, and use
+[copy-webpack-plugin](https://webpack.js.org/plugins/copy-webpack-plugin/) instead of
+`CopyRspackPlugin`.
+
+Add one `NormalModuleReplacementPlugin` for each template you replace. Don't use
+`resolve.alias` with a relative path such as `'./templates/message.js'`: it matches every
+import written that way, in every plugin.
+
+When you deploy, keep these files together:
+
+- `libomemo.esm.min.js` next to your bundle. Converse loads it relative to the bundle when
+  OMEMO is used.
+- `webfonts/` next to the HTML page that loads Converse, because the styles refer to the
+  fonts relative to the page.
+- The contents of `node_modules/converse.js/dist/` (images, sounds and `emoji.json`) at
+  the URL in [`assets_path`](/docs/configuration/#assets_path).
+
+To bundle the prebuilt `dist/converse.js` instead, without replacing templates, see
+[Output files](/docs/development/builds/#output-files).
 
 ### Best practices for theming
 

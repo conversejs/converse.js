@@ -149,7 +149,7 @@
     "semver": "^7.8.5",
     "sirv": "^3.0.2",
     "style-loader": "^4.0.0",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "vitest": "^4.1.9",
     "webpack-merge": "^6.0.1"
   },

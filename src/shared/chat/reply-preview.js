@@ -34,7 +34,7 @@ export default class ReplyPreview extends CustomElement {
      * Get the message being replied to, if any.
      * According to XEP-0461, for groupchat messages the stanza_id is used,
      * for other messages we check origin_id first, then msgid.
-     * @returns {import('@converse/headless/types/shared/message').default|undefined}
+     * @returns {import('@converse/headless').BaseMessage|undefined}
      */
     getReplyToMessage() {
         const reply_to_id = this.model.get('reply_to_id');

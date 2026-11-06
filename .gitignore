@@ -1,6 +1,10 @@
 # Distribution directory
 dist
 
+# Per-file declarations that `npm run types` emits and bundles into dist/
+/src/types/
+/src/headless/types/
+
 # SQLite databases written by @converse/skeletor when headless runs under Node
 .skeletor-storage/
 
@@ -53,9 +57,17 @@ node_modules
 
 # LLMs
 .aider*
-.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/codereview-conversejs/
+!.agents/skills/converse-cli
 .prompts/
-.claude/
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/codereview-conversejs
+!.claude/skills/converse-cli
 
 # Vitest browser-mode generated artifacts
 .vitest-attachments/

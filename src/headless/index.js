@@ -72,6 +72,32 @@ Object.assign(_converse.constants, constants);
 import * as errors from './shared/errors.js';
 export { api, converse, _converse, i18n, log, u, constants, parsers, errors };
 
+// Types for plugins and the UI. The package publishes a single bundled
+// declaration file, so these have to be reachable from the entry point.
+/**
+ * @typedef {import('./shared/_converse.js').ConversePrivateGlobal} ConversePrivateGlobal
+ * @typedef {import('./shared/chatbox.js').default} ChatBoxBase
+ * @typedef {import('./shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ * @typedef {import('./shared/types').MessageAttributes} MessageAttributes
+ * @typedef {import('./shared/types').MessageEventData} MessageEventData
+ * @typedef {import('./shared/types').XFormField} XFormField
+ * @typedef {import('./utils/types').MediaURLMetadata} MediaURLMetadata
+ * @typedef {import('./plugins/adhoc/types').AdHocCommand} AdHocCommand
+ * @typedef {import('./plugins/adhoc/types').AdHocCommandAction} AdHocCommandAction
+ * @typedef {import('./plugins/adhoc/types').AdHocCommandNoteType} AdHocCommandNoteType
+ * @typedef {import('./plugins/adhoc/types').AdHocCommandResult} AdHocCommandResult
+ * @typedef {import('./plugins/disco/entity.js').default} DiscoEntity
+ * @typedef {import('./plugins/headlines/feed.js').default} HeadlinesFeed
+ * @typedef {import('./plugins/muc/types').ChannelSearchItem} ChannelSearchItem
+ * @typedef {import('./plugins/muc/types').MEPMessageAttributes} MEPMessageAttributes
+ * @typedef {import('./plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
+ * @typedef {import('./plugins/muc/types').MUCMessageEventData} MUCMessageEventData
+ * @typedef {import('./plugins/omemo/types').OMEMOVersion} OMEMOVersion
+ * @typedef {import('./plugins/time/types').ContactTime} ContactTime
+ * @typedef {import('./plugins/vcard/types').VCardData} VCardData
+ * @typedef {import('./plugins/version/types').SoftwareVersion} SoftwareVersion
+ */
+
 globalThis['converse'] = converse;
 
 export default converse;

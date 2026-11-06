@@ -13,11 +13,12 @@ import MUCOccupant from './occupant.js';
 import MUCOccupants from './occupants.js';
 import affiliations_api from './affiliations/api.js';
 import muc_api from './api.js';
+import search_api, { ChannelSearchRefusedError, clearSearchState, parseChannelSearchError } from './search.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
-import { addRouteListener, addVisibilityListener } from '../../utils/environment.js';
+import { addVisibilityListener } from '../../utils/environment.js';
 import {
     autoJoinRooms,
     disconnectChatRooms,
@@ -32,7 +33,6 @@ import {
     onStatusInitialized,
     onWindowStateChanged,
     registerDirectInvitationHandler,
-    routeToRoom,
 } from './utils.js';
 import { computeAffiliationsDelta } from './affiliations/utils.js';
 import {
@@ -100,6 +100,8 @@ converse.plugins.add('converse-muc', {
             muc_history_max_stanzas: undefined,
             muc_instant_rooms: true,
             muc_nickname_from_jid: false,
+            // The JID of a XEP-0433 channel search service. Set to an empty string to disable search.
+            muc_search_service: 'api@search.jabber.network',
             muc_send_probes: false,
             muc_show_info_messages: [
                 ...converse.MUC.INFO_CODES.visibility_changes,
@@ -127,6 +129,7 @@ converse.plugins.add('converse-muc', {
         converse.env.muc_utils = { computeAffiliationsDelta };
         Object.assign(api, muc_api);
         Object.assign(api.rooms, affiliations_api);
+        Object.assign(api.rooms, search_api);
 
         /**
          * https://xmpp.org/extensions/xep-0045.html
@@ -160,9 +163,6 @@ converse.plugins.add('converse-muc', {
         Object.assign(_converse.labels, labels);
         Object.assign(_converse, labels); // XXX DEPRECATED
 
-        routeToRoom();
-        addRouteListener(routeToRoom);
-
         // TODO: DEPRECATED
         const legacy_exports = {
             ChatRoom: MUC,
@@ -174,6 +174,7 @@ converse.plugins.add('converse-muc', {
         Object.assign(_converse, legacy_exports);
 
         const exports = {
+            ChannelSearchRefusedError,
             MUC,
             MUCMessage,
             MUCMessages,
@@ -194,6 +195,8 @@ converse.plugins.add('converse-muc', {
         }
 
         api.listen.on('getDuplicateMessageQueries', getMUCDuplicateMessageQueries);
+        api.listen.on('parseErrorStanza', parseChannelSearchError);
+        api.listen.on('clearSession', clearSearchState);
 
         api.listen.on('addClientFeatures', () => api.disco.own.features.add(`${Strophe.NS.CONFINFO}+notify`));
         api.listen.on('addClientFeatures', onAddClientFeatures);

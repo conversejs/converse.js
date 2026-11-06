@@ -1,15 +1,13 @@
 /**
  * @typedef {module:muc-affiliations-utils.NonOutcastAffiliation} NonOutcastAffiliation
  */
-import { getOpenPromise } from '@converse/openpromise';
-import { api, converse, MUCOccupants, constants } from '@converse/headless';
+import { api, MUCOccupants, constants, u } from '@converse/headless';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import tplModeratorTools from './templates/moderator-tools.js';
 
 import './styles/moderator-tools.scss';
 
-const { u } = converse.env;
 const { AFFILIATIONS, ROLES } = constants;
 
 export default class ModeratorTools extends CustomElement {
@@ -64,7 +62,7 @@ export default class ModeratorTools extends CustomElement {
     }
 
     async initialize() {
-        this.initialized = getOpenPromise();
+        this.initialized = u.getOpenPromise();
         const muc = await api.rooms.get(this.jid);
         await muc.initialized;
         this.muc = muc;

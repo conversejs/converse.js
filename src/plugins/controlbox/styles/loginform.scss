@@ -116,6 +116,9 @@
                     display: block;
                 }
 
+                // The invitation shown above the forms (see the rootview
+                // plugin's pending-invitation.js) lines up with them.
+                converse-pending-invitation,
                 converse-registration-form,
                 converse-login-form {
                     margin: auto;

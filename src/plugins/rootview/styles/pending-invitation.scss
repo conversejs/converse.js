@@ -1,0 +1,22 @@
+converse-pending-invitation {
+    display: block;
+
+    .pending-invitation {
+        background-color: var(--background-color);
+        border-color: var(--controlbox-color, var(--subdued-color));
+    }
+
+    .pending-invitation__open-app {
+        color: var(--button-text-color);
+    }
+
+    .pending-invitation__apps,
+    .pending-invitation__or-browser {
+        color: var(--subdued-color);
+        font-size: 90%;
+    }
+
+    .pending-invitation__platforms {
+        font-size: 90%;
+    }
+}

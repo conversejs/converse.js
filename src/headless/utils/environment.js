@@ -77,7 +77,7 @@ export function removeVisibilityListener(listener) {
 }
 
 /**
- * The URL fragment Converse routes on, e.g. `#converse/room?jid=...`.
+ * The URL fragment Converse routes on, e.g. `#converse?loglevel=debug`.
  * @returns {string}
  */
 export function getRouteHash() {

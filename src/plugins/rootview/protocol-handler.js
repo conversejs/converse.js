@@ -15,10 +15,17 @@
  *    hash, which {@link routeXMPPURI} unpacks and passes to the existing
  *    dispatcher in shared/xmpp-uri-dispatch.js. All the parsing, the confirm
  *    prompts for state-mutating actions and the set of supported query actions
- *    live there and this module is only the transport.
+ *    live there and this module is only the transport. The legacy
+ *    `#converse/chat?jid=` and `#converse/room?jid=` deep links take the same
+ *    path, read as the `xmpp:` URI they stand for.
+ *
+ * A shareable invitation link (`<shareable_link_url>#romeo@montague.lit`)
+ * opened on the page it points at arrives the same way, with the bare
+ * `xmpp:` URI in the fragment, and is handled alike.
  */
 import { api, log } from '@converse/headless';
 import { dispatchXMPPURI } from 'shared/xmpp-uri-dispatch.js';
+import { decodeValue, invitationToXMPPURI, isHandledXMPPURI, jidSegmentToXMPPURI } from 'shared/xmpp-uri.js';
 
 /**
  * The hash the protocol handler hands the URI back on. Must stay in sync with
@@ -26,8 +33,34 @@ import { dispatchXMPPURI } from 'shared/xmpp-uri-dispatch.js';
  */
 export const ACTION_HASH_PREFIX = '#converse/action?uri=';
 
-// Guards against `hashchange` and `connected` both dispatching the same URI.
+// Handles one link at a time, so their confirm prompts don't stack.
 let dispatching = false;
+
+/**
+ * The `xmpp:` URI waiting for login. It's remembered apart from the hash,
+ * because the login and registration forms put their own routes there
+ * (`#converse/register`), and an invitation must survive someone creating an
+ * account before they can accept it.
+ * @type {import('./types').PendingXMPPURI|null}
+ */
+let pending = null;
+
+/**
+ * The `xmpp:` URI that will be acted on once logged in, if any: from a
+ * shareable link to this page or from the browser's protocol handler.
+ * @returns {import('./types').PendingXMPPURI|null}
+ */
+export function getPendingXMPPURI() {
+    return pending;
+}
+
+/**
+ * Take the link the page was opened with as the pending one, if any. Called
+ * when Converse is initialized, so a link is shown before login.
+ */
+export function initPendingXMPPURI() {
+    pending = getURIFromHash();
+}
 
 /**
  * Ask the browser to route `xmpp:` links to this Converse instance.
@@ -62,27 +95,63 @@ export function registerProtocolHandlerIfEnabled() {
 }
 
 /**
+ * The legacy deep-link fragments (`#converse/chat?jid=<jid>` and
+ * `#converse/room?jid=<jid>`), still accepted as an alias for the `xmpp:` URI
+ * they stand for but never emitted.
+ */
+const LEGACY_HASH = /^#converse\/(chat|room)\?jid=([^&;]*)/;
+
+/**
+ * The `xmpp:` URI a legacy `?jid=` fragment stands for, or null when the
+ * fragment isn't one or doesn't name a JID we can act on.
+ * @param {string} hash
+ * @returns {string|null}
+ */
+function legacyHashToXMPPURI(hash) {
+    const m = hash.match(LEGACY_HASH);
+    if (!m) return null;
+
+    const uri = jidSegmentToXMPPURI(m[2], m[1] === 'room');
+    return uri && isHandledXMPPURI(uri) ? uri : null;
+}
+
+/**
  * The `xmpp:` URI the current hash carries, or null when it carries none.
  *
  * The URI is attacker-supplied (any page can link to this hash), so a malformed
  * percent-sequence is passed through rather than allowed to throw.
  *
- * @returns {string|null}
+ * @returns {import('./types').PendingXMPPURI|null}
  */
 function getURIFromHash() {
-    if (!location.hash.startsWith(ACTION_HASH_PREFIX)) return null;
+    if (!location.hash.startsWith(ACTION_HASH_PREFIX)) {
+        // An old link is shared the same way a shareable one is, so it gets
+        // the same landing card.
+        const legacy = legacyHashToXMPPURI(location.hash);
+        if (legacy) return { uri: legacy, from_handler: false };
+
+        // A shareable link to this very page. Only a fragment naming something
+        // we can act on counts, so the hash of a page that embeds Converse is
+        // never cleared out from under it.
+        const uri = invitationToXMPPURI(new URL(location.href));
+        return uri && isHandledXMPPURI(uri) ? { uri, from_handler: false } : null;
+    }
 
     const escaped = location.hash.slice(ACTION_HASH_PREFIX.length);
-    if (!escaped) return null;
-
-    try {
-        return decodeURIComponent(escaped);
-    } catch {
-        return escaped;
-    }
+    return escaped ? { uri: decodeValue(escaped), from_handler: true } : null;
 }
 
-/** Drop the action hash, without a history entry and without firing `hashchange`. */
+/**
+ * Whether the current hash is an `xmpp:` link waiting to be handled (it is
+ * left in place until there's a live connection), so that nothing else, such
+ * as the Chat app mirroring its foreground conversation, overwrites it first.
+ * @returns {boolean}
+ */
+export function isWaitingXMPPLink() {
+    return getURIFromHash() !== null;
+}
+
+/** Drop the link from the hash, without a history entry and without firing `hashchange`. */
 function clearActionHash() {
     history.replaceState(history.state, '', `${location.pathname}${location.search}`);
 }
@@ -93,21 +162,34 @@ function clearActionHash() {
  *
  * Dispatch waits for a live connection. A cold click on an `xmpp:` link lands
  * here before login, and the chat and roster actions (along with their confirm
- * prompts) only mean anything against a live session. The hash is deliberately
- * left in place until it has been handled, so the intent survives the login and
- * the `connected` handler picks it up instead of it being silently dropped.
+ * prompts) only mean anything against a live session. Until then the URI is
+ * kept as the pending one (see {@link getPendingXMPPURI}), and the hash is left
+ * in place so that a reload doesn't lose it either. The `connected` handler
+ * then picks it up instead of it being silently dropped.
+ *
+ * The hash is dropped before dispatching, not after: with URL routing on,
+ * opening the conversation pushes the chat's own route, which clearing
+ * afterwards would wipe before the router gets to it.
+ *
+ * A link that arrives while another is being handled (e.g. during its confirm
+ * prompt) waits in the hash and is handled next.
  *
  * @returns {Promise<boolean>} Whether the URI was handled.
  */
 export async function routeXMPPURI() {
-    const uri = getURIFromHash();
+    const from_hash = getURIFromHash();
+    if (from_hash) pending = from_hash;
+
+    const uri = pending?.uri;
     if (!uri || dispatching || !api.connection.connected()) return false;
 
     dispatching = true;
+    pending = null;
+    if (from_hash) clearActionHash();
     try {
         return await dispatchXMPPURI(uri);
     } finally {
         dispatching = false;
-        clearActionHash();
+        if (pending || getURIFromHash()) routeXMPPURI();
     }
 }

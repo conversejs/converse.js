@@ -1,4 +1,4 @@
-import he from 'he';
+import { decode } from 'he';
 import { Strophe, Builder, Stanza } from 'strophe.js';
 
 /**
@@ -192,12 +192,12 @@ function htmlToText(html) {
 
         if (!MARKUP_START.test(html[lt + 1] ?? '')) {
             // A bare `<`. Keep it as text and carry on after it.
-            text += he.decode(html.slice(i, lt + 1));
+            text += decode(html.slice(i, lt + 1));
             i = lt + 1;
             continue;
         }
 
-        text += he.decode(html.slice(i, lt));
+        text += decode(html.slice(i, lt));
         i = endOfMarkup(html, lt);
 
         const tag = TAG_NAME.exec(html.slice(lt + 1, i))?.[1].toLowerCase();
@@ -207,7 +207,7 @@ function htmlToText(html) {
             i = offset === -1 ? html.length : endOfMarkup(html, i + offset);
         }
     }
-    return text + he.decode(html.slice(i));
+    return text + decode(html.slice(i));
 }
 
 /**
@@ -230,5 +230,5 @@ export function decodeHTMLEntities(str) {
  * @return {string}
  */
 export function unescapeHTML(string) {
-    return typeof string === 'string' ? he.decode(string) : string;
+    return typeof string === 'string' ? decode(string) : string;
 }

@@ -1,7 +1,7 @@
 import { Builder, Strophe } from 'strophe.js';
 import { Collection, FetchOrCreateOptions, Model } from '@converse/skeletor';
 import { getOpenPromise } from '@converse/openpromise';
-import type { DebouncedFunc } from 'lodash';
+import type { DebouncedFunc } from 'lodash-es';
 import BaseMessage from './message';
 import VCard from '../plugins/vcard/vcard';
 import RosterContact from '../plugins/roster/contact';
@@ -119,8 +119,9 @@ export interface MessagesAware {
     queueMessage(attrs: MessageAttributes): any;
     getOutgoingMessageAttributes(attrs?: MessageAttributes): Promise<MessageAttributes>;
     getReferencedMessage(reply_to_id: string): BaseMessage | undefined;
+    takeReplyAttributes(attrs?: MessageAttributes): Pick<MessageAttributes, 'reply_to_id' | 'reply_to'>;
     addReplyFallback(attrs: MessageAttributes): MessageAttributes;
-    sendMessage(attrs?: any): Promise<BaseMessage>;
+    sendMessage(attrs?: any, options?: { replying_to?: BaseMessage; correcting?: BaseMessage }): Promise<BaseMessage>;
     retractOwnMessage(message: BaseMessage): void;
     sendFiles(files: File[] | FileList): Promise<BaseMessage[]>;
     setEditable(attrs: any, send_time: string): void;
@@ -364,6 +365,7 @@ export type MessageAttributes = EncryptionAttrs &
         spoiler_hint: string; //  The XEP-0382 spoiler hint
         stanza_id: string; // The XEP-0359 Stanza ID. Note: the key is actually `stanza_id ${by_jid}` and there can be multiple.
         correction_stanza_ids?: Record<string, string[]>; // The XEP-0359 Stanza IDs of the message's XEP-0308 corrections, keyed by the assigning JID
+        mam_gap?: { before?: string; start?: string } | null; // The history right before the message, back to start (or without limit), not yet fetched from the archive. Paged from before, by default the message's archive id
         subject: string; // The <subject> element value
         thread: string; // The <thread> element value
         time: string; // The time (in ISO8601 format), either given by the XEP-0203 <delay> element, or of receipt.

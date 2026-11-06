@@ -3,6 +3,7 @@
  */
 import _converse from '../../shared/_converse.js';
 import chatboxes from '../../plugins/chatboxes/api.js';
+import sizzle from '#sizzle';
 import log from '@converse/log';
 import promise_api from '../../shared/api/promise.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
@@ -11,6 +12,12 @@ import { getJIDFromURI } from '../../utils/jid.js';
 import { settings_api as settings } from '../../shared/settings/api.js';
 
 const { waitUntil } = promise_api;
+
+/** How many rooms to ask a MUC service for at a time, when it pages its list. */
+const DISCOVER_PAGE_SIZE = 100;
+
+/** An upper bound on the pages asked for, so that a misbehaving service can't keep a request going forever. */
+const DISCOVER_MAX_PAGES = 100;
 
 /**
  * The "rooms" namespace groups methods relevant to chatrooms
@@ -111,12 +118,14 @@ const rooms = {
             throw new TypeError(err_msg);
         } else if (typeof jids === 'string') {
             const room = /** @type {MUC} */ (await rooms.get(jids, attrs, true));
-            !attrs.hidden && room?.maybeShow(force);
+            if (!attrs.hidden) room?.maybeShow(force);
             return room;
         } else {
-            const rooms = await Promise.all(jids.map((jid) => rooms.get(jid, attrs, true)));
-            rooms.forEach((r) => !attrs.hidden && r.maybeShow(force));
-            return rooms;
+            const mucs = await Promise.all(
+                jids.map(async (jid) => /** @type {MUC} */ (await rooms.get(jid, attrs, true))),
+            );
+            if (!attrs.hidden) mucs.forEach((r) => r.maybeShow(force));
+            return mucs;
         }
     },
 
@@ -166,6 +175,47 @@ const rooms = {
             return _get(jids);
         }
         return Promise.all(jids.map((jid) => _get(jid)));
+    },
+
+    /**
+     * Lists the rooms that a MUC service hosts, by asking it for its items
+     * (XEP-0030). This only lists them: joining is a separate step.
+     *
+     * A service that pages its list (XEP-0059) is asked for each page in turn,
+     * so that the list is the whole of it, and not only the first page.
+     *
+     * @method api.rooms.discover
+     * @param {string} service - The JID of the MUC service, e.g. "conference.example.org"
+     * @param {Object} [options]
+     * @param {number} [options.timeout] - How long to wait for the service to answer
+     * @returns {Promise<{jid: string, name: string|null}[]>} The rooms, in the order the service gave them
+     *
+     * @example
+     * const rooms = await api.rooms.discover('conference.example.org');
+     */
+    async discover(service, options) {
+        const rooms = [];
+        let after;
+        for (let page = 0; page < DISCOVER_MAX_PAGES; page++) {
+            const rsm = { max: DISCOVER_PAGE_SIZE, after };
+            const stanza = await _converse.api.disco.items(service, null, { ...options, rsm });
+            const query = `query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`;
+            const items = sizzle(`${query} > item`, stanza);
+            rooms.push(
+                ...items
+                    .filter((item) => !item.getAttribute('node'))
+                    .map((item) => ({ jid: item.getAttribute('jid'), name: item.getAttribute('name') || null })),
+            );
+
+            // A service that doesn't page its list answers without a <set>, with all of it.
+            // The <count> may be approximate, so the list ends with an empty page instead.
+            const last = sizzle(`${query} > set[xmlns="${Strophe.NS.RSM}"] > last`, stanza).pop()?.textContent;
+            if (!items.length || !last || last === after) return rooms;
+
+            after = last;
+        }
+        log.warn(`api.rooms.discover: stopped after ${DISCOVER_MAX_PAGES} pages of rooms from ${service}`);
+        return rooms;
     },
 };
 

@@ -27,6 +27,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         // When re-attaching to an existing session we don't need to again send out a presence stanza,
         // because it's as if "we never left" (see onConnectStatusChanged).
         this.send_initial_presence = true;
+        /** @type {import('lodash-es').DebouncedFunc<() => Promise<any>>} */
         this.debouncedReconnect = debounce(this.reconnect, 3000);
     }
 
@@ -486,9 +487,14 @@ export class MockConnection extends Connection {
                 '</stream:features>',
         ).firstElementChild;
 
-        // @ts-ignore
+        // @ts-expect-error Only the BOSH transport has _processRequest, but the mock stubs it out regardless
         this._proto._processRequest = () => {};
-        this._proto._disconnect = () => this._onDisconnectTimeout();
+        // Record the unavailable presence that a graceful disconnect sends,
+        // as a real transport would put it on the wire.
+        this._proto._disconnect = (pres) => {
+            if (pres) this.sent_stanzas.push(pres);
+            this._onDisconnectTimeout();
+        };
         this._proto._onDisconnectTimeout = () => {};
 
         // Drain the send queue synchronously into sent_stanzas: this
@@ -530,21 +536,20 @@ export class MockConnection extends Connection {
     }
 
     /** @returns {InstanceType<typeof import('strophe.js').Strophe.SASLSHA256>} */
-    // @ts-ignore
+    // @ts-expect-error Overrides the _sasl_mechanism property with a getter
     get _sasl_mechanism() {
         return new Strophe.SASLSHA256();
     }
 
     _processRequest() {
-        // eslint-disable-line class-methods-use-this
         // Don't attempt to send out stanzas
     }
 
-    sendIQ(iq, callback, errback) {
+    sendIQ(iq, callback, errback, timeout) {
         iq = iq.tree?.() ?? iq;
 
         this.IQ_stanzas.push(iq);
-        const id = super.sendIQ(iq, callback, errback);
+        const id = super.sendIQ(iq, callback, errback, timeout);
         this.IQ_ids.push(id);
         return id;
     }

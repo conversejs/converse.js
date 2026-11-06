@@ -470,6 +470,8 @@ Please refer to your XMPP server's documentation on how to enable BOSH. For more
 
 A more modern alternative to BOSH is to use [websockets](https://developer.mozilla.org/en/docs/WebSockets). Please see the `websocket-url` configuration setting.
 
+Note that this setting is superseded by any server-defined settings in host-meta when [discover_connection_methods](#discover_connection_methods) is enabled. If you want to avoid this, set [discover_connection_methods](#discover_connection_methods) to `false`.
+
 ### call_ice_servers
 
 - Default: `[]`
@@ -535,6 +537,16 @@ Some user's clients routinely connect and disconnect (likely on mobile) and each
 When desktop notifications are turned on (see [show_desktop_notifications](#show_desktop_notifications)), then you'll receive notification messages each time this happens.
 
 Receiving constant notifications that a user's client is connecting and disconnecting is annoying, so this option allows you to ignore those JIDs.
+
+### confirm_external_links
+
+- Default: `true`
+
+When a link in a chat message leads to a web page outside of Converse, ask the user to confirm before following it. The confirmation shows the site and the full address the link points to, which can differ from what the message made it look like. This applies to a middle-click as well as a normal click.
+
+Links that Converse handles itself, such as `xmpp:` URIs and invitation links that open a chat or groupchat, and links to the page Converse runs on, are followed without asking. So are links that open another app rather than a web page, such as `mailto:` links.
+
+A confirmed link opens in a new tab. A shift-click opens it in a new window, but a Ctrl- or Cmd-click opens it in the foreground rather than in a background tab.
 
 ### connection_options
 
@@ -626,6 +638,8 @@ JIDs with other domains are still allowed but need to be provided in full. To sp
 Use [XEP-0156](https://xmpp.org/extensions/xep-0156.html) to discover whether the XMPP host for the current user advertises any Websocket or BOSH connection URLs that can be used.
 
 Currently only the XML encoded host-meta resource is supported as shown in [Example 2 under section 3.3](https://xmpp.org/extensions/xep-0156.html#httpexamples).
+
+When this setting is enabled, endpoints discovered from host-meta (if any) will supersede endpoints specified via the [websocket_url](#websocket_url) and [bosh_service_url](#bosh_service_url) settings.
 
 ### domain_placeholder
 
@@ -1101,7 +1115,9 @@ So, for example, if <john@example.com> joins a chatroom, his nickname will autom
 
 - Default: `'api@search.jabber.network'`
 
-The JID of the service that should be used to search for MUCs for auto-complete purposes. If this value is set to an empty string, no service will be used and the auto-complete feature for adding MUCs will be disabled.
+The JID of a [XEP-0433 Extended Channel Search](https://xmpp.org/extensions/xep-0433.html) service, used to suggest groupchats while you type the name or address of one to join, and by `api.rooms.search`. Services that only speak the pre-standard protocol of search.jabber.network are supported as well.
+
+If this value is set to an empty string, no service will be used and groupchats won't be suggested.
 
 ### muc_send_probes
 
@@ -1637,6 +1653,39 @@ Changing this during a session takes effect immediately for the queries Converse
 
 Note that this setting controls _outgoing_ timezone information only. To stop Converse from querying your contacts, use `show_entity_time`.
 
+### shareable_link_apps
+
+- Default: Conversations, Converse Desktop, Monal, Gajim and Dino
+
+The XMPP apps suggested to someone who opens a [shareable link](/docs/configuration/#shareable_link_url) while logged out, followed by a link to the full list on xmpp.org. Each entry has a `name`, the `url` to get it from and, optionally, the `platforms` it runs on: `'Android'`, `'iOS'`, `'Windows'`, `'macOS'` or `'Linux'`.
+
+```javascript
+converse.initialize({
+    shareable_link_apps: [
+        { name: 'Conversations', url: 'https://conversations.im/', platforms: ['Android'] },
+        { name: 'Gajim', url: 'https://gajim.org/', platforms: ['Windows', 'Linux'] },
+    ],
+});
+```
+
+Only the first app for the visitor's platform is suggested, so order the list by preference. When the platform can't be told, or no app is listed for it, all of them are.
+
+Set it to an empty list to suggest no apps.
+
+### shareable_link_url
+
+- Default: `'https://chat.conversejs.org/'`
+
+The page that shareable invitation links point at. An `xmpp:` address can't be clicked in an email, on social media or in most chat apps, so the profile, user details and groupchat details modals also show an https link, with a button to copy it and, where the browser supports the Web Share API, one to share it.
+
+The XMPP address goes in the link's fragment, as [xmpp.link](https://xmpp.link) does it, so the server hosting the page never sees it: `https://chat.conversejs.org/#romeo@montague.lit` for a contact, and `https://chat.conversejs.org/#coven@chat.shakespeare.lit?join` for a groupchat.
+
+Set this to your own Converse deployment to have the links point there. Converse opens a link to that page in-app, both when it's clicked in a message and when the page itself is opened with one, once the user has logged in. A groupchat link asks for confirmation before joining.
+
+Someone who opens a link while logged out sees the invitation above the login form, with a button that hands it to the XMPP app they already have and a short list of apps for those who'd rather install one (see [shareable_link_apps](/docs/configuration/#shareable_link_apps)). They can also log in, or create an account, and then land in the chat or groupchat the link was for.
+
+Set it to an empty string to turn shareable links off, for example when your users can't use other XMPP clients and an outside link would only confuse them.
+
 ### show_background
 
 - Default: `true`
@@ -1909,6 +1958,8 @@ This option is used to specify a [websocket](https://developer.mozilla.org/en/do
 Websockets provide a more modern and effective two-way communication protocol between the browser and a server, effectively emulating TCP at the application layer and therefore overcoming many of the problems with existing long-polling techniques for bidirectional HTTP (such as [BOSH](https://en.wikipedia.org/wiki/BOSH)).
 
 Please refer to your XMPP server's documentation on how to enable websocket support.
+
+Note that this setting is superseded by any server-defined settings in host-meta when [discover_connection_methods](#discover_connection_methods) is enabled. If you want to avoid this, set [discover_connection_methods](#discover_connection_methods) to `false`.
 
 ### view_mode
 

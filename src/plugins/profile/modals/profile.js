@@ -12,7 +12,7 @@ import './styles/profile.scss';
 
 export default class ProfileModal extends BaseModal {
     /**
-     * @typedef {import('@converse/headless/types/plugins/vcard/types').VCardData} VCardData
+     * @typedef {import('@converse/headless').VCardData} VCardData
      * @typedef {import("@converse/headless").Profile} Profile
      * @typedef {import("lit").TemplateResult} TemplateResult
      */
@@ -36,7 +36,7 @@ export default class ProfileModal extends BaseModal {
         /**
          * The software version of the user's server, as advertised via
          * XEP-0092, or `null` if it hasn't been determined.
-         * @type {import('@converse/headless/types/plugins/version/types').SoftwareVersion|null}
+         * @type {import('@converse/headless').SoftwareVersion|null}
          */
         this._server_version = null;
     }

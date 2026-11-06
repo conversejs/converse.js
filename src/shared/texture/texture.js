@@ -6,6 +6,7 @@ import tplAudio from './templates/audio.js';
 import tplGif from './templates/gif.js';
 import tplImage from './templates/image.js';
 import tplVideo from './templates/video.js';
+import tplWebP from './templates/webp.js';
 import tplSpotify from './templates/spotify.js';
 import { getEmojiMarkup } from '../chat/utils.js';
 import { getHyperlinkTemplate } from '../../utils/html.js';
@@ -44,7 +45,7 @@ const { addMediaURLsOffset, getMediaURLsMetadata } = u;
  */
 export class Texture extends String {
     /**
-     * @typedef {import('@converse/headless/types/utils/types').MediaURLMetadata} MediaURLMetadata
+     * @typedef {import('@converse/headless').MediaURLMetadata} MediaURLMetadata
      */
 
     /**
@@ -124,7 +125,10 @@ export class Texture extends String {
         const { url } = url_obj;
         const filtered_url = filterQueryParamsFromURL(url);
         let template;
-        if (url_obj.is_gif && this.shouldRenderMedia(url, 'image')) {
+        // WebP comes first, since a `.gif` URL may be served as WebP (going by its headers).
+        if (url_obj.is_webp && this.shouldRenderMedia(url, 'image')) {
+            template = tplWebP(filtered_url, this.hide_media_urls, this.onImgClick, this.onImgLoad);
+        } else if (url_obj.is_gif && this.shouldRenderMedia(url, 'image')) {
             template = tplGif(filtered_url, this.hide_media_urls);
         } else if (url_obj.is_image && this.shouldRenderMedia(url, 'image')) {
             template = tplImage({

@@ -468,6 +468,20 @@
     </implements>
     <implements>
       <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0431.html"/>
+        <xmpp:status>complete</xmpp:status>
+      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
+        <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0433.html"/>
+        <xmpp:version>0.1.0</xmpp:version>
+        <xmpp:since>15.0.0</xmpp:since>
+        <xmpp:status>partial</xmpp:status>
+        <xmpp:note>Keyword search for XEP-0045 groupchats, used to suggest groupchats when joining one. The search form is not requested from the service, the "all" field (full listing) is not used, and MIX channels are not searched for. Falls back to the pre-standard protocol of search.jabber.network when a service doesn't support XEP-0433.</xmpp:note>      </xmpp:SupportedXep>
+    </implements>
+    <implements>
+      <xmpp:SupportedXep>
         <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0437.html"/>
         <xmpp:since>8.0.0</xmpp:since>
         <xmpp:status>complete</xmpp:status>

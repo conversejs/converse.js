@@ -1,10 +1,43 @@
 import { _converse, api } from '@converse/headless';
 import { getTheme, isDarkTheme } from './utils.js';
 import { registerProtocolHandler } from './protocol-handler.js';
+import { shortcuts } from './shortcuts.js';
 
 const apps = new Map();
 
 const apps_api = {
+    shortcuts: {
+        /**
+         * Registers a keyboard shortcut. It's handled anywhere in Converse
+         * (unless `enable_keyboard_shortcuts` is false) and listed in the
+         * keyboard shortcuts help modal, under its group.
+         *
+         * A shortcut with the same `id` as an existing one replaces it.
+         *
+         * @param {import('./types').KeyboardShortcut} shortcut
+         * @example
+         * api.shortcuts.add({
+         *     id: 'myplugin-hello',
+         *     group: __('My plugin'),
+         *     label: 'Alt+Shift+Y',
+         *     description: __('Say hello'),
+         *     matches: (ev) => ev.altKey && ev.shiftKey && ev.code === 'KeyY',
+         *     handler: () => alert('Hello'),
+         * });
+         */
+        add(shortcut) {
+            shortcuts.set(shortcut.id, shortcut);
+        },
+
+        /**
+         * Returns the registered keyboard shortcuts, in the order they were added.
+         * @returns {import('./types').KeyboardShortcut[]}
+         */
+        get() {
+            return [...shortcuts.values()];
+        },
+    },
+
     protocolHandler: {
         /**
          * Ask the browser to route `xmpp:` links (XEP-0147) to this Converse

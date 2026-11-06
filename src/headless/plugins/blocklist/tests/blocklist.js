@@ -223,3 +223,28 @@ describe('A Chat Message', function () {
         }),
     );
 });
+
+describe('A server without XEP-0191 blocking', function () {
+    it(
+        'still lets a message from someone outside the roster through',
+        mock.initConverse(converse, ['discoInitialized'], {}, async function (_converse) {
+            const { api } = _converse;
+            await mock.waitUntilDiscoConfirmed(_converse, _converse.domain, [{ category: 'server', type: 'IM' }], []);
+            await mock.waitForRoster(_converse, 'current', 0);
+
+            const blocklist = await api.blocklist.get();
+            expect(blocklist.length).toBe(0);
+
+            const stanza = stx`
+                <message xmlns="jabber:client" from="stranger@shakespeare.lit/x" to="${api.connection.get().jid}"
+                        type="chat" id="${u.getUniqueId()}">
+                    <body>Hello</body>
+                </message>`;
+            api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+
+            const chat = await u.waitUntil(() => _converse.state.chatboxes.get('stranger@shakespeare.lit'));
+            await u.waitUntil(() => chat.messages.length);
+            expect(chat.messages.at(0).get('body')).toBe('Hello');
+        }),
+    );
+});

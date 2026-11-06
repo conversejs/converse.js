@@ -91,6 +91,9 @@ version:
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' manifest.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' package.json
 	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' src/headless/package.json
+	npm pkg set 'dependencies.@converse/headless=$(VERSION)'
+	npm pkg set 'dependencies.@converse/headless=^$(VERSION)' --workspace src/daemon
+	npm install --package-lock-only
 	$(SED) -ri 's/--package-version=$(VERSION_FORMAT)/--package-version=$(VERSION)/' Makefile
 
 	$(SED) -i "s/[Uu]nreleased/`date +%Y-%m-%d`/" CHANGES.md
@@ -103,13 +106,15 @@ version:
 
 release-checkout:
 	git clone git@github.com:conversejs/converse.js.git --depth 1 --branch $(BRANCH) release-$(BRANCH)
-	cd release-$(BRANCH) && make dist
+	@# The bundled .d.ts files in dist/ aren't committed, so generate them for the packages.
+	cd release-$(BRANCH) && make dist && npm run types
 
 .PHONY: publish
 publish:
 	make release-checkout
-	cd release-$(BRANCH) && npm pack && npm publish --tag $(NPM_TAG)
+	@# Headless first: converse.js depends on this exact headless version.
 	cd release-$(BRANCH)/src/headless && npm pack && npm publish --tag $(NPM_TAG)
+	cd release-$(BRANCH) && npm pack && npm publish --tag $(NPM_TAG)
 	find ./release-$(BRANCH)/ -name "converse.js-*.tgz" -exec mv {} . \;
 	find ./release-$(BRANCH)/src/headless -name "converse-headless-*.tgz" -exec mv {} . \;
 	rm -rf release-$(BRANCH)
@@ -236,25 +241,31 @@ types:: node_modules
 ########################################################################
 ## Tests
 
-.PHONY: check-git-clean
-check-git-clean:
-	@# `npm run types` rewrites every .d.ts, so the index holds stale stat info
-	@# even for files whose content did not change. Refresh it first, otherwise
-	@# diff-index reports differences that `git status` does not see.
-	@git update-index --refresh -q >/dev/null || true
-	@if ! git diff-index --quiet HEAD -- src/types src/headless/types; then \
-		echo "Error: uncommitted type changes. Please include all type changes in your commit"; \
-		exit 1; \
-	fi
+.PHONY: check-workspace-versions
+check-workspace-versions: node_modules
+	node scripts/check-workspace-versions.mjs
+
+.PHONY: check-headless-package
+check-headless-package: node_modules
+	@# The package ships its bundled .d.ts, which isn't committed
+	npm run types:headless
+	node scripts/check-headless-package.mjs
+
+.PHONY: readme-xeps
+readme-xeps:
+	node scripts/readme-xeps.mjs
+
+.PHONY: check-readme-xeps
+check-readme-xeps:
+	node scripts/readme-xeps.mjs --check
 
 .PHONY: eslint
 eslint: node_modules
 	npm run lint
 
 .PHONY: check
-check: eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
+check: check-workspace-versions check-headless-package check-readme-xeps eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
 	npm run types
-	make check-git-clean
 	npm run test:all
 
 ########################################################################

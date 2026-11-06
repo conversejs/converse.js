@@ -10,7 +10,7 @@ const { Strophe, sizzle } = converse.env;
 
 export default class AdHocCommands extends CustomElement {
    /**
-    * @typedef {import('@converse/headless/types/plugins/adhoc/types').AdHocCommandAction} AdHocCommandAction
+    * @typedef {import('@converse/headless').AdHocCommandAction} AdHocCommandAction
     * @typedef {import('./types').AdHocCommandUIProps} AdHocCommandUIProps
     */
 

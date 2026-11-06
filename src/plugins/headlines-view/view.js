@@ -37,9 +37,6 @@ class HeadlinesFeedView extends DragResizable(BaseChatView) {
      */
     async close(ev) {
         ev?.preventDefault?.();
-        if (location.hash === 'converse/chat?jid=' + this.model.get('jid')) {
-            history.pushState(null, '', window.location.pathname);
-        }
         await this.model.close(ev);
         return this;
     }

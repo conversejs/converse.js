@@ -2,6 +2,7 @@ import { rspack } from '@rspack/core';
 import path from 'path';
 import { merge } from 'webpack-merge';
 import common, { __dirname } from '../rspack/rspack.common.js';
+import IgnoreChunkImportsPlugin from './ignore-chunk-imports.js';
 
 const buildConfig = (_env, argv) => {
     const isDev = argv?.mode === 'development';
@@ -87,6 +88,7 @@ const buildConfig = (_env, argv) => {
                             options: {
                                 sassOptions: {
                                     style: 'expanded',
+                                    quietDeps: true,
                                     silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
                                     includePaths: [
                                         path.resolve(__dirname, '../node_modules/'),
@@ -109,6 +111,7 @@ const buildConfig = (_env, argv) => {
             modules: [path.resolve(__dirname, '../node_modules/'), path.resolve(__dirname, '../src/')],
         },
         plugins: [
+            new IgnoreChunkImportsPlugin(),
             new rspack.IgnorePlugin({
                 resourceRegExp: /curve25519_compiled\.wasm$/,
             }),

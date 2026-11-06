@@ -12,22 +12,19 @@
   "exports": {
     ".": {
       "node": {
-        "types": "./types/index-node.d.ts",
+        "types": "./dist/converse-headless.d.ts",
         "import": "./index-node.js"
       },
       "import": {
-        "types": "./types/index.d.ts",
+        "types": "./dist/converse-headless.d.ts",
         "default": "./dist/converse-headless.js"
       }
     },
     "./node": {
-      "types": "./types/index-node.d.ts",
+      "types": "./dist/converse-headless.d.ts",
       "import": "./index-node.js"
     },
-    "./dist/*": "./dist/*",
-    "./types/*": {
-      "types": "./types/*.d.ts"
-    }
+    "./dist/*": "./dist/*"
   },
   "imports": {
     "#sizzle": {
@@ -36,20 +33,20 @@
     }
   },
   "main": "./dist/converse-headless.js",
-  "types": "./types/index.d.ts",
+  "types": "./dist/converse-headless.d.ts",
   "files": [
     "README.md",
     "dist/",
     "./**/*.html",
     "./**/*.js",
     "./**/*.ts",
-    "./**/*.ts.map",
     "./**/*.json",
     "./**/*.md",
     "./**/*.po",
     "./**/*.pot",
     "./**/*.scss",
-    "./**/*.svg"
+    "./**/*.svg",
+    "!types/**"
   ],
   "keywords": [
     "converse.js",
@@ -69,24 +66,31 @@
     "test": "cd ../.. && vitest run --project headless",
     "test:browser": "cd ../.. && vitest --project headless --browser.headless=false",
     "test:node": "cd ../.. && vitest run --project headless-node",
-    "types": "tsc -p tsconfig.json"
+    "types": "cd ../.. && npm run types:headless"
   },
   "bugs": {
     "url": "https://github.com/conversejs/converse.js/issues"
   },
   "dependencies": {
-    "@converse/log": "^0.0.1",
+    "@converse/log": "^0.1.0",
     "@converse/openpromise": "^0.0.5",
-    "@converse/skeletor": "^4.0.0",
+    "@converse/skeletor": "^4.0.2",
+    "@types/lodash": "^4.17.27",
+    "@types/lodash-es": "^4.17.12",
+    "@types/sdp-transform": "^3.0.0",
+    "@types/sizzle": "^2.3.8",
     "dayjs": "^1.11.8",
     "filesize": "^11.0.13",
-    "he": "^1.2.0",
+    "he": "^2.0.0",
+    "hsluv": "^1.0.1",
     "libomemo.js": "^3.0.0",
+    "lit": "^3.1.4",
     "lodash-es": "^4.17.21",
     "pluggable.js": "3.0.1",
+    "sdp-transform": "^3.0.0",
     "sizzle": "^2.3.5",
     "sprintf-js": "^1.1.2",
-    "strophe.js": "^5.0.0"
+    "strophe.js": "^6.0.0"
   },
   "optionalDependencies": {
     "@xmldom/xmldom": "^0.9.0",

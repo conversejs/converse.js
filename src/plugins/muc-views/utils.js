@@ -1,5 +1,5 @@
 /**
- * @typedef {import('@converse/headless/types/plugins/muc/muc').default} MUC
+ * @typedef {import('@converse/headless').MUC} MUC
  * @typedef {import("shared/avatar/avatar").default} Avatar
  * @typedef {import("shared/autocomplete/suggestion").default} Suggestion
  */
@@ -50,15 +50,6 @@ export function confirmDirectMUCInvitation({ contact, jid, reason }) {
                 reason,
             ),
         );
-    }
-}
-
-/**
- * @param {string} jid
- */
-export function clearHistory(jid) {
-    if (location.hash === `converse/room?jid=${jid}`) {
-        history.pushState(null, '', window.location.pathname);
     }
 }
 

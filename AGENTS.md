@@ -1,8 +1,10 @@
-# Converse.js Agent Guidelines
+# Converse Agent Guidelines
 
-**Converse.js** is an XMPP chat client built with JavaScript and web tech.
-It has a plugin-based architecture, uses JSDoc TypeScript type definitions,
-Bootstrap 5 and Lit UI components.
+**Converse** is an XMPP chat client written in JavaScript, with JSDoc
+TypeScript type definitions. Its plugin-based headless core
+(`@converse/headless`) runs in the browser and in Node.js. Front ends sit on
+top of it: the web UI (Bootstrap 5 and Lit components), with a CLI and later
+a TUI in development.
 
 ## Monorepo
 
@@ -38,8 +40,7 @@ details you cannot read off `package.json`:
 - `npm run serve` serves static files on http://localhost:8080, searching upwards for a
   free port if that one is taken. Pass a port with `npm run serve -- -p 8000`.
 - `npm run serve-tls` is the HTTPS equivalent and needs a certificate and key in `certs/`.
-- `make check` is what CI runs: lint, `npm run types`, a check that the generated types are
-  committed, and all tests. Slow, use sparingly.
+- `make check` is what CI runs: lint, `npm run types` and all tests. Slow, use sparingly.
 
 ### Testing
 
@@ -63,6 +64,9 @@ npx vitest run --project main src/plugins/chatview/tests/messages.js
 > status, presence) live in the **headless** suite and will not be picked up by `npm test`.
 > Use `npm run test:headless` (or `npm run dev:headless` before it) when
 > working in that area. `npm test` only covers the UI plugins under `src/plugins/`.
+
+The daemon and CLI tests run under Node with a mock connection: `npm run test:daemon`. The real-server
+tests need Docker and start Prosody themselves: `npm run test:prosody`.
 
 #### Creating new test files
 
@@ -122,9 +126,16 @@ Formatting is set by `.prettierrc`. Naming conventions:
 - **Logging**: use `log.debug/info/warn/error`, not `console`. Outside `src/headless/`, import `log` from `@converse/headless`, never `@converse/log` directly (that bundles a second logger)
 - **Line endings**: LF
 
-Types are JSDoc annotations in `.js` files. `npm run types` regenerates the `.d.ts` files
-under `src/types/` and `src/headless/types/`, which are committed: include them in the
-commit when a change alters them. Bare imports such as `shared/components/element.js`
+Types are JSDoc annotations in `.js` files. `npm run types` emits per-file `.d.ts` files
+under `src/types/` and `src/headless/types/` (gitignored) and bundles each package's into
+one file with rollup-plugin-dts: `src/headless/dist/converse-headless.d.ts` and
+`dist/converse.d.ts`. `npm run types:check` type-checks without writing anything. The UI
+checks against the headless source; the daemon and CLI check against the headless bundle,
+as consumers see it. The bundle only contains what the entry point exports, so a type that
+UI code or plugins need from headless has to be exported from `src/headless/index.js` (a
+top-level `@typedef` there is enough); import it as `import('@converse/headless').Name`,
+never from a `@converse/headless/types/...` subpath. Likewise, UI types that plugins need
+are exported from `src/index.js`. Bare imports such as `shared/components/element.js`
 resolve through the catch-all `paths` entry of each `tsconfig.json`, not through
 `baseUrl`. Side-effect imports of stylesheets are covered by the ambient `*.scss`
 declaration in `src/shared/styles/scss.d.ts`.
@@ -139,7 +150,7 @@ implemented. Don't explain how; the code and its comments document that.
 
 ### Plugin System
 
-Converse.js uses a **plugin-based architecture** powered by `pluggable.js`:
+Converse uses a **plugin-based architecture** powered by `pluggable.js`:
 
 - **Headless plugins** (`src/headless/plugins/`): Core XMPP logic, no UI
 - **UI plugins** (`src/plugins/`): Visual components that depend on headless
@@ -178,7 +189,18 @@ converse.plugins.add('plugin-name', {
 ### Plugin Design Philosophy
 
 Converse.js mirrors the XMPP philosophy: a minimal core with features implemented as
-plugins corresponding to individual XEPs.
+plugins.
+
+**Plugin boundaries follow features, not XEPs:** a plugin should hold one cohesive feature
+that makes sense on its own. A XEP doesn't automatically get its own plugin, nor does it
+automatically go into an existing one. Ask whether the code could stand alone:
+
+- If it only serves an existing feature (it depends on that plugin, extends its API, and has
+  no other consumer), put it in that plugin, in its own file or subdirectory
+  (e.g. `src/headless/plugins/muc/affiliations/`).
+- If it's a distinct feature that other plugins or UIs could use independently, or that a
+  deployment might want to leave out, give it its own plugin, rather than growing an
+  existing plugin with unrelated functionality.
 
 **Avoiding leaky abstractions:** Shared core code (`src/headless/shared/`, e.g.
 `model-with-messages.js`) must not contain logic specific to a particular plugin.
@@ -310,6 +332,22 @@ export default (model) => html`
     </div>
 `;
 ```
+
+### API design
+
+The integration API follows a design of short methods chained onto namespaces,
+so it reads as `api.<noun>.<verb>()`.
+
+- Use `api.user.get()`, not `api.getUser()`. Group methods by the thing they act on
+  (`api.chats`, `api.rooms`, `api.contacts`, `api.settings`), with short verbs: `get`,
+  `set`, `create`, `open`, `add`, `remove`.
+- Nest a namespace for a sub-resource rather than compounding the method name:
+  `api.disco.entities.get()`, `api.user.status.set()`, `api.microblog.feeds.get()`.
+- A compound name like `getActive` or `browseFeeds` usually means a namespace is missing
+  (`api.apps.active.get()`, `api.microblog.feeds.browse()`). Predicates (`is…`, `can…`)
+  are the usual exception.
+- A plugin adds its methods under its own namespace, not as loose top-level methods on
+  `api`. Exceptions exist, like `api.waitUntil()` and `api.sendIQ()`.
 
 ### API Usage Patterns
 

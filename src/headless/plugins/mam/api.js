@@ -6,6 +6,8 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { RSM } from '../../shared/rsm.js';
 import { TimeoutError } from '../../shared/errors.js';
+import { getPage } from './page.js';
+import { searchArchive } from './utils.js';
 
 const { NS } = Strophe;
 const { dayjs, stx, u } = converse.env;
@@ -210,6 +212,7 @@ export default {
             }
 
             const withJID = !options.is_groupchat && options.mam?.with || null;
+            const fulltext = options.mam?.fulltext || null;
 
             const bare_jid = _converse.session.get('bare_jid');
             const jid = toJID || bare_jid;
@@ -243,13 +246,14 @@ export default {
                         xmlns="jabber:client">
                     <query queryid="${queryid}" xmlns="${NS.MAM}">
                         ${
-                            withJID || startDate || endDate
+                            withJID || startDate || endDate || fulltext
                                 ? stx`
                             <x type="submit" xmlns="${NS.XFORM}">
                                 <field type="hidden" var="FORM_TYPE"><value>${NS.MAM}</value></field>
                                 ${withJID ? stx`<field var="with"><value>${withJID}</value></field>` : ""}
                                 ${startDate ? stx`<field var="start"><value>${startDate}</value></field>` : ""}
                                 ${endDate ? stx`<field var="end"><value>${endDate}</value></field>` : ""}
+                                ${fulltext ? stx`<field var="{${NS.FULLTEXT}}fulltext"><value>${fulltext}</value></field>` : ""}
                             </x>`
                                 : ""
                         }
@@ -305,6 +309,62 @@ export default {
                 rsm_result = new RSM({...options.rsm, xml: set});
             }
             return { messages, rsm: rsm_result, complete };
-        }
+        },
+
+        /**
+         * Searches the archive for messages containing `text`, using the
+         * server's full-text search ([XEP-0431](https://xmpp.org/extensions/xep-0431.html)).
+         *
+         * The matches are held in their conversations, as messages fetched from the
+         * archive are, so that each has the id the rest of the API knows it by.
+         * A match is left out if it has no conversation to be held in: one in a
+         * room we aren't in, or in a chat we don't have, unless `create` is set.
+         *
+         * @method _converse.api.archive.search
+         * @param {string} text - The words to search for, as the server interprets them
+         * @param {Object} [options]
+         * @param {string} [options.with] - The bare JID of a contact or room, to search only that conversation
+         * @param {number} [options.max] - The most matches to return, the newest
+         * @param {boolean} [options.create] - Whether to create the chats that matches are in, if we don't have them
+         * @returns {Promise<{messages: import('../../shared/message.js').default[], complete: boolean}|null>}
+         *  The matches, oldest first. Null if the server can't search its archive, or we aren't connected.
+         * @throws {Error} If the server's answer is an error, or doesn't come.
+         *
+         * @example
+         * const result = await api.archive.search('lunch', { with: 'juliet@capulet.lit' });
+         * if (result === null) {
+         *     // The server has no full-text search, so search the messages held locally instead.
+         * }
+         */
+        search(text, options = {}) {
+            return searchArchive(text, options);
+        },
+
+        /**
+         * A page of a conversation's history, newest last, taken from the
+         * messages held locally and, where those fall short, from the archive.
+         *
+         * A stretch of history that was never fetched (marked by a
+         * {@link MAMPlaceholderMessage}) is fetched when the page reaches it, and
+         * so is the history before the oldest message held. Once the archive has
+         * nothing older, it isn't asked again for that conversation.
+         *
+         * @method _converse.api.archive.page
+         * @param {import('../chat/model').default|import('../muc/muc').default} chat
+         * @param {import('./types').ArchivePageOptions} options
+         * @returns {Promise<import('../../shared/message').default[]>} Oldest first. Fewer than
+         *  `limit` when the history runs out, or the archive can't be reached.
+         *
+         * @example
+         * // The 20 messages before `message`, but none older than a day
+         * const messages = await api.archive.page(chat, {
+         *     limit: 20,
+         *     before: message,
+         *     since: Date.now() - 24 * 60 * 60 * 1000,
+         * });
+         */
+        page(chat, options) {
+            return getPage(chat, options);
+        },
     }
 }

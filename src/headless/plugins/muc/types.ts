@@ -143,3 +143,41 @@ export type OccupantData = {
     occupant_id?: string; // The XEP-0421 unique occupant id
     affiliation?: MUCAffiliation | null; // Undefined when the source (e.g. a message) doesn't state one
 };
+
+// XEP-0433 Extended Channel Search
+
+export type ChannelSearchProtocol = 'xep-0433' | 'muclumbus';
+
+export type ChannelSearchSortKey = 'nusers' | 'address';
+
+// Why we're not querying a search service. The `code` of a ChannelSearchRefusedError.
+export type ChannelSearchRefusal = 'rate-limited' | 'unresponsive' | 'unsupported';
+
+export type ChannelSearchBackOff = {
+    reason: 'rate-limited' | 'unresponsive';
+    attempts: number; // How often in a row the service rate-limited us or didn't respond
+    until: number; // When (in ms since the epoch) we may query the service again
+};
+
+export type ChannelSearchOptions = {
+    max?: number; // How many results to ask for in one page
+    after?: string; // The `last` cursor of the previous page, to fetch the next one
+    sort?: ChannelSearchSortKey; // Busiest channels first, or alphabetical by address
+    service?: string; // JID of the search service, defaults to the muc_search_service setting
+};
+
+export type ChannelSearchItem = {
+    jid: string; // The channel's address
+    name?: string;
+    description?: string;
+    language?: string; // The channel's primary language, as an xml:lang code
+    nusers?: number; // Number of occupants, possibly stale
+    is_open?: boolean; // Whether the channel can be joined without extra credentials
+    anonymity_mode?: string;
+    service_type?: string; // e.g. "xep-0045"
+};
+
+export type ChannelSearchResult = {
+    items: ChannelSearchItem[];
+    last?: string; // Pass as `after` to fetch the next page. An empty page means there are no more.
+};

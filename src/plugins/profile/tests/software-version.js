@@ -37,4 +37,18 @@ describe('The profile modal', function () {
             expect(el.textContent.replace(/\s+/g, ' ').trim()).toBe('Prosody 0.12.0 (Debian GNU/Linux)');
         })
     );
+
+    it(
+        'offers our own address for the clipboard',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.openControlBox(_converse);
+            const cbview = _converse.chatboxviews.get('controlbox');
+            cbview.querySelector('.change-status').click();
+
+            const modal = _converse.api.modal.get('converse-profile-modal');
+            await u.waitUntil(() => u.isVisible(modal), 1000);
+            const button = await u.waitUntil(() => modal.querySelector('.profile-property converse-copy-button'));
+            expect(button.text).toBe('romeo@montague.lit');
+        })
+    );
 });

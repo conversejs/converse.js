@@ -5,8 +5,8 @@
  */
 
 /**
- * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
- * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ * @typedef {import('@converse/headless').BaseMessage} BaseMessage
+ * @typedef {import('@converse/headless').ChatBoxOrMUC} ChatBoxOrMUC
  * @typedef {import('lit').TemplateResult} TemplateResult
  */
 import { CustomElement } from 'shared/components/element.js';

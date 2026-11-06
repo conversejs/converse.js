@@ -23,7 +23,7 @@ export class AutoComplete extends EventEmitter(Object) {
         this.is_opened = false;
         this.match_current_word = false; // Match only the current word, otherwise all input is matched
         this.suffix = ' '; // String to append after the autocompleted value
-        this.sort = typeof config.sort === 'boolean' && config.sort === false ? null : SORT_BY_QUERY_POSITION;
+        this.sort = SORT_BY_QUERY_POSITION; // Replaced by config.sort below, false disables sorting
         this.filter = FILTER_CONTAINS;
         /** @type {string[]} */ this.ac_triggers = []; // Array of keys (`ev.key`) values that will trigger auto-complete
         /** @type {string[]} */ this.include_triggers = []; // Array of trigger keys which should be included in the returned value

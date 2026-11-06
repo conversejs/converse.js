@@ -69,6 +69,24 @@ describe('Converse', function () {
         });
     });
 
+    describe('The "user.logout" method', function () {
+        it(
+            'sends unavailable presence before closing the stream',
+            mock.initConverse(converse, ['discoInitialized', 'statusInitialized'], {}, async (_converse) => {
+                const { stx, u } = _converse.env;
+                const connection = _converse.api.connection.get();
+                // Let the session finish coming up, so that logging out
+                // doesn't race its initialization.
+                await mock.waitForRoster(_converse, 'current', 0);
+                await u.waitUntil(() => connection.sent_stanzas.find((s) => s.nodeName === 'presence'));
+                await _converse.api.user.logout();
+                expect(connection.sent_stanzas.pop()).toEqualStanza(
+                    stx`<presence xmlns="jabber:client" type="unavailable"/>`,
+                );
+            }),
+        );
+    });
+
     describe('The "tokens" API', function () {
         it(
             'has a method for retrieving the next RID',

@@ -1,6 +1,6 @@
 /**
- * @typedef {import('@converse/headless/types/shared/message').default} BaseMessage
- * @typedef {import('@converse/headless/types/shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ * @typedef {import('@converse/headless').BaseMessage} BaseMessage
+ * @typedef {import('@converse/headless').ChatBoxOrMUC} ChatBoxOrMUC
  */
 import { api, u } from '@converse/headless';
 import { html, nothing } from 'lit';

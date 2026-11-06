@@ -3,14 +3,14 @@
  * @description XEP-0045 Multi-User Chat Views
  * @license Mozilla Public License (MPLv2)
  */
-import { api, converse, constants } from '@converse/headless';
+import { api, converse } from '@converse/headless';
 import './affiliation-form.js';
 import './role-form.js';
 import MUCView from './muc.js';
-import { clearHistory, confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
+import { clearRoomsCache } from './search.js';
+import { confirmDirectMUCInvitation, parseMessageForMUCCommands } from './utils.js';
 
 const { Strophe } = converse.env;
-const { CHATROOMS_TYPE } = constants;
 
 import './styles/index.scss';
 
@@ -39,7 +39,6 @@ converse.plugins.add('converse-muc-views', {
             'muc_mention_autocomplete_show_avatar': true,
             'muc_roomid_policy': null,
             'muc_roomid_policy_hint': null,
-            'muc_search_service': 'api@search.jabber.network',
             'roomconfig_whitelist': [],
             'show_retraction_warning': true,
         });
@@ -67,21 +66,7 @@ converse.plugins.add('converse-muc-views', {
             });
         }
 
-        api.listen.on('clearsession', () => {
-            const view = _converse.chatboxviews.get('controlbox');
-            if (view && view.roomspanel) {
-                view.roomspanel.model.destroy();
-                view.roomspanel.remove();
-                delete view.roomspanel;
-            }
-        });
-
-        api.listen.on('chatBoxClosed', (model) => {
-            if (model.get('type') === CHATROOMS_TYPE) {
-                clearHistory(model.get('jid'));
-            }
-        });
-
+        api.listen.on('clearSession', clearRoomsCache);
         api.listen.on('parseMessageForCommands', parseMessageForMUCCommands);
         api.listen.on('confirmDirectMUCInvitation', confirmDirectMUCInvitation);
     },

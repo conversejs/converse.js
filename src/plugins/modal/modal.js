@@ -1,6 +1,5 @@
 import { html } from 'lit';
 import Modal from 'bootstrap/js/src/modal.js';
-import { getOpenPromise } from '@converse/openpromise';
 import { CustomElement } from 'shared/components/element.js';
 import { api, u, Model, log } from '@converse/headless';
 import { modal_close_button } from './templates/buttons.js';
@@ -41,7 +40,7 @@ class BaseModal extends CustomElement {
             }
         };
 
-        this.initialized = getOpenPromise();
+        this.initialized = u.getOpenPromise();
 
         // Allow properties to be set via passed in options
         Object.assign(this, options);

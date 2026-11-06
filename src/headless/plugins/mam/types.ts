@@ -1,10 +1,11 @@
-import { RSMQueryOptions } from 'shared/types';
+import { RSMQueryOptions } from '../../shared/types';
 import { RSM } from '../../shared/rsm';
 import BaseMessage from '../../shared/message';
 
 export type MAMQueryOptions = {
     end?: string; // A date string in ISO-8601 format, before which messages should be returned.
     start?: string; // A date string in ISO-8601 format, after which messages should be returned.
+    fulltext?: string; // Text to match in the messages, by the server's full-text search (XEP-0431).
     with?: string; // A JID against which to match messages, according to either the `to` or `from` attribute.
     // An item in a MUC archive matches if the publisher of the item matches the JID.
     // If `with` is omitted, all messages that match the rest of the query will be returned, regardless of to/from
@@ -27,4 +28,13 @@ export type MAMQueryResult = {
     // to get the RSM query parameters for the next or previous page in the result set.
     complete?: boolean;
     error?: Error;
+};
+
+// The options that can be passed in to the api.archive.page method
+export type ArchivePageOptions = {
+    limit: number; // How many messages the page has, at most
+    before?: BaseMessage; // A message held in the conversation: the page ends before it
+    since?: number; // Milliseconds since the epoch: the page has no messages older than this
+    // Which messages count towards the page. Placeholders for unfetched history never do.
+    filter?: (message: BaseMessage) => boolean;
 };

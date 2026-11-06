@@ -7,7 +7,7 @@ const { u } = converse.env;
 
 /**
  * @param {import('../entity-time-alert').default} el
- * @param {import('@converse/headless/types/plugins/time/types').ContactTime} contact_time
+ * @param {import('@converse/headless').ContactTime} contact_time
  */
 function tplBar(el, contact_time) {
     const display_name = el.getDisplayName();
@@ -36,7 +36,7 @@ function tplBar(el, contact_time) {
 
 /**
  * @param {import('../entity-time-alert').default} el
- * @param {import('@converse/headless/types/plugins/time/types').ContactTime|null} contact_time -
+ * @param {import('@converse/headless').ContactTime|null} contact_time -
  *  The contact's time if the warning is due, otherwise null.
  */
 export default (el, contact_time) => {

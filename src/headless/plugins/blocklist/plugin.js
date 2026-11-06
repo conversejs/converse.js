@@ -7,6 +7,7 @@ import _converse from "../../shared/_converse.js";
 import api from "../../shared/api/index.js";
 import converse from "../../shared/api/public.js";
 import log from "@converse/log";
+import { Collection } from "@converse/skeletor";
 import Blocklist from "./collection.js";
 import BlockedEntity from "./model.js";
 import blocklist_api from "./api.js";
@@ -112,6 +113,10 @@ converse.plugins.add("converse-blocklist", {
             const domain = _converse.session.get("domain");
             if (await api.disco.supports(Strophe.NS.BLOCKING, domain)) {
                 _converse.state.blocklist = new _converse.exports.Blocklist();
+            } else {
+                // Nothing can be blocked, but whoever waits to check the
+                // blocklist (e.g. before opening a chat) mustn't wait forever.
+                api.trigger("blocklistInitialized", new Collection());
             }
         });
     },

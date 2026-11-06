@@ -7,6 +7,7 @@ const { OPENED } = constants;
  * @extends {Model<import("./types").RoomsListAttrs>}
  */
 class RoomsListModel extends Model {
+    /** @returns {import("./types").RoomsListAttrs} */
     defaults() {
         return {
             muc_domain: api.settings.get('muc_domain'),

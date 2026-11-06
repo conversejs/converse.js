@@ -74,6 +74,32 @@ describe('The app-switcher URL routing', function () {
     );
 
     it(
+        "doesn't switch apps for a legacy `?jid=` link before it is handled",
+        mock.initConverse(
+            converse,
+            [],
+            { enable_url_routing: true, view_mode: 'fullscreen' },
+            async function (_converse) {
+                const { api } = _converse;
+                await mock.waitForRoster(_converse, 'current', 1);
+                clearHash();
+                api.apps.switch('social');
+                await u.waitUntil(() => api.apps.getActive().name === 'social');
+
+                // A domain-only JID is not one the protocol handler acts on, so
+                // nothing opens, and leaving Social for it would strand the user.
+                location.hash = '#converse/chat?jid=montague.lit';
+                await new Promise((resolve) => setTimeout(resolve, 50));
+                expect(api.apps.getActive().name).toBe('social');
+
+                clearHash();
+                api.apps.switch('chat');
+                await u.waitUntil(() => document.querySelector('converse-app-chat'));
+            },
+        ),
+    );
+
+    it(
         'stays dormant when URL routing is disabled',
         mock.initConverse(converse, [], { view_mode: 'fullscreen' }, function (_converse) {
             const { api } = _converse;

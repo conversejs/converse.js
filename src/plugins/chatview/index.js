@@ -8,7 +8,6 @@ import 'shared/chat/toolbar.js';
 import ChatView from './chat.js';
 import { _converse, api, converse } from '@converse/headless';
 import { html } from 'lit';
-import { clearHistory } from './utils.js';
 import { getAttachmentMenuItems } from './attachments.js';
 import tplComposerPanel from 'shared/chat/templates/composer-panel.js';
 import 'shared/chat/reply-preview.js';
@@ -42,6 +41,7 @@ converse.plugins.add('converse-chatview', {
                 'allowed_image_domains': null,
                 'allowed_video_domains': null,
                 'auto_focus': true,
+                'confirm_external_links': true,
                 'debounced_content_rendering': true,
                 'filter_url_query_params': null,
                 'image_urls_regex': null,
@@ -73,7 +73,6 @@ converse.plugins.add('converse-chatview', {
         Object.assign(_converse.exports, { tplComposerPanel });
 
         api.listen.on('connected', () => api.disco.own.features.add(Strophe.NS.SPOILER));
-        api.listen.on('chatBoxClosed', (model) => clearHistory(model.get('jid')));
         api.listen.on('getAttachmentMenuItems', getAttachmentMenuItems);
 
         api.listen.on('getComposerPanels', (container, panels) => {

@@ -37,8 +37,10 @@ export default (el) => {
         action="#"
         @submit=${(/** @type {SubmitEvent} */ ev) => el.onConfirmation(ev)}
     >
-        <div class="mb-3 lh-base"><strong>${first_msg}</strong></div>
-        <div class="mb-3">${subsequent_msgs?.map(/** @param {string} msg */ (msg) => html`<p>${msg}</p>`)}</div>
+        <div class="mb-3 lh-base text-break"><strong>${first_msg}</strong></div>
+        <div class="mb-3 text-break">
+            ${subsequent_msgs?.map(/** @param {string} msg */ (msg) => html`<p>${msg}</p>`)}
+        </div>
         ${el.state.get('fields')?.map(/** @param {import('../types').Field} f */ (f) => tplField(f))}
         <div class="d-flex justify-content-end">
             <button type="submit" class="btn btn-primary me-2">${__('Confirm')}</button>

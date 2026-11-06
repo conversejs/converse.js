@@ -6,6 +6,7 @@ import { html } from 'lit';
 import { api, converse } from '@converse/headless';
 import { addHashtagAnnotations } from './texture.js';
 import { requestOpenPost } from './view.js';
+import { addShortcuts } from './shortcuts.js';
 import 'plugins/rootview/index.js';
 import './modals/discover.js';
 
@@ -33,5 +34,10 @@ converse.plugins.add('converse-app-social', {
                 ></converse-app-social>`;
             },
         });
+
+        // Like the app switcher, the Social app is only shown in fullscreen
+        if (api.settings.get('view_mode') === 'fullscreen' && api.settings.get('apps')?.includes('social')) {
+            addShortcuts();
+        }
     },
 });

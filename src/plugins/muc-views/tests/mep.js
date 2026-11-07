@@ -262,7 +262,7 @@ describe('A XEP-0316 MEP notification', function () {
             await view.model.handleMessageStanza(retraction);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('moderated')).toBe('retracted');
-            expect(view.model.messages.at(0).get('moderation_reason')).toBeUndefined;
+            expect(view.model.messages.at(0).get('moderation_reason')).toBeUndefined();
             expect(view.model.messages.at(0).get('is_ephemeral')).toBe(false);
             expect(view.model.messages.at(0).get('editable')).toBe(false);
             const msg_el = view.querySelector('.chat-msg--retracted .chat-info__message .retraction');

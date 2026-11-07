@@ -278,7 +278,7 @@ export default defineConfig([{
         "valid-jsdoc": "off",
         "vars-on-top": "off",
         "wrap-iife": ["error", "any"],
-        "wrap-regex": "error",
+        "wrap-regex": "off",
         "yield-star-spacing": "error",
         yoda: "off",
     },

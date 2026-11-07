@@ -114,7 +114,8 @@ Two caveats, independent of style:
 
 ## Code Style and Conventions
 
-Formatting is set by `.prettierrc`. Naming conventions:
+Formatting is set by `.prettierrc` and enforced in CI: run `npm run format` before
+committing (`npm run format:check` only reports). Naming conventions:
 
 - **Files**: `kebab-case.js`
 - **Variables**: `snake_case` (`camelCase` for variables referring to functions)

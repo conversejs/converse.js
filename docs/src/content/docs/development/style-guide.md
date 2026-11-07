@@ -6,11 +6,15 @@ description: Coding conventions and style guide for Converse development.
 Converse uses [Prettier](https://prettier.io/) to enforce a consistent code style
 across the codebase. The configuration lives in `.prettierrc` at the project root.
 
-Run Prettier on your changes before committing:
+Format the codebase before committing:
 
 ```bash
-npx prettier --write src/path/to/file.js
+npm run format
 ```
+
+CI runs `npm run format:check` (part of `make check`) and fails on unformatted
+files. Paths listed in `.prettierignore` (Markdown, HTML pages, the docs site and
+generated files) are not formatted.
 
 Many of the conventions below are enforced by Prettier automatically. Where Prettier
 doesn't cover something (naming conventions, architectural patterns), the rules below
@@ -26,7 +30,6 @@ Our Prettier settings:
 | `useTabs` | `false` (spaces, not tabs) |
 | `singleQuote` | `true` |
 | `printWidth` | 120 |
-| `spaceBeforeFunctionParen` | `true` |
 | `bracketSpacing` | `true` |
 
 ## Naming conventions
@@ -36,7 +39,7 @@ Our Prettier settings:
 We use `snake_case` for variable names and `camelCase` for function names.
 
 ```javascript
-function thisIsAFunction () {
+function thisIsAFunction() {
     let this_is_a_variable;
     ...
 }
@@ -54,7 +57,7 @@ Global identifiers that denote constant values should be written in
 ```javascript
 const SECONDS_IN_HOUR = 3600;
 
-function update () {
+function update() {
     const timeout = 20;
     let seconds_since_message = 0;
 }

@@ -1,0 +1,25 @@
+# Prettier also skips everything in .gitignore.
+
+# Lockfiles and generated data
+package-lock.json
+src/headless/plugins/emoji/emoji.json
+
+# Prose: Markdown is written by hand and the docs use Starlight syntax
+*.md
+
+# Hand-written demo and website pages
+*.html
+
+# The docs site is a separate package with its own tooling
+docs/
+
+# Config files where a consistent style adds little
+.github/
+composer.json
+eslint.config.mjs
+
+# Local scratch files that aren't part of the repo
+.scratch/
+.vitest/
+reports/
+research_notes/

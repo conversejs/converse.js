@@ -22,9 +22,8 @@ export function setEmojiJSONLoader(loader) {
 async function loadEmojiJSON() {
     if (_json_loader) return _json_loader();
 
-    const path = api.settings.get('assets_path');
-    const response = await fetch(`${path}/emoji.json`);
-    if (!response.ok) throw new Error('Failed to fetch emoji.json');
+    const response = await fetch(`${api.settings.get('assets_path')}/emoji.json`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     return response.json();
 }
@@ -48,10 +47,12 @@ const emojis = {
                 json = await loadEmojiJSON();
             } catch (e) {
                 log.error(
-                    `Could not load emoji.json from "${api.settings.get('assets_path')}". ` +
-                        'Set assets_path to the directory that holds the Converse assets.',
+                    _json_loader
+                        ? 'Could not load emoji.json.'
+                        : `Could not load ${api.settings.get('assets_path')}/emoji.json. ` +
+                              'Set assets_path to the directory that holds the Converse assets.',
+                    e,
                 );
-                log.error(e);
                 json = {};
             }
 

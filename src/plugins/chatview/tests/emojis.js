@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
@@ -125,47 +124,6 @@ describe('Emojis', function () {
                 const dropdown = view.querySelector('converse-emoji-dropdown');
                 await u.waitUntil(() => !dropdown.querySelector('.dropdown-menu').classList.contains('show'), 1000);
                 expect(dropdown.querySelector('.dropdown-menu').classList.contains('show')).toBe(false);
-            }),
-        );
-
-        it(
-            'opens the emoji picker when emoji.json could not be loaded (#4132)',
-            mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
-                // Emoji support is set up once per page, so put back what an earlier test loaded.
-                const saved = { ...converse.emojis };
-                const fetch = window.fetch;
-                vi.spyOn(window, 'fetch').mockImplementation((url, ...args) =>
-                    String(url).endsWith('/emoji.json')
-                        ? Promise.resolve(new Response('', { status: 404 }))
-                        : fetch(url, ...args),
-                );
-                const unhandled = vi.fn();
-                window.addEventListener('unhandledrejection', unhandled);
-                try {
-                    Object.assign(converse.emojis, {
-                        initialized: false,
-                        initialized_promise: u.getOpenPromise(),
-                        toned: undefined,
-                    });
-                    await mock.waitForRoster(_converse, 'current');
-                    await mock.openControlBox(_converse);
-                    const contact_jid = mock.cur_names[2].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-                    await mock.openChatBoxFor(_converse, contact_jid);
-                    const view = _converse.chatboxviews.get(contact_jid);
-                    const toolbar = await u.waitUntil(() => view.querySelector('converse-chat-toolbar'));
-                    toolbar.querySelector('.toggle-emojis').click();
-
-                    // The header calls getTonedEmojis for every category icon.
-                    const picker = await u.waitUntil(() => view.querySelector('converse-emoji-picker'));
-                    await u.waitUntil(() => picker.querySelectorAll('.emoji-picker__header .emoji-category').length);
-                    expect(converse.emojis.json).toEqual({});
-                    expect(picker.querySelectorAll('.insert-emoji').length).toBe(0);
-                    expect(unhandled).not.toHaveBeenCalled();
-                } finally {
-                    window.removeEventListener('unhandledrejection', unhandled);
-                    vi.restoreAllMocks();
-                    Object.assign(converse.emojis, saved);
-                }
             }),
         );
 

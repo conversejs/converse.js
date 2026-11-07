@@ -1204,8 +1204,6 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             const entity_jid = 'muc.montague.lit';
             const { IQ_stanzas } = _converse.api.connection.get();
 
-            const jid = _converse.session.get('jid');
-
             const modal = await api.modal.show('converse-user-settings-modal');
             await u.waitUntil(() => u.isVisible(modal));
             modal.querySelector('#commands-tab').click();
@@ -1348,9 +1346,7 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                 ),
             );
 
-            const dummy = await u.waitUntil(() =>
-                adhoc_form.querySelector('form form textarea[name="onlineuserjids"]'),
-            );
+            await u.waitUntil(() => adhoc_form.querySelector('form form textarea[name="onlineuserjids"]'));
 
             const form = await u.waitUntil(() => adhoc_form.querySelector('form form'));
             expect(form).toBeDefined();

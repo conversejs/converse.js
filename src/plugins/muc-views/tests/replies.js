@@ -1,4 +1,4 @@
-﻿import mock from '../../../shared/tests/mock.js';
+import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
 const { u, stx } = converse.env;

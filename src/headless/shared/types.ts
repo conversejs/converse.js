@@ -53,7 +53,7 @@ export type RSMResult = {
 // -----------------
 
 // Represents the class that will be extended via a mixin.
-export type Constructor<T = {}> = new (...args: any[]) => T;
+export type Constructor<T = object> = new (...args: any[]) => T;
 
 export type ModelExtender = Constructor<Model>;
 
@@ -143,7 +143,7 @@ export interface MessagesAware {
     getDuplicateMessage(attrs: object): Promise<BaseMessage | undefined>;
     isCorrectionOf(attrs: object, message: BaseMessage): boolean;
     getOriginIdQueryAttrs(attrs: object): { origin_id: any; from: any };
-    getStanzaIdQueryAttrs(attrs: object): {}[];
+    getStanzaIdQueryAttrs(attrs: object): object[];
     getMessageBodyQueryAttrs(attrs: object): { from: any; msgid: any };
     sendMarkerForMessage(msg: BaseMessage, type?: MessageMarkerType, force?: boolean): Promise<void>;
     handleUnreadMessage(message: BaseMessage): void;

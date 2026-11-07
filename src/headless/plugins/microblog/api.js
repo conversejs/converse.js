@@ -301,6 +301,8 @@ export default {
             // dead server frees its worker in seconds, not the default 60s.
             const queue = [...targets];
             const worker = async () => {
+                // Other workers shift from `queue`, and `signal` aborts from outside.
+                // oxlint-disable-next-line no-unmodified-loop-condition
                 while (queue.length && !signal?.aborted) {
                     const jid = queue.shift();
                     const verdict = await probeFeed(jid);
@@ -492,6 +494,8 @@ export default {
             //    up the rest, and an aborted browse stops launching further probes.
             const queue = Array.from({ length: total }, (_, i) => i);
             const worker = async () => {
+                // Other workers shift from `queue`, and `signal` aborts from outside.
+                // oxlint-disable-next-line no-unmodified-loop-condition
                 while (queue.length && !signal?.aborted) {
                     const idx = queue.shift();
                     const meta = await probeNodeMeta(jid, feeds[idx].node);

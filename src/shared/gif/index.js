@@ -56,7 +56,7 @@ export default class ConverseGif extends AnimationPlayer {
             this.lsd = gif.lsd;
             this.setSizes(this.options.width ?? this.lsd.width, this.options.height ?? this.lsd.height);
             this.frames = decompressFrames(gif, true);
-        } catch (err) {
+        } catch {
             this.showError();
         }
         this.initPlayer();

@@ -2,10 +2,6 @@ import { LitElement } from 'lit';
 import { EventEmitter } from '@converse/headless';
 
 export class CustomElement extends EventEmitter(LitElement) {
-    constructor() {
-        super();
-    }
-
     createRenderRoot() {
         // Render without the shadow DOM
         return this;

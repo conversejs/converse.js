@@ -232,7 +232,7 @@ describe('An OMEMO encrypted MUC message', function () {
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             // Wait for Converse to fetch newguy's device list
-            let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
+            const iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
             expect(iq_stanza).toEqualStanza(stx`
             <iq from="romeo@montague.lit" id="${iq_stanza.getAttribute('id')}" to="${contact_jid}" type="get" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
@@ -269,7 +269,6 @@ describe('An OMEMO encrypted MUC message', function () {
 
             const original_text = 'This message will be encrypted';
             await mock.setComposerText(view, original_text);
-            const message_form = mock.getMessageForm(view);
             await mock.pressComposerKey(view, 'Enter');
 
             await u.waitUntil(() =>

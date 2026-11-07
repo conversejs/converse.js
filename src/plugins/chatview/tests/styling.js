@@ -211,7 +211,7 @@ describe('An incoming chat Message', function () {
             let valid_url = false;
             try {
                 valid_url = !!new URL('https://conversejs.org~now');
-            } catch (e) {
+            } catch {
                 valid_url = false;
             }
 

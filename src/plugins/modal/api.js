@@ -100,7 +100,7 @@ const modal_api = {
         let result;
         try {
             result = await confirm.confirmation;
-        } catch (e) {
+        } catch {
             result = false;
         }
         confirm.remove();
@@ -136,7 +136,7 @@ const modal_api = {
         let result;
         try {
             result = (await prompt.confirmation).pop()?.value;
-        } catch (e) {
+        } catch {
             result = false;
         }
         prompt.remove();

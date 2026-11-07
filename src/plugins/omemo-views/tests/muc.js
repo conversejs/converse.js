@@ -44,7 +44,7 @@ describe('The OMEMO module', function () {
             _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 
             // Wait for Converse to fetch newguy's device list
-            let iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
+            const iq_stanza = await u.waitUntil(() => mock.deviceListFetched(_converse, contact_jid));
             expect(iq_stanza).toEqualStanza(stx`
             <iq from="romeo@montague.lit" id="${iq_stanza.getAttribute('id')}" to="${contact_jid}" type="get" xmlns="jabber:client">
                 <pubsub xmlns="http://jabber.org/protocol/pubsub">
@@ -105,7 +105,10 @@ describe('The OMEMO module', function () {
             );
 
             const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-            let sent_stanza = await u.waitUntil(() => sent_stanzas.filter((s) => sizzle('body', s).length).pop(), 1000);
+            const sent_stanza = await u.waitUntil(
+                () => sent_stanzas.filter((s) => sizzle('body', s).length).pop(),
+                1000,
+            );
 
             expect(sent_stanza).toEqualStanza(stx`
             <message from="${own_jid}"
@@ -175,8 +178,6 @@ describe('The OMEMO module', function () {
                 'muc_unmoderated',
                 'muc_nonanonymous',
             ];
-            const { api } = _converse;
-            const { jid: own_jid } = api.connection.get();
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);
@@ -280,8 +281,6 @@ describe('The OMEMO module', function () {
                 'muc_unmoderated',
                 'muc_nonanonymous',
             ];
-            const { api } = _converse;
-            const { jid: own_jid } = api.connection.get();
             const muc_jid = 'lounge@montague.lit';
             await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', features);
             const view = _converse.chatboxviews.get(muc_jid);

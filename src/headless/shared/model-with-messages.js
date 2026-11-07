@@ -489,7 +489,7 @@ export default function ModelWithMessages(BaseModel) {
 
                 message.save({
                     ...['body', 'is_only_emojis', 'media_urls', 'references', 'is_encrypted'].reduce((obj, k) => {
-                        if (attrs.hasOwnProperty(k)) obj[k] = attrs[k];
+                        if (Object.hasOwn(attrs, k)) obj[k] = attrs[k];
                         return obj;
                     }, {}),
                     ...{

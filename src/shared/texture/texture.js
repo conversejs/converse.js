@@ -254,14 +254,14 @@ export class Texture extends String {
 
         let i = 0;
         while (i < this.length) {
-            if (mention_ranges.filter((r) => r.includes(i)).length) {
-                // eslint-disable-line no-loop-func
+            const pos = i;
+            if (mention_ranges.some((r) => r.includes(pos))) {
                 // Don't treat potential directives if they fall within a
                 // declared XEP-0372 reference
                 i++;
                 continue;
             }
-            if (url_ranges.some(([start, end]) => i >= start && i < end)) {
+            if (url_ranges.some(([start, end]) => pos >= start && pos < end)) {
                 // Don't treat potential directives if they fall within a URL
                 i++;
                 continue;

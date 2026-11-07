@@ -55,7 +55,7 @@ export function checkFileTypes(types, url) {
     try {
         parsed_url = getURL(url);
     } catch (error) {
-        throw new Error(`checkFileTypes: could not parse url ${url}`);
+        throw new Error(`checkFileTypes: could not parse url ${url}`, { cause: error });
     }
     const filename = parsed_url.pathname.split('/').pop().toLowerCase();
     return !!types.filter((ext) => filename.endsWith(ext)).length;
@@ -155,7 +155,7 @@ export function withinString(string, callback, options) {
         const match = _start.exec(string);
         if (!match) break;
 
-        let start = match.index;
+        const start = match.index;
         if (options.ignoreHtml) {
             const attributeOpen = string.slice(Math.max(start - 3, 0), start);
             if (attributeOpen && _attributeOpen.test(attributeOpen)) {

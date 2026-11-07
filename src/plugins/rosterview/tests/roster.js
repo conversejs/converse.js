@@ -185,7 +185,7 @@ describe('The Contacts Roster', function () {
         'also contains contacts with subscription of none',
         mock.initConverse(converse, [], {}, async function (_converse) {
             const { IQ_stanzas } = _converse.api.connection.get();
-            let stanza = await u.waitUntil(() =>
+            const stanza = await u.waitUntil(() =>
                 IQ_stanzas.filter((iq) => sizzle('iq query[xmlns="jabber:iq:roster"]', iq).length).pop(),
             );
 

@@ -1,6 +1,6 @@
 import { PersistentStorage, IEventEmitter } from '@converse/skeletor';
 
-export type CommonUtils = Record<string, Function>;
+export type CommonUtils = Record<string, (...args: any[]) => any>;
 
 type PluginUtilsKeys = 'muc' | 'mam' | 'omemo' | 'roster' | 'reactions' | 'bookmarks' | 'emojis' | 'jingle';
 

@@ -38,10 +38,10 @@
                 });
                 this.parentElement.classList.add('active');
 
-                let hash = this.getAttribute('href');
-                let endLocation = document.querySelector(hash).offsetTop;
-                let startLocation = window.pageYOffset;
-                let distance = endLocation - startLocation;
+                const hash = this.getAttribute('href');
+                const endLocation = document.querySelector(hash).offsetTop;
+                const startLocation = window.pageYOffset;
+                const distance = endLocation - startLocation;
                 let start, percentage, position;
                 let timeLapsed = 0;
 
@@ -55,7 +55,7 @@
                     position = startLocation + distance * percentage * percentage;
                     window.scrollTo(0, Math.floor(position));
 
-                    let currentLocation = window.pageYOffset;
+                    const currentLocation = window.pageYOffset;
                     if (
                         position == endLocation ||
                         currentLocation == endLocation ||

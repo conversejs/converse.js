@@ -1,4 +1,4 @@
-﻿import mock from '../../../shared/tests/mock.js';
+import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
 const { u, stx } = converse.env;
@@ -241,7 +241,7 @@ describe('XEP-0461 Message Replies', function () {
                 await u.waitUntil(() => view.querySelector('.composer-panel--context'));
 
                 // Send a reply
-                let sent_stanzas = [];
+                const sent_stanzas = [];
                 const send = api.connection.get().send;
                 spyOn(api.connection.get(), 'send').and.callFake((stanza) => {
                     sent_stanzas.push(stanza);

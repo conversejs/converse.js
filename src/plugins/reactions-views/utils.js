@@ -79,8 +79,8 @@ export async function sendReaction(message, emoji) {
 export function getEmojiKeyedReactions(reactions) {
     /** @type {Record<string, string[]>} */
     const emoji_map = {};
-    for (const jid in reactions) {
-        for (const emoji of reactions[jid]) {
+    for (const [jid, emojis] of Object.entries(reactions)) {
+        for (const emoji of emojis) {
             if (!emoji_map[emoji]) {
                 emoji_map[emoji] = [];
             }

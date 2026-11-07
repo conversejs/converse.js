@@ -190,7 +190,7 @@ describe('The User Details Modal', function () {
             spyOn(view.model.contact, 'sendRosterRemoveStanza').and.callFake(() => {
                 throw new Error('foo');
             });
-            let remove_contact_button = await u.waitUntil(() => modal.querySelector('button.remove-contact'));
+            const remove_contact_button = await u.waitUntil(() => modal.querySelector('button.remove-contact'));
             expect(u.isVisible(remove_contact_button)).toBeTruthy();
 
             remove_contact_button.click();

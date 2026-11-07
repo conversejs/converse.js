@@ -219,7 +219,7 @@ describe('A spoiler message', function () {
                 spyOn(api.connection.get(), 'send');
 
                 await u.waitUntil(() => view.querySelector('.toggle-compose-spoiler'));
-                let spoiler_toggle = view.querySelector('.toggle-compose-spoiler');
+                const spoiler_toggle = view.querySelector('.toggle-compose-spoiler');
                 spoiler_toggle.click();
 
                 let hint_input = view.querySelector('.spoiler-hint');

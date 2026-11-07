@@ -10,7 +10,7 @@ so a small compatibility shim (`vitest/setup.jasmine-shim.js`) maps the Jasmine 
 (`spyOn`, `jasmine.*`, the `toEqualStanza` matcher, `fdescribe`/`fit`, ...) onto Vitest
 primitives — the spec files themselves are unchanged.
 
-In addition, we use [ESLint](https://eslint.org/) to run a static analysis (aka
+In addition, we use [oxlint](https://oxc.rs/docs/guide/usage/linter) to run a static analysis (aka
 linting) of the source files and report errors.
 
 Whenever a commit is pushed to the Converse GitHub repo, all linting checks and

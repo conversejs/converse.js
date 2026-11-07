@@ -1,0 +1,235 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "node"],
+  "categories": {
+    "correctness": "off"
+  },
+  "env": {
+    "builtin": true,
+    "es2022": true,
+    "browser": true,
+    "jasmine": true
+  },
+  "globals": {
+    "sinon": "readonly"
+  },
+  "ignorePatterns": ["**/dist/**", "src/types/**", "src/headless/types/**"],
+  "rules": {
+    "constructor-super": "error",
+    "for-direction": "error",
+    "getter-return": "error",
+    "no-async-promise-executor": "error",
+    "no-case-declarations": "error",
+    "no-class-assign": "error",
+    "no-compare-neg-zero": "error",
+    "no-const-assign": "error",
+    "no-constant-binary-expression": "error",
+    "no-constant-condition": "error",
+    "no-control-regex": "error",
+    "no-debugger": "error",
+    "no-delete-var": "error",
+    "no-dupe-class-members": "error",
+    "no-dupe-else-if": "error",
+    "no-dupe-keys": "error",
+    "no-duplicate-case": "error",
+    "no-empty": "error",
+    "no-empty-character-class": "error",
+    "no-empty-pattern": "error",
+    "no-empty-static-block": "error",
+    "no-ex-assign": "error",
+    "no-extra-boolean-cast": "error",
+    "no-fallthrough": "error",
+    "no-func-assign": "error",
+    "no-global-assign": "error",
+    "no-import-assign": "error",
+    "no-invalid-regexp": "error",
+    "no-irregular-whitespace": "error",
+    "no-loss-of-precision": "error",
+    "no-misleading-character-class": "error",
+    "no-new-native-nonconstructor": "error",
+    "no-nonoctal-decimal-escape": "error",
+    "no-obj-calls": "error",
+    "no-prototype-builtins": "error",
+    "no-regex-spaces": "error",
+    "no-self-assign": "error",
+    "no-setter-return": "error",
+    "no-shadow-restricted-names": "error",
+    "no-sparse-arrays": "error",
+    "no-this-before-super": "error",
+    "no-unassigned-vars": "error",
+    "no-unexpected-multiline": "error",
+    "no-unreachable": "error",
+    "no-unsafe-finally": "error",
+    "no-unsafe-negation": "error",
+    "no-unsafe-optional-chaining": "error",
+    "no-unused-labels": "error",
+    "no-unused-private-class-members": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "no-useless-backreference": "error",
+    "no-with": "error",
+    "preserve-caught-error": "error",
+    "require-yield": "error",
+    "use-isnan": "error",
+    "valid-typeof": "error",
+    "no-array-constructor": "error",
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": true,
+        "allowTernary": true
+      }
+    ],
+    "accessor-pairs": "error",
+    "array-callback-return": "error",
+    "func-name-matching": "error",
+    "guard-for-in": "error",
+    "id-match": "error",
+    "max-depth": "error",
+    "no-caller": "error",
+    "no-div-regex": "error",
+    "no-duplicate-imports": "error",
+    "no-eval": "error",
+    "no-extra-label": "error",
+    "no-implied-eval": "error",
+    "no-inner-declarations": ["error", "functions"],
+    "no-iterator": "error",
+    "no-label-var": "error",
+    "no-labels": "error",
+    "no-lone-blocks": "error",
+    "no-loop-func": "error",
+    "no-multi-str": "error",
+    "no-new-func": "error",
+    "no-new-wrappers": "error",
+    "no-proto": "error",
+    "no-restricted-globals": "error",
+    "no-restricted-imports": "error",
+    "no-restricted-properties": "error",
+    "no-return-assign": "error",
+    "no-script-url": "error",
+    "no-self-compare": "error",
+    "no-sequences": "error",
+    "no-template-curly-in-string": "error",
+    "no-throw-literal": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-useless-call": "error",
+    "no-useless-computed-key": "error",
+    "no-useless-constructor": "error",
+    "no-useless-rename": "error",
+    "no-void": "error",
+    "prefer-const": "error",
+    "prefer-destructuring": [
+      "error",
+      {
+        "array": false,
+        "object": false
+      }
+    ],
+    "prefer-numeric-literals": "error",
+    "radix": ["error", "always"],
+    "require-await": "off",
+    "symbol-description": "error",
+    "unicode-bom": ["error", "never"],
+    "typescript/ban-ts-comment": "error",
+    "typescript/no-duplicate-enum-values": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/no-explicit-any": "off",
+    "typescript/no-extra-non-null-assertion": "error",
+    "typescript/no-misused-new": "error",
+    "typescript/no-namespace": "error",
+    "typescript/no-non-null-asserted-optional-chain": "error",
+    "typescript/no-require-imports": "error",
+    "typescript/no-this-alias": "error",
+    "typescript/no-unnecessary-type-constraint": "error",
+    "typescript/no-unsafe-declaration-merging": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "typescript/no-wrapper-object-types": "error",
+    "typescript/prefer-as-const": "error",
+    "typescript/prefer-namespace-keyword": "error",
+    "typescript/triple-slash-reference": "error",
+    "node/no-sync": "error",
+    "unicorn/no-process-exit": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.js"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@converse/log",
+                "message": "Import { log } from '@converse/headless' instead."
+              },
+              {
+                "name": "@converse/openpromise",
+                "message": "Use u.getOpenPromise from '@converse/headless' instead."
+              }
+            ],
+            "patterns": [
+              {
+                "group": [
+                  "@converse/skeletor",
+                  "@converse/skeletor/*",
+                  "dayjs",
+                  "dayjs/*",
+                  "filesize",
+                  "pluggable.js",
+                  "sizzle",
+                  "sprintf-js",
+                  "strophe.js",
+                  "strophe.js/*"
+                ],
+                "message": "@converse/headless bundles its own copy. Import it from '@converse/headless' or use converse.env instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/headless/**", "src/log/**", "src/daemon/**", "src/cli/**"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
+      "files": ["**/*.ts"],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    },
+    {
+      "files": ["src/daemon/**/*.js", "src/cli/**/*.js", "src/headless/shims/**/node-*.js"],
+      "env": {
+        "node": true
+      },
+      "rules": {
+        "node/no-sync": "off"
+      }
+    },
+    {
+      "files": ["src/daemon/bin/*.js", "src/cli/bin/*.js"],
+      "rules": {
+        "unicorn/no-process-exit": "off"
+      }
+    },
+    {
+      "files": ["src/shared/qrcode/**"],
+      "rules": {
+        "max-depth": "off"
+      }
+    }
+  ]
+}

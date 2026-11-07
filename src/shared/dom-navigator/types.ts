@@ -1,5 +1,5 @@
 export type DOMNavigatorOptions = {
-    getSelector: Function;
+    getSelector: (...args: any[]) => any;
     end?: string[];
     home?: string[];
     down?: number[]; // The keycode for navigating down
@@ -17,7 +17,7 @@ export type DOMNavigatorOptions = {
     // navigating to the first tab.
     jump_to_picked_selector?: string; // The direction for which jumping to the picked element should be enabled.
     jump_to_picked_direction?: string; // The callback function which should be called when en element gets selected.
-    onSelected?: Function;
+    onSelected?: (...args: any[]) => any;
     scroll_container?: HTMLElement;
 };
 

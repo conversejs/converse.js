@@ -197,7 +197,7 @@ describe('Groupchats', function () {
                         ),
                     );
 
-                    let message = stx`<message xmlns="jabber:client"
+                    const message = stx`<message xmlns="jabber:client"
                         to="romeo@montague.lit/orchard"
                         from="${muc_jid}">
                     <result xmlns="urn:xmpp:mam:2" queryid="${iq_get.querySelector('query').getAttribute('queryid')}" id="${last_msg_id}">

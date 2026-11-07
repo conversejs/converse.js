@@ -27,7 +27,7 @@ describe('Message Archive Management', function () {
                     const own_jid = _converse.session.get('jid');
                     await mock.openAndEnterMUC(_converse, muc_jid, nick);
 
-                    let view = _converse.chatboxviews.get(muc_jid);
+                    const view = _converse.chatboxviews.get(muc_jid);
                     let iq_get = await u.waitUntil(() =>
                         sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop(),
                     );
@@ -536,7 +536,7 @@ describe('Message Archive Management', function () {
                 </message>`;
                     _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, message));
 
-                    let result = stx`
+                    const result = stx`
                 <iq type='result' id='${iq_get.getAttribute('id')}' xmlns="jabber:client">
                     <fin xmlns='urn:xmpp:mam:2' complete="true">
                         <set xmlns='http://jabber.org/protocol/rsm'>
@@ -603,7 +603,7 @@ describe('Message Archive Management', function () {
                     const first_msg_id = u.getUniqueId();
 
                     // We first receive a new message before the MAM query could have been made.
-                    let message = stx`
+                    const message = stx`
                 <message xmlns="jabber:client" type="groupchat" id="${first_msg_id}" to="${own_jid}" from="${muc_jid}/juliet">
                     <body>First p0st!</body>
                     <active xmlns="http://jabber.org/protocol/chatstates"/>
@@ -613,7 +613,7 @@ describe('Message Archive Management', function () {
 
                     await u.waitUntil(() => muc.messages.length);
 
-                    let iq_get = await u.waitUntil(() =>
+                    const iq_get = await u.waitUntil(() =>
                         sent_IQs.filter((iq) => sizzle(`query[xmlns="${Strophe.NS.MAM}"]`, iq).length).pop(),
                     );
                     const query_id = iq_get.querySelector('query').getAttribute('queryid');

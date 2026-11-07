@@ -71,7 +71,7 @@ class ImageDirective extends AsyncDirective {
                     url.pathname = url.pathname.replace(fallback_filename, new_filename);
                     this.setValue(renderImage(url.toString(), href, onLoad, onClick, filename));
                 }
-            } catch (error) {
+            } catch {
                 console.error('Invalid URL:', src);
                 return href ? getHyperlinkTemplate(href) : html`<span>Image failed to load</span>`;
             }

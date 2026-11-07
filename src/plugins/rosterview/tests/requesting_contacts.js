@@ -371,7 +371,7 @@ describe('A chat with a requesting contact', function () {
 
             await u.waitUntil(() => api.confirm.calls.count());
 
-            let stanza = await u.waitUntil(() =>
+            const stanza = await u.waitUntil(() =>
                 sent_stanzas.filter((s) => s.matches('presence[type="unsubscribed"]')).pop(),
             );
             expect(stanza).toEqualStanza(stx`<presence to="${jid}" type="unsubscribed" xmlns="jabber:client"/>`);

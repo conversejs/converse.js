@@ -843,7 +843,7 @@ describe('Message Reactions (XEP-0444)', function () {
 
                 // getReactorNames() names the first 2 nicks and counts the rest:
                 // "juliet, mercutio and 1 other"
-                let btn = await u.waitUntil(() =>
+                const btn = await u.waitUntil(() =>
                     view.querySelector(
                         `converse-reactions .chat-msg__reaction[data-tooltip="juliet, mercutio and 1 other"]`,
                     ),

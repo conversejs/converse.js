@@ -108,7 +108,7 @@ export class QRCodeModel {
         let pattern = 0;
         for (let i = 0; i < 8; i++) {
             this.makeImpl(true, i);
-            let lostPoint = QRUtil.getLostPoint(this);
+            const lostPoint = QRUtil.getLostPoint(this);
             if (i == 0 || minLostPoint > lostPoint) {
                 minLostPoint = lostPoint;
                 pattern = i;
@@ -133,11 +133,11 @@ export class QRCodeModel {
     }
 
     setupPositionAdjustPattern() {
-        let pos = QRUtil.getPatternPosition(this.typeNumber);
+        const pos = QRUtil.getPatternPosition(this.typeNumber);
         for (let i = 0; i < pos.length; i++) {
             for (let j = 0; j < pos.length; j++) {
-                let row = pos[i];
-                let col = pos[j];
+                const row = pos[i];
+                const col = pos[j];
                 if (this.modules[row][col] != null) {
                     continue;
                 }
@@ -158,13 +158,13 @@ export class QRCodeModel {
      * @param {boolean} test
      */
     setupTypeNumber(test) {
-        let bits = QRUtil.getBCHTypeNumber(this.typeNumber);
+        const bits = QRUtil.getBCHTypeNumber(this.typeNumber);
         for (let i = 0; i < 18; i++) {
-            let mod = !test && ((bits >> i) & 1) == 1;
+            const mod = !test && ((bits >> i) & 1) == 1;
             this.modules[Math.floor(i / 3)][(i % 3) + this.moduleCount - 8 - 3] = mod;
         }
         for (let i = 0; i < 18; i++) {
-            let mod = !test && ((bits >> i) & 1) == 1;
+            const mod = !test && ((bits >> i) & 1) == 1;
             this.modules[(i % 3) + this.moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
         }
     }
@@ -177,7 +177,7 @@ export class QRCodeModel {
         const data = (this.errorCorrectLevel << 3) | maskPattern;
         const bits = QRUtil.getBCHTypeInfo(data);
         for (let i = 0; i < 15; i++) {
-            let mod = !test && ((bits >> i) & 1) == 1;
+            const mod = !test && ((bits >> i) & 1) == 1;
             if (i < 6) {
                 this.modules[i][8] = mod;
             } else if (i < 8) {
@@ -187,7 +187,7 @@ export class QRCodeModel {
             }
         }
         for (let i = 0; i < 15; i++) {
-            let mod = !test && ((bits >> i) & 1) == 1;
+            const mod = !test && ((bits >> i) & 1) == 1;
             if (i < 8) {
                 this.modules[8][this.moduleCount - i - 1] = mod;
             } else if (i < 9) {
@@ -217,7 +217,7 @@ export class QRCodeModel {
                         if (byteIndex < data.length) {
                             dark = ((data[byteIndex] >>> bitIndex) & 1) == 1;
                         }
-                        let mask = QRUtil.getMask(maskPattern, row, col - c);
+                        const mask = QRUtil.getMask(maskPattern, row, col - c);
                         if (mask) {
                             dark = !dark;
                         }
@@ -245,10 +245,10 @@ export class QRCodeModel {
      * @param {any[]} dataList
      */
     static createData(typeNumber, errorCorrectLevel, dataList) {
-        let rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
+        const rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
         const buffer = new QRBitBuffer();
         for (let i = 0; i < dataList.length; i++) {
-            let data = dataList[i];
+            const data = dataList[i];
             buffer.put(data.mode, 4);
             buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
             data.write(buffer);
@@ -288,11 +288,11 @@ export class QRCodeModel {
         let offset = 0;
         let maxDcCount = 0;
         let maxEcCount = 0;
-        let dcdata = new Array(rsBlocks.length);
-        let ecdata = new Array(rsBlocks.length);
+        const dcdata = new Array(rsBlocks.length);
+        const ecdata = new Array(rsBlocks.length);
         for (let r = 0; r < rsBlocks.length; r++) {
-            let dcCount = rsBlocks[r].dataCount;
-            let ecCount = rsBlocks[r].totalCount - dcCount;
+            const dcCount = rsBlocks[r].dataCount;
+            const ecCount = rsBlocks[r].totalCount - dcCount;
             maxDcCount = Math.max(maxDcCount, dcCount);
             maxEcCount = Math.max(maxEcCount, ecCount);
             dcdata[r] = new Array(dcCount);
@@ -300,12 +300,12 @@ export class QRCodeModel {
                 dcdata[r][i] = 0xff & buffer.buffer[i + offset];
             }
             offset += dcCount;
-            let rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
-            let rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
-            let modPoly = rawPoly.mod(rsPoly);
+            const rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+            const rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+            const modPoly = rawPoly.mod(rsPoly);
             ecdata[r] = new Array(rsPoly.getLength() - 1);
             for (let i = 0; i < ecdata[r].length; i++) {
-                let modIndex = i + modPoly.getLength() - ecdata[r].length;
+                const modIndex = i + modPoly.getLength() - ecdata[r].length;
                 ecdata[r][i] = modIndex >= 0 ? modPoly.get(modIndex) : 0;
             }
         }
@@ -313,7 +313,7 @@ export class QRCodeModel {
         for (let i = 0; i < rsBlocks.length; i++) {
             totalCodeCount += rsBlocks[i].totalCount;
         }
-        let data = new Array(totalCodeCount);
+        const data = new Array(totalCodeCount);
         let index = 0;
         for (let i = 0; i < maxDcCount; i++) {
             for (let r = 0; r < rsBlocks.length; r++) {
@@ -344,8 +344,8 @@ class QR8bitByte {
 
         // Added to support UTF-8 Characters
         for (let i = 0, l = this.data.length; i < l; i++) {
-            let byteArray = [];
-            let code = this.data.charCodeAt(i);
+            const byteArray = [];
+            const code = this.data.charCodeAt(i);
 
             if (code > 0x10000) {
                 byteArray[0] = 0xf0 | ((code & 0x1c0000) >>> 18);
@@ -405,16 +405,16 @@ class QRRSBlock {
      * @returns {QRRSBlock[]}
      */
     static getRSBlocks(typeNumber, errorCorrectLevel) {
-        let rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
+        const rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
         if (rsBlock == undefined) {
             throw new Error('bad rs block @ typeNumber:' + typeNumber + '/errorCorrectLevel:' + errorCorrectLevel);
         }
-        let length = rsBlock.length / 3;
-        let list = [];
+        const length = rsBlock.length / 3;
+        const list = [];
         for (let i = 0; i < length; i++) {
-            let count = rsBlock[i * 3 + 0];
-            let totalCount = rsBlock[i * 3 + 1];
-            let dataCount = rsBlock[i * 3 + 2];
+            const count = rsBlock[i * 3 + 0];
+            const totalCount = rsBlock[i * 3 + 1];
+            const dataCount = rsBlock[i * 3 + 2];
             for (let j = 0; j < count; j++) {
                 list.push(new QRRSBlock(totalCount, dataCount));
             }
@@ -475,7 +475,7 @@ class QRBitBuffer {
      * @param {Boolean} bit
      */
     putBit(bit) {
-        let bufIndex = Math.floor(this.length / 8);
+        const bufIndex = Math.floor(this.length / 8);
         if (this.buffer.length <= bufIndex) {
             this.buffer.push(0);
         }

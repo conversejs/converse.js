@@ -60,7 +60,7 @@ export default class AddMUCModal extends BaseModal {
             .trim()
             .replace(/\s+/g, '-')
             .replace(/\u0142/g, 'l')
-            .replace(/[^\x00-\x7F]/g, (c) => c.normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
+            .replace(/[\u0080-￿]/g, (c) => c.normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
             .replace(/[^a-zA-Z0-9-]/g, '-')
             .replace(/-+/g, '-')
             .replace(/[^a-zA-Z0-9]$/g, '')

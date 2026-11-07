@@ -61,7 +61,7 @@ describe('A blocklist', function () {
             await mock.waitForRoster(_converse, 'current', 0);
 
             const IQ_stanzas = api.connection.get().IQ_stanzas;
-            let sent_stanza = await u.waitUntil(() => IQ_stanzas.find((s) => s.querySelector('iq blocklist')));
+            const sent_stanza = await u.waitUntil(() => IQ_stanzas.find((s) => s.querySelector('iq blocklist')));
 
             const stanza = stx`
                     <iq xmlns="jabber:client"

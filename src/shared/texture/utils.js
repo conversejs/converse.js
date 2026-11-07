@@ -29,7 +29,7 @@ export function isSpotifyTrack(url) {
     try {
         const { hostname, pathname } = u.getURL(url);
         return hostname === 'open.spotify.com' && pathname.startsWith('/track/');
-    } catch (e) {
+    } catch {
         console.debug(`Could not create URL object from ${url}`);
         return false;
     }

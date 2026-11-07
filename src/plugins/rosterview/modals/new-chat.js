@@ -1,9 +1,7 @@
-import { _converse, api, converse, u } from '@converse/headless';
+import { _converse, api, u } from '@converse/headless';
 import BaseModal from 'plugins/modal/modal.js';
 import tplNewChat from './templates/new-chat.js';
 import { __ } from 'i18n';
-
-const { Strophe } = converse.env;
 
 export default class NewChatModal extends BaseModal {
     initialize() {

@@ -222,7 +222,7 @@ describe("The 'Add Contact' widget", function () {
             },
             async function (_converse) {
                 // Track if providers URL was called
-                const fetchSpy = spyOn(window, 'fetch').and.callFake((url) => {
+                const fetchSpy = spyOn(window, 'fetch').and.callFake(() => {
                     // Return empty response for any fetch call
                     return Promise.resolve({
                         ok: true,

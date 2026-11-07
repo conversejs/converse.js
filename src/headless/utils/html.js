@@ -114,8 +114,12 @@ export function queryChildren(el, selector) {
  * @return {number}
  */
 export function siblingIndex(el) {
-    /* eslint-disable no-cond-assign */
-    for (var i = 0; (el = el.previousElementSibling); i++);
+    let i = 0;
+    let sibling = el.previousElementSibling;
+    while (sibling) {
+        i++;
+        sibling = sibling.previousElementSibling;
+    }
     return i;
 }
 

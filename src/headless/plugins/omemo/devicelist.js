@@ -1,4 +1,3 @@
-import { getOpenPromise } from '@converse/openpromise';
 import log from '@converse/log';
 import * as errors from '../../shared/errors.js';
 import { parsers } from '../../shared/index.js';

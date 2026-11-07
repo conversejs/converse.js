@@ -37,7 +37,7 @@ class QRPolynomial {
      * @returns {QRPolynomial}
      */
     multiply(e) {
-        let num = new Array(this.getLength() + e.getLength() - 1);
+        const num = new Array(this.getLength() + e.getLength() - 1);
         for (let i = 0; i < this.getLength(); i++) {
             for (let j = 0; j < e.getLength(); j++) {
                 num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
@@ -54,8 +54,8 @@ class QRPolynomial {
         if (this.getLength() - e.getLength() < 0) {
             return this;
         }
-        let ratio = QRMath.glog(this.get(0)) - QRMath.glog(e.get(0));
-        let num = new Array(this.getLength());
+        const ratio = QRMath.glog(this.get(0)) - QRMath.glog(e.get(0));
+        const num = new Array(this.getLength());
         for (let i = 0; i < this.getLength(); i++) {
             num[i] = this.get(i);
         }

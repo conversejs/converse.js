@@ -35,7 +35,7 @@ describe('A Groupchat Message', function () {
                 xmlns="jabber:client">
                 <body>${firstMessageText}</body>
             </message>`);
-            let firstAction = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action-copy'));
+            const firstAction = await u.waitUntil(() => view.querySelector('.chat-msg .chat-msg__action-copy'));
             expect(firstAction).not.toBeNull();
             firstAction.click();
             expect(spyClipboard).toHaveBeenCalledOnceWith(firstMessageText);
@@ -46,7 +46,7 @@ describe('A Groupchat Message', function () {
             await u.waitUntil(() => view.querySelectorAll('.chat-msg').length === 2);
             const copyActions = view.querySelectorAll('.chat-msg__action-copy');
             expect(copyActions.length).toBe(2);
-            let secondAction = copyActions[copyActions.length - 1];
+            const secondAction = copyActions[copyActions.length - 1];
             expect(secondAction).not.toBeNull();
             secondAction.click();
             expect(spyClipboard).toHaveBeenCalledWith(secondMessageText);
@@ -85,7 +85,7 @@ describe('A Groupchat Message', function () {
 
             // Quote with empty text area
             expect(mock.composerText(view)).toBe('');
-            let firstAction = await u.waitUntil(() => view.querySelector('.chat-msg__action-quote'));
+            const firstAction = await u.waitUntil(() => view.querySelector('.chat-msg__action-quote'));
             expect(firstAction).not.toBeNull();
             firstAction.click();
             await u.waitUntil(() => mock.composerText(view) === '> ' + firstMessageText);

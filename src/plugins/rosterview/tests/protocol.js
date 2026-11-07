@@ -351,7 +351,7 @@ describe('Presence subscriptions', function () {
                 /* The process by which a user subscribes to a contact, including
                  * the interaction between roster items and subscription states.
                  */
-                var contact, stanza, sent_stanza, sent_IQ;
+                var contact, stanza, sent_IQ;
                 const sent_stanzas = [];
                 await mock.waitForRoster(_converse, 'current', 0);
                 mock.openControlBox(_converse);
@@ -372,7 +372,6 @@ describe('Presence subscriptions', function () {
                 spyOn(contact, 'ackUnsubscribe').and.callThrough();
 
                 spyOn(_converse.api.connection.get(), 'send').and.callFake((stanza) => {
-                    sent_stanza = stanza;
                     sent_stanzas.push(stanza);
                 });
                 spyOn(_converse.api.connection.get(), 'sendIQ').and.callFake((iq) => {

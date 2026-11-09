@@ -59,7 +59,7 @@ export function tplSearchResults(o) {
 async function tplEmojisForCategory(o) {
     const { popular_emojis } = _converse.state;
     const emojis =
-        o.category === 'popular' ? await popular_emojis?.getPopularEmojis() : converse.emojis?.json?.[o.category];
+        o.category === 'popular' ? await popular_emojis?.getPopularEmojis() : converse.emojis.json[o.category];
 
     return html`<a id="emoji-picker-${o.category}" class="emoji-category__heading" data-category="${o.category}"
             >${__(api.settings.get('emoji_category_labels')[o.category])}</a

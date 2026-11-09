@@ -1,3 +1,4 @@
+import log from '@converse/log';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 
@@ -45,7 +46,11 @@ const emojis = {
             try {
                 json = await loadEmojiJSON();
             } catch (e) {
-                console.error('Failed to load emoji.json:', e);
+                log.error(
+                    `Could not load emoji.json from "${api.settings.get('assets_path')}". ` +
+                        'Set assets_path to the directory that holds the Converse assets.',
+                );
+                log.error(e);
                 json = {};
             }
 

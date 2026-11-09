@@ -3,7 +3,7 @@ import { CustomElement } from './element.js';
 import { api } from '@converse/headless';
 
 export class FontAwesome extends CustomElement {
-    render () {
+    render() {
         return tplIcons();
     }
 }

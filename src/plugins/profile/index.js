@@ -14,13 +14,7 @@ const { Strophe } = converse.env;
 Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
 
 converse.plugins.add('converse-profile', {
-    dependencies: [
-        'converse-status',
-        'converse-modal',
-        'converse-vcard',
-        'converse-app-chat',
-        'converse-adhoc-views',
-    ],
+    dependencies: ['converse-status', 'converse-modal', 'converse-vcard', 'converse-app-chat', 'converse-adhoc-views'],
 
     initialize() {
         api.settings.extend({
@@ -46,7 +40,7 @@ converse.plugins.add('converse-profile', {
 
         api.listen.on(
             'presencesInitialized',
-            /** @param {boolean} reconnecting */ (reconnecting) => !reconnecting && registerIntervalHandler()
+            /** @param {boolean} reconnecting */ (reconnecting) => !reconnecting && registerIntervalHandler(),
         );
         api.listen.on('beforeTearDown', tearDown);
     },

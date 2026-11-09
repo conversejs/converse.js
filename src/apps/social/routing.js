@@ -85,8 +85,10 @@ export function parseSocialRoute(hash = location.hash) {
 
             /** @type {import("./types.ts").SocialRoute} */
             let route;
-            if (post_part.length === 2) route = { view: 'post', feedJid: post_part[0], node: MICROBLOG_NODE, itemId: post_part[1] };
-            else if (post_part.length >= 3) route = { view: 'post', feedJid: post_part[0], node: post_part[1], itemId: post_part[2] };
+            if (post_part.length === 2)
+                route = { view: 'post', feedJid: post_part[0], node: MICROBLOG_NODE, itemId: post_part[1] };
+            else if (post_part.length >= 3)
+                route = { view: 'post', feedJid: post_part[0], node: post_part[1], itemId: post_part[2] };
             else return { view: 'timeline' };
 
             if (comment_part.length === 1) route.commentId = comment_part[0];

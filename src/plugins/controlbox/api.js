@@ -1,5 +1,5 @@
-import { _converse, api, converse } from "@converse/headless";
-import ControlBox from "./model.js";
+import { _converse, api, converse } from '@converse/headless';
+import ControlBox from './model.js';
 
 const { u } = converse.env;
 
@@ -17,13 +17,13 @@ export default {
          * @method _converse.api.controlbox.open
          * @returns { Promise<ControlBox> }
          */
-        async open () {
+        async open() {
             await api.waitUntil('chatBoxesFetched');
             let model = await api.chatboxes.get('controlbox');
             if (!model) {
-              model = await api.chatboxes.create('controlbox', {}, ControlBox);
+                model = await api.chatboxes.create('controlbox', {}, ControlBox);
             }
-            u.safeSave(model, {'closed': false});
+            u.safeSave(model, { 'closed': false });
             return model;
         },
 
@@ -33,8 +33,8 @@ export default {
          * @returns {ControlBox} View representing the controlbox
          * @example const view = _converse.api.controlbox.get();
          */
-        get () {
+        get() {
             return _converse.state.chatboxviews.get('controlbox');
-        }
-    }
-}
+        },
+    },
+};

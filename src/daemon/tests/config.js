@@ -300,7 +300,7 @@ describe('The account configuration', () => {
             [['garden@conference.montague.lit'], 'must map room JIDs to their settings'],
             [{ garden: {} }, 'must be keyed by room JIDs, and "garden" isn\'t one'],
             [{ 'garden@conference.montague.lit': true }, 'must be an object'],
-            [{ 'garden@conference.montague.lit': { password: '' } }, 'must be the room\'s password'],
+            [{ 'garden@conference.montague.lit': { password: '' } }, "must be the room's password"],
             [{ 'garden@conference.montague.lit': { autojoin: true } }, 'can only have a "password", not "autojoin"'],
             [{ 'Garden@conference.montague.lit': {}, 'garden@conference.montague.lit ': {} }, 'more than once'],
         ];

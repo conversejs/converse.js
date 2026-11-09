@@ -57,17 +57,27 @@ export default (el) => {
                                       (i) =>
                                           html`<li class="list-item">
                                               <ul class="list-unstyled">
-                                                  ${i.get('name')
-                                                      ? html`<li><strong>${__('Name')}:</strong> ${i.get('name')}</li>`
-                                                      : ''}
-                                                  ${i.get('type')
-                                                      ? html`<li><strong>${__('Type')}:</strong> ${i.get('type')}</li>`
-                                                      : ''}
-                                                  ${i.get('category')
-                                                      ? html`<li>
-                                                            <strong>${__('Category')}:</strong> ${i.get('category')}
-                                                        </li>`
-                                                      : ''}
+                                                  ${
+                                                      i.get('name')
+                                                          ? html`<li>
+                                                                <strong>${__('Name')}:</strong> ${i.get('name')}
+                                                            </li>`
+                                                          : ''
+                                                  }
+                                                  ${
+                                                      i.get('type')
+                                                          ? html`<li>
+                                                                <strong>${__('Type')}:</strong> ${i.get('type')}
+                                                            </li>`
+                                                          : ''
+                                                  }
+                                                  ${
+                                                      i.get('category')
+                                                          ? html`<li>
+                                                                <strong>${__('Category')}:</strong> ${i.get('category')}
+                                                            </li>`
+                                                          : ''
+                                                  }
                                               </ul>
                                           </li>`,
                                   )}

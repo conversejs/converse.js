@@ -316,7 +316,8 @@ describe('Popular Emojis', function () {
 
         it(
             'respects the popular_emojis setting length',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['chatBoxesFetched'],
                 { 'popular_emojis': [':thumbsup:', ':heart:'] },
                 async function (_converse) {

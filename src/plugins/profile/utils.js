@@ -46,9 +46,10 @@ let inactive = false;
  * @param { String } stat - The user's chat status
  */
 export function sendCSI(stat) {
-    const stanza = stat === constants.ACTIVE
-        ? stx`<active xmlns="${Strophe.NS.CSI}"></active>`
-        : stx`<inactive xmlns="${Strophe.NS.CSI}"></inactive>`;
+    const stanza =
+        stat === constants.ACTIVE
+            ? stx`<active xmlns="${Strophe.NS.CSI}"></active>`
+            : stx`<inactive xmlns="${Strophe.NS.CSI}"></inactive>`;
     api.send(stanza);
     inactive = stat === constants.INACTIVE;
 }

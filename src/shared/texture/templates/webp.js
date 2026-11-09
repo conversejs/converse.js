@@ -16,4 +16,5 @@ export default (url, hide_url, onImgClick, onImgLoad) =>
             src=${url}
             .onImgClick=${onImgClick}
             .onImgLoad=${onImgLoad}
-        ></converse-webp>${hide_url ? '' : getHyperlinkTemplate(url)}`;
+        ></converse-webp
+        >${hide_url ? '' : getHyperlinkTemplate(url)}`;

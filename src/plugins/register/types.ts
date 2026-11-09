@@ -15,4 +15,4 @@ export type XMPPProvider = {
     maximumHttpFileUploadFileSize?: number;
     maximumHttpFileUploadStorageTime?: number;
     maximumMessageArchiveManagementStorageTime?: number;
-}
+};

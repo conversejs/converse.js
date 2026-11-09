@@ -37,7 +37,10 @@
                 }
             }
 
-            a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+            a,
+            a:visited,
+            a:hover,
+            a:not([href]):not([tabindex]) {
                 &.chatbox-btn {
                     &.fa {
                         color: var(--muc-header-fg-color);

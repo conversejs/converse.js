@@ -85,8 +85,14 @@ describe('Social hash routing grammar', function () {
         expect(parseSocialRoute('#converse/social/post/onlyfeedjid')).toEqual({ view: 'timeline' });
     });
 
-    it('round-trips a focused-comment route in the post\'s own comments node', function () {
-        const route = { view: 'post', feedJid: 'juliet@capulet.lit', node: MICROBLOG_NODE, itemId: 'post-1', commentId: 'c3' };
+    it("round-trips a focused-comment route in the post's own comments node", function () {
+        const route = {
+            view: 'post',
+            feedJid: 'juliet@capulet.lit',
+            node: MICROBLOG_NODE,
+            itemId: 'post-1',
+            commentId: 'c3',
+        };
         const hash = buildSocialRoute(route);
         expect(hash).toBe('#converse/social/post/juliet%40capulet.lit/post-1/comment/c3');
         expect(parseSocialRoute(hash)).toEqual(route);

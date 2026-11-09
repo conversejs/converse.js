@@ -8,8 +8,7 @@ import './styles/role-form.scss';
 const { Strophe, sizzle } = converse.env;
 
 class RoleForm extends CustomElement {
-
-    static get properties () {
+    static get properties() {
         return {
             muc: { type: Object },
             jid: { type: String },
@@ -19,23 +18,23 @@ class RoleForm extends CustomElement {
         };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.muc = null;
         this.nick = null;
         this.jid = null;
     }
 
-    render () {
+    render() {
         return tplRoleForm(this);
     }
 
-    alert (message, type) {
+    alert(message, type) {
         this.alert_message = message;
         this.alert_type = type;
     }
 
-    assignRole (ev) {
+    assignRole(ev) {
         ev.stopPropagation();
         ev.preventDefault();
         this.alert(); // clear alert
@@ -58,7 +57,6 @@ class RoleForm extends CustomElement {
                  */
                 const event = new CustomEvent('roleChanged', { bubbles: true });
                 this.dispatchEvent(event);
-
             },
             (e) => {
                 if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
@@ -67,9 +65,8 @@ class RoleForm extends CustomElement {
                     this.alert(__('Sorry, something went wrong while trying to set the role'), 'danger');
                     if (u.isErrorObject(e)) log.error(e);
                 }
-            }
+            },
         );
-
     }
 }
 

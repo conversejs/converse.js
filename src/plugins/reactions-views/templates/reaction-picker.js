@@ -10,7 +10,7 @@ export default (el) => {
         const popular_reactions = await el.popular_reactions_promise;
         return html`${popular_reactions.map(
             /** @param {string} sn */ (sn) =>
-                html`<button class="reaction-item" @click=${() => el.onEmojiSelected(sn)}>${sn}</button>`
+                html`<button class="reaction-item" @click=${() => el.onEmojiSelected(sn)}>${sn}</button>`,
         )}`;
     };
 

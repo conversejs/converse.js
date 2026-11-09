@@ -17,9 +17,11 @@ export default (el) => {
     return html`
         <div class="chatbox-title ${show_subject ? '' : 'chatbox-title--no-desc'}">
             <div class="chatbox-title--row">
-                ${!_converse.api.settings.get('singleton')
-                    ? html`<converse-controlbox-navback jid="${o.jid}"></converse-controlbox-navback>`
-                    : ''}
+                ${
+                    !_converse.api.settings.get('singleton')
+                        ? html`<converse-controlbox-navback jid="${o.jid}"></converse-controlbox-navback>`
+                        : ''
+                }
                 <a
                     data-room-jid="${el.model.get('jid')}"
                     title="${__('Show more information on this groupchat')}"
@@ -48,10 +50,12 @@ export default (el) => {
                 ${until(getDropdownButtons(heading_buttons_promise), '')}
             </div>
         </div>
-        ${show_subject
-            ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">
-                  <converse-texture text=${subject} render_styling embed_audio></converse-texture>
-              </p>`
-            : ''}
+        ${
+            show_subject
+                ? html`<p class="chat-head__desc" title="${i18n_hide_topic}">
+                      <converse-texture text=${subject} render_styling embed_audio></converse-texture>
+                  </p>`
+                : ''
+        }
     `;
 };

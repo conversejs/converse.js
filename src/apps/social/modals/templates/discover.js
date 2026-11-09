@@ -27,59 +27,65 @@ export default (el) => {
 
             <details class="social-discover__manual mt-3">
                 <summary>${__('Enter an address manually')}</summary>
-                <p class="form-text text-muted mt-2">
-                    ${__('Already know the exact address? Follow it directly.')}
-                </p>
-            <form class="converse-form" @submit=${(/** @type {Event} */ ev) => el.submit(ev)}>
-                <div class="mb-3">
-                    <label class="form-label clearfix" for="discover-feed-address">${__('Feed address')}:</label>
-                    <input
-                        type="text"
-                        name="address"
-                        id="discover-feed-address"
-                        class="form-control"
-                        autocomplete="off"
-                        placeholder="news@example.org"
-                        @input=${(/** @type {Event} */ ev) => el.onAddressInput(ev)}
-                    />
-                    <small class="form-text text-muted">
-                        ${__('A JID (a person or a service), or an xmpp: address that includes a node.')}
-                    </small>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label clearfix" for="discover-feed-name">${__('Name (optional)')}:</label>
-                    <input type="text" name="title" id="discover-feed-name" class="form-control" autocomplete="off" />
-                </div>
-
-                <details class="mb-3">
-                    <summary>${__('Advanced')}</summary>
-                    <div class="mt-2">
-                        <label class="form-label clearfix" for="discover-feed-node">${__('Node')}:</label>
+                <p class="form-text text-muted mt-2">${__('Already know the exact address? Follow it directly.')}</p>
+                <form class="converse-form" @submit=${(/** @type {Event} */ ev) => el.submit(ev)}>
+                    <div class="mb-3">
+                        <label class="form-label clearfix" for="discover-feed-address">${__('Feed address')}:</label>
                         <input
                             type="text"
-                            name="node"
-                            id="discover-feed-node"
+                            name="address"
+                            id="discover-feed-address"
                             class="form-control"
                             autocomplete="off"
-                            placeholder="urn:xmpp:microblog:0"
+                            placeholder="news@example.org"
+                            @input=${(/** @type {Event} */ ev) => el.onAddressInput(ev)}
                         />
                         <small class="form-text text-muted">
-                            ${__('Overrides the node in the address. Leave blank for a personal feed.')}
+                            ${__('A JID (a person or a service), or an xmpp: address that includes a node.')}
                         </small>
                     </div>
-                </details>
 
-                ${preview
-                    ? html`<p class="social-discover__preview text-muted">
-                          ${__('Will follow %1$s (node %2$s)', preview.jid, preview.node)}
-                      </p>`
-                    : ''}
+                    <div class="mb-3">
+                        <label class="form-label clearfix" for="discover-feed-name">${__('Name (optional)')}:</label>
+                        <input
+                            type="text"
+                            name="title"
+                            id="discover-feed-name"
+                            class="form-control"
+                            autocomplete="off"
+                        />
+                    </div>
 
-                <button type="submit" class="btn btn-primary" ?disabled=${el.submitting || !preview}>
-                    ${el.submitting ? __('Following…') : __('Follow')}
-                </button>
-            </form>
+                    <details class="mb-3">
+                        <summary>${__('Advanced')}</summary>
+                        <div class="mt-2">
+                            <label class="form-label clearfix" for="discover-feed-node">${__('Node')}:</label>
+                            <input
+                                type="text"
+                                name="node"
+                                id="discover-feed-node"
+                                class="form-control"
+                                autocomplete="off"
+                                placeholder="urn:xmpp:microblog:0"
+                            />
+                            <small class="form-text text-muted">
+                                ${__('Overrides the node in the address. Leave blank for a personal feed.')}
+                            </small>
+                        </div>
+                    </details>
+
+                    ${
+                        preview
+                            ? html`<p class="social-discover__preview text-muted">
+                                  ${__('Will follow %1$s (node %2$s)', preview.jid, preview.node)}
+                              </p>`
+                            : ''
+                    }
+
+                    <button type="submit" class="btn btn-primary" ?disabled=${el.submitting || !preview}>
+                        ${el.submitting ? __('Following…') : __('Follow')}
+                    </button>
+                </form>
             </details>
         </section>
     </div>`;

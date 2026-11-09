@@ -11,7 +11,7 @@ import { FILTER_CONTAINS } from 'shared/autocomplete/utils.js';
 const { sizzle } = converse.env;
 
 export default class EmojiPickerContent extends CustomElement {
-    static get properties () {
+    static get properties() {
         return {
             'search_results': { type: Array },
             'current_skintone': { type: String },
@@ -21,7 +21,7 @@ export default class EmojiPickerContent extends CustomElement {
         };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.model = null;
         this.current_skintone = null;
@@ -30,22 +30,22 @@ export default class EmojiPickerContent extends CustomElement {
         this.allowed_emojis = null;
     }
 
-    render () {
+    render() {
         const props = {
             'current_skintone': this.current_skintone,
-            'insertEmoji': /** @param {MouseEvent} ev */(ev) => this.insertEmoji(ev),
+            'insertEmoji': /** @param {MouseEvent} ev */ (ev) => this.insertEmoji(ev),
             'query': this.query,
             'search_results': this.search_results,
-            'shouldBeHidden': /** @param {string} shortname */(shortname) => this.shouldBeHidden(shortname),
+            'shouldBeHidden': /** @param {string} shortname */ (shortname) => this.shouldBeHidden(shortname),
         };
         return html` <div class="emoji-picker__lists">${tplSearchResults(props)} ${tplAllEmojis(props)}</div> `;
     }
 
-    firstUpdated () {
+    firstUpdated() {
         this.initIntersectionObserver();
     }
 
-    initIntersectionObserver () {
+    initIntersectionObserver() {
         if (!window.IntersectionObserver) {
             return;
         }
@@ -56,28 +56,35 @@ export default class EmojiPickerContent extends CustomElement {
                 root: this.querySelector('.emoji-picker__lists'),
                 threshold: [0.1],
             };
-            const handler = /** @param {IntersectionObserverEntry[]} ev */(ev) => this.setCategoryOnVisibilityChange(ev);
+            const handler = /** @param {IntersectionObserverEntry[]} ev */ (ev) =>
+                this.setCategoryOnVisibilityChange(ev);
             this.observer = new IntersectionObserver(handler, options);
         }
-        sizzle('.emoji-picker', this).forEach(/** @param {Element} a */(a) => this.observer.observe(a));
+        sizzle('.emoji-picker', this).forEach(/** @param {Element} a */ (a) => this.observer.observe(a));
     }
 
     /** @param {IntersectionObserverEntry[]} entries */
-    setCategoryOnVisibilityChange (entries) {
-        const selected = /** @type {EmojiPicker} */(this.parentElement).navigator.selected;
-        const intersection_with_selected = entries.filter(/** @param {IntersectionObserverEntry} i */(i) => i.target.contains(selected)).pop();
+    setCategoryOnVisibilityChange(entries) {
+        const selected = /** @type {EmojiPicker} */ (this.parentElement).navigator.selected;
+        const intersection_with_selected = entries
+            .filter(/** @param {IntersectionObserverEntry} i */ (i) => i.target.contains(selected))
+            .pop();
         let current;
         // Choose the intersection that contains the currently selected
         // element, or otherwise the one with the largest ratio.
         if (intersection_with_selected) {
             current = intersection_with_selected;
         } else {
-            current = entries.reduce(/** @param {IntersectionObserverEntry|null} p */ /** @param {IntersectionObserverEntry} c */(p, c) => (c.intersectionRatio >= (p?.intersectionRatio || 0) ? c : p), null);
+            current = entries.reduce(
+                /** @param {IntersectionObserverEntry|null} p */ /** @param {IntersectionObserverEntry} c */ (p, c) =>
+                    c.intersectionRatio >= (p?.intersectionRatio || 0) ? c : p,
+                null,
+            );
         }
         if (current && current.isIntersecting) {
             const category = current.target.getAttribute('data-category');
             if (category !== this.model.get('current_category')) {
-                /** @type {EmojiPicker} */(this.parentElement).preserve_scroll = true;
+                /** @type {EmojiPicker} */ (this.parentElement).preserve_scroll = true;
                 u.safeSave(this.model, { 'current_category': category });
             }
         }
@@ -86,12 +93,12 @@ export default class EmojiPickerContent extends CustomElement {
     /**
      * @param {MouseEvent} ev
      */
-    insertEmoji (ev) {
+    insertEmoji(ev) {
         ev.preventDefault();
         ev.stopPropagation();
-        const target = /** @type {HTMLElement} */(ev.target);
+        const target = /** @type {HTMLElement} */ (ev.target);
         const emoji_el = target.nodeName === 'IMG' ? target.parentElement : target;
-        /** @type EmojiPicker */(this.parentElement).selectEmoji(emoji_el.getAttribute('data-emoji'));
+        /** @type EmojiPicker */ (this.parentElement).selectEmoji(emoji_el.getAttribute('data-emoji'));
     }
 
     /**
@@ -105,7 +112,7 @@ export default class EmojiPickerContent extends CustomElement {
      * @param {string} shortname
      * @returns {boolean}
      */
-    shouldBeHidden (shortname) {
+    shouldBeHidden(shortname) {
         if (this.allowed_emojis && this.allowed_emojis.length > 0) {
             const unicode = u.shortnamesToEmojis(shortname);
             if (!this.allowed_emojis.includes(unicode)) {

@@ -16,12 +16,14 @@ export default (el) => {
     const style = el.model ? getChatStyle(el.model) : '';
     return html` <div class="flyout box-flyout" style="${style || nothing}">
         ${api.settings.get('view_mode') === 'overlayed' ? html`<converse-dragresize></converse-dragresize>` : ''}
-        ${el.model
-            ? html`
-                  <converse-muc-heading jid="${el.model.get('jid')}" class="chat-head chat-head-chatroom row g-0">
-                  </converse-muc-heading>
-                  <div class="chat-body chatroom-body row g-0">${getChatRoomBodyTemplate(el.model)}</div>
-              `
-            : ''}
+        ${
+            el.model
+                ? html`
+                      <converse-muc-heading jid="${el.model.get('jid')}" class="chat-head chat-head-chatroom row g-0">
+                      </converse-muc-heading>
+                      <div class="chat-body chatroom-body row g-0">${getChatRoomBodyTemplate(el.model)}</div>
+                  `
+                : ''
+        }
     </div>`;
 };

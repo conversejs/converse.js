@@ -235,9 +235,9 @@ describe('Microblog following (XEP-0330)', function () {
             const presences = _converse.state.presences;
             (presences.get(jid) || presences.create({ jid })).resources.create({ name: 'phone' });
 
-            const supports = vi.spyOn(api.disco, 'supports').mockImplementation((feature, j) =>
-                Promise.resolve(feature === SOCIAL_FEED_FEATURE && j === full_jid),
-            );
+            const supports = vi
+                .spyOn(api.disco, 'supports')
+                .mockImplementation((feature, j) => Promise.resolve(feature === SOCIAL_FEED_FEATURE && j === full_jid));
 
             expect(await api.microblog.canFollow(jid)).toBe(true);
             // It resolves against the resource (full JID) and never queries the

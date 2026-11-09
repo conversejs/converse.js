@@ -501,7 +501,7 @@ describe('A MUC occupant', function () {
     );
 
     it(
-        'is matched by the real JID of a message with an occupant id it doesn\'t have',
+        "is matched by the real JID of a message with an occupant id it doesn't have",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
             const muc_jid = 'lounge@montague.lit';

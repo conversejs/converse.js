@@ -367,7 +367,7 @@ async function toEmoji(emoji) {
 
     await api.emojis.initialize();
     const text = u.emojis.shortnamesToUnicode(emoji.trim());
-    if (!(/^\p{RGI_Emoji}$/v).test(text)) throw invalid();
+    if (!/^\p{RGI_Emoji}$/v.test(text)) throw invalid();
 
     return text;
 }

@@ -346,15 +346,13 @@ describe("A contact's cached presence", function () {
             // resources goes offline with it, the one with a known
             // resource stays online.
             for (const jid of [lost_jid, kept_jid]) {
-                api.connection
-                    .get()
-                    ._dataRecv(
-                        mock.createRequest(
-                            _converse,
-                            stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard"
+                api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard"
                                     from="${jid}/laptop" type="unavailable"/>`,
-                        ),
-                    );
+                    ),
+                );
             }
             await u.waitUntil(() => reloaded_lost.getStatus() === 'offline');
             expect(reloaded_kept.getStatus()).toBe('online');

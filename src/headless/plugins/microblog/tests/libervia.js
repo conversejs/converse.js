@@ -57,7 +57,7 @@ function childEvent(id, body, author) {
 
 describe('Libervia node-per-comment threads', function () {
     it(
-        'resolves a comment\'s explicit replies node, and never probes a flat comment',
+        "resolves a comment's explicit replies node, and never probes a flat comment",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;

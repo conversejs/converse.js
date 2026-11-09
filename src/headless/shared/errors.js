@@ -21,7 +21,7 @@ export class IQError extends Error {
      * @param {string} message
      * @param {Element} iq
      */
-    constructor (message, iq) {
+    constructor(message, iq) {
         super(message);
         this.name = 'IQError';
         this.iq = iq;
@@ -57,7 +57,7 @@ export class StanzaError extends Error {
     constructor(name, e, extra) {
         super(e.querySelector('text')?.textContent ?? '');
         /** @type {ErrorName} */
-        this.name = name
+        this.name = name;
         /** @type {string} */
         this.message = name;
         /** @type {ErrorType} */

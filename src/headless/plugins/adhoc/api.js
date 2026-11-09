@@ -1,11 +1,10 @@
-import log from "@converse/log";
+import log from '@converse/log';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import { parseCommandNote, parseCommandResult, parseForCommands } from './utils.js';
 
 const { Strophe, u, stx } = converse.env;
-
 
 export default {
     /**
@@ -25,7 +24,7 @@ export default {
          * @method api.adhoc.getCommands
          * @param {string} to_jid
          */
-        async getCommands (to_jid) {
+        async getCommands(to_jid) {
             try {
                 return parseForCommands(await api.disco.items(to_jid, Strophe.NS.ADHOC));
             } catch (e) {
@@ -45,7 +44,7 @@ export default {
          * @param {string} node
          * @returns {Promise<AdHocCommandResult>}
          */
-        async fetchCommandForm (jid, node) {
+        async fetchCommandForm(jid, node) {
             const stanza = stx`
                 <iq type="set" to="${jid}" xmlns="jabber:client">
                     <command xmlns="${Strophe.NS.ADHOC}" action="execute" node="${node}"></command>
@@ -61,17 +60,25 @@ export default {
          * @param {String} node
          * @param {Array<{ [k:string]: string }>} inputs
          */
-        async runCommand (jid, sessionid, node, action, inputs) {
-            const iq =
-                stx`<iq type="set" to="${jid}" xmlns="jabber:client">
+        async runCommand(jid, sessionid, node, action, inputs) {
+            const iq = stx`<iq type="set" to="${jid}" xmlns="jabber:client">
                     <command sessionid="${sessionid}" node="${node}" action="${action}" xmlns="${Strophe.NS.ADHOC}">
-                        ${ !['cancel', 'prev'].includes(action) ? stx`
+                        ${
+                            !['cancel', 'prev'].includes(action)
+                                ? stx`
                             <x xmlns="${Strophe.NS.XFORM}" type="submit">
-                                ${ inputs.map(({ name, value }) => stx`<field var="${name}">
-                                    ${ Array.isArray(value)
-                                        ? value.map(v => stx`<value>${v}</value>`) : stx`<value>${value}</value>` }
-                                </field>`) }
-                            </x>` : '' }
+                                ${inputs.map(
+                                    ({ name, value }) => stx`<field var="${name}">
+                                    ${
+                                        Array.isArray(value)
+                                            ? value.map((v) => stx`<value>${v}</value>`)
+                                            : stx`<value>${value}</value>`
+                                    }
+                                </field>`,
+                                )}
+                            </x>`
+                                : ''
+                        }
                     </command>
                 </iq>`;
 
@@ -85,7 +92,7 @@ export default {
                         text: __('A timeout occurred'),
                         type: 'error',
                     }),
-                }
+                };
             } else if (u.isErrorStanza(result)) {
                 log.error('Error while trying to execute an ad-hoc command');
                 log.error(result);
@@ -98,7 +105,7 @@ export default {
                 status,
                 ...(status === 'executing' || (status === 'completed' && resultData) ? parseCommandResult(result) : {}),
                 note: parseCommandNote(command),
-            }
-        }
-    }
-}
+            };
+        },
+    },
+};

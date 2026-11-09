@@ -3,13 +3,13 @@
  * @license Mozilla Public License (MPLv2)
  * @description Accessible audio player component that works with screen readers
  */
-import { html } from "lit";
-import { api, u } from "@converse/headless";
-import { CustomElement } from "shared/components/element.js";
-import { __ } from "i18n";
+import { html } from 'lit';
+import { api, u } from '@converse/headless';
+import { CustomElement } from 'shared/components/element.js';
+import { __ } from 'i18n';
 
-import "shared/components/icons.js";
-import "../styles/audio-player.scss";
+import 'shared/components/icons.js';
+import '../styles/audio-player.scss';
 
 /**
  * Available playback speed options
@@ -23,11 +23,11 @@ const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
  */
 function formatTime(seconds) {
     if (!isFinite(seconds) || isNaN(seconds)) {
-        return "0:00";
+        return '0:00';
     }
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
 /**
@@ -36,7 +36,7 @@ function formatTime(seconds) {
  * @returns {string}
  */
 function formatSpeed(speed) {
-    return speed === 1 ? "1x" : `${speed}x`;
+    return speed === 1 ? '1x' : `${speed}x`;
 }
 
 /**
@@ -63,8 +63,8 @@ export default class AudioPlayer extends CustomElement {
 
     constructor() {
         super();
-        this.src = "";
-        this.title = "";
+        this.src = '';
+        this.title = '';
         this.hide_url = false;
         this.is_playing = false;
         this.current_time = 0;
@@ -91,35 +91,35 @@ export default class AudioPlayer extends CustomElement {
 
     #setupAudio() {
         this.audio = new Audio();
-        this.audio.preload = "metadata";
+        this.audio.preload = 'metadata';
         this.audio.src = this.src;
 
         // Event listeners
-        this.audio.addEventListener("loadedmetadata", this.#onLoadedMetadata);
-        this.audio.addEventListener("timeupdate", this.#onTimeUpdate);
-        this.audio.addEventListener("play", this.#onPlay);
-        this.audio.addEventListener("pause", this.#onPause);
-        this.audio.addEventListener("ended", this.#onEnded);
-        this.audio.addEventListener("volumechange", this.#onVolumeChange);
-        this.audio.addEventListener("error", this.#onError);
-        this.audio.addEventListener("canplay", this.#onCanPlay);
-        this.audio.addEventListener("waiting", this.#onWaiting);
-        this.audio.addEventListener("ratechange", this.#onRateChange);
+        this.audio.addEventListener('loadedmetadata', this.#onLoadedMetadata);
+        this.audio.addEventListener('timeupdate', this.#onTimeUpdate);
+        this.audio.addEventListener('play', this.#onPlay);
+        this.audio.addEventListener('pause', this.#onPause);
+        this.audio.addEventListener('ended', this.#onEnded);
+        this.audio.addEventListener('volumechange', this.#onVolumeChange);
+        this.audio.addEventListener('error', this.#onError);
+        this.audio.addEventListener('canplay', this.#onCanPlay);
+        this.audio.addEventListener('waiting', this.#onWaiting);
+        this.audio.addEventListener('ratechange', this.#onRateChange);
     }
 
     #cleanupAudio() {
         if (this.audio) {
             this.audio.pause();
-            this.audio.removeEventListener("loadedmetadata", this.#onLoadedMetadata);
-            this.audio.removeEventListener("timeupdate", this.#onTimeUpdate);
-            this.audio.removeEventListener("play", this.#onPlay);
-            this.audio.removeEventListener("pause", this.#onPause);
-            this.audio.removeEventListener("ended", this.#onEnded);
-            this.audio.removeEventListener("volumechange", this.#onVolumeChange);
-            this.audio.removeEventListener("error", this.#onError);
-            this.audio.removeEventListener("canplay", this.#onCanPlay);
-            this.audio.removeEventListener("waiting", this.#onWaiting);
-            this.audio.removeEventListener("ratechange", this.#onRateChange);
+            this.audio.removeEventListener('loadedmetadata', this.#onLoadedMetadata);
+            this.audio.removeEventListener('timeupdate', this.#onTimeUpdate);
+            this.audio.removeEventListener('play', this.#onPlay);
+            this.audio.removeEventListener('pause', this.#onPause);
+            this.audio.removeEventListener('ended', this.#onEnded);
+            this.audio.removeEventListener('volumechange', this.#onVolumeChange);
+            this.audio.removeEventListener('error', this.#onError);
+            this.audio.removeEventListener('canplay', this.#onCanPlay);
+            this.audio.removeEventListener('waiting', this.#onWaiting);
+            this.audio.removeEventListener('ratechange', this.#onRateChange);
             this.audio = null;
         }
     }
@@ -198,9 +198,9 @@ export default class AudioPlayer extends CustomElement {
         } else {
             this.audio.play().catch((error) => {
                 // Pausing before playback starts rejects the pending play()
-                if (error.name === "AbortError") return;
+                if (error.name === 'AbortError') return;
 
-                console.error("Audio playback failed:", error);
+                console.error('Audio playback failed:', error);
                 this.has_error = true;
                 this.requestUpdate();
             });
@@ -212,7 +212,7 @@ export default class AudioPlayer extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     #onPlayPauseKeyDown = (ev) => {
-        if (ev.key === "Enter" || ev.key === " ") {
+        if (ev.key === 'Enter' || ev.key === ' ') {
             ev.preventDefault();
             this.togglePlay();
         }
@@ -238,18 +238,18 @@ export default class AudioPlayer extends CustomElement {
         if (!this.audio) return;
         const step = this.duration > 60 ? 5 : 1; // 5 seconds for longer audio, 1 for short
 
-        if (ev.key === "ArrowLeft" || ev.key === "ArrowDown") {
+        if (ev.key === 'ArrowLeft' || ev.key === 'ArrowDown') {
             ev.preventDefault();
             const newTime = Math.max(0, this.current_time - step);
             this.audio.currentTime = newTime;
-        } else if (ev.key === "ArrowRight" || ev.key === "ArrowUp") {
+        } else if (ev.key === 'ArrowRight' || ev.key === 'ArrowUp') {
             ev.preventDefault();
             const newTime = Math.min(this.duration, this.current_time + step);
             this.audio.currentTime = newTime;
-        } else if (ev.key === "Home") {
+        } else if (ev.key === 'Home') {
             ev.preventDefault();
             this.audio.currentTime = 0;
-        } else if (ev.key === "End") {
+        } else if (ev.key === 'End') {
             ev.preventDefault();
             this.audio.currentTime = this.duration;
         }
@@ -270,7 +270,7 @@ export default class AudioPlayer extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     #onMuteKeyDown = (ev) => {
-        if (ev.key === "Enter" || ev.key === " ") {
+        if (ev.key === 'Enter' || ev.key === ' ') {
             ev.preventDefault();
             this.toggleMute();
         }
@@ -298,11 +298,11 @@ export default class AudioPlayer extends CustomElement {
         if (!this.audio) return;
         const step = 0.1;
 
-        if (ev.key === "ArrowLeft" || ev.key === "ArrowDown") {
+        if (ev.key === 'ArrowLeft' || ev.key === 'ArrowDown') {
             ev.preventDefault();
             const newVolume = Math.max(0, this.volume - step);
             this.audio.volume = newVolume;
-        } else if (ev.key === "ArrowRight" || ev.key === "ArrowUp") {
+        } else if (ev.key === 'ArrowRight' || ev.key === 'ArrowUp') {
             ev.preventDefault();
             const newVolume = Math.min(1, this.volume + step);
             this.audio.volume = newVolume;
@@ -327,7 +327,7 @@ export default class AudioPlayer extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     #onSpeedKeyDown = (ev) => {
-        if (ev.key === "Enter" || ev.key === " ") {
+        if (ev.key === 'Enter' || ev.key === ' ') {
             ev.preventDefault();
             this.cyclePlaybackSpeed();
         }
@@ -339,28 +339,28 @@ export default class AudioPlayer extends CustomElement {
      */
     #getVolumeIcon() {
         if (this.is_muted || this.volume === 0) {
-            return "fa fa-volume-xmark";
+            return 'fa fa-volume-xmark';
         } else if (this.volume < 0.5) {
-            return "fa fa-volume-low";
+            return 'fa fa-volume-low';
         } else {
-            return "fa fa-volume-high";
+            return 'fa fa-volume-high';
         }
     }
 
     render() {
-        const { hostname } = this.src ? u.getURL(this.src) : { hostname: "" };
-        const i18n_play = __("Play");
-        const i18n_pause = __("Pause");
-        const i18n_mute = __("Mute");
-        const i18n_unmute = __("Unmute");
-        const i18n_seek = __("Seek");
-        const i18n_volume = __("Volume");
-        const i18n_audio_player = __("Audio player");
-        const i18n_loading = __("Loading audio...");
-        const i18n_error = __("Error loading audio");
-        const i18n_current_time = __("Current time");
-        const i18n_duration = __("Duration");
-        const i18n_playback_speed = __("Playback speed");
+        const { hostname } = this.src ? u.getURL(this.src) : { hostname: '' };
+        const i18n_play = __('Play');
+        const i18n_pause = __('Pause');
+        const i18n_mute = __('Mute');
+        const i18n_unmute = __('Unmute');
+        const i18n_seek = __('Seek');
+        const i18n_volume = __('Volume');
+        const i18n_audio_player = __('Audio player');
+        const i18n_loading = __('Loading audio...');
+        const i18n_error = __('Error loading audio');
+        const i18n_current_time = __('Current time');
+        const i18n_duration = __('Duration');
+        const i18n_playback_speed = __('Playback speed');
 
         const play_pause_label = this.is_playing ? i18n_pause : i18n_play;
         const mute_label = this.is_muted ? i18n_unmute : i18n_mute;
@@ -370,21 +370,25 @@ export default class AudioPlayer extends CustomElement {
 
         return html`
             <figure class="audio-player" role="group" aria-label="${i18n_audio_player}">
-                ${this.title || !this.hide_url
-                    ? html`<figcaption class="audio-player__caption">
-                          ${this.title ? html`<span class="audio-player__title">${this.title}</span>` : ""}
-                          ${this.hide_url || !hostname
-                              ? ""
-                              : html`<a
-                                    class="audio-player__link"
-                                    target="_blank"
-                                    rel="noopener"
-                                    title="${this.src}"
-                                    href="${this.src}"
-                                    >${hostname}</a
-                                >`}
-                      </figcaption>`
-                    : ""}
+                ${
+                    this.title || !this.hide_url
+                        ? html`<figcaption class="audio-player__caption">
+                              ${this.title ? html`<span class="audio-player__title">${this.title}</span>` : ''}
+                              ${
+                                  this.hide_url || !hostname
+                                      ? ''
+                                      : html`<a
+                                            class="audio-player__link"
+                                            target="_blank"
+                                            rel="noopener"
+                                            title="${this.src}"
+                                            href="${this.src}"
+                                            >${hostname}</a
+                                        >`
+                              }
+                          </figcaption>`
+                        : ''
+                }
 
                 <div class="audio-player__controls">
                     <!-- Play/Pause Button -->
@@ -397,23 +401,25 @@ export default class AudioPlayer extends CustomElement {
                         aria-pressed="${this.is_playing}"
                         ?disabled=${this.has_error}
                     >
-                        ${this.is_loading
-                            ? html`<converse-icon
-                                  aria-hidden="true"
-                                  class="fa fa-spinner audio-player__spinner"
-                                  size="1.2em"
-                              ></converse-icon>`
-                            : this.is_playing
-                              ? html`<converse-icon
-                                    aria-hidden="true"
-                                    class="fa fa-pause"
-                                    size="1.2em"
-                                ></converse-icon>`
-                              : html`<converse-icon
-                                    aria-hidden="true"
-                                    class="fa fa-play"
-                                    size="1.2em"
-                                ></converse-icon>`}
+                        ${
+                            this.is_loading
+                                ? html`<converse-icon
+                                      aria-hidden="true"
+                                      class="fa fa-spinner audio-player__spinner"
+                                      size="1.2em"
+                                  ></converse-icon>`
+                                : this.is_playing
+                                  ? html`<converse-icon
+                                        aria-hidden="true"
+                                        class="fa fa-pause"
+                                        size="1.2em"
+                                    ></converse-icon>`
+                                  : html`<converse-icon
+                                        aria-hidden="true"
+                                        class="fa fa-play"
+                                        size="1.2em"
+                                    ></converse-icon>`
+                        }
                     </button>
 
                     <!-- Time Display -->
@@ -503,17 +509,12 @@ export default class AudioPlayer extends CustomElement {
                 </div>
 
                 <!-- Status announcements for screen readers -->
-                <div
-                    class="visually-hidden"
-                    role="status"
-                    aria-live="polite"
-                    aria-atomic="true"
-                >
-                    ${this.has_error ? i18n_error : this.is_loading ? i18n_loading : ""}
+                <div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+                    ${this.has_error ? i18n_error : this.is_loading ? i18n_loading : ''}
                 </div>
             </figure>
         `;
     }
 }
 
-api.elements.define("converse-audio-player", AudioPlayer);
+api.elements.define('converse-audio-player', AudioPlayer);

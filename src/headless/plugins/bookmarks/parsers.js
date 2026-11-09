@@ -28,8 +28,8 @@ export async function parseStanzaForBookmarks(stanza) {
                 autojoin: ['1', 'true'].includes(el.getAttribute('autojoin')),
                 nick: el.querySelector('nick')?.textContent ?? '',
                 password: el.querySelector('password')?.textContent ?? '',
-                extensions: Array.from(el.querySelector('extensions')?.children ?? []).map(c => c.outerHTML),
+                extensions: Array.from(el.querySelector('extensions')?.children ?? []).map((c) => c.outerHTML),
             };
-        }
+        },
     );
 }

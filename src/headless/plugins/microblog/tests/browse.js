@@ -58,7 +58,8 @@ describe('Microblog browseFeeds (XEP-0060 node discovery)', function () {
                 itemsResult([{ node: 'news', name: 'Community News' }, { node: 'weather' }, { node: 'avatars' }]),
             );
             vi.spyOn(api.disco, 'info').mockImplementation((_jid, node) => {
-                if (node === 'news') return Promise.resolve(infoResult('news', { title: 'Town News', type: ATOM, subs: 214 }));
+                if (node === 'news')
+                    return Promise.resolve(infoResult('news', { title: 'Town News', type: ATOM, subs: 214 }));
                 if (node === 'weather') return Promise.resolve(infoResult('weather', { title: 'Weather', type: ATOM }));
                 // A non-feed node (e.g. an avatar node): no Atom type.
                 return Promise.resolve(infoResult('avatars', { type: 'urn:xmpp:avatar:data' }));
@@ -168,7 +169,9 @@ describe('Microblog browseFeeds (XEP-0060 node discovery)', function () {
                 if (!after) return Promise.resolve(itemsResult([{ node: 'a' }, { node: 'b' }], { last: 'c1' }));
                 return Promise.resolve(itemsResult([{ node: 'c' }], { last: 'c2' }));
             });
-            vi.spyOn(api.disco, 'info').mockImplementation((_jid, node) => Promise.resolve(infoResult(node, { type: ATOM })));
+            vi.spyOn(api.disco, 'info').mockImplementation((_jid, node) =>
+                Promise.resolve(infoResult(node, { type: ATOM })),
+            );
 
             const page1 = await api.microblog.browseFeeds(SERVICE, { max: 2 });
             expect(page1.feeds.map((f) => f.node)).toEqual(['a', 'b']);
@@ -192,10 +195,7 @@ describe('Microblog browseFeeds (XEP-0060 node discovery)', function () {
             // exhausted, so has_more stays true (the UI pages past it).
             vi.spyOn(api.disco, 'items').mockResolvedValue(
                 itemsResult(
-                    [
-                        { node: 'urn:xmpp:microblog:0:comments/aaa' },
-                        { node: 'urn:xmpp:microblog:0:comments/bbb' },
-                    ],
+                    [{ node: 'urn:xmpp:microblog:0:comments/aaa' }, { node: 'urn:xmpp:microblog:0:comments/bbb' }],
                     { last: 'c1' },
                 ),
             );
@@ -218,7 +218,9 @@ describe('Microblog browseFeeds (XEP-0060 node discovery)', function () {
             // A full page (max=2) with NO <set>: a service without RSM returns its
             // nodes in one unpaged batch, so there's no cursor to page with.
             vi.spyOn(api.disco, 'items').mockResolvedValue(itemsResult([{ node: 'a' }, { node: 'b' }]));
-            vi.spyOn(api.disco, 'info').mockImplementation((_jid, node) => Promise.resolve(infoResult(node, { type: ATOM })));
+            vi.spyOn(api.disco, 'info').mockImplementation((_jid, node) =>
+                Promise.resolve(infoResult(node, { type: ATOM })),
+            );
 
             const { cursor, has_more } = await api.microblog.browseFeeds(SERVICE, { max: 2 });
 
@@ -233,7 +235,9 @@ describe('Microblog browseFeeds (XEP-0060 node discovery)', function () {
             const { api } = _converse;
 
             vi.spyOn(api.disco, 'items').mockResolvedValue(itemsResult([{ node: 'a' }, { node: 'b' }]));
-            vi.spyOn(api.disco, 'info').mockImplementation((_jid, node) => Promise.resolve(infoResult(node, { type: ATOM })));
+            vi.spyOn(api.disco, 'info').mockImplementation((_jid, node) =>
+                Promise.resolve(infoResult(node, { type: ATOM })),
+            );
 
             const seen = [];
             await api.microblog.browseFeeds(SERVICE, { onProgress: (p) => seen.push(p) });

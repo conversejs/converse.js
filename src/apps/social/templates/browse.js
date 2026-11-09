@@ -45,19 +45,25 @@ const tplRow = (el, feed) => {
             <span class="social-browse__title">${label}</span>
             <span class="social-browse__meta">
                 ${feed.is_feed ? html`<span class="social-browse__badge">${__('Feed')}</span>` : ''}
-                ${feed.num_subscribers !== undefined
-                    ? html`<span class="social-browse__subs"
-                          >${feed.num_subscribers === 1
-                              ? __('1 subscriber')
-                              : __('%1$s subscribers', feed.num_subscribers)}</span
-                      >`
-                    : ''}
+                ${
+                    feed.num_subscribers !== undefined
+                        ? html`<span class="social-browse__subs"
+                              >${
+                                  feed.num_subscribers === 1
+                                      ? __('1 subscriber')
+                                      : __('%1$s subscribers', feed.num_subscribers)
+                              }</span
+                          >`
+                        : ''
+                }
                 <span class="social-browse__node">${feed.node}</span>
             </span>
             ${feed.description ? html`<span class="social-browse__desc">${feed.description}</span>` : ''}
-            ${state === 'error'
-                ? html`<span class="social-browse__error text-danger">${__('Could not follow this feed')}</span>`
-                : ''}
+            ${
+                state === 'error'
+                    ? html`<span class="social-browse__error text-danger">${__('Could not follow this feed')}</span>`
+                    : ''
+            }
         </a>
         ${button}
     </li>`;
@@ -83,52 +89,68 @@ export default (el) => {
                 .value=${el.service}
                 @input=${(/** @type {Event} */ ev) => el.onServiceInput(ev)}
             />
-            ${el.browsing
-                ? html`<button type="button" class="btn btn-secondary" @click=${() => el.cancel()}>
-                      ${__('Cancel')}
-                  </button>`
-                : html`<button type="submit" class="btn btn-secondary" ?disabled=${!el.service.trim()}>
-                      ${__('Browse')}
-                  </button>`}
+            ${
+                el.browsing
+                    ? html`<button type="button" class="btn btn-secondary" @click=${() => el.cancel()}>
+                          ${__('Cancel')}
+                      </button>`
+                    : html`<button type="submit" class="btn btn-secondary" ?disabled=${!el.service.trim()}>
+                          ${__('Browse')}
+                      </button>`
+            }
         </form>
 
         ${el.browsing ? html`<p class="social-browse__progress form-text text-muted">${__('Reading feeds…')}</p>` : ''}
         ${el.error ? html`<p class="social-browse__error text-danger">${el.error}</p>` : ''}
-        ${done && el.results.length === 0 && !el.has_more
-            ? html`<p class="social-browse__empty form-text text-muted">${__('This service has no feeds to show.')}</p>`
-            : ''}
-        ${done && el.results.length > 0 && feeds.length === 0 && !el.show_all
-            ? html`<p class="social-browse__empty form-text text-muted">
-                  ${__('No social feeds found on this service.')}
-              </p>`
-            : ''}
-        ${visible.length
-            ? html`<ul class="social-browse__list">
-                  ${repeat(
-                      visible,
-                      (f) => `${f.jid}/${f.node}`,
-                      (f) => tplRow(el, f),
-                  )}
-              </ul>`
-            : ''}
-        ${!el.browsing && others.length
-            ? html`<button type="button" class="social-browse__toggle" @click=${() => el.toggleShowAll()}>
-                  ${el.show_all
-                      ? __('Hide non-feed nodes')
-                      : others.length === 1
-                        ? __('Show 1 other node')
-                        : __('Show %1$s other nodes', others.length)}
-              </button>`
-            : ''}
-        ${el.has_more && !el.browsing
-            ? html`<button
-                  type="button"
-                  class="social-browse__more btn btn-secondary btn-sm"
-                  ?disabled=${el.loading_more}
-                  @click=${() => el.loadMore()}
-              >
-                  ${el.loading_more ? __('Loading…') : __('Load more')}
-              </button>`
-            : ''}
+        ${
+            done && el.results.length === 0 && !el.has_more
+                ? html`<p class="social-browse__empty form-text text-muted">
+                      ${__('This service has no feeds to show.')}
+                  </p>`
+                : ''
+        }
+        ${
+            done && el.results.length > 0 && feeds.length === 0 && !el.show_all
+                ? html`<p class="social-browse__empty form-text text-muted">
+                      ${__('No social feeds found on this service.')}
+                  </p>`
+                : ''
+        }
+        ${
+            visible.length
+                ? html`<ul class="social-browse__list">
+                      ${repeat(
+                          visible,
+                          (f) => `${f.jid}/${f.node}`,
+                          (f) => tplRow(el, f),
+                      )}
+                  </ul>`
+                : ''
+        }
+        ${
+            !el.browsing && others.length
+                ? html`<button type="button" class="social-browse__toggle" @click=${() => el.toggleShowAll()}>
+                      ${
+                          el.show_all
+                              ? __('Hide non-feed nodes')
+                              : others.length === 1
+                                ? __('Show 1 other node')
+                                : __('Show %1$s other nodes', others.length)
+                      }
+                  </button>`
+                : ''
+        }
+        ${
+            el.has_more && !el.browsing
+                ? html`<button
+                      type="button"
+                      class="social-browse__more btn btn-secondary btn-sm"
+                      ?disabled=${el.loading_more}
+                      @click=${() => el.loadMore()}
+                  >
+                      ${el.loading_more ? __('Loading…') : __('Load more')}
+                  </button>`
+                : ''
+        }
     </div>`;
 };

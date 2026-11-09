@@ -20,7 +20,7 @@ export default class AcceptContactRequestModal extends BaseModal {
         this.addEventListener(
             'shown.bs.modal',
             () => /** @type {HTMLInputElement} */ (this.querySelector('input[name="name"]'))?.focus(),
-            false
+            false,
         );
     }
 

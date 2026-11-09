@@ -31,9 +31,11 @@ export default (el) => html`
                               <p class="byline">messaging freedom</p>
                           </span>
                       </div>
-                      ${api.settings.get('view_mode') === 'overlayed'
-                          ? html`<div class="converse-brand__padding"></div>`
-                          : ''}
+                      ${
+                          api.settings.get('view_mode') === 'overlayed'
+                              ? html`<div class="converse-brand__padding"></div>`
+                              : ''
+                      }
                   </div>
               `
             : ''

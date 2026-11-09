@@ -1,14 +1,12 @@
-import { api } from "@converse/headless";
+import { api } from '@converse/headless';
 import { __ } from 'i18n';
-import BaseModal from "plugins/modal/modal.js";
-import tplUserSettingsModal from "./templates/user-settings.js";
+import BaseModal from 'plugins/modal/modal.js';
+import tplUserSettingsModal from './templates/user-settings.js';
 
 import './styles/user-settings.scss';
 
-
 export default class UserSettingsModal extends BaseModal {
-
-    constructor (options) {
+    constructor(options) {
         super(options);
 
         const show_client_info = api.settings.get('show_client_info');
@@ -22,11 +20,11 @@ export default class UserSettingsModal extends BaseModal {
         }
     }
 
-    renderModal () {
+    renderModal() {
         return tplUserSettingsModal(this);
     }
 
-    getModalTitle () {
+    getModalTitle() {
         return __('Settings');
     }
 }

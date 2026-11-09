@@ -57,7 +57,7 @@ export function parseFeedAddress(address) {
     let jid = raw;
     let node = MICROBLOG_NODE;
 
-    if ((/^xmpp:/i).test(raw)) {
+    if (/^xmpp:/i.test(raw)) {
         const [jid_part, query = ''] = raw.slice('xmpp:'.length).split('?');
         jid = decodeURIComponent(jid_part);
         // The query is `[action];key=value;key=value` (the leading action may be

@@ -45,32 +45,27 @@ describe('The app-switcher URL routing', function () {
     );
 
     it(
-        'restores each app\'s last route on a programmatic switch (syncAppToHash)',
-        mock.initConverse(
-            converse,
-            [],
-            { enable_url_routing: true, view_mode: 'fullscreen' },
-            function (_converse) {
-                const { api } = _converse;
-                const chat = api.apps.get('chat');
-                const social = api.apps.get('social');
+        "restores each app's last route on a programmatic switch (syncAppToHash)",
+        mock.initConverse(converse, [], { enable_url_routing: true, view_mode: 'fullscreen' }, function (_converse) {
+            const { api } = _converse;
+            const chat = api.apps.get('chat');
+            const social = api.apps.get('social');
 
-                // `appSwitch` is what `api.apps.switch` triggers for the hash side;
-                // firing it directly exercises `syncAppToHash`.
-                history.replaceState(null, '', '#converse/chat/mercutio@montague.lit');
-                api.trigger('appSwitch', social);
-                expect(location.hash).toBe('#converse/social');
+            // `appSwitch` is what `api.apps.switch` triggers for the hash side;
+            // firing it directly exercises `syncAppToHash`.
+            history.replaceState(null, '', '#converse/chat/mercutio@montague.lit');
+            api.trigger('appSwitch', social);
+            expect(location.hash).toBe('#converse/social');
 
-                history.replaceState(null, '', '#converse/social/tag/xmpp');
-                api.trigger('appSwitch', chat);
-                expect(location.hash).toBe('#converse/chat/mercutio@montague.lit');
+            history.replaceState(null, '', '#converse/social/tag/xmpp');
+            api.trigger('appSwitch', chat);
+            expect(location.hash).toBe('#converse/chat/mercutio@montague.lit');
 
-                api.trigger('appSwitch', social);
-                expect(location.hash).toBe('#converse/social/tag/xmpp');
+            api.trigger('appSwitch', social);
+            expect(location.hash).toBe('#converse/social/tag/xmpp');
 
-                clearHash();
-            },
-        ),
+            clearHash();
+        }),
     );
 
     it(

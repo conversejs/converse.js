@@ -18,7 +18,7 @@ export default (el) => {
     return html`
         <span class="btn-group toolbar-buttons">${until(el.getButtons(), '')}</span>
         <span>
-            ${ message_limit ? html`<converse-message-limit-indicator .model="${el.model}"/>` : '' }
+            ${message_limit ? html`<converse-message-limit-indicator .model="${el.model}" />` : ''}
             ${el.show_send_button ? tplSendButton() : ''}
         </span>
     `;

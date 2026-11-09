@@ -91,7 +91,9 @@ describe('decodeWebP', function () {
             return bitmap;
         });
         try {
-            await expect(decodeWebP(await getFixture('animated.webp'), { signal: controller.signal })).rejects.toThrow();
+            await expect(
+                decodeWebP(await getFixture('animated.webp'), { signal: controller.signal }),
+            ).rejects.toThrow();
         } finally {
             vi.unstubAllGlobals();
         }
@@ -103,7 +105,9 @@ describe('decodeWebP', function () {
     it('throws when the browser has no ImageDecoder', async function () {
         vi.stubGlobal('ImageDecoder', undefined);
         try {
-            await expect(decodeWebP(await getFixture('animated.webp'))).rejects.toThrow('ImageDecoder is not supported');
+            await expect(decodeWebP(await getFixture('animated.webp'))).rejects.toThrow(
+                'ImageDecoder is not supported',
+            );
         } finally {
             vi.unstubAllGlobals();
         }

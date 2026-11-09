@@ -23,7 +23,7 @@
                 }
             }
 
-            .suggestion-box{
+            .suggestion-box {
                 ul {
                     padding: 0;
                     li {
@@ -104,7 +104,7 @@
                             }
                         }
 
-                        div.row.g-0{
+                        div.row.g-0 {
                             flex-wrap: nowrap;
                             min-height: 1.5em;
                         }
@@ -117,7 +117,7 @@
         }
     }
 
-    converse-app-chat{
+    converse-app-chat {
         &.converse-overlayed {
             converse-muc-occupants {
                 .occupants {

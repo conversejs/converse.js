@@ -58,7 +58,7 @@ describe('Chatboxes', function () {
                 }
                 await u.waitUntil(() => sizzle('converse-chat-message', view).length === 10);
 
-            await mock.setComposerText(view, '/clear');
+                await mock.setComposerText(view, '/clear');
                 await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => _converse.api.confirm.calls.count() === 1);
                 await u.waitUntil(() => sizzle('converse-chat-message', view).length === 0);

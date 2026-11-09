@@ -8,7 +8,12 @@ const { Strophe, u } = converse.env;
 // The voice-messages plugin is on by default and adds its own item to the menu.
 // These tests are about the built-in items, so it is left out here.
 function initConverse(converse, promise_names, settings, func) {
-    return mock.initConverse(converse, promise_names, { blacklisted_plugins: ['converse-voice-messages'], ...settings }, func);
+    return mock.initConverse(
+        converse,
+        promise_names,
+        { blacklisted_plugins: ['converse-voice-messages'], ...settings },
+        func,
+    );
 }
 
 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
@@ -443,7 +448,13 @@ describe('The attachment menu and plugins', function () {
         initConverse(converse, ['chatBoxesFetched'], settings, async function (_converse) {
             const log_error = vi.spyOn(converse.env.log, 'error').mockImplementation(() => {});
             _converse.api.listen.on('getAttachmentMenuItems', (_menu, items) => {
-                items.push({ name: 'test-item', order: 250, icon: 'fa-star', label: 'Share a star', handler: () => {} });
+                items.push({
+                    name: 'test-item',
+                    order: 250,
+                    icon: 'fa-star',
+                    label: 'Share a star',
+                    handler: () => {},
+                });
             });
             const view = await openChat(_converse);
             await u.waitUntil(() =>

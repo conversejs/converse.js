@@ -44,9 +44,10 @@ export function getCallButton(toolbar_el, buttons) {
         ev.preventDefault();
         api.calls.dial(model.get('jid'));
     };
-    buttons.push(html`
-        <button type="button" class="btn start-call" title="${__('Start an audio call')}" @click=${onClick}>
+    buttons.push(
+        html` <button type="button" class="btn start-call" title="${__('Start an audio call')}" @click=${onClick}>
             <converse-icon color="var(--chat-color)" class="fa fa-phone" size="1em"></converse-icon>
-        </button>`);
+        </button>`,
+    );
     return buttons;
 }

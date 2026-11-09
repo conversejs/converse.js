@@ -23,7 +23,7 @@ function attr(name, value) {
  */
 function assertSingleLine(value) {
     if (typeof value === 'string') {
-        if ((/[\r\n]/).test(value)) throw new Error('Jingle value contains a line break');
+        if (/[\r\n]/.test(value)) throw new Error('Jingle value contains a line break');
     } else if (value && typeof value === 'object') {
         Object.values(value).forEach(assertSingleLine);
     }
@@ -212,31 +212,36 @@ function buildDescription(media) {
                     ${fmtp ? parseFmtpConfig(fmtp).map((p) => stx`<parameter ${p.name ? attr('name', p.name) : ''} value="${p.value}"/>`) : ''}
                     ${fbs.map(
                         (fb) =>
-                            stx`<rtcp-fb xmlns="${Strophe.NS.JINGLE_RTP_FB}" type="${fb.type}" ${fb.subtype ? attr('subtype', fb.subtype) : ''}/>`
+                            stx`<rtcp-fb xmlns="${Strophe.NS.JINGLE_RTP_FB}" type="${fb.type}" ${fb.subtype ? attr('subtype', fb.subtype) : ''}/>`,
                     )}
                 </payload-type>`;
             })}
             ${(fb_by_payload['*'] ?? []).map(
                 (fb) =>
-                    stx`<rtcp-fb xmlns="${Strophe.NS.JINGLE_RTP_FB}" type="${fb.type}" ${fb.subtype ? attr('subtype', fb.subtype) : ''}/>`
+                    stx`<rtcp-fb xmlns="${Strophe.NS.JINGLE_RTP_FB}" type="${fb.type}" ${fb.subtype ? attr('subtype', fb.subtype) : ''}/>`,
             )}
             ${(media.ext ?? []).map(
-                (e) => stx`<rtp-hdrext xmlns="${Strophe.NS.JINGLE_RTP_HDREXT}" id="${e.value}" uri="${e.uri}"/>`
+                (e) => stx`<rtp-hdrext xmlns="${Strophe.NS.JINGLE_RTP_HDREXT}" id="${e.value}" uri="${e.uri}"/>`,
             )}
             ${media.extmapAllowMixed ? stx`<extmap-allow-mixed xmlns="${Strophe.NS.JINGLE_RTP_HDREXT}"/>` : ''}
             ${(media.ssrcGroups ?? []).map(
                 (g) => stx`
                 <ssrc-group xmlns="${Strophe.NS.JINGLE_RTP_SSMA}" semantics="${g.semantics}">
-                    ${String(g.ssrcs).split(' ').map((ssrc) => stx`<source ssrc="${ssrc}"/>`)}
-                </ssrc-group>`
+                    ${String(g.ssrcs)
+                        .split(' ')
+                        .map((ssrc) => stx`<source ssrc="${ssrc}"/>`)}
+                </ssrc-group>`,
             )}
             ${Object.entries(ssrcs_by_id).map(
                 ([id, params]) => stx`
                 <source xmlns="${Strophe.NS.JINGLE_RTP_SSMA}" ssrc="${id}">
-                    ${/** @type {any[]} */ (params).map(
-                        (s) => stx`<parameter name="${s.attribute}" ${s.value !== undefined ? attr('value', s.value) : ''}/>`
-                    )}
-                </source>`
+                    ${
+                        /** @type {any[]} */ (params).map(
+                            (s) =>
+                                stx`<parameter name="${s.attribute}" ${s.value !== undefined ? attr('value', s.value) : ''}/>`,
+                        )
+                    }
+                </source>`,
             )}
             ${media.rtcpMux ? stx`<rtcp-mux/>` : ''}
         </description>`;
@@ -302,7 +307,9 @@ export function sdpToJingle(sdp, options) {
                 bundle
                     ? stx`
                 <group xmlns="${Strophe.NS.JINGLE_GROUPING}" semantics="BUNDLE">
-                    ${String(bundle.mids).split(' ').map((mid) => stx`<content name="${mid}"/>`)}
+                    ${String(bundle.mids)
+                        .split(' ')
+                        .map((mid) => stx`<content name="${mid}"/>`)}
                 </group>`
                     : ''
             }

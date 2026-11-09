@@ -56,9 +56,8 @@ export function handleBookmarksPush(message) {
     return true;
 }
 
-
 Object.assign(u, {
     bookmarks: {
         getStorageKeys,
-    }
+    },
 });

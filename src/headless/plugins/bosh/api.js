@@ -13,7 +13,7 @@ export default {
          * @returns {string} A token, either the RID or SID token depending on what's asked for.
          * @example _converse.api.tokens.get('rid');
          */
-        get (id) {
+        get(id) {
             const connection = api.connection.get();
             if (!connection) return null;
 
@@ -22,7 +22,6 @@ export default {
             } else if (id.toLowerCase() === 'sid') {
                 return connection.sid || connection._proto.sid;
             }
-        }
-    }
-
+        },
+    },
 };

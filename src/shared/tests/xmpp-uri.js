@@ -1,12 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { api } from '@converse/headless';
-import {
-    parseXMPPURI,
-    isHandledXMPPURI,
-    invitationToXMPPURI,
-    getShareableLink,
-    DEFAULT_ACTION,
-} from '../xmpp-uri.js';
+import { parseXMPPURI, isHandledXMPPURI, invitationToXMPPURI, getShareableLink, DEFAULT_ACTION } from '../xmpp-uri.js';
 
 describe('XEP-0147 xmpp: URI parsing', function () {
     it('parses a bare JID with no query', function () {

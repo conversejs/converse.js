@@ -126,13 +126,15 @@ export default (el) => {
                     @click="${el.toggleRoster}"
                 >
                     ${i18n_heading_contacts}
-                    ${roster.length
-                        ? html`<converse-icon
-                              class="fa ${is_closed ? 'fa-caret-right' : 'fa-caret-down'}"
-                              size="1em"
-                              color="var(--chat-color)"
-                          ></converse-icon>`
-                        : ''}
+                    ${
+                        roster.length
+                            ? html`<converse-icon
+                                  class="fa ${is_closed ? 'fa-caret-right' : 'fa-caret-down'}"
+                                  size="1em"
+                                  color="var(--chat-color)"
+                              ></converse-icon>`
+                            : ''
+                    }
                 </a>
             </span>
             <converse-dropdown
@@ -142,15 +144,17 @@ export default (el) => {
         </div>
 
         <div class="list-container roster-contacts ${is_closed ? 'hidden' : ''}">
-            ${is_filter_visible
-                ? html`<converse-list-filter
-                      @update=${() => el.requestUpdate()}
-                      .promise=${api.waitUntil('rosterInitialized')}
-                      .items=${_converse.state.roster}
-                      .template=${tplRosterFilter}
-                      .model=${_converse.state.roster_filter}
-                  ></converse-list-filter>`
-                : ''}
+            ${
+                is_filter_visible
+                    ? html`<converse-list-filter
+                          @update=${() => el.requestUpdate()}
+                          .promise=${api.waitUntil('rosterInitialized')}
+                          .items=${_converse.state.roster}
+                          .template=${tplRosterFilter}
+                          .model=${_converse.state.roster_filter}
+                      ></converse-list-filter>`
+                    : ''
+            }
             ${repeat(
                 groupnames,
                 (n) => n,

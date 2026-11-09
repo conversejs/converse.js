@@ -54,10 +54,12 @@ export function tplRoomSuggestion(suggestion, query) {
     const i18n_participants = __('Participants');
     return html`<li aria-selected="false" class="room-suggestion" title="${description ?? ''}">
         <span class="room-suggestion__label">${highlightMatches(suggestion.label, query)}</span>
-        ${nusers === undefined
-            ? ''
-            : html`<span class="room-suggestion__nusers" title="${i18n_participants}">
-                  <converse-icon class="fa fa-users" size="0.8em"></converse-icon> ${nusers}
-              </span>`}
+        ${
+            nusers === undefined
+                ? ''
+                : html`<span class="room-suggestion__nusers" title="${i18n_participants}">
+                      <converse-icon class="fa fa-users" size="0.8em"></converse-icon> ${nusers}
+                  </span>`
+        }
     </li>`;
 }

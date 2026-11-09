@@ -1,7 +1,7 @@
 import { Strophe } from 'strophe.js';
 
 export const BOSH_WAIT = 59;
-export const VERSION_NAME = "v14.0.0";
+export const VERSION_NAME = 'v14.0.0';
 
 export const PRES_SHOW_VALUES = ['chat', 'dnd', 'away', 'xa'];
 export const PRES_TYPE_VALUES = [
@@ -26,22 +26,22 @@ export const STATUS_WEIGHTS = {
 };
 
 export const METADATA_ATTRIBUTES = [
-    "og:article:author",
-    "og:article:published_time",
-    "og:description",
-    "og:image",
-    "og:image:height",
-    "og:image:width",
-    "og:site_name",
-    "og:title",
-    "og:type",
-    "og:url",
-    "og:video:height",
-    "og:video:secure_url",
-    "og:video:tag",
-    "og:video:type",
-    "og:video:url",
-    "og:video:width"
+    'og:article:author',
+    'og:article:published_time',
+    'og:description',
+    'og:image',
+    'og:image:height',
+    'og:image:width',
+    'og:site_name',
+    'og:title',
+    'og:type',
+    'og:url',
+    'og:video:height',
+    'og:video:secure_url',
+    'og:video:tag',
+    'og:video:type',
+    'og:video:url',
+    'og:video:width',
 ];
 
 export const ANONYMOUS = 'anonymous';
@@ -159,19 +159,19 @@ export const CHAT_STATES = ['active', 'composing', 'gone', 'inactive', 'paused']
 export const MARKER_TYPES = ['displayed', 'received', 'acknowledged'];
 
 export const KEYCODES = {
-    TAB: "Tab",
-    ENTER: "Enter",
-    SHIFT: "Shift",
-    CTRL: "Control",
-    ALT: "Alt",
-    ESCAPE: "Escape",
-    LEFT_ARROW: "ArrowLeft",
-    UP_ARROW: "ArrowUp",
-    RIGHT_ARROW: "ArrowRight",
-    DOWN_ARROW: "ArrowDown",
-    FORWARD_SLASH: "Divide",
-    AT: "Alt",
-    META: "Meta",
+    TAB: 'Tab',
+    ENTER: 'Enter',
+    SHIFT: 'Shift',
+    CTRL: 'Control',
+    ALT: 'Alt',
+    ESCAPE: 'Escape',
+    LEFT_ARROW: 'ArrowLeft',
+    UP_ARROW: 'ArrowUp',
+    RIGHT_ARROW: 'ArrowRight',
+    DOWN_ARROW: 'ArrowDown',
+    FORWARD_SLASH: 'Divide',
+    AT: 'Alt',
+    META: 'Meta',
 };
 
 export const XFORM_TYPE_MAP = {
@@ -183,7 +183,7 @@ export const XFORM_TYPE_MAP = {
     'hidden': 'hidden',
     'jid-multi': 'textarea',
     'list-single': 'dropdown',
-    'list-multi': 'dropdown'
+    'list-multi': 'dropdown',
 };
 
 export const XFORM_VALIDATE_TYPE_MAP = {

@@ -53,7 +53,7 @@ export const settings_api = {
      *     { deep_merge: ['visible_toolbar_buttons'] }
      * );
      */
-    extend (settings, options) {
+    extend(settings, options) {
         return extendAppSettings(settings, options);
     },
 
@@ -64,7 +64,7 @@ export const settings_api = {
      *  settings if no key was specified.
      * @example api.settings.get("play_sounds");
      */
-    get (key) {
+    get(key) {
         return key ? getAppSetting(key) : getAppSettings();
     },
 
@@ -87,7 +87,7 @@ export const settings_api = {
      *     "hide_offline_users": true
      * });
      */
-    set (settings_or_key, value) {
+    set(settings_or_key, value) {
         updateAppSettings(settings_or_key, value);
     },
 
@@ -109,7 +109,7 @@ export const settings_api = {
          *  handler function.
          * @example api.settings.listen.on('change', callback);
          */
-        on (name, handler, context) {
+        on(name, handler, context) {
             registerListener(name, handler, context);
         },
 
@@ -120,8 +120,8 @@ export const settings_api = {
          * @param { Function } handler The callback method that is to no longer be called when the event fires
          * @example api.settings.listen.not('change', callback);
          */
-        not (name, handler) {
+        not(name, handler) {
             unregisterListener(name, handler);
-        }
-    }
+        },
+    },
 };

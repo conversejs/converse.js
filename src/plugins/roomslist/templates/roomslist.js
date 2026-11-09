@@ -137,13 +137,15 @@ export default (el) => {
                     @click=${(/** @type {Event} */ ev) => el.toggleRoomsList(ev)}
                 >
                     ${i18n_heading_chatrooms}
-                    ${rooms.length
-                        ? html`<converse-icon
-                              class="fa ${is_closed ? 'fa-caret-right' : 'fa-caret-down'}"
-                              size="1em"
-                              color="var(--muc-color)"
-                          ></converse-icon>`
-                        : ''}
+                    ${
+                        rooms.length
+                            ? html`<converse-icon
+                                  class="fa ${is_closed ? 'fa-caret-right' : 'fa-caret-down'}"
+                                  size="1em"
+                                  color="var(--muc-color)"
+                              ></converse-icon>`
+                            : ''
+                    }
                 </a>
             </span>
             <converse-dropdown class="btn-group dropstart" .items=${btns}></converse-dropdown>
@@ -152,9 +154,11 @@ export default (el) => {
         <div class="list-container list-container--openrooms ${rooms.length ? '' : 'hidden'}">
             <ul class="items-list rooms-list open-rooms-list ${is_closed ? 'collapsed' : ''}">
                 ${tplPinnedRooms(el, pinned, pinned.length > 0 && unpinned.length > 0)}
-                ${group_by_domain
-                    ? tplRoomDomainGroupList(el, unpinned)
-                    : unpinned.map(/** @param {MUC} room */ (room) => tplRoomItem(el, room))}
+                ${
+                    group_by_domain
+                        ? tplRoomDomainGroupList(el, unpinned)
+                        : unpinned.map(/** @param {MUC} room */ (room) => tplRoomItem(el, room))
+                }
             </ul>
         </div>`;
 };

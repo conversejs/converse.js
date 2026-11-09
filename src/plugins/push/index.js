@@ -13,7 +13,7 @@ const { Strophe } = converse.env;
 Strophe.addNamespace('PUSH', 'urn:xmpp:push:0');
 
 converse.plugins.add('converse-push', {
-    initialize () {
+    initialize() {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */

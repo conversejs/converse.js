@@ -28,7 +28,10 @@ describe('The roster Follow toggle', function () {
 
             // The followable contact gets a Follow toggle (appears once canFollow resolves).
             const follow_btn = await u.waitUntil(() =>
-                roster_el.querySelector(`[data-jid="${followable}"]`)?.closest('li')?.querySelector('.follow-xmpp-contact'),
+                roster_el
+                    .querySelector(`[data-jid="${followable}"]`)
+                    ?.closest('li')
+                    ?.querySelector('.follow-xmpp-contact'),
             );
             expect(follow_btn.textContent.trim()).toBe('Follow');
 

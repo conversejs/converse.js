@@ -16,7 +16,7 @@ describe('The profile modal', function () {
 
             const conn = _converse.api.connection.get();
             const sent_iq = await u.waitUntil(() =>
-                conn.IQ_stanzas.filter((iq) => sizzle('query[xmlns="jabber:iq:version"]', iq).length).pop()
+                conn.IQ_stanzas.filter((iq) => sizzle('query[xmlns="jabber:iq:version"]', iq).length).pop(),
             );
             expect(sent_iq).toEqualStanza(stx`
                 <iq id="${sent_iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">
@@ -35,7 +35,7 @@ describe('The profile modal', function () {
 
             const el = await u.waitUntil(() => modal.querySelector('.server-version'));
             expect(el.textContent.replace(/\s+/g, ' ').trim()).toBe('Prosody 0.12.0 (Debian GNU/Linux)');
-        })
+        }),
     );
 
     it(
@@ -49,6 +49,6 @@ describe('The profile modal', function () {
             await u.waitUntil(() => u.isVisible(modal), 1000);
             const button = await u.waitUntil(() => modal.querySelector('.profile-property converse-copy-button'));
             expect(button.text).toBe('romeo@montague.lit');
-        })
+        }),
     );
 });

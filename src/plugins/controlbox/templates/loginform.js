@@ -16,7 +16,7 @@ function tplTrustCheckbox(checked) {
         'To improve performance, we cache your data in this browser. ' +
             'Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. ' +
             "It's important that you explicitly log out, otherwise not all cached data might be deleted. " +
-            'Please note, when using an untrusted device, OMEMO encryption is NOT available.'
+            'Please note, when using an untrusted device, OMEMO encryption is NOT available.',
     );
     const i18n_trusted = __('This is a trusted device');
     return html`
@@ -119,11 +119,13 @@ function tplFormFields() {
     const i18n_anon_login = __('Click here to log in anonymously');
     return html`
         ${authentication == LOGIN || authentication == EXTERNAL ? tplAuthFields() : ''}
-        ${authentication == ANONYMOUS
-            ? html`<div class="text-center mb-3">
-                  <button class="btn btn-primary login-anon px-5 mx-auto" type="submit">${i18n_anon_login}</button>
-              </div>`
-            : ''}
+        ${
+            authentication == ANONYMOUS
+                ? html`<div class="text-center mb-3">
+                      <button class="btn btn-primary login-anon px-5 mx-auto" type="submit">${i18n_anon_login}</button>
+                  </div>`
+                : ''
+        }
         ${authentication == PREBIND ? html`<p class="alert alert-warning">${i18n_disconnected}</p>` : ''}
     `;
 }
@@ -143,8 +145,10 @@ export default (el) => {
         >
             <span class="feedback-message">${conn_feedback_message}</span>
         </div>
-        ${['CONNECTED', 'CONNECTING', 'AUTHENTICATING', 'RECONNECTING'].includes(CONNECTION_STATUS[connection_status])
-            ? html`<div class="text-center my-3">${tplSpinner()}</div>`
-            : tplFormFields()}
+        ${
+            ['CONNECTED', 'CONNECTING', 'AUTHENTICATING', 'RECONNECTING'].includes(CONNECTION_STATUS[connection_status])
+                ? html`<div class="text-center my-3">${tplSpinner()}</div>`
+                : tplFormFields()
+        }
     </form>`;
 };

@@ -1,6 +1,5 @@
-import { html } from "lit";
+import { html } from 'lit';
 import { __ } from 'i18n';
-
 
 export default (el) => {
     const name = el.model.getDisplayName();
@@ -12,33 +11,57 @@ export default (el) => {
     const i18n_name = __('Name');
     const i18n_nick = __('What should your nickname for this groupchat be?');
     const i18n_password = __('Password (for a protected groupchat)');
-    const i18n_password_help = __('If the groupchat requires a password to enter, you can save it here. Note this is not intended to be a secure storage.');
+    const i18n_password_help = __(
+        'If the groupchat requires a password to enter, you can save it here. Note this is not intended to be a secure storage.',
+    );
     const i18n_submit = el.bookmark ? __('Update') : __('Save');
 
     return html`
-        <form class="converse-form chatroom-form" @submit=${(/** @type {Event} */ ev) => el.onBookmarkFormSubmitted(ev)}>
+        <form
+            class="converse-form chatroom-form"
+            @submit=${(/** @type {Event} */ ev) => el.onBookmarkFormSubmitted(ev)}
+        >
             <legend>${i18n_heading}</legend>
             <fieldset>
                 <label class="form-label" for="converse_muc_bookmark_name">${i18n_name}</label>
-                <input class="form-control" type="text" value="${name}" name="name" required="required" id="converse_muc_bookmark_name"/>
+                <input
+                    class="form-control"
+                    type="text"
+                    value="${name}"
+                    name="name"
+                    required="required"
+                    id="converse_muc_bookmark_name"
+                />
             </fieldset>
             <fieldset>
                 <label class="form-label" for="converse_muc_bookmark_nick">${i18n_nick}</label>
-                <input class="form-control" type="text" name="nick" value="${nick || ''}" id="converse_muc_bookmark_nick"/>
+                <input
+                    class="form-control"
+                    type="text"
+                    name="nick"
+                    value="${nick || ''}"
+                    id="converse_muc_bookmark_nick"
+                />
             </fieldset>
             <fieldset>
                 <label for="muc-password" class="form-label">${i18n_password}</label>
                 <p class="form-help">${i18n_password_help}</p>
-                <input type="password" name="password" class="form-control" id="muc-password">
+                <input type="password" name="password" class="form-control" id="muc-password" />
             </fieldset>
             <fieldset class="form-group form-check">
-                <input class="form-check-input" id="converse_muc_bookmark_autojoin" type="checkbox" ?checked=${el.bookmark?.get('autojoin')} name="autojoin"/>
+                <input
+                    class="form-check-input"
+                    id="converse_muc_bookmark_autojoin"
+                    type="checkbox"
+                    ?checked=${el.bookmark?.get('autojoin')}
+                    name="autojoin"
+                />
                 <label class="form-check-label" for="converse_muc_bookmark_autojoin">${i18n_autojoin}</label>
             </fieldset>
             <fieldset>
-                <input class="btn btn-primary" type="submit" value="${i18n_submit}">
-                    ${el.bookmark ? html`<input class="btn btn-secondary button-remove" type="button" value="${i18n_remove}" @click=${(/** @type {Event} */ ev) => el.removeBookmark(ev)}>` : '' }
+                <input class="btn btn-primary" type="submit" value="${i18n_submit}" />
+                ${el.bookmark ? html`<input class="btn btn-secondary button-remove" type="button" value="${i18n_remove}" @click=${(/** @type {Event} */ ev) => el.removeBookmark(ev)} />` : ''}
             </fieldset>
         </form>
     `;
-}
+};

@@ -7,7 +7,7 @@ import { html } from 'lit';
 import './styles.scss';
 
 export default class ConverseGIFElement extends CustomElement {
-    static get properties () {
+    static get properties() {
         /**
          * @typedef { Object } ConverseGIFComponentProperties
          * @property { Boolean } autoplay
@@ -26,7 +26,7 @@ export default class ConverseGIFElement extends CustomElement {
         };
     }
 
-    constructor () {
+    constructor() {
         super();
         this.src = null;
         this.autoplay = false;
@@ -37,16 +37,16 @@ export default class ConverseGIFElement extends CustomElement {
         this.supergif = null;
     }
 
-    initGIF () {
+    initGIF() {
         this.supergif = new ConverseGif(this, this.getPlayerOptions());
     }
 
-    getPlayerOptions () {
+    getPlayerOptions() {
         /** @type {Record<string, any>} */
         const options = {
             'autoplay': this.autoplay,
             'loop': !this.noloop,
-        }
+        };
         if (this.progress_color) {
             options['progress_color'] = this.progress_color;
         }
@@ -57,7 +57,7 @@ export default class ConverseGIFElement extends CustomElement {
     /**
      * @param {import('lit').PropertyValues} changed
      */
-    updated (changed) {
+    updated(changed) {
         if (!this.supergif || changed.has('src')) {
             this.initGIF();
             return;
@@ -73,15 +73,16 @@ export default class ConverseGIFElement extends CustomElement {
         }
     }
 
-    render () {
-        return (this.supergif?.load_error && ['url', 'empty'].includes(this.fallback)) ? this.renderErrorFallback() :
-            html`<canvas class="gif-canvas"
+    render() {
+        return this.supergif?.load_error && ['url', 'empty'].includes(this.fallback)
+            ? this.renderErrorFallback()
+            : html`<canvas class="gif-canvas"
                 @mouseover=${() => this.setHover()}
                 @mouseleave=${() => this.unsetHover()}
-                @click=${/** @param {MouseEvent} ev */ ev => this.onControlsClicked(ev)}><img class="gif" src="${this.src}"></a></canvas>`;
+                @click=${/** @param {MouseEvent} ev */ (ev) => this.onControlsClicked(ev)}><img class="gif" src="${this.src}"></a></canvas>`;
     }
 
-    renderErrorFallback () {
+    renderErrorFallback() {
         if (this.fallback === 'url') {
             return getHyperlinkTemplate(this.src);
         } else if (this.fallback === 'empty') {
@@ -89,7 +90,7 @@ export default class ConverseGIFElement extends CustomElement {
         }
     }
 
-    setHover () {
+    setHover() {
         if (this.supergif) {
             this.supergif.hovering = true;
             this.hover_timeout && clearTimeout(this.hover_timeout);
@@ -97,12 +98,12 @@ export default class ConverseGIFElement extends CustomElement {
         }
     }
 
-    unsetHover () {
+    unsetHover() {
         if (this.supergif) this.supergif.hovering = false;
     }
 
     /** @param {MouseEvent} ev */
-    onControlsClicked (ev) {
+    onControlsClicked(ev) {
         ev.preventDefault();
         if (this.supergif.playing) {
             this.supergif.pause();

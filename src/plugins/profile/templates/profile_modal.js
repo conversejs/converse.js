@@ -46,9 +46,7 @@ export default (el) => {
     const ii18n_reset_password = __('Reset Password');
 
     const sv = el._server_version;
-    const server_version = sv
-        ? [sv.name, sv.version].filter(Boolean).join(' ') + (sv.os ? ` (${sv.os})` : '')
-        : '';
+    const server_version = sv ? [sv.name, sv.version].filter(Boolean).join(' ') + (sv.os ? ` (${sv.os})` : '') : '';
 
     // Initialize navigation_tabs as a Map
     const navigation_tabs = new Map();
@@ -158,18 +156,22 @@ export default (el) => {
                                 <label class="col-form-label">${i18n_jid}:</label>
                                 <div class="profile-property__value">${tplCopyableAddress(o.jid)}</div>
                             </div>
-                            ${share_link
-                                ? html`<div class="px-3 profile-property">
-                                      <label class="col-form-label">${i18n_share_link}:</label>
-                                      <div class="profile-property__value">${tplShareableLink(share_link)}</div>
-                                  </div>`
-                                : ''}
-                            ${server_version
-                                ? html`<div class="px-3 profile-property">
-                                      <label class="col-form-label">${i18n_server}:</label>
-                                      <div class="profile-property__value server-version">${server_version}</div>
-                                  </div>`
-                                : ''}
+                            ${
+                                share_link
+                                    ? html`<div class="px-3 profile-property">
+                                          <label class="col-form-label">${i18n_share_link}:</label>
+                                          <div class="profile-property__value">${tplShareableLink(share_link)}</div>
+                                      </div>`
+                                    : ''
+                            }
+                            ${
+                                server_version
+                                    ? html`<div class="px-3 profile-property">
+                                          <label class="col-form-label">${i18n_server}:</label>
+                                          <div class="profile-property__value server-version">${server_version}</div>
+                                      </div>`
+                                    : ''
+                            }
                         </div>
                     </div>
                     <div>
@@ -210,9 +212,11 @@ export default (el) => {
                           role="tabpanel"
                           aria-labelledby="passwordreset-tab"
                       >
-                          ${el.tab === 'passwordreset'
-                              ? html`<converse-change-password-form></converse-change-password-form>`
-                              : ''}
+                          ${
+                              el.tab === 'passwordreset'
+                                  ? html`<converse-change-password-form></converse-change-password-form>`
+                                  : ''
+                          }
                       </div>`
                     : ''
             }

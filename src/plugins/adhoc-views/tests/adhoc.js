@@ -31,12 +31,15 @@ async function completeCommand(_converse, payload) {
     let sel = `iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#items"]`;
     let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
     api.connection.get()._dataRecv(
-        mock.createRequest(_converse, stx`
+        mock.createRequest(
+            _converse,
+            stx`
         <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
             <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
                 <item node="${node}" name="Configure" jid="${entity_jid}"/>
             </query>
-        </iq>`),
+        </iq>`,
+        ),
     );
 
     (await u.waitUntil(() => adhoc_form.querySelector(`form a[data-command-node="${node}"]`))).click();
@@ -44,7 +47,9 @@ async function completeCommand(_converse, payload) {
     sel = `iq[to="${entity_jid}"] command[action="execute"]`;
     iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
     api.connection.get()._dataRecv(
-        mock.createRequest(_converse, stx`
+        mock.createRequest(
+            _converse,
+            stx`
         <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
             <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="${node}">
                 <actions><complete/></actions>
@@ -53,7 +58,8 @@ async function completeCommand(_converse, payload) {
                     <field label="Setting" type="text-single" var="setting"><value>on</value></field>
                 </x>
             </command>
-        </iq>`),
+        </iq>`,
+        ),
     );
 
     (await u.waitUntil(() => adhoc_form.querySelector('input[data-action="complete"]'))).click();
@@ -61,12 +67,15 @@ async function completeCommand(_converse, payload) {
     sel = `iq[to="${entity_jid}"] command[action="complete"]`;
     iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
     api.connection.get()._dataRecv(
-        mock.createRequest(_converse, stx`
+        mock.createRequest(
+            _converse,
+            stx`
         <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
             <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="completed" node="${node}">
                 ${payload}
             </command>
-        </iq>`),
+        </iq>`,
+        ),
     );
     return adhoc_form;
 }
@@ -102,7 +111,9 @@ describe('Ad-hoc commands', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -132,7 +143,8 @@ describe('Ad-hoc commands', function () {
                     node="adduser"
                     name="Add User"/>
             </query>
-        </iq>`),
+        </iq>`,
+                ),
             );
 
             const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
@@ -159,7 +171,9 @@ describe('Ad-hoc commands', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq to="${_converse.jid}" xmlns="jabber:client" type="result" xml:lang="en" id="${iq.getAttribute('id')}" from="${entity_jid}">
             <command status="executing" node="adduser" sessionid="1653988890.6236324-886f3dc54ce443c6b4a1805877bf7faa" xmlns="http://jabber.org/protocol/commands">
                 <actions>
@@ -182,7 +196,8 @@ describe('Ad-hoc commands', function () {
                     </field>
                 </x>
             </command>
-        </iq>`),
+        </iq>`,
+                ),
             );
 
             const form = await u.waitUntil(() => adhoc_form.querySelector('form form'));
@@ -243,7 +258,9 @@ describe('Ad-hoc commands', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -253,7 +270,8 @@ describe('Ad-hoc commands', function () {
                     node="http://jabber.org/protocol/commands">
                 <item node="uptime" name="Get uptime" jid="${entity_jid}"/>
             </query>
-        </iq>`),
+        </iq>`,
+                ),
             );
 
             const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
@@ -278,7 +296,9 @@ describe('Ad-hoc commands', function () {
                 '11 hours and 15 minutes (since Sun Nov 12 21:22:22: 2023)';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq to="${_converse.jid}"
                     xmlns="jabber:client"
                     type="result"
@@ -292,7 +312,8 @@ describe('Ad-hoc commands', function () {
                              xmlns="http://jabber.org/protocol/commands">
                         <note type="info">${uptime_text}</note>
                     </command>
-                </iq>`),
+                </iq>`,
+                ),
             );
 
             const form = await u.waitUntil(() => adhoc_form.querySelector('form form'));
@@ -337,7 +358,9 @@ describe('Ad-hoc commands', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -347,7 +370,8 @@ describe('Ad-hoc commands', function () {
                     node="http://jabber.org/protocol/commands">
                 <item node="list" name="List services" jid="${entity_jid}"/>
             </query>
-        </iq>`),
+        </iq>`,
+                ),
             );
 
             const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
@@ -367,7 +391,9 @@ describe('Ad-hoc commands', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result" from="${entity_jid}" to="${jid}" id="${iq.getAttribute('id')}" xmlns="jabber:client">
                 <command xmlns="http://jabber.org/protocol/commands"
                         sessionid="list:20020923T213616Z-700"
@@ -405,7 +431,8 @@ describe('Ad-hoc commands', function () {
                     </item>
                     </x>
                 </command>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             const table = await u.waitUntil(() => adhoc_form.querySelector('form form table'));
@@ -480,7 +507,9 @@ describe('Ad-hoc commands', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -490,7 +519,8 @@ describe('Ad-hoc commands', function () {
                     node="http://jabber.org/protocol/commands">
                 <item node="list" name="Generate Invite" jid="${entity_jid}"/>
             </query>
-        </iq>`),
+        </iq>`,
+                ),
             );
 
             const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
@@ -510,7 +540,9 @@ describe('Ad-hoc commands', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result" from="${entity_jid}" to="${jid}" id="${iq.getAttribute('id')}" xmlns="jabber:client">
                 <command node="urn:xmpp:invite#create-account"
                         status="completed"
@@ -535,7 +567,8 @@ describe('Ad-hoc commands', function () {
                         </field>
                     </x>
                 </command>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             const form = await u.waitUntil(() => adhoc_form.querySelector('form form'));
@@ -605,7 +638,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
                     <item node="uptime" name="Get uptime" jid="${entity_jid}"/>
@@ -614,7 +649,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                     <item node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" name="Multi-step command demo" jid="${entity_jid}"/>
                 </query>
             </iq>
-        `),
+        `,
+                ),
             );
 
             const item = await u.waitUntil(() =>
@@ -633,7 +669,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             const sessionid = 'f4d477d3-d8b1-452d-95c9-fece53ef99ad';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
         <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
             <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                 <actions>
@@ -668,7 +706,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                 </x>
             </command>
         </iq>
-        `),
+        `,
+                ),
             );
 
             let button = await u.waitUntil(() => modal.querySelector('input[data-action="next"]'));
@@ -704,7 +743,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                 <actions>
@@ -743,7 +784,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                 </x>
                 </command>
             </iq>
-        `),
+        `,
+                ),
             );
 
             // Step 1 also has a "complete" button, so wait for step 2 to render
@@ -778,7 +820,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:server" type="result" from="${entity_jid}" to="${_converse.jid}" id="${iq.getAttribute('id')}">
                 <command xmlns="http://jabber.org/protocol/commands"
                         sessionid="${sessionid}"
@@ -786,7 +830,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                         status="completed">
                     <note type="info">Service has been configured.</note>
                 </command>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             const close_button = await u.waitUntil(() => modal.querySelector('input.button-cancel[value="Close"]'));
@@ -803,16 +848,23 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             // Running the command again shows its actions, not the previous run's Close button
             modal.querySelector('form a[data-command-node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi"]').click();
             sel = `iq[to="${entity_jid}"] command[action="execute"]`;
-            iq = await u.waitUntil(() => IQ_stanzas.slice(iq_count).filter((iq) => sizzle(sel, iq).length).pop());
+            iq = await u.waitUntil(() =>
+                IQ_stanzas.slice(iq_count)
+                    .filter((iq) => sizzle(sel, iq).length)
+                    .pop(),
+            );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}-2" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                     <actions><next/></actions>
                     <x xmlns="jabber:x:data" type="form"><title>Step 1</title></x>
                 </command>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             await u.waitUntil(() => modal.querySelector('input[data-action="next"]'));
@@ -851,13 +903,16 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
                     <item node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" name="Multi-step command" jid="${entity_jid}"/>
                 </query>
             </iq>
-        `),
+        `,
+                ),
             );
 
             const item = await u.waitUntil(() =>
@@ -871,7 +926,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             const sessionid = 'f4d477d3-d8b1-452d-95c9-fece53ef99cc';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
         <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
             <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                 <actions>
@@ -888,7 +945,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                 </x>
             </command>
         </iq>
-        `),
+        `,
+                ),
             );
 
             const button = await u.waitUntil(() => modal.querySelector('input.button-cancel'));
@@ -907,7 +965,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands"
                         sessionid="${sessionid}"
@@ -915,7 +975,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                         node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                 </command>
             </iq>
-        `),
+        `,
+                ),
             );
         }),
     );
@@ -955,7 +1016,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <query xmlns="http://jabber.org/protocol/disco#items" node="http://jabber.org/protocol/commands">
                     <item node="uptime" name="Get uptime" jid="${entity_jid}"/>
@@ -964,7 +1027,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                     <item node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi" name="Multi-step command demo" jid="${entity_jid}"/>
                 </query>
             </iq>
-        `),
+        `,
+                ),
             );
 
             const item = await u.waitUntil(() =>
@@ -983,7 +1047,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             const sessionid = 'f4d477d3-d8b1-452d-95c9-fece53ef99ad';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                     <actions>
@@ -1000,7 +1066,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                     </x>
                 </command>
             </iq>
-        `),
+        `,
+                ),
             );
 
             let button = await u.waitUntil(() => modal.querySelector('input[data-action="next"]'));
@@ -1021,7 +1088,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                 <actions>
@@ -1039,7 +1108,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                 </x>
                 </command>
             </iq>
-        `),
+        `,
+                ),
             );
 
             button = await u.waitUntil(() => modal.querySelector('input[data-action="prev"]'));
@@ -1058,7 +1128,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client" id="${iq.getAttribute('id')}" type="result" from="${entity_jid}" to="${_converse.jid}">
                 <command xmlns="http://jabber.org/protocol/commands" sessionid="${sessionid}" status="executing" node="xmpp:zash.se/mod_adhoc_dataforms_demo#multi">
                     <actions>
@@ -1075,7 +1147,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                     </x>
                 </command>
             </iq>
-        `),
+        `,
+                ),
             );
         }),
     );
@@ -1156,7 +1229,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             let iq = await u.waitUntil(() => IQ_stanzas.filter((iq) => sizzle(sel, iq).length).pop());
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result"
                 id="${iq.getAttribute('id')}"
                 to="${_converse.jid}"
@@ -1166,7 +1241,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                         node="http://jabber.org/protocol/commands">
                     <item node="get-online-users-list" name="Get List of Online Users" jid="${entity_jid}"/>
                 </query>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             const heading = await u.waitUntil(() => adhoc_form.querySelector('.list-group-item.active'));
@@ -1188,7 +1264,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             const sessionid = 'f4d477d3-d8b1-452d-95c9-fece53ef99ad';
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result" to="${_converse.jid}" from="${entity_jid}"
             id="${iq.getAttribute('id')}" xmlns="jabber:client">
                 <command status="executing"
@@ -1216,7 +1294,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                         <next/><complete/>
                     </actions>
                 </command>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             const button = await u.waitUntil(() => adhoc_form.querySelector('input[data-action="complete"]'));
@@ -1246,7 +1325,9 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq type="result"
                 to="${entity_jid}" from="${_converse.jid}"
                 id="${iq.getAttribute('id')}" xmlns="jabber:client">
@@ -1263,7 +1344,8 @@ describe('Ad-hoc commands consisting of multiple steps', function () {
                         </field>
                     </x>
                 </command>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             const dummy = await u.waitUntil(() =>

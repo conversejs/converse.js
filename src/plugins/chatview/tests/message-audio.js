@@ -213,7 +213,8 @@ describe('A Chat Message', function () {
 
     it(
         'will render Spotify player for Spotify URLs',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesFetched'],
             { embed_3rd_party_media_players: true, view_mode: 'fullscreen' },
             async function (_converse) {

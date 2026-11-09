@@ -11,7 +11,7 @@ function whenNotConnected(el) {
     const is_fullscreen = api.settings.get('view_mode') === 'fullscreen';
     const connection_status = _converse.state.connfeedback.get('connection_status');
     const connecting = [Strophe.Status.RECONNECTING, Strophe.Status.CONNECTING, Strophe.Status.CONNECTED].includes(
-        connection_status
+        connection_status,
     );
     const view_mode = api.settings.get('view_mode');
     const show_bg = api.settings.get('show_background');
@@ -20,19 +20,21 @@ function whenNotConnected(el) {
         ${show_bg && view_mode === 'fullscreen' ? html`<converse-bg></converse-bg>` : ''}
         <converse-controlbox-buttons class="controlbox-padded"></converse-controlbox-buttons>
         <div class="controlbox-pane d-flex flex-column justify-content-between">
-            ${connecting
-                ? html`<converse-spinner class="vertically-centered fade-in"></converse-spinner>`
-                : el.model.get('active-form') === 'register'
-                  ? html`${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
-                        <converse-brand-logo></converse-brand-logo>
-                        <converse-pending-invitation></converse-pending-invitation>
-                        <converse-registration-form class="fade-in rounded"></converse-registration-form>
-                        ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''} `
-                  : html`${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
-                        <converse-brand-logo></converse-brand-logo>
-                        <converse-pending-invitation></converse-pending-invitation>
-                        <converse-login-form class="fade-in rounded"></converse-login-form>
-                        ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''} `}
+            ${
+                connecting
+                    ? html`<converse-spinner class="vertically-centered fade-in"></converse-spinner>`
+                    : el.model.get('active-form') === 'register'
+                      ? html`${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
+                            <converse-brand-logo></converse-brand-logo>
+                            <converse-pending-invitation></converse-pending-invitation>
+                            <converse-registration-form class="fade-in rounded"></converse-registration-form>
+                            ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''} `
+                      : html`${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
+                            <converse-brand-logo></converse-brand-logo>
+                            <converse-pending-invitation></converse-pending-invitation>
+                            <converse-login-form class="fade-in rounded"></converse-login-form>
+                            ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''} `
+            }
         </div>
     `;
 }
@@ -49,11 +51,12 @@ export default (el) => {
     const { renderControlbox } = api.apps.getActive();
     return html`<div class="flyout box-flyout" style="${style || nothing}">
         ${api.settings.get('view_mode') === 'overlayed' ? html`<converse-dragresize></converse-dragresize>` : ''}
-        ${el.model.get('connected')
-            ? html`<converse-user-profile></converse-user-profile>
-                  ${renderControlbox
-                      ? html`<div class="controlbox-pane">${renderControlbox()}</div>`
-                      : nothing}`
-            : whenNotConnected(el)}
+        ${
+            el.model.get('connected')
+                ? html`<converse-user-profile></converse-user-profile> ${
+                          renderControlbox ? html`<div class="controlbox-pane">${renderControlbox()}</div>` : nothing
+                      }`
+                : whenNotConnected(el)
+        }
     </div>`;
 };

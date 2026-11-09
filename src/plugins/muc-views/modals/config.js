@@ -11,23 +11,23 @@ export default class MUCConfigModal extends BaseModal {
      * @typedef {import('@converse/headless').VCardData} VCardData
      */
 
-    constructor (options) {
+    constructor(options) {
         super(options);
         this.id = 'converse-muc-config-modal';
     }
 
-    initialize () {
+    initialize() {
         super.initialize();
         this.addListeners();
     }
 
-    addListeners () {
+    addListeners() {
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.model.features, 'change:passwordprotected', () => this.requestUpdate());
         this.listenTo(this.model.session, 'change:config_stanza', () => this.requestUpdate());
     }
 
-    renderModal () {
+    renderModal() {
         return tplMUCConfigForm(this);
     }
 
@@ -43,11 +43,11 @@ export default class MUCConfigModal extends BaseModal {
         return true;
     }
 
-    getModalTitle () {
+    getModalTitle() {
         return __('Configure %1$s', this.model.getDisplayName());
     }
 
-    async getConfig () {
+    async getConfig() {
         const iq = await this.model.fetchRoomConfiguration();
         this.model.session.set('config_stanza', iq.outerHTML);
     }
@@ -55,7 +55,7 @@ export default class MUCConfigModal extends BaseModal {
     /**
      * @param {SubmitEvent} ev
      */
-    async setAvatar (ev) {
+    async setAvatar(ev) {
         if (!this.model.features.get('vcard-temp')) {
             return;
         }
@@ -79,11 +79,11 @@ export default class MUCConfigModal extends BaseModal {
     /**
      * @param {SubmitEvent} ev
      */
-    async submitConfigForm (ev) {
+    async submitConfigForm(ev) {
         ev.preventDefault();
         const inputs = sizzle(
             ':input:not([type=button]):not([type=submit]):not([name="avatar_image"][type="file"])',
-            ev.target
+            ev.target,
         );
         const config_array = inputs.map(u.webForm2xForm).filter((f) => f);
 
@@ -92,7 +92,8 @@ export default class MUCConfigModal extends BaseModal {
         } catch (e) {
             log.error(e);
             const message =
-                __("Sorry, an error occurred while trying to submit the config form.") + " " +
+                __('Sorry, an error occurred while trying to submit the config form.') +
+                ' ' +
                 __("Check your browser's developer console for details.");
             api.alert('error', __('Error'), message);
         }
@@ -101,10 +102,12 @@ export default class MUCConfigModal extends BaseModal {
             await this.setAvatar(ev);
         } catch (err) {
             log.fatal(err);
-            this.alert([
-                __("Sorry, an error happened while trying to save the groupchat avatar."),
-                __("You can check your browser's developer console for any error output.")
-            ].join(" "));
+            this.alert(
+                [
+                    __('Sorry, an error happened while trying to save the groupchat avatar.'),
+                    __("You can check your browser's developer console for any error output."),
+                ].join(' '),
+            );
             return;
         }
 

@@ -177,7 +177,9 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
             spyOn(api, 'confirm').and.callFake(() => Promise.resolve(true));
             const triggered = new Promise((resolve) => api.listen.once('openConversation', resolve));
             await clickXMPPURI(_converse, 'xmpp:coven@chat.shakespeare.lit?join');
-            expect(await triggered).toEqual(jasmine.objectContaining({ view: 'room', jid: 'coven@chat.shakespeare.lit' }));
+            expect(await triggered).toEqual(
+                jasmine.objectContaining({ view: 'room', jid: 'coven@chat.shakespeare.lit' }),
+            );
             expect(api.confirm).not.toHaveBeenCalled();
         }),
     );
@@ -194,9 +196,7 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
 
             const { sent_stanzas } = api.connection.get();
             const pres = await u.waitUntil(() =>
-                sent_stanzas.find(
-                    (s) => s.matches?.('presence[type="subscribe"]') && s.getAttribute('to') === target,
-                ),
+                sent_stanzas.find((s) => s.matches?.('presence[type="subscribe"]') && s.getAttribute('to') === target),
             );
             expect(pres).toBeDefined();
         }),
@@ -233,8 +233,7 @@ describe('The XEP-0147 xmpp: URI dispatcher', function () {
             const pres = await u.waitUntil(() =>
                 sent_stanzas.find(
                     (s) =>
-                        s.matches?.('presence[type="unsubscribe"]') &&
-                        s.getAttribute('to') === 'someone@montague.lit',
+                        s.matches?.('presence[type="unsubscribe"]') && s.getAttribute('to') === 'someone@montague.lit',
                 ),
             );
             expect(pres).toBeDefined();

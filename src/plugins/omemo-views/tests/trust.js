@@ -68,12 +68,12 @@ describe('OMEMO Trust Verification', function () {
                 const store = _converse.state.omemo_store;
                 const identity_key = new Uint8Array([1, 2, 3]).buffer;
 
-                expect(() =>
-                    store.isTrustedIdentity(null, identity_key, store.Direction.RECEIVING),
-                ).toThrowError("Can't check identity key for invalid key");
-                expect(() =>
-                    store.isTrustedIdentity(undefined, identity_key, store.Direction.RECEIVING),
-                ).toThrowError("Can't check identity key for invalid key");
+                expect(() => store.isTrustedIdentity(null, identity_key, store.Direction.RECEIVING)).toThrowError(
+                    "Can't check identity key for invalid key",
+                );
+                expect(() => store.isTrustedIdentity(undefined, identity_key, store.Direction.RECEIVING)).toThrowError(
+                    "Can't check identity key for invalid key",
+                );
             }),
         );
 
@@ -207,7 +207,7 @@ describe('OMEMO Trust Verification', function () {
                 const device = devicelist.devices.get('555');
                 device.save('trusted', UNTRUSTED);
 
-            await mock.setComposerText(view, 'This message should not be encrypted for untrusted device');
+                await mock.setComposerText(view, 'This message should not be encrypted for untrusted device');
                 await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() =>
@@ -264,7 +264,7 @@ describe('OMEMO Trust Verification', function () {
                 const device = devicelist.devices.get('555');
                 expect(device.get('trusted')).toBe(UNDECIDED);
 
-            await mock.setComposerText(view, 'This message should be encrypted for undecided device');
+                await mock.setComposerText(view, 'This message should be encrypted for undecided device');
                 await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() =>
@@ -322,7 +322,7 @@ describe('OMEMO Trust Verification', function () {
                 const device = devicelist.devices.get('555');
                 device.save('trusted', TRUSTED);
 
-            await mock.setComposerText(view, 'This message should be encrypted for trusted device');
+                await mock.setComposerText(view, 'This message should be encrypted for trusted device');
                 await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() =>
@@ -568,7 +568,7 @@ describe('OMEMO Trust Verification', function () {
                     },
                 });
 
-            await mock.setComposerText(view, 'This message should skip inactive devices');
+                await mock.setComposerText(view, 'This message should skip inactive devices');
                 await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() =>

@@ -517,41 +517,43 @@ class OMEMOStore extends Model {
      */
     fetchSession() {
         if (this.#setup_promise === undefined) {
-            this.#setup_promise = new Promise(/** @param {(v: boolean) => void} resolve */ (resolve, reject) => {
-                this.fetch({
-                    success: () => {
-                        if (!this.get('device_id') || !this.get('identity_keypair')) {
-                            // No store yet, or a generateBundle() interrupted before
-                            // the identity key was persisted. (Re)generate a complete
-                            // bundle; any half-published device_id is left as an orphan.
-                            // A brand-new bundle always needs publishing.
+            this.#setup_promise = new Promise(
+                /** @param {(v: boolean) => void} resolve */ (resolve, reject) => {
+                    this.fetch({
+                        success: () => {
+                            if (!this.get('device_id') || !this.get('identity_keypair')) {
+                                // No store yet, or a generateBundle() interrupted before
+                                // the identity key was persisted. (Re)generate a complete
+                                // bundle; any half-published device_id is left as an orphan.
+                                // A brand-new bundle always needs publishing.
+                                this.generateBundle()
+                                    .then(() => resolve(true))
+                                    .catch(reject);
+                            } else {
+                                // Existing store: backfill any missing key material and
+                                // report whether that changed the bundle.
+                                this.ensureProvisioned()
+                                    .then(resolve)
+                                    .catch((e) => {
+                                        log.error('Could not repair/migrate the OMEMO store');
+                                        log.error(e);
+                                        resolve(false);
+                                    });
+                            }
+                        },
+                        /**
+                         * @param {unknown} _model
+                         * @param {unknown} resp
+                         */
+                        error: (_model, resp) => {
+                            log.warn(`Could not restore OMEMO session, we'll generate a new one: ${resp}`);
                             this.generateBundle()
                                 .then(() => resolve(true))
                                 .catch(reject);
-                        } else {
-                            // Existing store: backfill any missing key material and
-                            // report whether that changed the bundle.
-                            this.ensureProvisioned()
-                                .then(resolve)
-                                .catch((e) => {
-                                    log.error('Could not repair/migrate the OMEMO store');
-                                    log.error(e);
-                                    resolve(false);
-                                });
-                        }
-                    },
-                    /**
-                     * @param {unknown} _model
-                     * @param {unknown} resp
-                     */
-                    error: (_model, resp) => {
-                        log.warn(`Could not restore OMEMO session, we'll generate a new one: ${resp}`);
-                        this.generateBundle()
-                            .then(() => resolve(true))
-                            .catch(reject);
-                    },
-                });
-            });
+                        },
+                    });
+                },
+            );
         }
         return this.#setup_promise;
     }

@@ -13,7 +13,7 @@ export async function onClearSession() {
         await Promise.all(chatboxes.map(/** @param {ChatBox} c */ (c) => c.messages?.clearStore({ 'silent': true })));
         chatboxes.clearStore(
             { silent: true },
-            /** @param {import('../../shared/chatbox').default} o */ (o) => o.get('type') !== constants.CONTROLBOX_TYPE
+            /** @param {import('../../shared/chatbox').default} o */ (o) => o.get('type') !== constants.CONTROLBOX_TYPE,
         );
     }
 }

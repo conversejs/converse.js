@@ -5,9 +5,7 @@ import { getTheme } from './utils.js';
 
 import './styles/background.scss';
 
-
 class ConverseBackground extends CustomElement {
-
     static get properties() {
         return {
             logo: { type: Boolean },
@@ -18,8 +16,8 @@ class ConverseBackground extends CustomElement {
         this.setThemeAttributes();
 
         const settings = api.settings.get();
-        this.listenTo(settings, 'change:view_mode', () => this.setThemeAttributes())
-        this.listenTo(settings, 'change:singleton', () => this.setThemeAttributes())
+        this.listenTo(settings, 'change:view_mode', () => this.setThemeAttributes());
+        this.listenTo(settings, 'change:singleton', () => this.setThemeAttributes());
         window.matchMedia('(prefers-color-scheme: dark)').addListener(() => this.setThemeAttributes());
         window.matchMedia('(prefers-color-scheme: light)').addListener(() => this.setThemeAttributes());
     }
@@ -28,7 +26,7 @@ class ConverseBackground extends CustomElement {
         return tplBackground(this);
     }
 
-    setThemeAttributes () {
+    setThemeAttributes() {
         const theme = getTheme();
         this.classList.forEach((name) => name.startsWith('theme-') && this.classList.remove(name));
         this.classList.add(`theme-${theme}`);
@@ -37,7 +35,6 @@ class ConverseBackground extends CustomElement {
         this.requestUpdate();
     }
 }
-
 
 api.elements.define('converse-bg', ConverseBackground);
 

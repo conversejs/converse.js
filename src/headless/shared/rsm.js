@@ -5,14 +5,14 @@
  *   Some code taken from the Strophe RSM plugin, licensed under the MIT License
  *   Copyright 2006-2017 Strophe (https://github.com/strophe/strophejs)
  */
-import { isUndefined } from "../utils/object.js";
-import converse from "./api/public.js";
+import { isUndefined } from '../utils/object.js';
+import converse from './api/public.js';
 
 const { Strophe, $build } = converse.env;
 
-Strophe.addNamespace("RSM", "http://jabber.org/protocol/rsm");
+Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 
-const RSM_QUERY_PARAMETERS = ["after", "before", "index", "max"];
+const RSM_QUERY_PARAMETERS = ['after', 'before', 'index', 'max'];
 
 const toNumber = (v) => Number(v);
 const toString = (v) => v.toString();
@@ -51,8 +51,8 @@ export class RSM {
             const elem = set.getElementsByTagName(attr)[0];
             if (!isUndefined(elem) && elem !== null) {
                 result[attr] = RSM_TYPES[attr](Strophe.getText(elem));
-                if (attr == "first") {
-                    result.index = RSM_TYPES["index"](elem.getAttribute("index"));
+                if (attr == 'first') {
+                    result.index = RSM_TYPES['index'](elem.getAttribute('index'));
                 }
             }
         }
@@ -75,12 +75,12 @@ export class RSM {
      * @returns {Element}
      */
     toXML() {
-        const xml = $build("set", { xmlns: Strophe.NS.RSM });
+        const xml = $build('set', { xmlns: Strophe.NS.RSM });
         const reducer = (xml, a) =>
             !isUndefined(this.query[a])
                 ? xml
                       .c(a)
-                      .t((this.query[a] || "").toString())
+                      .t((this.query[a] || '').toString())
                       .up()
                 : xml;
         return RSM_QUERY_PARAMETERS.reduce(reducer, xml).tree();

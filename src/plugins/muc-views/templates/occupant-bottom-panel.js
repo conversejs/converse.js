@@ -18,33 +18,41 @@ export default (el) => {
     const i18n_open_chat = __('Open Chat');
     const i18n_invite = __('Invite');
     if (conn_status === converse.ROOMSTATUS.ENTERED) {
-        return html`${el.muc.ui.get('scrolled') && el.model.get('num_unread')
-            ? html`<div class="new-msgs-indicator" @click=${(/** @type {Event} */ ev) => el.viewUnreadMessages(ev)}>▼ ${unread_msgs} ▼</div>`
-            : ''}
-        ${el.canPostMessages()
-            ? html`<converse-composer-panels .model=${el.model}></converse-composer-panels>
-                  <converse-muc-message-form .model=${el.model}></converse-muc-message-form>`
-            : html`<div class="bottom-panel bottom-panel--muted">
-                  <p class="bottom-panel--muted__msg">${i18n_not_allowed}</p>
-                  ${el.model.get('jid')
-                      ? html` <button
-                                @click=${el.openChat}
-                                type="button"
-                                class="btn btn-primary"
-                                title="${i18n_open_chat_tooltip}"
-                            >
-                                ${i18n_open_chat}
-                            </button>
-                            <button
-                                @click=${el.invite}
-                                type="button"
-                                class="btn btn-secondary"
-                                title="${i18n_invite_tooltip}"
-                            >
-                                ${i18n_invite}
-                            </button>`
-                      : ''}
-              </div>`}`;
+        return html`${
+            el.muc.ui.get('scrolled') && el.model.get('num_unread')
+                ? html`<div class="new-msgs-indicator" @click=${(/** @type {Event} */ ev) => el.viewUnreadMessages(ev)}>
+                      ▼ ${unread_msgs} ▼
+                  </div>`
+                : ''
+        }
+        ${
+            el.canPostMessages()
+                ? html`<converse-composer-panels .model=${el.model}></converse-composer-panels>
+                      <converse-muc-message-form .model=${el.model}></converse-muc-message-form>`
+                : html`<div class="bottom-panel bottom-panel--muted">
+                      <p class="bottom-panel--muted__msg">${i18n_not_allowed}</p>
+                      ${
+                          el.model.get('jid')
+                              ? html` <button
+                                        @click=${el.openChat}
+                                        type="button"
+                                        class="btn btn-primary"
+                                        title="${i18n_open_chat_tooltip}"
+                                    >
+                                        ${i18n_open_chat}
+                                    </button>
+                                    <button
+                                        @click=${el.invite}
+                                        type="button"
+                                        class="btn btn-secondary"
+                                        title="${i18n_invite_tooltip}"
+                                    >
+                                        ${i18n_invite}
+                                    </button>`
+                              : ''
+                      }
+                  </div>`
+        }`;
     } else {
         return '';
     }

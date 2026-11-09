@@ -14,5 +14,4 @@ export default class AppContainer extends CustomElement {
     }
 }
 
-
 api.elements.define('converse-app-container', AppContainer);

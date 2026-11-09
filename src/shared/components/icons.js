@@ -11,31 +11,29 @@ import { CustomElement } from './element.js';
 
 import './styles/icon.scss';
 
-
 class ConverseIcon extends CustomElement {
-
-    static get properties () {
+    static get properties() {
         return {
             color: { type: String },
-            class_name: { attribute: "class" },
+            class_name: { attribute: 'class' },
             css: { type: String },
-            size: { type: String }
+            size: { type: String },
         };
     }
 
-    constructor () {
+    constructor() {
         super();
-        this.class_name = "";
-        this.css = "";
-        this.size = "";
-        this.color = "";
+        this.class_name = '';
+        this.css = '';
+        this.size = '';
+        this.color = '';
     }
 
-    getSource () {
-        return `#icon-${this.class_name.trim().split(" ")[1].replace("fa-", "")}`;
+    getSource() {
+        return `#icon-${this.class_name.trim().split(' ')[1].replace('fa-', '')}`;
     }
 
-    getStyles () {
+    getStyles() {
         const cssprop = this.color.match(/var\((--.*)\)/)?.[1];
         const color = cssprop ? getComputedStyle(this).getPropertyValue(cssprop) : this.color;
         return `
@@ -46,7 +44,7 @@ class ConverseIcon extends CustomElement {
         `;
     }
 
-    render () {
+    render() {
         // The SVG is decorative; an accessible name, if any, goes on the host element.
         return html`<svg aria-hidden="true" .style="${this.getStyles()}">
             <use href="${this.getSource()}"></use>
@@ -54,4 +52,4 @@ class ConverseIcon extends CustomElement {
     }
 }
 
-api.elements.define("converse-icon", ConverseIcon);
+api.elements.define('converse-icon', ConverseIcon);

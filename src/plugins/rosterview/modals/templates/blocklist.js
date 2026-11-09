@@ -14,59 +14,65 @@ export default (el) => {
         return html`
             <form @submit="${(ev) => el.unblockUsers(ev)}">
                 <div class="d-flex justify-content-between">
-                    ${el.blocklist.length > 5
-                        ? html`<p style="line-height: 3em">
-                              ${__('%1$s blocked users shown', filtered_blocklist.length)}
-                          </p>`
-                        : ''}
-                    ${filtered_blocklist.length
-                        ? html`<div class="text-end">
-                              <button type="submit" class="btn btn-danger mt-2 mb-2">
-                                  ${__('Unblock selected users')}
-                              </button>
-                          </div>`
-                        : ''}
+                    ${
+                        el.blocklist.length > 5
+                            ? html`<p style="line-height: 3em">
+                                  ${__('%1$s blocked users shown', filtered_blocklist.length)}
+                              </p>`
+                            : ''
+                    }
+                    ${
+                        filtered_blocklist.length
+                            ? html`<div class="text-end">
+                                  <button type="submit" class="btn btn-danger mt-2 mb-2">
+                                      ${__('Unblock selected users')}
+                                  </button>
+                              </div>`
+                            : ''
+                    }
                 </div>
-                ${el.blocklist.length > 5
-                    ? html`
-                          <div class="mb-3  ${el.filter_text ? 'input-group' : ''}">
-                              <input
-                                  autofocus
-                                  name="blocklist_filter"
-                                  type="text"
-                                  class="form-control"
-                                  value="${el.filter_text}"
-                                  placeholder="${__('Filter blocked users')}"
-                                  @input="${(ev) => (el.filter_text = ev.target.value)}"
-                              />
-                              <button
-                                  type="button"
-                                  class="btn btn-outline-secondary ${!el.filter_text ? 'hidden' : ''}"
-                                  @click=${() => {
-                                      el.filter_text = '';
-                                      const input = /** @type {HTMLInputElement} */ (
-                                          el.querySelector('input[name="blocklist_filter"]')
-                                      );
-                                      input.value = '';
-                                  }}
-                              >
-                                  <converse-icon size="1em" class="fa fa-times"></converse-icon>
-                                  ${__('clear')}
-                              </button>
-                          </div>
-                          <div class="form-check mb-1">
-                              <input
-                                  class="form-check-input"
-                                  type="checkbox"
-                                  id="select-all"
-                                  @change="${(ev) => el.toggleSelectAll(ev)}"
-                              />
-                              <label class="form-check-label" for="select-all">
-                                  <strong>${__('Select All')}</strong></label
-                              >
-                          </div>
-                      `
-                    : ''}
+                ${
+                    el.blocklist.length > 5
+                        ? html`
+                              <div class="mb-3  ${el.filter_text ? 'input-group' : ''}">
+                                  <input
+                                      autofocus
+                                      name="blocklist_filter"
+                                      type="text"
+                                      class="form-control"
+                                      value="${el.filter_text}"
+                                      placeholder="${__('Filter blocked users')}"
+                                      @input="${(ev) => (el.filter_text = ev.target.value)}"
+                                  />
+                                  <button
+                                      type="button"
+                                      class="btn btn-outline-secondary ${!el.filter_text ? 'hidden' : ''}"
+                                      @click=${() => {
+                                          el.filter_text = '';
+                                          const input = /** @type {HTMLInputElement} */ (
+                                              el.querySelector('input[name="blocklist_filter"]')
+                                          );
+                                          input.value = '';
+                                      }}
+                                  >
+                                      <converse-icon size="1em" class="fa fa-times"></converse-icon>
+                                      ${__('clear')}
+                                  </button>
+                              </div>
+                              <div class="form-check mb-1">
+                                  <input
+                                      class="form-check-input"
+                                      type="checkbox"
+                                      id="select-all"
+                                      @change="${(ev) => el.toggleSelectAll(ev)}"
+                                  />
+                                  <label class="form-check-label" for="select-all">
+                                      <strong>${__('Select All')}</strong></label
+                                  >
+                              </div>
+                          `
+                        : ''
+                }
                 <ul class="items-list">
                     ${repeat(
                         filtered_blocklist,
@@ -94,7 +100,7 @@ export default (el) => {
                                         ${b.get('jid')}
                                     </label>
                                 </div>
-                            </li>`
+                            </li>`,
                     )}
                 </ul>
             </form>

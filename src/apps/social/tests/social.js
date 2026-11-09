@@ -436,7 +436,7 @@ describe('The social feed', function () {
             // the Social app). Click the contact's post (the newest, first).
             const author = await u.waitUntil(() => {
                 const a = articles[0].querySelector('a.social-post__author.show-msg-author-modal');
-                return a && (/color:/).test(a.getAttribute('style') || '') ? a : null;
+                return a && /color:/.test(a.getAttribute('style') || '') ? a : null;
             });
             let selected = null;
             el.addEventListener('profileselected', (ev) => (selected = ev.detail.jid));
@@ -944,9 +944,7 @@ describe('The social feed', function () {
             expect(via.textContent.trim()).toBe(`via Phoronix on ${short}`);
             expect(via.getAttribute('title')).toBe(`via Phoronix on ${author_jid}`);
             const via_post = via.closest('.social-post');
-            expect(via.getBoundingClientRect().right).toBeLessThanOrEqual(
-                via_post.getBoundingClientRect().right + 1,
-            );
+            expect(via.getBoundingClientRect().right).toBeLessThanOrEqual(via_post.getBoundingClientRect().right + 1);
         }),
     );
 });
@@ -1514,7 +1512,9 @@ describe('Liking a post', function () {
                 Array.from(detail.querySelectorAll('.social-comment .social-post__body')).map((n) => n.textContent);
             expect(topBodies().some((b) => b.includes('Nested reply'))).toBe(false);
             // The comment's reply count (its drill affordance) reads 1.
-            await u.waitUntil(() => detail.querySelector('.social-comment .social-post__action--comment .social-post__count'));
+            await u.waitUntil(() =>
+                detail.querySelector('.social-comment .social-post__action--comment .social-post__count'),
+            );
             expect(
                 detail.querySelector('.social-comment .social-post__action--comment .social-post__count').textContent,
             ).toContain('1');
@@ -1933,8 +1933,8 @@ describe('The social profile view', function () {
 
             // Simulate the browser's load failure; the header swaps to the logo.
             img.dispatchEvent(new Event('error'));
-            const fallback = await u.waitUntil(
-                () => profile.querySelector('.social-profile__banner--fallback converse-logo'),
+            const fallback = await u.waitUntil(() =>
+                profile.querySelector('.social-profile__banner--fallback converse-logo'),
             );
             expect(fallback).not.toBe(null);
             expect(profile.querySelector('.social-profile__banner img')).toBe(null);
@@ -2429,7 +2429,9 @@ describe('The profile Following tab', function () {
 
             // Clicking a row navigates to that author's profile on its Posts tab.
             row.click();
-            await u.waitUntil(() => el.querySelector('converse-social-profile')?.getAttribute('jid') === 'mercutio@montague.lit');
+            await u.waitUntil(
+                () => el.querySelector('converse-social-profile')?.getAttribute('jid') === 'mercutio@montague.lit',
+            );
             const profile = el.querySelector('converse-social-profile');
             expect(profile.querySelector('converse-social-following')).toBe(null);
             expect(profile.querySelector('.social-profile__posts')).not.toBe(null);

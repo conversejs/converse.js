@@ -1,6 +1,5 @@
 .conversejs {
     converse-profile-modal {
-
         .profile-property {
             margin-bottom: 0.5em;
 
@@ -32,7 +31,7 @@
         .list-group-item {
             font-size: 95%;
             border-color: var(--primary-color);
-            input[type="checkbox"] {
+            input[type='checkbox'] {
                 margin-inline-end: 1em;
             }
         }

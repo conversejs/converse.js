@@ -7,15 +7,15 @@ const { Strophe, stx } = converse.env;
 
 let lastStanzaDate;
 
-export function onWindowStateChanged () {
+export function onWindowStateChanged() {
     if (!isAppHidden()) api.ping(null, 5000);
 }
 
-export function setLastStanzaDate (date) {
+export function setLastStanzaDate(date) {
     lastStanzaDate = date;
 }
 
-function pong (ping) {
+function pong(ping) {
     lastStanzaDate = new Date();
     const from = ping.getAttribute('from');
     const id = ping.getAttribute('id');
@@ -24,15 +24,15 @@ function pong (ping) {
     return true;
 }
 
-export function registerPongHandler () {
+export function registerPongHandler() {
     const connection = api.connection.get();
     if (connection.disco) {
         api.disco.own.features.add(Strophe.NS.PING);
     }
-    return connection.addHandler(pong, Strophe.NS.PING, "iq", "get");
+    return connection.addHandler(pong, Strophe.NS.PING, 'iq', 'get');
 }
 
-export function registerPingHandler () {
+export function registerPingHandler() {
     api.connection.get()?.addHandler(() => {
         if (api.settings.get('ping_interval') > 0) {
             // Handler on each stanza, saves the received date
@@ -45,7 +45,7 @@ export function registerPingHandler () {
 
 let intervalId;
 
-export function registerHandlers () {
+export function registerHandlers() {
     // Wrapper so that we can spy on registerPingHandler in tests
     registerPongHandler();
     registerPingHandler();
@@ -53,11 +53,11 @@ export function registerHandlers () {
     intervalId = setInterval(onEverySecond, 1000);
 }
 
-export function unregisterIntervalHandler () {
+export function unregisterIntervalHandler() {
     clearInterval(intervalId);
 }
 
-export function onEverySecond () {
+export function onEverySecond() {
     if (isTestEnv() || !api.connection.authenticated()) {
         return;
     }
@@ -65,7 +65,7 @@ export function onEverySecond () {
     if (ping_interval > 0) {
         const now = new Date();
         lastStanzaDate = lastStanzaDate ?? now;
-        if ((now.valueOf() - lastStanzaDate.valueOf())/1000 > ping_interval) {
+        if ((now.valueOf() - lastStanzaDate.valueOf()) / 1000 > ping_interval) {
             api.ping();
         }
     }

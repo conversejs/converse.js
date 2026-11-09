@@ -5,20 +5,13 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { _converse, api, converse, u } from "@converse/headless";
+import { _converse, api, converse, u } from '@converse/headless';
 import './view.js';
 
-
 converse.plugins.add('converse-roomslist', {
+    dependencies: ['converse-singleton', 'converse-controlbox', 'converse-muc', 'converse-bookmarks'],
 
-    dependencies: [
-        "converse-singleton",
-        "converse-controlbox",
-        "converse-muc",
-        "converse-bookmarks"
-    ],
-
-    initialize () {
+    initialize() {
         api.settings.extend({
             muc_grouped_by_domain: false,
         });
@@ -28,5 +21,5 @@ converse.plugins.add('converse-roomslist', {
                 _converse.state.roomslist?.destroy();
             }
         });
-    }
+    },
 });

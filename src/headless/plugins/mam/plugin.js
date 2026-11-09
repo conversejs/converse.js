@@ -3,14 +3,14 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { Strophe } from "strophe.js";
-import _converse from "../../shared/_converse.js";
-import api from "../../shared/api/index.js";
-import converse from "../../shared/api/public.js";
-import { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } from "../..//shared/constants.js";
-import "../disco/index.js";
-import mam_api from "./api.js";
-import MAMPlaceholderMessage from "./placeholder.js";
+import { Strophe } from 'strophe.js';
+import _converse from '../../shared/_converse.js';
+import api from '../../shared/api/index.js';
+import converse from '../../shared/api/public.js';
+import { CHATROOMS_TYPE, PRIVATE_CHAT_TYPE } from '../..//shared/constants.js';
+import '../disco/index.js';
+import mam_api from './api.js';
+import MAMPlaceholderMessage from './placeholder.js';
 import {
     addGapPlaceholder,
     createScrollupPlaceholder,
@@ -20,16 +20,16 @@ import {
     onMAMError,
     onMAMPreferences,
     preMUCJoinMAMFetch,
-} from "./utils.js";
+} from './utils.js';
 
 const { NS } = Strophe;
 
-converse.plugins.add("converse-mam", {
-    dependencies: ["converse-disco", "converse-muc"],
+converse.plugins.add('converse-mam', {
+    dependencies: ['converse-disco', 'converse-muc'],
 
     initialize() {
         api.settings.extend({
-            archived_messages_page_size: "50",
+            archived_messages_page_size: '50',
             mam_request_all_pages: false,
             message_archiving: undefined, // Supported values are 'always', 'never', 'roster'
             // https://xmpp.org/extensions/xep-0313.html#prefs
@@ -43,21 +43,21 @@ converse.plugins.add("converse-mam", {
         Object.assign(_converse.exports, exports);
 
         /************************ Event Handlers ************************/
-        api.listen.on("addClientFeatures", () => api.disco.own.features.add(NS.MAM));
-        api.listen.on("serviceDiscovered", getMAMPrefsFromFeature);
-        api.listen.on("chatRoomViewInitialized", ({ model }) => {
-            if (api.settings.get("muc_show_logs_before_join")) {
+        api.listen.on('addClientFeatures', () => api.disco.own.features.add(NS.MAM));
+        api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
+        api.listen.on('chatRoomViewInitialized', ({ model }) => {
+            if (api.settings.get('muc_show_logs_before_join')) {
                 preMUCJoinMAMFetch(model);
                 // If we want to show MAM logs before entering the MUC, we need
                 // to be informed once it's clear that this MUC supports MAM.
-                model.features.on("change:mam_enabled", () => preMUCJoinMAMFetch(model));
+                model.features.on('change:mam_enabled', () => preMUCJoinMAMFetch(model));
             }
         });
         api.listen.on(
-            "enteredNewRoom",
+            'enteredNewRoom',
             /** @param {import('../muc/muc').default} muc */ async (muc) => {
                 try {
-                    if (muc.features.get("mam_enabled")) {
+                    if (muc.features.get('mam_enabled')) {
                         await fetchNewestMessages(muc);
                         // `fetchNewestMessages` only *queues* the fetched messages
                         // for processing (via `queueMessage`), so wait for that
@@ -71,19 +71,19 @@ converse.plugins.add("converse-mam", {
                     // as genuinely empty rather than waiting forever.
                     muc.session.save({ mam_initialized: true });
                 }
-            }
+            },
         );
 
-        api.listen.on("chatReconnected", (chat) => {
-            if (![CHATROOMS_TYPE, PRIVATE_CHAT_TYPE].includes(chat.get("type"))) {
+        api.listen.on('chatReconnected', (chat) => {
+            if (![CHATROOMS_TYPE, PRIVATE_CHAT_TYPE].includes(chat.get('type'))) {
                 return;
             }
             fetchNewestMessages(chat);
         });
 
-        api.listen.on("afterMessagesFetched", (chat) => {
-            chat.messages.filter((m) => m.get("mam_gap")).forEach((m) => addGapPlaceholder(chat, m));
-            if (chat.get("type") === PRIVATE_CHAT_TYPE) {
+        api.listen.on('afterMessagesFetched', (chat) => {
+            chat.messages.filter((m) => m.get('mam_gap')).forEach((m) => addGapPlaceholder(chat, m));
+            if (chat.get('type') === PRIVATE_CHAT_TYPE) {
                 fetchNewestMessages(chat);
             }
             createScrollupPlaceholder(chat);

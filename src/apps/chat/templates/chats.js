@@ -25,9 +25,11 @@ export default () => {
         CONNECTION_STATUS[connection_status],
     );
     return html`
-        ${!logged_out && is_overlayed
-            ? html`<converse-minimized-chats class="col-auto"></converse-minimized-chats>`
-            : ''}
+        ${
+            !logged_out && is_overlayed
+                ? html`<converse-minimized-chats class="col-auto"></converse-minimized-chats>`
+                : ''
+        }
         ${repeat(
             chatboxes.filter(shouldShowChat),
             (m) => m.get('jid'),

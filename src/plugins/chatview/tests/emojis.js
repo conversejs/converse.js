@@ -25,7 +25,7 @@ describe('Emojis', function () {
                 const view = _converse.chatboxviews.get(contact_jid);
 
                 // Type an emoji shortname and send the message
-            await mock.setComposerText(view, ':thumbsup:');
+                await mock.setComposerText(view, ':thumbsup:');
                 await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
@@ -122,10 +122,7 @@ describe('Emojis', function () {
                 editable.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
 
                 const dropdown = view.querySelector('converse-emoji-dropdown');
-                await u.waitUntil(
-                    () => !dropdown.querySelector('.dropdown-menu').classList.contains('show'),
-                    1000,
-                );
+                await u.waitUntil(() => !dropdown.querySelector('.dropdown-menu').classList.contains('show'), 1000);
                 expect(dropdown.querySelector('.dropdown-menu').classList.contains('show')).toBe(false);
             }),
         );
@@ -254,11 +251,15 @@ describe('Emojis', function () {
     describe('A Chat Message', function () {
         it(
             "will display larger if it's only emojis",
-            mock.initConverse(converse, ['chatBoxesFetched'], { 'use_system_emojis': true }, async function (_converse) {
-                await mock.waitForRoster(_converse, 'current');
-                const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-                _converse.handleMessageStanza(
-                    stx`<message from="${sender_jid}"
+            mock.initConverse(
+                converse,
+                ['chatBoxesFetched'],
+                { 'use_system_emojis': true },
+                async function (_converse) {
+                    await mock.waitForRoster(_converse, 'current');
+                    const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                    _converse.handleMessageStanza(
+                        stx`<message from="${sender_jid}"
                                  to="${_converse.api.connection.get().jid}"
                                  type="chat"
                                  id="${_converse.api.connection.get().getUniqueId()}"
@@ -266,14 +267,16 @@ describe('Emojis', function () {
                         <body>😇</body>
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
                     </message>`,
-                );
-                await new Promise((resolve) => _converse.on('chatBoxViewInitialized', resolve));
-                const view = _converse.chatboxviews.get(sender_jid);
-                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
-                await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.querySelector('.chat-msg__text')));
+                    );
+                    await new Promise((resolve) => _converse.on('chatBoxViewInitialized', resolve));
+                    const view = _converse.chatboxviews.get(sender_jid);
+                    await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length);
+                    await u.waitUntil(() =>
+                        u.hasClass('chat-msg__text--larger', view.querySelector('.chat-msg__text')),
+                    );
 
-                _converse.handleMessageStanza(
-                    stx`<message from="${sender_jid}"
+                    _converse.handleMessageStanza(
+                        stx`<message from="${sender_jid}"
                                  to="${_converse.api.connection.get().jid}"
                                  type="chat"
                                  id="${_converse.api.connection.get().getUniqueId()}"
@@ -281,59 +284,64 @@ describe('Emojis', function () {
                         <body>😇 Hello world! 😇 😇</body>
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
                     </message>`,
-                );
-                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
+                    );
+                    await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 2);
 
-                let sel = '.message:last-child .chat-msg__text';
-                await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.querySelector(sel)));
+                    let sel = '.message:last-child .chat-msg__text';
+                    await u.waitUntil(() => u.hasClass('chat-msg__text--larger', view.querySelector(sel)));
 
-                // Test that a modified message that no longer contains only
-                // emojis now renders normally again.
-            await mock.setComposerText(view, ':poop: :innocent:');
-                await mock.pressComposerKey(view, 'Enter');
-                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
-                const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
-                await u.waitUntil(() => view.querySelector(last_msg_sel).textContent === '💩 😇');
+                    // Test that a modified message that no longer contains only
+                    // emojis now renders normally again.
+                    await mock.setComposerText(view, ':poop: :innocent:');
+                    await mock.pressComposerKey(view, 'Enter');
+                    await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 3);
+                    const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
+                    await u.waitUntil(() => view.querySelector(last_msg_sel).textContent === '💩 😇');
 
-                expect(mock.composerText(view)).toBe('');
-                await mock.pressComposerKey(view, 'ArrowUp');
-                await u.waitUntil(() => mock.composerText(view) === '💩 😇');
-                expect(view.model.messages.at(2).get('correcting')).toBe(true);
-                sel = 'converse-chat-message:last-child .chat-msg';
-                await u.waitUntil(() => u.hasClass('correcting', view.querySelector(sel)), 500);
-                const edited_text = mock.composerText(view) + 'This is no longer an emoji-only message';
-                await mock.setComposerText(view, edited_text);
-                await mock.pressComposerKey(view, 'Enter');
-                await u.waitUntil(
-                    () =>
-                        Array.from(view.querySelectorAll('.chat-msg__text')).filter(
-                            (el) => el.textContent === edited_text,
-                        ).length,
-                );
-                expect(view.model.messages.models.length).toBe(3);
-                let message = view.querySelector(last_msg_sel);
-                expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
+                    expect(mock.composerText(view)).toBe('');
+                    await mock.pressComposerKey(view, 'ArrowUp');
+                    await u.waitUntil(() => mock.composerText(view) === '💩 😇');
+                    expect(view.model.messages.at(2).get('correcting')).toBe(true);
+                    sel = 'converse-chat-message:last-child .chat-msg';
+                    await u.waitUntil(() => u.hasClass('correcting', view.querySelector(sel)), 500);
+                    const edited_text = mock.composerText(view) + 'This is no longer an emoji-only message';
+                    await mock.setComposerText(view, edited_text);
+                    await mock.pressComposerKey(view, 'Enter');
+                    await u.waitUntil(
+                        () =>
+                            Array.from(view.querySelectorAll('.chat-msg__text')).filter(
+                                (el) => el.textContent === edited_text,
+                            ).length,
+                    );
+                    expect(view.model.messages.models.length).toBe(3);
+                    let message = view.querySelector(last_msg_sel);
+                    expect(u.hasClass('chat-msg__text--larger', message)).toBe(false);
 
-            await mock.setComposerText(view, ':smile: Hello world!');
-                await mock.pressComposerKey(view, 'Enter');
-                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
+                    await mock.setComposerText(view, ':smile: Hello world!');
+                    await mock.pressComposerKey(view, 'Enter');
+                    await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 4);
 
-            await mock.setComposerText(view, ':smile: :smiley: :imp:');
-                await mock.pressComposerKey(view, 'Enter');
-                await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 5);
+                    await mock.setComposerText(view, ':smile: :smiley: :imp:');
+                    await mock.pressComposerKey(view, 'Enter');
+                    await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 5);
 
-                message = view.querySelector('.message:last-child .chat-msg__text');
-                expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
-            }),
+                    message = view.querySelector('.message:last-child .chat-msg__text');
+                    expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
+                },
+            ),
         );
 
         it(
             'can render emojis as images',
-            mock.initConverse(converse, ['chatBoxesFetched'], { 'use_system_emojis': false }, async function (_converse) {
-                await mock.waitForRoster(_converse, 'current');
-                const contact_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-                _converse.handleMessageStanza(
-                    stx`<message from="${contact_jid}"
+            mock.initConverse(
+                converse,
+                ['chatBoxesFetched'],
+                { 'use_system_emojis': false },
+                async function (_converse) {
+                    await mock.waitForRoster(_converse, 'current');
+                    const contact_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                    _converse.handleMessageStanza(
+                        stx`<message from="${contact_jid}"
                                  to="${_converse.api.connection.get().jid}"
                                  type="chat"
                                  id="${_converse.api.connection.get().getUniqueId()}"
@@ -341,42 +349,44 @@ describe('Emojis', function () {
                         <body>😇</body>
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
                     </message>`,
-                );
-                await new Promise((resolve) => _converse.on('chatBoxViewInitialized', resolve));
-                const view = _converse.chatboxviews.get(contact_jid);
-                await new Promise((resolve) => view.model.messages.once('rendered', resolve));
-                await u.waitUntil(
-                    () =>
-                        view.querySelector('.chat-msg__text').innerHTML.replace(/<!-.*?->/g, '') ===
-                        '<img class="emoji" loading="lazy" draggable="false" title=":innocent:" alt="😇" src="https://twemoji.maxcdn.com/v/12.1.6//72x72/1f607.png">',
-                );
+                    );
+                    await new Promise((resolve) => _converse.on('chatBoxViewInitialized', resolve));
+                    const view = _converse.chatboxviews.get(contact_jid);
+                    await new Promise((resolve) => view.model.messages.once('rendered', resolve));
+                    await u.waitUntil(
+                        () =>
+                            view.querySelector('.chat-msg__text').innerHTML.replace(/<!-.*?->/g, '') ===
+                            '<img class="emoji" loading="lazy" draggable="false" title=":innocent:" alt="😇" src="https://twemoji.maxcdn.com/v/12.1.6//72x72/1f607.png">',
+                    );
 
-                const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
-                let message = view.querySelector(last_msg_sel);
-                await u.waitUntil(() => u.isVisible(message.querySelector('.emoji')), 1000);
-                let imgs = message.querySelectorAll('.emoji');
-                expect(imgs.length).toBe(1);
-                expect(imgs[0].src).toBe(_converse.api.settings.get('emoji_image_path') + '/72x72/1f607.png');
+                    const last_msg_sel = 'converse-chat-message:last-child .chat-msg__text';
+                    let message = view.querySelector(last_msg_sel);
+                    await u.waitUntil(() => u.isVisible(message.querySelector('.emoji')), 1000);
+                    let imgs = message.querySelectorAll('.emoji');
+                    expect(imgs.length).toBe(1);
+                    expect(imgs[0].src).toBe(_converse.api.settings.get('emoji_image_path') + '/72x72/1f607.png');
 
-            await mock.setComposerText(view, ':poop: :innocent:');
-                await mock.pressComposerKey(view, 'Enter');
-                await new Promise((resolve) => view.model.messages.once('rendered', resolve));
-                message = view.querySelector(last_msg_sel);
-                await u.waitUntil(() => u.isVisible(message.querySelector('.emoji')), 1000);
-                imgs = message.querySelectorAll('.emoji');
-                expect(imgs.length).toBe(2);
-                expect(imgs[0].src).toBe(_converse.api.settings.get('emoji_image_path') + '/72x72/1f4a9.png');
-                expect(imgs[1].src).toBe(_converse.api.settings.get('emoji_image_path') + '/72x72/1f607.png');
+                    await mock.setComposerText(view, ':poop: :innocent:');
+                    await mock.pressComposerKey(view, 'Enter');
+                    await new Promise((resolve) => view.model.messages.once('rendered', resolve));
+                    message = view.querySelector(last_msg_sel);
+                    await u.waitUntil(() => u.isVisible(message.querySelector('.emoji')), 1000);
+                    imgs = message.querySelectorAll('.emoji');
+                    expect(imgs.length).toBe(2);
+                    expect(imgs[0].src).toBe(_converse.api.settings.get('emoji_image_path') + '/72x72/1f4a9.png');
+                    expect(imgs[1].src).toBe(_converse.api.settings.get('emoji_image_path') + '/72x72/1f607.png');
 
-                const sent_stanzas = _converse.api.connection.get().sent_stanzas;
-                const sent_stanza = sent_stanzas.filter((s) => s.nodeName === 'message').pop();
-                expect(sent_stanza.querySelector('body').innerHTML).toBe('💩 😇');
-            }),
+                    const sent_stanzas = _converse.api.connection.get().sent_stanzas;
+                    const sent_stanza = sent_stanzas.filter((s) => s.nodeName === 'message').pop();
+                    expect(sent_stanza.querySelector('body').innerHTML).toBe('💩 😇');
+                },
+            ),
         );
 
         it(
             'can show custom emojis',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['chatBoxesFetched'],
                 {
                     emoji_categories: {
@@ -407,7 +417,7 @@ describe('Emojis', function () {
                         '<img class="emoji" loading="lazy" draggable="false" title=":xmpp:" alt=":xmpp:" src="/dist/./images/custom_emojis/xmpp.png">',
                     );
 
-            await mock.setComposerText(view, 'Running tests for :converse:');
+                    await mock.setComposerText(view, 'Running tests for :converse:');
                     await mock.pressComposerKey(view, 'Enter');
                     await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                     const body = view.querySelector('converse-chat-message-body');
@@ -422,7 +432,8 @@ describe('Emojis', function () {
 
         it(
             'correctly resolves overlapping custom emoji shortnames',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['chatBoxesFetched'],
                 {
                     emoji_categories: {
@@ -463,7 +474,7 @@ describe('Emojis', function () {
                     const view = _converse.chatboxviews.get(contact_jid);
 
                     // Send a message using the longer shortname :penguin3:
-            await mock.setComposerText(view, 'Look at :penguin3: here');
+                    await mock.setComposerText(view, 'Look at :penguin3: here');
                     await mock.pressComposerKey(view, 'Enter');
                     await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                     const body = view.querySelector('converse-chat-message-body');

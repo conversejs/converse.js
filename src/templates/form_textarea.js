@@ -8,8 +8,7 @@ export default (o) => {
         <div class="mb-3">
             <label class="form-label label-ta" for="${o.id}">${o.label}${desc}</label>
             <textarea name="${o.name}" id="${id}" ?readonly=${o.readonly} ?required=${o.required} class="form-control">
-${o.value}</textarea
-            >
+${o.value}</textarea>
         </div>
     `;
 };

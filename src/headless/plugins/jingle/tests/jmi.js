@@ -760,7 +760,11 @@ describe('Jingle Message Initiation (XEP-0353)', function () {
                 { allow_non_roster_messaging: false },
                 async (_converse) => {
                     await getContactJid(_converse);
-                    _converse.state.roster.create({ jid: 'pending@montague.lit', subscription: 'none', ask: 'subscribe' });
+                    _converse.state.roster.create({
+                        jid: 'pending@montague.lit',
+                        subscription: 'none',
+                        ask: 'subscribe',
+                    });
 
                     receive(_converse, 'pending@montague.lit/phone', propose('pending1'));
 

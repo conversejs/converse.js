@@ -11,7 +11,7 @@ describe('XEP-0092 Software Version', function () {
             const promise = _converse.api.version.get();
 
             const sent_iq = await u.waitUntil(() =>
-                conn.IQ_stanzas.filter((iq) => sizzle('query[xmlns="jabber:iq:version"]', iq).length).pop()
+                conn.IQ_stanzas.filter((iq) => sizzle('query[xmlns="jabber:iq:version"]', iq).length).pop(),
             );
             expect(sent_iq).toEqualStanza(stx`
                 <iq id="${sent_iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">
@@ -30,7 +30,7 @@ describe('XEP-0092 Software Version', function () {
 
             const version = await promise;
             expect(version).toEqual({ name: 'Prosody', version: '0.12.0', os: 'Debian GNU/Linux' });
-        })
+        }),
     );
 
     it(
@@ -40,10 +40,9 @@ describe('XEP-0092 Software Version', function () {
             const promise = _converse.api.version.get('shakespeare.lit');
 
             const sent_iq = await u.waitUntil(() =>
-                conn.IQ_stanzas
-                    .filter((iq) => iq.getAttribute('to') === 'shakespeare.lit')
+                conn.IQ_stanzas.filter((iq) => iq.getAttribute('to') === 'shakespeare.lit')
                     .filter((iq) => sizzle('query[xmlns="jabber:iq:version"]', iq).length)
-                    .pop()
+                    .pop(),
             );
 
             const error = stx`
@@ -56,6 +55,6 @@ describe('XEP-0092 Software Version', function () {
             conn._dataRecv(mock.createRequest(_converse, error));
 
             expect(await promise).toBe(null);
-        })
+        }),
     );
 });

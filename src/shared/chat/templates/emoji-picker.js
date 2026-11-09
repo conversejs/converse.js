@@ -115,15 +115,17 @@ export function tplEmojiPicker(el, o) {
             />
             ${o.query ? '' : tplEmojiPickerHeader(o)}
         </div>
-        ${o.render_emojis
-            ? html`<converse-emoji-picker-content
-                  .model=${el.state}
-                  .search_results="${o.search_results}"
-                  .allowed_emojis="${el.allowed_emojis}"
-                  current_skintone="${o.current_skintone}"
-                  query="${o.query}"
-              ></converse-emoji-picker-content>`
-            : ''}
+        ${
+            o.render_emojis
+                ? html`<converse-emoji-picker-content
+                      .model=${el.state}
+                      .search_results="${o.search_results}"
+                      .allowed_emojis="${el.allowed_emojis}"
+                      current_skintone="${o.current_skintone}"
+                      query="${o.query}"
+                  ></converse-emoji-picker-content>`
+                : ''
+        }
 
         <div class="emoji-skintone-picker">
             Skin tone:

@@ -1,20 +1,18 @@
-import BaseModal from "plugins/modal/modal.js";
-import tplAlertModal from "./templates/alert.js";
-import { api } from "@converse/headless";
-
+import BaseModal from 'plugins/modal/modal.js';
+import tplAlertModal from './templates/alert.js';
+import { api } from '@converse/headless';
 
 export default class Alert extends BaseModal {
-
-    initialize () {
+    initialize() {
         super.initialize();
         this.addEventListener('hide.bs.modal', () => this.remove(), false);
     }
 
-    renderModal () {
+    renderModal() {
         return tplAlertModal(this.state.toJSON());
     }
 
-    getModalTitle () {
+    getModalTitle() {
         return this.state.get('title');
     }
 }

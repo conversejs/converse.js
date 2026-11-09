@@ -1,4 +1,4 @@
-import { _converse, api, converse } from "@converse/headless";
+import { _converse, api, converse } from '@converse/headless';
 import './modals/config.js';
 import './modals/muc-details.js';
 import './modals/nickname.js';
@@ -9,13 +9,12 @@ import tplMUCHead from './templates/muc-head.js';
 
 import './styles/muc-head.scss';
 
-
 export default class MUCHeading extends CustomElement {
     /**
      * @typedef {import('@converse/headless').MUCOccupant} MUCOccupant
      */
 
-    async initialize () {
+    async initialize() {
         const { chatboxes } = _converse.state;
         this.model = chatboxes.get(this.getAttribute('jid'));
         this.listenTo(this.model, 'change', () => this.requestUpdate());
@@ -29,21 +28,21 @@ export default class MUCHeading extends CustomElement {
         const own_occupant = this.model.occupants.findOccupant({ jid: _converse.session.get('bare_jid') });
         if (own_occupant) this.updateIfOwnOccupant(own_occupant);
 
-        this.listenTo(this.model.occupants, "add", this.updateIfOwnOccupant);
-        this.listenTo(this.model.occupants, "change:affiliation", this.updateIfOwnOccupant);
-        this.listenTo(this.model.occupants, "change:role", this.updateIfOwnOccupant);
-        this.listenTo(this.model.session, "change:connection_status", () => this.requestUpdate());
+        this.listenTo(this.model.occupants, 'add', this.updateIfOwnOccupant);
+        this.listenTo(this.model.occupants, 'change:affiliation', this.updateIfOwnOccupant);
+        this.listenTo(this.model.occupants, 'change:role', this.updateIfOwnOccupant);
+        this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
         this.requestUpdate();
     }
 
-    render () {
+    render() {
         return this.model ? tplMUCHead(this) : '';
     }
 
     /**
      * @param {MUCOccupant} occupant
      */
-    updateIfOwnOccupant (occupant) {
+    updateIfOwnOccupant(occupant) {
         const bare_jid = _converse.session.get('bare_jid');
         if (occupant.get('jid') === bare_jid) {
             this.requestUpdate();
@@ -53,7 +52,7 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
-    showRoomDetailsModal (ev) {
+    showRoomDetailsModal(ev) {
         ev.preventDefault();
         api.modal.show('converse-muc-details-modal', { model: this.model }, ev);
     }
@@ -61,7 +60,7 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
-    showNicknameModal (ev) {
+    showNicknameModal(ev) {
         ev.preventDefault();
         api.modal.show('converse-muc-nickname-modal', { model: this.model }, ev);
     }
@@ -69,7 +68,7 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
-    toggleTopic (ev) {
+    toggleTopic(ev) {
         ev?.preventDefault?.();
         this.model.toggleSubjectHiddenState();
     }
@@ -77,10 +76,10 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
-    toggleOccupants (ev) {
+    toggleOccupants(ev) {
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
-        this.model.save({'hidden_occupants': !this.model.get('hidden_occupants')});
+        this.model.save({ 'hidden_occupants': !this.model.get('hidden_occupants') });
     }
 
     /**
@@ -94,7 +93,7 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
-    close (ev) {
+    close(ev) {
         ev.preventDefault();
         this.model.close();
     }
@@ -102,7 +101,7 @@ export default class MUCHeading extends CustomElement {
     /**
      * @param {Event} ev
      */
-    destroy (ev) {
+    destroy(ev) {
         ev.preventDefault();
         destroyMUC(this.model);
     }
@@ -113,35 +112,35 @@ export default class MUCHeading extends CustomElement {
      *
      * @param {boolean} subject_hidden
      */
-    getHeadingButtons (subject_hidden) {
+    getHeadingButtons(subject_hidden) {
         const buttons = [];
         buttons.push({
             'i18n_text': __('Details'),
             'i18n_title': __('Show more information about this groupchat'),
-            'handler': /** @param {Event} ev */(ev) => this.showRoomDetailsModal(ev),
+            'handler': /** @param {Event} ev */ (ev) => this.showRoomDetailsModal(ev),
             'a_class': 'show-muc-details-modal',
             'icon_class': 'fa-info-circle',
-            'name': 'details'
+            'name': 'details',
         });
 
         if (this.model.getOwnAffiliation() === 'owner') {
             buttons.push({
                 'i18n_text': __('Configure'),
                 'i18n_title': __('Configure this groupchat'),
-                'handler': /** @param {Event} ev */(ev) => this.showConfigModal(ev),
+                'handler': /** @param {Event} ev */ (ev) => this.showConfigModal(ev),
                 'a_class': 'configure-chatroom-button',
                 'icon_class': 'fa-wrench',
-                'name': 'configure'
+                'name': 'configure',
             });
         }
 
         buttons.push({
             'i18n_text': __('Nickname'),
             'i18n_title': __("Change the nickname you're using in this groupchat"),
-            'handler': /** @param {Event} ev */(ev) => this.showNicknameModal(ev),
+            'handler': /** @param {Event} ev */ (ev) => this.showNicknameModal(ev),
             'a_class': 'open-nickname-modal',
             'icon_class': 'fa-smile',
-            'name': 'nickname'
+            'name': 'nickname',
         });
 
         const subject = this.model.get('subject');
@@ -151,10 +150,10 @@ export default class MUCHeading extends CustomElement {
                 'i18n_title': subject_hidden
                     ? __('Show the topic message in the heading')
                     : __('Hide the topic in the heading'),
-                'handler': /** @param {Event} ev */(ev) => this.toggleTopic(ev),
+                'handler': /** @param {Event} ev */ (ev) => this.toggleTopic(ev),
                 'a_class': 'hide-topic',
                 'icon_class': 'fa-minus-square',
-                'name': 'toggle-topic'
+                'name': 'toggle-topic',
             });
         }
 
@@ -163,7 +162,7 @@ export default class MUCHeading extends CustomElement {
             'i18n_title': this.model.get('hidden_occupants')
                 ? __('Show the groupchat participants')
                 : __('Hide the groupchat participants'),
-            'handler': /** @param {Event} ev */(ev) => this.toggleOccupants(ev),
+            'handler': /** @param {Event} ev */ (ev) => this.toggleOccupants(ev),
             'icon_class': 'fa-users',
         });
 
@@ -177,7 +176,7 @@ export default class MUCHeading extends CustomElement {
                     'handler': () => showModeratorToolsModal(this.model),
                     'a_class': 'moderate-chatroom-button',
                     'icon_class': 'fa-user-cog',
-                    'name': 'moderate'
+                    'name': 'moderate',
                 });
             }
             if (allowed_commands.includes('destroy')) {
@@ -187,7 +186,7 @@ export default class MUCHeading extends CustomElement {
                     'handler': (ev) => this.destroy(ev),
                     'a_class': 'destroy-chatroom-button',
                     'icon_class': 'fa-trash',
-                    'name': 'destroy'
+                    'name': 'destroy',
                 });
             }
         }
@@ -205,7 +204,7 @@ export default class MUCHeading extends CustomElement {
                 'a_class': 'close-chatbox-button',
                 'standalone': api.settings.get('view_mode') === 'overlayed',
                 'icon_class': 'fa-sign-out-alt',
-                'name': 'signout'
+                'name': 'signout',
             });
         }
 

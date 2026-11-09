@@ -70,7 +70,14 @@ export default defineConfig({
                 test: {
                     name: 'main',
                     include: ['src/**/tests/**/*.js', 'src/**/tests/*.js'],
-                    exclude: ['src/headless/**', 'src/daemon/**', 'src/cli/**', '**/*.node.js', '**/*.prosody.js', ...commonExclude],
+                    exclude: [
+                        'src/headless/**',
+                        'src/daemon/**',
+                        'src/cli/**',
+                        '**/*.node.js',
+                        '**/*.prosody.js',
+                        ...commonExclude,
+                    ],
                     browser: makeBrowser(),
                 },
             },

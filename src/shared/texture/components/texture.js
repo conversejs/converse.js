@@ -1,7 +1,7 @@
-import { LitElement } from "lit";
-import renderTexture from "../directives/texture.js";
+import { LitElement } from 'lit';
+import renderTexture from '../directives/texture.js';
 
-import "../styles/texture.scss";
+import '../styles/texture.scss';
 
 /**
  * The Texture custom element allows you to parse transform text into rich DOM elements.
@@ -67,8 +67,8 @@ export default class Texture extends LitElement {
     }
 }
 
-if (!customElements.get("converse-texture")) {
-    if (!customElements.get("converse-texture")) {
-    customElements.define("converse-texture", Texture);
-}
+if (!customElements.get('converse-texture')) {
+    if (!customElements.get('converse-texture')) {
+        customElements.define('converse-texture', Texture);
+    }
 }

@@ -6,7 +6,8 @@ const { u, sizzle, stx } = converse.env;
 describe('A list of open groupchats', function () {
     it(
         'is shown in controlbox',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesFetched'],
             {
                 allow_bookmarks: false, // Makes testing easier, otherwise we
@@ -115,7 +116,8 @@ describe('A list of open groupchats', function () {
 describe('A groupchat shown in the groupchats list', function () {
     it(
         "is highlighted if it's currently open",
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesFetched'],
             {
                 view_mode: 'fullscreen',
@@ -157,7 +159,8 @@ describe('A groupchat shown in the groupchats list', function () {
 
     it(
         'shows the MUC avatar',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesFetched'],
             {
                 whitelisted_plugins: ['converse-roomslist'],
@@ -307,7 +310,8 @@ describe('A groupchat shown in the groupchats list', function () {
 
     it(
         'can be closed',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             [],
             {
                 whitelisted_plugins: ['converse-roomslist'],
@@ -345,7 +349,8 @@ describe('A groupchat shown in the groupchats list', function () {
 
     it(
         'shows unread messages directed at the user',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             null,
             {
                 whitelisted_plugins: ['converse-roomslist'],

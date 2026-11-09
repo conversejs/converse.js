@@ -4,16 +4,15 @@ import tplProfile from './templates/profile.js';
 
 import './styles/profile.scss';
 
-
 class Profile extends CustomElement {
-    initialize () {
+    initialize() {
         this.model = _converse.state.profile;
-        this.listenTo(this.model, "change", () => this.requestUpdate());
-        this.listenTo(this.model, "vcard:add", () => this.requestUpdate());
-        this.listenTo(this.model, "vcard:change", () => this.requestUpdate());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
     }
 
-    render () {
+    render() {
         return tplProfile(this);
     }
 
@@ -21,7 +20,7 @@ class Profile extends CustomElement {
      * @param {MouseEvent} ev
      * @param {'status'|'profile'} tab
      */
-    showProfileModal (ev, tab='status') {
+    showProfileModal(ev, tab = 'status') {
         ev?.preventDefault();
         api.modal.show('converse-profile-modal', { model: this.model, tab }, ev);
     }

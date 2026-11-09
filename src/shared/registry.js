@@ -1,4 +1,4 @@
-import { api } from "@converse/headless";
+import { api } from '@converse/headless';
 
 /** @type {Record<string, any>} */
 const registry = {};
@@ -26,7 +26,7 @@ const elements = {
      * @param { string } name
      * @param { object } constructor
      */
-    define (name, constructor) {
+    define(name, constructor) {
         this.registry[name] = constructor;
     },
 
@@ -34,13 +34,13 @@ const elements = {
      * Registers all previously defined custom HTML elements
      * @method api.elements.register
      */
-    register () {
-        Object.keys(registry).forEach(name => {
+    register() {
+        Object.keys(registry).forEach((name) => {
             if (!customElements.get(name)) {
-                customElements.define(name, registry[name])
+                customElements.define(name, registry[name]);
             }
         });
-    }
-}
+    },
+};
 
 Object.assign(api, { elements });

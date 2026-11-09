@@ -3,13 +3,16 @@ import converse from '../../../../dist/converse.js';
 
 const u = converse.env.utils;
 
-describe('Converse Background Theme', function() {
+describe('Converse Background Theme', function () {
     it(
         'clears old theme class and applies only the new one when theme changes',
-        mock.initConverse(converse, [], {
+        mock.initConverse(
+            converse,
+            [],
+            {
                 show_background: true,
                 theme: 'nordic',
-                dark_theme: 'nordic'
+                dark_theme: 'nordic',
             },
             async (_converse) => {
                 const { api } = _converse;
@@ -27,7 +30,7 @@ describe('Converse Background Theme', function() {
 
                 bgClassList = Array.from(bg.classList).filter((c) => c.startsWith('theme-'));
                 expect(bgClassList).toEqual(['theme-dracula']);
-            }
-        )
+            },
+        ),
     );
 });

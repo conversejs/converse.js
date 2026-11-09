@@ -1,3 +1,3 @@
-import { ModelAttributes } from "@converse/skeletor";
+import { ModelAttributes } from '@converse/skeletor';
 
 export type BookmarksViewStateAttrs = ModelAttributes & { text: string };

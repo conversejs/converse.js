@@ -1,9 +1,9 @@
-import dayjs from "dayjs";
-import { $build, $iq, $msg, $pres, Strophe, Stanza } from "strophe.js";
-import { Model, Collection } from "@converse/skeletor";
-import { html, render } from "lit";
-import u from "../../utils/index.js";
-import sizzle from "sizzle";
+import dayjs from 'dayjs';
+import { $build, $iq, $msg, $pres, Strophe, Stanza } from 'strophe.js';
+import { Model, Collection } from '@converse/skeletor';
+import { html, render } from 'lit';
+import u from '../../utils/index.js';
+import sizzle from 'sizzle';
 
 /**
  * Utility methods and globals from bundled 3rd party libraries.

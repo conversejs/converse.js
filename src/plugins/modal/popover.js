@@ -1,13 +1,12 @@
 import '@popperjs/core';
-import { html } from "lit";
-import { default as BootstrapPopover } from "bootstrap/js/src/popover.js";
-import { api } from "@converse/headless";
-import { CustomElement } from "shared/components/element.js";
+import { html } from 'lit';
+import { default as BootstrapPopover } from 'bootstrap/js/src/popover.js';
+import { api } from '@converse/headless';
+import { CustomElement } from 'shared/components/element.js';
 
 import './styles/popover.scss';
 
 class Popover extends CustomElement {
-
     static get properties() {
         return {
             title: { type: String },
@@ -45,6 +44,6 @@ class Popover extends CustomElement {
     }
 }
 
-api.elements.define("converse-popover", Popover);
+api.elements.define('converse-popover', Popover);
 
 export default Popover;

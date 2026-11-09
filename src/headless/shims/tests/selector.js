@@ -103,12 +103,11 @@ describe('querySelector/querySelectorAll', () => {
     });
 
     it('returns matches in document order', () => {
-        expect(parse().querySelectorAll('vCard *').map((el) => el.localName)).toEqual([
-            'FN',
-            'PHOTO',
-            'TYPE',
-            'BINVAL',
-        ]);
+        expect(
+            parse()
+                .querySelectorAll('vCard *')
+                .map((el) => el.localName),
+        ).toEqual(['FN', 'PHOTO', 'TYPE', 'BINVAL']);
     });
 
     it('returns null when nothing matches', () => {

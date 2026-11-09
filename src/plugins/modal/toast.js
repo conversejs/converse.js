@@ -34,34 +34,45 @@ export default class Toast extends CustomElement {
     }
 
     render() {
-        return html`<div class="toast show text-bg-${this.type ?? 'info'}" role="alert" aria-live="assertive" aria-atomic="true">
-            ${this.title
-                ? html`<div class="toast-header">
-                      <img src="/logo/conversejs-filled.svg" class="rounded me-2" alt="${__('Converse logo')}" />
-                      <strong class="me-auto">${this.title ?? ''}</strong>
-                      <button
-                          @click="${this.hide}"
-                          type="button"
-                          class="btn-close"
-                          aria-label="${__('Close')}"
-                      ></button>
-                  </div>`
-                : ''}
-            ${this.body
-                ? html`<div class="d-flex justify-content-between toast-body__container">
-                      <div class="toast-body w-100">${this.body ?? ''}</div>
-                      ${!this.title
-                          ? html`<button
-                                @click="${this.hide}"
-                                type="button"
-                                class="btn centered"
-                                aria-label="${__('Close')}"
-                            >
-                                <converse-icon size="1em" class="fa fa-times"></converse-icon>
-                            </button>`
-                          : ''}
-                  </div>`
-                : ''}
+        return html`<div
+            class="toast show text-bg-${this.type ?? 'info'}"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+        >
+            ${
+                this.title
+                    ? html`<div class="toast-header">
+                          <img src="/logo/conversejs-filled.svg" class="rounded me-2" alt="${__('Converse logo')}" />
+                          <strong class="me-auto">${this.title ?? ''}</strong>
+                          <button
+                              @click="${this.hide}"
+                              type="button"
+                              class="btn-close"
+                              aria-label="${__('Close')}"
+                          ></button>
+                      </div>`
+                    : ''
+            }
+            ${
+                this.body
+                    ? html`<div class="d-flex justify-content-between toast-body__container">
+                          <div class="toast-body w-100">${this.body ?? ''}</div>
+                          ${
+                              !this.title
+                                  ? html`<button
+                                        @click="${this.hide}"
+                                        type="button"
+                                        class="btn centered"
+                                        aria-label="${__('Close')}"
+                                    >
+                                        <converse-icon size="1em" class="fa fa-times"></converse-icon>
+                                    </button>`
+                                  : ''
+                          }
+                      </div>`
+                    : ''
+            }
         </div>`;
     }
 

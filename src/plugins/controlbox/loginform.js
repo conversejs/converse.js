@@ -8,34 +8,32 @@ import './styles/loginform.scss';
 const { Strophe } = converse.env;
 const { ANONYMOUS } = constants;
 
-
 class LoginForm extends CustomElement {
-
-    initialize () {
+    initialize() {
         const settings = api.settings.get();
         this.listenTo(settings, 'change:show_connection_url_input', () => this.requestUpdate());
         this.listenTo(_converse.state.connfeedback, 'change', () => this.requestUpdate());
-        this.handler = () => this.requestUpdate()
+        this.handler = () => this.requestUpdate();
     }
 
-    connectedCallback () {
+    connectedCallback() {
         super.connectedCallback();
         api.settings.listen.on('change', this.handler);
     }
 
-    disconnectedCallback () {
+    disconnectedCallback() {
         super.disconnectedCallback();
         api.settings.listen.not('change', this.handler);
     }
 
-    render () {
+    render() {
         return tplLoginPanel(this);
     }
 
     /**
      * @param {SubmitEvent} ev
      */
-    async onLoginFormSubmitted (ev) {
+    async onLoginFormSubmitted(ev) {
         ev?.preventDefault();
 
         if (api.settings.get('authentication') === ANONYMOUS) {
@@ -43,7 +41,7 @@ class LoginForm extends CustomElement {
             return this.connect(jid);
         }
 
-        const form = /** @type {HTMLFormElement} */(ev.target);
+        const form = /** @type {HTMLFormElement} */ (ev.target);
         if (!validateJID(form)) {
             return;
         }
@@ -67,8 +65,8 @@ class LoginForm extends CustomElement {
     /**
      * @param {HTMLFormElement} form
      */
-    discoverConnectionMethods (form) {
-        if (!api.settings.get("discover_connection_methods")) {
+    discoverConnectionMethods(form) {
+        if (!api.settings.get('discover_connection_methods')) {
             return;
         }
         const form_data = new FormData(form);
@@ -83,7 +81,7 @@ class LoginForm extends CustomElement {
     /**
      * @param {string} [jid]
      */
-    connect (jid) {
+    connect(jid) {
         if (['#converse/login', '#converse/register'].includes(location.hash)) {
             history.replaceState(history.state, '', `${location.pathname}${location.search}`);
         }

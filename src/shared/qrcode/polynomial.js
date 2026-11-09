@@ -5,7 +5,7 @@ class QRPolynomial {
      */
     constructor(num, shift) {
         if (num.length == undefined) {
-            throw new Error(num.length + "/" + shift);
+            throw new Error(num.length + '/' + shift);
         }
         let offset = 0;
         while (offset < num.length && num[offset] == 0) {
@@ -17,7 +17,7 @@ class QRPolynomial {
         }
     }
 
-        /**
+    /**
      * @param {number} index
      * @returns {number}
      */
@@ -25,14 +25,14 @@ class QRPolynomial {
         return this.num[index];
     }
 
-        /**
+    /**
      * @returns {number}
      */
     getLength() {
         return this.num.length;
     }
 
-        /**
+    /**
      * @param {QRPolynomial} e
      * @returns {QRPolynomial}
      */
@@ -46,7 +46,7 @@ class QRPolynomial {
         return new QRPolynomial(num, 0);
     }
 
-        /**
+    /**
      * @param {QRPolynomial} e
      * @returns {QRPolynomial}
      */
@@ -68,7 +68,6 @@ class QRPolynomial {
 
 export default QRPolynomial;
 
-
 export const QRMath = {
     /**
      * @param {number} n
@@ -76,7 +75,7 @@ export const QRMath = {
      */
     glog: function (n) {
         if (n < 1) {
-            throw new Error("glog(" + n + ")");
+            throw new Error('glog(' + n + ')');
         }
         return QRMath.LOG_TABLE[n];
     },

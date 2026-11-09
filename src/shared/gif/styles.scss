@@ -21,47 +21,47 @@ img.gif {
     position: relative;
 
     &:after {
-	transition: background 0.25s ease-in-out;
-	position: absolute;
-	content: "";
-	display: block;
-	left: calc(50% - 25px);
-	top: calc(50% - 25px);
+        transition: background 0.25s ease-in-out;
+        position: absolute;
+        content: '';
+        display: block;
+        left: calc(50% - 25px);
+        top: calc(50% - 25px);
     }
 
     &.loading {
-	background: rgba(255, 255, 255, 0.75);
-	&:after {
-	    background: #FFF;
-	    width: 50px;
-	    height: 50px;
-	    border-radius: 50px;
-	}
+        background: rgba(255, 255, 255, 0.75);
+        &:after {
+            background: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50px;
+        }
     }
 
     &.playing {
-	/* Only show the 'stop' button on hover */
-	&:after {
-	    opacity: 0;
-	    transition: opacity 0.25s ease-in-out;
-	    border-inline-start: 20px solid #FFF;
-	    border-inline-end: 20px solid #FFF;
-	    width: 50px;
-	    height: 50px;
-	}
-	&:hover:after {
-	    opacity: 1;
-	}
+        /* Only show the 'stop' button on hover */
+        &:after {
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+            border-inline-start: 20px solid #fff;
+            border-inline-end: 20px solid #fff;
+            width: 50px;
+            height: 50px;
+        }
+        &:hover:after {
+            opacity: 1;
+        }
     }
 
     &.paused {
-	background: rgba(255, 255, 255, 0.5);
-	&:after {
-	    width: 0;
-	    height: 0;
-	    border-style: solid;
-	    border-width: 25px 0 25px 50px;
-	    border-color: transparent transparent transparent #fff;
-	}
+        background: rgba(255, 255, 255, 0.5);
+        &:after {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 25px 0 25px 50px;
+            border-color: transparent transparent transparent #fff;
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from 'lit';
 import { __ } from 'i18n';
 
 export default (el) => {
@@ -11,7 +11,7 @@ export default (el) => {
         <form class="converse-form" @submit=${(/** @type {Event} */ ev) => el.submitInviteForm(ev)}>
             <fieldset>
                 <label class="form-label clearfix" for="invitee_jids">${i18n_invite_label}:</label>
-                ${ el.state.get('invalid_invite_jid') ? html`<div class="error error-feedback">${i18n_error_message}</div>` : '' }
+                ${el.state.get('invalid_invite_jid') ? html`<div class="error error-feedback">${i18n_error_message}</div>` : ''}
                 <converse-autocomplete
                     .getAutoCompleteList="${() => el.getAutoCompleteList()}"
                     ?autofocus=${true}
@@ -20,7 +20,8 @@ export default (el) => {
                     required="required"
                     name="invitee_jids"
                     id="invitee_jids"
-                    placeholder="${i18n_jid_placeholder}">
+                    placeholder="${i18n_jid_placeholder}"
+                >
                 </converse-autocomplete>
             </fieldset>
 
@@ -30,8 +31,8 @@ export default (el) => {
             </fieldset>
 
             <fieldset>
-                <input type="submit" class="btn btn-primary" value="${i18n_invite}"/>
+                <input type="submit" class="btn btn-primary" value="${i18n_invite}" />
             </fieldset>
         </form>
     `;
-}
+};

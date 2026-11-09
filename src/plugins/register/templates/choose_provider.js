@@ -18,16 +18,18 @@ function tplFormRequest(el) {
             @submit=${(/** @type {Event} */ ev) => el.onFormSubmission(ev)}
         >
             ${tplSpinner({ 'class': 'hor_centered' })}
-            ${default_domain
-                ? ''
-                : html`
-                      <button
-                          class="btn btn-secondary button-cancel hor_centered"
-                          @click=${(/** @type {Event} */ ev) => el.renderProviderChoiceForm(ev)}
-                      >
-                          ${i18n_cancel}
-                      </button>
-                  `}
+            ${
+                default_domain
+                    ? ''
+                    : html`
+                          <button
+                              class="btn btn-secondary button-cancel hor_centered"
+                              @click=${(/** @type {Event} */ ev) => el.renderProviderChoiceForm(ev)}
+                          >
+                              ${i18n_cancel}
+                          </button>
+                      `
+            }
         </form>
     `;
 }
@@ -66,14 +68,16 @@ function tplProviderDetails(provider) {
 
     return html`
         <div class="provider-details">
-            ${compliance !== undefined && compliance !== null && compliance >= 0
-                ? html`
-                      <div class="provider-details__item">
-                          <span class="provider-details__label">${__('XMPP Compliance')}:</span>
-                          <span class="provider-details__value">${compliance}%</span>
-                      </div>
-                  `
-                : ''}
+            ${
+                compliance !== undefined && compliance !== null && compliance >= 0
+                    ? html`
+                          <div class="provider-details__item">
+                              <span class="provider-details__label">${__('XMPP Compliance')}:</span>
+                              <span class="provider-details__value">${compliance}%</span>
+                          </div>
+                      `
+                    : ''
+            }
             <div class="provider-details__item">
                 <span class="provider-details__label">${__('Free of charge')}:</span>
                 <span class="provider-details__value">${is_free ? __('Yes') : __('No')}</span>
@@ -90,50 +94,62 @@ function tplProviderDetails(provider) {
                 <span class="provider-details__label">${__('Password reset')}:</span>
                 <span class="provider-details__value">${has_password_reset ? __('Yes') : __('No')}</span>
             </div>
-            ${has_legal_notice
-                ? html`
-                      <div class="provider-details__item">
-                          <span class="provider-details__label">${__('Legal notice')}:</span>
-                          <span class="provider-details__value">${__('Yes')}</span>
-                      </div>
-                  `
-                : ''}
-            ${since
-                ? html`
-                      <div class="provider-details__item">
-                          <span class="provider-details__label">${__('Online since')}:</span>
-                          <span class="provider-details__value">${since}</span>
-                      </div>
-                  `
-                : ''}
-            ${archive_time !== undefined && archive_time !== null
-                ? html`
-                      <div class="provider-details__item">
-                          <span class="provider-details__label">${__('Message archive storage time')}:</span>
-                          <span class="provider-details__value"
-                              >${archive_time > 0 ? __('%1$s days', archive_time) : '-'}</span
-                          >
-                      </div>
-                  `
-                : ''}
-            ${upload_size !== undefined && upload_size !== null
-                ? html`
-                      <div class="provider-details__item">
-                          <span class="provider-details__label">${__('File upload size limit')}:</span>
-                          <span class="provider-details__value">${upload_size > 0 ? `${upload_size} MB` : '-'}</span>
-                      </div>
-                  `
-                : ''}
-            ${upload_time !== undefined && upload_time !== null
-                ? html`
-                      <div class="provider-details__item">
-                          <span class="provider-details__label">${__('File upload storage time')}:</span>
-                          <span class="provider-details__value"
-                              >${upload_time > 0 ? __('%1$s days', upload_time) : '-'}</span
-                          >
-                      </div>
-                  `
-                : ''}
+            ${
+                has_legal_notice
+                    ? html`
+                          <div class="provider-details__item">
+                              <span class="provider-details__label">${__('Legal notice')}:</span>
+                              <span class="provider-details__value">${__('Yes')}</span>
+                          </div>
+                      `
+                    : ''
+            }
+            ${
+                since
+                    ? html`
+                          <div class="provider-details__item">
+                              <span class="provider-details__label">${__('Online since')}:</span>
+                              <span class="provider-details__value">${since}</span>
+                          </div>
+                      `
+                    : ''
+            }
+            ${
+                archive_time !== undefined && archive_time !== null
+                    ? html`
+                          <div class="provider-details__item">
+                              <span class="provider-details__label">${__('Message archive storage time')}:</span>
+                              <span class="provider-details__value"
+                                  >${archive_time > 0 ? __('%1$s days', archive_time) : '-'}</span
+                              >
+                          </div>
+                      `
+                    : ''
+            }
+            ${
+                upload_size !== undefined && upload_size !== null
+                    ? html`
+                          <div class="provider-details__item">
+                              <span class="provider-details__label">${__('File upload size limit')}:</span>
+                              <span class="provider-details__value"
+                                  >${upload_size > 0 ? `${upload_size} MB` : '-'}</span
+                              >
+                          </div>
+                      `
+                    : ''
+            }
+            ${
+                upload_time !== undefined && upload_time !== null
+                    ? html`
+                          <div class="provider-details__item">
+                              <span class="provider-details__label">${__('File upload storage time')}:</span>
+                              <span class="provider-details__value"
+                                  >${upload_time > 0 ? __('%1$s days', upload_time) : '-'}</span
+                              >
+                          </div>
+                      `
+                    : ''
+            }
         </div>
     `;
 }
@@ -178,27 +194,29 @@ function tplProviderRow(provider, el) {
                 </span>
                 <span class="provider-row__jid">${provider.jid}</span>
                 <span class="provider-row__badge ${categoryClass}">${category}</span>
-                ${provider.category === 'B' && !u.isEmpty(provider.registrationWebPage)
-                    ? html`<a
-                          class="provider-row__register-btn"
-                          href="${getLocalizedURL(provider.registrationWebPage)}"
-                          target="_blank"
-                          rel="noopener"
-                      >
-                          <converse-icon class="fa fa-user-plus" size="0.85em"></converse-icon>
-                          ${__('Register')}
-                      </a>`
-                    : html`<button
-                          type="button"
-                          class="provider-row__register-btn"
-                          @click=${(/** @type {Event} */ ev) => {
-                              ev.stopPropagation();
-                              el.onProviderSelected(provider.jid);
-                          }}
-                      >
-                          <converse-icon class="fa fa-user-plus" size="0.85em"></converse-icon>
-                          ${__('Register')}
-                      </button>`}
+                ${
+                    provider.category === 'B' && !u.isEmpty(provider.registrationWebPage)
+                        ? html`<a
+                              class="provider-row__register-btn"
+                              href="${getLocalizedURL(provider.registrationWebPage)}"
+                              target="_blank"
+                              rel="noopener"
+                          >
+                              <converse-icon class="fa fa-user-plus" size="0.85em"></converse-icon>
+                              ${__('Register')}
+                          </a>`
+                        : html`<button
+                              type="button"
+                              class="provider-row__register-btn"
+                              @click=${(/** @type {Event} */ ev) => {
+                                  ev.stopPropagation();
+                                  el.onProviderSelected(provider.jid);
+                              }}
+                          >
+                              <converse-icon class="fa fa-user-plus" size="0.85em"></converse-icon>
+                              ${__('Register')}
+                          </button>`
+                }
             </div>
             ${isExpanded ? tplProviderDetails(provider) : ''}
         </div>
@@ -286,18 +304,20 @@ function tplManualDomainFields() {
                 <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_providers_link}</a>.
             </p>
         </div>
-        ${api.settings.get('show_connection_url_input')
-            ? html` <div class="form-group">
-                  <label for="reg-connection-url">${__('Connection URL')}</label>
-                  <input
-                      class="form-control"
-                      id="reg-connection-url"
-                      type="text"
-                      name="connection-url"
-                      placeholder="${__('e.g. https://example.org/http-bind')}"
-                  />
-              </div>`
-            : ''}
+        ${
+            api.settings.get('show_connection_url_input')
+                ? html` <div class="form-group">
+                      <label for="reg-connection-url">${__('Connection URL')}</label>
+                      <input
+                          class="form-control"
+                          id="reg-connection-url"
+                          type="text"
+                          name="connection-url"
+                          placeholder="${__('e.g. https://example.org/http-bind')}"
+                      />
+                  </div>`
+                : ''
+        }
         <input class="btn btn-primary" type="submit" value="${i18n_register}" />
     `;
 }
@@ -356,14 +376,18 @@ function tplChooseProvider(el) {
         <div id="converse-register" class="converse-form">
             <legend class="col-form-label">${i18n_create_account}</legend>
             <p class="provider-list-section__label">${i18n_choose_provider}</p>
-            ${has_providers
-                ? html`
-                      ${tplProviderList(el)}
-                      <p class="provider-list-section__footer">
-                          <a href="${href_providers}" class="url" target="_blank" rel="noopener">${i18n_browse_all}</a>
-                      </p>
-                  `
-                : tplSpinner({ 'class': 'hor_centered' })}
+            ${
+                has_providers
+                    ? html`
+                          ${tplProviderList(el)}
+                          <p class="provider-list-section__footer">
+                              <a href="${href_providers}" class="url" target="_blank" rel="noopener"
+                                  >${i18n_browse_all}</a
+                              >
+                          </p>
+                      `
+                    : tplSpinner({ 'class': 'hor_centered' })
+            }
             <div class="manual-registration-domain">
                 <p class="manual-registration-domain__toggle">
                     ${i18n_manual_prompt}
@@ -375,14 +399,16 @@ function tplChooseProvider(el) {
                         >${i18n_manual_toggle}</a
                     >
                 </p>
-                ${show_manual
-                    ? html`<form
-                          class="converse-form manual-registration-domain__form"
-                          @submit=${(/** @type {Event} */ ev) => el.onFormSubmission(ev)}
-                      >
-                          ${tplManualDomainFields()}
-                      </form>`
-                    : ''}
+                ${
+                    show_manual
+                        ? html`<form
+                              class="converse-form manual-registration-domain__form"
+                              @submit=${(/** @type {Event} */ ev) => el.onFormSubmission(ev)}
+                          >
+                              ${tplManualDomainFields()}
+                          </form>`
+                        : ''
+                }
             </div>
             <div class="switch-form">
                 <p class="mb-1">${i18n_existing_account}</p>
@@ -402,9 +428,11 @@ const REGISTRATION_FORM_ERROR = 3;
  */
 export default (el) => {
     return html`
-        ${el.alert_message
-            ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert_message}</div>`
-            : ''}
+        ${
+            el.alert_message
+                ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert_message}</div>`
+                : ''
+        }
         ${el.status === CHOOSE_PROVIDER ? tplChooseProvider(el) : ''}
         ${el.status === FETCHING_FORM ? tplFormRequest(el) : ''}
         ${el.status === REGISTRATION_FORM ? tplRegistrationForm(el) : ''}

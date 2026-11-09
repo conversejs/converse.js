@@ -7,7 +7,8 @@ describe('The Controlbox', function () {
     describe('The user profile', function () {
         it(
             "shows the user's configured nickname",
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 [],
                 { blacklisted_plugins: ['converse-vcard'], nickname: 'nicky' },
                 async function (_converse) {

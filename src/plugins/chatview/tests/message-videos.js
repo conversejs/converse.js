@@ -79,7 +79,8 @@ describe('A chat message containing video URLs', function () {
 
     it(
         'will allow rendering of videos from approved URLs only',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesFetched'],
             { 'allowed_video_domains': ['conversejs.org'] },
             async function (_converse) {

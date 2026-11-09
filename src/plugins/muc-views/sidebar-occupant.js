@@ -1,7 +1,7 @@
-import { _converse, api, MUC, Model } from "@converse/headless";
-import { ObservableElement } from "shared/components/observable.js";
-import tplMUCOccupant from "./templates/occupant.js";
-import "./occupant-bottom-panel.js";
+import { _converse, api, MUC, Model } from '@converse/headless';
+import { ObservableElement } from 'shared/components/observable.js';
+import tplMUCOccupant from './templates/occupant.js';
+import './occupant-bottom-panel.js';
 
 export default class MUCOccupantListItem extends ObservableElement {
     /**
@@ -11,7 +11,7 @@ export default class MUCOccupantListItem extends ObservableElement {
     constructor() {
         super();
         this.muc = null;
-        this.observable = /** @type {ObservableProperty} */ ("once");
+        this.observable = /** @type {ObservableProperty} */ ('once');
     }
 
     static get properties() {
@@ -25,14 +25,14 @@ export default class MUCOccupantListItem extends ObservableElement {
     async initialize() {
         super.initialize();
         await this.muc.initialized;
-        this.listenTo(this.model, "change", () => this.requestUpdate());
-        this.listenTo(this.model, "vcard:add", () => this.requestUpdate());
-        this.listenTo(this.model, "vcard:change", () => this.requestUpdate());
+        this.listenTo(this.model, 'change', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:add', () => this.requestUpdate());
+        this.listenTo(this.model, 'vcard:change', () => this.requestUpdate());
         this.requestUpdate();
     }
 
     render() {
-        return this.muc ? tplMUCOccupant(this) : "";
+        return this.muc ? tplMUCOccupant(this) : '';
     }
 
     /**
@@ -42,11 +42,11 @@ export default class MUCOccupantListItem extends ObservableElement {
     onOccupantClicked(ev, occupant) {
         ev.preventDefault();
         if (this.muc.getOwnOccupant() === occupant) {
-            api.modal.show("converse-profile-modal", { model: _converse.state.xmppstatus }, ev);
+            api.modal.show('converse-profile-modal', { model: _converse.state.xmppstatus }, ev);
         } else {
             this.muc.save({ sidebar_view: `occupant:${occupant.id}` });
         }
     }
 }
 
-api.elements.define("converse-muc-occupant-list-item", MUCOccupantListItem);
+api.elements.define('converse-muc-occupant-list-item', MUCOccupantListItem);

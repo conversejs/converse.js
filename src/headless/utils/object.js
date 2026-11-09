@@ -6,7 +6,7 @@
 export function merge(dst, src) {
     for (const k in src) {
         if (!Object.prototype.hasOwnProperty.call(src, k)) continue;
-        if (k === "__proto__" || k === "constructor") continue;
+        if (k === '__proto__' || k === 'constructor') continue;
 
         if (dst[k] instanceof Object) {
             merge(dst[k], src[k]);
@@ -21,7 +21,7 @@ export function merge(dst, src) {
  * @returns {boolean} True if the object is an Error, false otherwise.
  */
 export function isError(obj) {
-    return Object.prototype.toString.call(obj) === "[object Error]";
+    return Object.prototype.toString.call(obj) === '[object Error]';
 }
 
 /**
@@ -29,7 +29,7 @@ export function isError(obj) {
  * @returns {boolean} True if the value is a function, false otherwise.
  */
 export function isFunction(val) {
-    return typeof val === "function";
+    return typeof val === 'function';
 }
 
 /**
@@ -37,7 +37,7 @@ export function isFunction(val) {
  * @returns {boolean} True if the value is undefined, false otherwise.
  */
 export function isUndefined(x) {
-    return typeof x === "undefined";
+    return typeof x === 'undefined';
 }
 
 /**

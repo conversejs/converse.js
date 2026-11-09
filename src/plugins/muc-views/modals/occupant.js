@@ -1,21 +1,20 @@
-import { _converse, api, converse, Model } from "@converse/headless";
+import { _converse, api, converse, Model } from '@converse/headless';
 import { __ } from 'i18n';
-import BaseModal from "plugins/modal/modal.js";
-import tplOccupantModal from "./templates/occupant.js";
+import BaseModal from 'plugins/modal/modal.js';
+import tplOccupantModal from './templates/occupant.js';
 
 const { u } = converse.env;
 
 export default class OccupantModal extends BaseModal {
-
-    constructor (options) {
+    constructor(options) {
         super();
         this.message = options.message;
-        this.addEventListener("affiliationChanged", () => this.alert(__('Affiliation changed')));
-        this.addEventListener("roleChanged", () => this.alert(__('role changed')));
+        this.addEventListener('affiliationChanged', () => this.alert(__('Affiliation changed')));
+        this.addEventListener('roleChanged', () => this.alert(__('role changed')));
     }
 
-    initialize () {
-        super.initialize()
+    initialize() {
+        super.initialize();
         const model = this.model ?? this.message;
         this.listenTo(model, 'change', () => this.requestUpdate());
         /**
@@ -27,20 +26,20 @@ export default class OccupantModal extends BaseModal {
         api.trigger('occupantModalInitialized', { 'model': this.model, 'message': this.message });
     }
 
-    renderModal () {
+    renderModal() {
         return tplOccupantModal(this);
     }
 
     /**
      * @param {MouseEvent} ev
      */
-    openChat (ev) {
+    openChat(ev) {
         ev.preventDefault();
         api.trigger('openConversation', { view: 'chat', jid: this.model.get('jid') });
         this.close();
     }
 
-    getVcard () {
+    getVcard() {
         const model = this.model ?? this.message;
         if (model.vcard) {
             return model.vcard;
@@ -49,18 +48,18 @@ export default class OccupantModal extends BaseModal {
         return jid ? _converse.state.vcards.get(jid) : null;
     }
 
-    getModalTitle () {
+    getModalTitle() {
         const model = this.model ?? this.message;
         return model?.getDisplayName();
     }
 
-    addToContacts () {
+    addToContacts() {
         const model = this.model ?? this.message;
         const jid = model.get('jid');
         if (jid) api.modal.show('converse-add-contact-modal', { state: new Model({ jid }) });
     }
 
-    toggleForm (ev) {
+    toggleForm(ev) {
         const toggle = u.ancestor(ev.target, '.toggle-form');
         const form = toggle.getAttribute('data-form');
         if (form === 'row-form') {

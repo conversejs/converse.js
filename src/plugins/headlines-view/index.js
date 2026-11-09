@@ -11,7 +11,6 @@ import { _converse, converse } from '@converse/headless';
 import './styles/headlines.scss';
 import './styles/headlines-head.scss';
 
-
 converse.plugins.add('converse-headlines-view', {
     /* Plugin dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
@@ -25,13 +24,13 @@ converse.plugins.add('converse-headlines-view', {
      */
     dependencies: ['converse-headlines', 'converse-dragresize', 'converse-chatview'],
 
-    initialize () {
-        const exports =  {
+    initialize() {
+        const exports = {
             HeadlinesFeedView,
             HeadlinesFeedsList,
             HeadlinesPanel: HeadlinesFeedsList, // DEPRECATED
-        }
+        };
         Object.assign(_converse, exports); // DEPRECATED
         Object.assign(_converse.exports, exports);
-    }
+    },
 });

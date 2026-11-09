@@ -8,6 +8,6 @@ import './plugin.js';
 
 import { getDefaultMUCService, isChatRoom } from './utils.js';
 import { setAffiliation } from './affiliations/utils.js';
-Object.assign(u, { muc: { isChatRoom, setAffiliation, getDefaultMUCService }});
+Object.assign(u, { muc: { isChatRoom, setAffiliation, getDefaultMUCService } });
 
 export { MUCMessage, MUCMessages, MUC, MUCOccupant, MUCOccupants };

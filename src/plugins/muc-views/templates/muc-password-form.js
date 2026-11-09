@@ -1,6 +1,5 @@
-import { html } from "lit";
+import { html } from 'lit';
 import { __ } from 'i18n';
-
 
 export default (o) => {
     const i18n_heading = __('This groupchat requires a password');
@@ -16,7 +15,7 @@ export default (o) => {
                 <input type="password"
                     name="password"
                     required="required"
-                    class="form-control ${o.validation_message ? 'error': ''}"
+                    class="form-control ${o.validation_message ? 'error' : ''}"
                     placeholder="${i18n_password}"/>
             </fieldset>
             <fieldset>
@@ -24,4 +23,4 @@ export default (o) => {
             </fieldset>
         </form>
     `;
-}
+};

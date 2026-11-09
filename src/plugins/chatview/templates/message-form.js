@@ -20,61 +20,61 @@ export default (el) => {
     const show_toolbar = api.settings.get('show_toolbar');
 
     return html`<form
-            class="chat-message-form"
-            @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}"
-        >
-            ${
-                show_toolbar
-                    ? html`<converse-chat-toolbar
-                          class="btn-toolbar chat-toolbar no-text-select"
-                          .model=${el.model}
-                          ?composing_spoiler="${composing_spoiler}"
-                          ?is_groupchat="${is_groupchat}"
-                          ?show_emoji_button="${show_emoji_button}"
-                          ?show_send_button="${show_send_button}"
-                          ?show_spoiler_button="${show_spoiler_button}"
-                          ?show_toolbar="${show_toolbar}"
-                          message_limit="${message_limit}"
-                      ></converse-chat-toolbar>`
-                    : ''
-            }
+        class="chat-message-form"
+        @submit="${/** @param {SubmitEvent} ev */ (ev) => el.onFormSubmitted(ev)}"
+    >
+        ${
+            show_toolbar
+                ? html`<converse-chat-toolbar
+                      class="btn-toolbar chat-toolbar no-text-select"
+                      .model=${el.model}
+                      ?composing_spoiler="${composing_spoiler}"
+                      ?is_groupchat="${is_groupchat}"
+                      ?show_emoji_button="${show_emoji_button}"
+                      ?show_send_button="${show_send_button}"
+                      ?show_spoiler_button="${show_spoiler_button}"
+                      ?show_toolbar="${show_toolbar}"
+                      message_limit="${message_limit}"
+                  ></converse-chat-toolbar>`
+                : ''
+        }
 
-            <input
-                type="text"
-                enterkeyhint="send"
-                placeholder="${label_spoiler_hint || ''}"
-                .value="${el.model.get('draft_hint') ?? ''}"
-                @change="${
-                    /** @param {Event} ev */ (ev) =>
-                        u.safeSave(el.model, { draft_hint: /** @type {HTMLInputElement} */ (ev.target).value })
-                }"
-                class="${composing_spoiler ? '' : 'hidden'} spoiler-hint"
-            />
+        <input
+            type="text"
+            enterkeyhint="send"
+            placeholder="${label_spoiler_hint || ''}"
+            .value="${el.model.get('draft_hint') ?? ''}"
+            @change="${
+                /** @param {Event} ev */ (ev) =>
+                    u.safeSave(el.model, { draft_hint: /** @type {HTMLInputElement} */ (ev.target).value })
+            }"
+            class="${composing_spoiler ? '' : 'hidden'} spoiler-hint"
+        />
 
-            <div class="chat-rich">
-                <!-- Stable host: no dynamic bindings inside, so Lit never re-renders its
+        <div class="chat-rich">
+            <!-- Stable host: no dynamic bindings inside, so Lit never re-renders its
                      children and Lexical's managed DOM survives the component's updates.
                      Keeps the chat-textarea class, because the chat views focus the
                      composer by that selector. -->
-                <div
-                    class="chat-textarea chat-rich__editable
+            <div
+                class="chat-textarea chat-rich__editable
                             ${el.is_empty ? 'is-empty' : ''}
                             ${el.model.get('correcting') ? 'correcting' : ''}
                             ${show_send_button ? 'chat-textarea-send-button' : ''}
                             ${composing_spoiler ? 'spoiler' : ''}"
-                    contenteditable="true"
-                    role="textbox"
-                    aria-multiline="true"
-                    aria-label="${label_message}"
-                    data-placeholder="${label_message}"
-                    @focusin=${() => el.ensureEditor()}
-                    @focusout=${/** @param {FocusEvent} ev */ (ev) => el.onEditorFocusOut(ev)}
-                    @drop="${/** @param {DragEvent} ev */ (ev) => el.onDrop(ev)}"
-                    @keydown="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyDown(ev)}"
-                    @keyup="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyUp(ev)}"
-                    @paste="${/** @param {ClipboardEvent} ev */ (ev) => el.onPaste(ev)}"
-                ></div>
-                ${el.typeahead.is_open ? tplTypeahead(el.typeahead) : ''}
-            </div>
-        </form>`;
+                contenteditable="true"
+                role="textbox"
+                aria-multiline="true"
+                aria-label="${label_message}"
+                data-placeholder="${label_message}"
+                @focusin=${() => el.ensureEditor()}
+                @focusout=${/** @param {FocusEvent} ev */ (ev) => el.onEditorFocusOut(ev)}
+                @drop="${/** @param {DragEvent} ev */ (ev) => el.onDrop(ev)}"
+                @keydown="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyDown(ev)}"
+                @keyup="${/** @param {KeyboardEvent} ev */ (ev) => el.onKeyUp(ev)}"
+                @paste="${/** @param {ClipboardEvent} ev */ (ev) => el.onPaste(ev)}"
+            ></div>
+            ${el.typeahead.is_open ? tplTypeahead(el.typeahead) : ''}
+        </div>
+    </form>`;
 };

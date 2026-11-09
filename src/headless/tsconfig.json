@@ -1,26 +1,13 @@
 {
-  "include": [
-      "**/*.js",
-      "**/*.ts",
-  ],
-  "exclude": [
-      "**/*.js.map",
-      "**/dist/**/*",
-      "**/tests/*",
-      "types/**/*",
-  ],
+  "include": ["**/*.js", "**/*.ts"],
+  "exclude": ["**/*.js.map", "**/dist/**/*", "**/tests/*", "types/**/*"],
   "compilerOptions": {
     "target": "es2020",
     "module": "esnext",
 
-    "types": [
-      "@types/webappsec-credential-management"
-    ],
+    "types": ["@types/webappsec-credential-management"],
 
-    "lib": [
-      "es2023",
-      "dom"
-    ],
+    "lib": ["es2023", "dom"],
 
     "allowJs": true,
     "checkJs": true,

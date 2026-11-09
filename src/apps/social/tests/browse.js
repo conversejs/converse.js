@@ -219,9 +219,7 @@ describe('The Discover modal (browse a service)', function () {
             // can middle-/⌘-click it into a new tab (which restores the feed).
             const link = browse.querySelector('.social-browse__item .social-browse__info');
             expect(link.tagName).toBe('A');
-            expect(link.getAttribute('href')).toBe(
-                buildSocialRoute({ view: 'profile', jid: SERVICE, node: 'news' }),
-            );
+            expect(link.getAttribute('href')).toBe(buildSocialRoute({ view: 'profile', jid: SERVICE, node: 'news' }));
 
             // A modifier/middle click is left for the browser (new tab); it must not
             // navigate in place (no `feedselected` dispatched).

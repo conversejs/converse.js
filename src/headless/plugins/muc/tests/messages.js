@@ -222,8 +222,8 @@ describe('A MUC message', function () {
                         _converse,
                         stx`<message from="${muc_jid}/juliet" type="groupchat" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
                             <body>${body}</body>
-                        </message>`
-                    )
+                        </message>`,
+                    ),
                 );
                 return u.waitUntil(() => model.messages.findWhere({ body }));
             };
@@ -239,8 +239,8 @@ describe('A MUC message', function () {
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="member" role="participant" jid="juliet@capulet.lit/balcony"/>
                         </x>
-                    </presence>`
-                )
+                    </presence>`,
+                ),
             );
             await u.waitUntil(() => juliet.get('presence') === 'online');
             message = await sendLiveMessage('It is I');
@@ -248,7 +248,7 @@ describe('A MUC message', function () {
 
             // The nick of an archived message might since have been taken by someone else
             const iq = await u.waitUntil(() =>
-                conn.IQ_stanzas.filter((iq) => sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length).pop()
+                conn.IQ_stanzas.filter((iq) => sizzle('query[xmlns="urn:xmpp:mam:2"]', iq).length).pop(),
             );
             const query_id = iq.querySelector('query').getAttribute('queryid');
             const archived = stx`
@@ -266,8 +266,8 @@ describe('A MUC message', function () {
             conn._dataRecv(
                 mock.createRequest(
                     _converse,
-                    stx`<iq type="result" id="${iq.getAttribute('id')}" xmlns="jabber:client"><fin xmlns="urn:xmpp:mam:2"/></iq>`
-                )
+                    stx`<iq type="result" id="${iq.getAttribute('id')}" xmlns="jabber:client"><fin xmlns="urn:xmpp:mam:2"/></iq>`,
+                ),
             );
             message = await u.waitUntil(() => model.messages.findWhere({ body: 'Years ago' }));
             expect(message.get('from_real_jid')).toBeUndefined();
@@ -279,8 +279,8 @@ describe('A MUC message', function () {
                     stx`<message from="${muc_jid}/juliet" type="groupchat" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
                         <body>Before you joined</body>
                         <delay xmlns="urn:xmpp:delay" from="${muc_jid}" stamp="2020-01-02T00:00:00Z"/>
-                    </message>`
-                )
+                    </message>`,
+                ),
             );
             message = await u.waitUntil(() => model.messages.findWhere({ body: 'Before you joined' }));
             expect(message.get('from_real_jid')).toBeUndefined();
@@ -293,7 +293,17 @@ describe('A MUC message', function () {
             await mock.waitUntilBookmarksReturned(_converse);
             const muc_jid = 'lounge@montague.lit';
             const members = [{ jid: 'juliet@capulet.lit', nick: 'juliet', affiliation: 'member' }];
-            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], members, true, {}, 'member', 'participant');
+            const model = await mock.openAndEnterMUC(
+                _converse,
+                muc_jid,
+                'romeo',
+                [],
+                members,
+                true,
+                {},
+                'member',
+                'participant',
+            );
             await u.waitUntil(() => model.occupants.length === 2);
             const juliet = model.occupants.findWhere({ nick: 'juliet' });
 
@@ -305,8 +315,8 @@ describe('A MUC message', function () {
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="member" role="participant"/>
                         </x>
-                    </presence>`
-                )
+                    </presence>`,
+                ),
             );
             await u.waitUntil(() => juliet.get('presence') === 'online');
             // The JID from the member list is kept, but the presence didn't confirm it
@@ -317,8 +327,8 @@ describe('A MUC message', function () {
                     _converse,
                     stx`<message from="${muc_jid}/juliet" type="groupchat" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
                         <body>Hello</body>
-                    </message>`
-                )
+                    </message>`,
+                ),
             );
             const message = await u.waitUntil(() => model.messages.at(0));
             expect(message.getOccupant()).toBe(juliet);
@@ -331,7 +341,17 @@ describe('A MUC message', function () {
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitUntilBookmarksReturned(_converse);
             const muc_jid = 'lounge@montague.lit';
-            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo', [], [], true, {}, 'admin', 'moderator');
+            const model = await mock.openAndEnterMUC(
+                _converse,
+                muc_jid,
+                'romeo',
+                [],
+                [],
+                true,
+                {},
+                'admin',
+                'moderator',
+            );
 
             const conn = _converse.api.connection.get();
             conn._dataRecv(
@@ -341,8 +361,8 @@ describe('A MUC message', function () {
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" role="participant" jid="juliet@capulet.lit/balcony"/>
                         </x>
-                    </presence>`
-                )
+                    </presence>`,
+                ),
             );
             await u.waitUntil(() => model.occupants.findWhere({ nick: 'juliet' })?.get('presence') === 'online');
 
@@ -351,8 +371,8 @@ describe('A MUC message', function () {
                     _converse,
                     stx`<message from="${muc_jid}/juliet" type="groupchat" id="${u.getUniqueId()}" to="${_converse.bare_jid}" xmlns="jabber:client">
                         <body>Hello</body>
-                    </message>`
-                )
+                    </message>`,
+                ),
             );
             const message = await u.waitUntil(() => model.messages.at(0));
             expect(message.get('from_real_jid')).toBe('juliet@capulet.lit');

@@ -49,7 +49,7 @@ export function quote(text) {
  * @param {string} text
  */
 export function token(text) {
-    return (/^[^\s"[\]]+$/u).test(text) ? text : JSON.stringify(text);
+    return /^[^\s"[\]]+$/u.test(text) ? text : JSON.stringify(text);
 }
 
 /**

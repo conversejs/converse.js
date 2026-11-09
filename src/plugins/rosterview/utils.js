@@ -324,15 +324,31 @@ export function groupsComparator(a, b) {
     const a_is_special = special_groups.includes(/** @type {string} */ (a));
     const b_is_special = special_groups.includes(/** @type {string} */ (b));
     if (!a_is_special && !b_is_special) {
-        return (/** @type {string} */ (a)).toLowerCase() < (/** @type {string} */ (b)).toLowerCase() ? -1 : (/** @type {string} */ (a)).toLowerCase() > (/** @type {string} */ (b)).toLowerCase() ? 1 : 0;
+        return /** @type {string} */ (a).toLowerCase() < /** @type {string} */ (b).toLowerCase()
+            ? -1
+            : /** @type {string} */ (a).toLowerCase() > /** @type {string} */ (b).toLowerCase()
+              ? 1
+              : 0;
     } else if (a_is_special && b_is_special) {
-        return WEIGHTS[/** @type {string} */ (a)] < WEIGHTS[/** @type {string} */ (b)] ? -1 : WEIGHTS[/** @type {string} */ (a)] > WEIGHTS[/** @type {string} */ (b)] ? 1 : 0;
+        return WEIGHTS[/** @type {string} */ (a)] < WEIGHTS[/** @type {string} */ (b)]
+            ? -1
+            : WEIGHTS[/** @type {string} */ (a)] > WEIGHTS[/** @type {string} */ (b)]
+              ? 1
+              : 0;
     } else if (!a_is_special && b_is_special) {
         const a_header = HEADER_CURRENT_CONTACTS;
-        return WEIGHTS[/** @type {string} */ (a_header)] < WEIGHTS[/** @type {string} */ (b)] ? -1 : WEIGHTS[/** @type {string} */ (a_header)] > WEIGHTS[/** @type {string} */ (b)] ? 1 : 0;
+        return WEIGHTS[/** @type {string} */ (a_header)] < WEIGHTS[/** @type {string} */ (b)]
+            ? -1
+            : WEIGHTS[/** @type {string} */ (a_header)] > WEIGHTS[/** @type {string} */ (b)]
+              ? 1
+              : 0;
     } else if (a_is_special && !b_is_special) {
         const b_header = HEADER_CURRENT_CONTACTS;
-        return WEIGHTS[/** @type {string} */ (a)] < WEIGHTS[/** @type {string} */ (b_header)] ? -1 : WEIGHTS[/** @type {string} */ (a)] > WEIGHTS[/** @type {string} */ (b_header)] ? 1 : 0;
+        return WEIGHTS[/** @type {string} */ (a)] < WEIGHTS[/** @type {string} */ (b_header)]
+            ? -1
+            : WEIGHTS[/** @type {string} */ (a)] > WEIGHTS[/** @type {string} */ (b_header)]
+              ? 1
+              : 0;
     }
 }
 

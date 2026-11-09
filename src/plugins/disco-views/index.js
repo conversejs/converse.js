@@ -12,5 +12,5 @@ converse.plugins.add('converse-disco-views', {
         return true;
     },
 
-    initialize () {},
+    initialize() {},
 });

@@ -85,7 +85,11 @@ describe('A Chat Message containing a WebP URL', function () {
 
             const show = vi.spyOn(_converse.api.modal, 'show').mockReturnValue(undefined);
             img.click();
-            expect(show).toHaveBeenCalledWith('converse-image-modal', expect.objectContaining({ src: static_url }), expect.anything());
+            expect(show).toHaveBeenCalledWith(
+                'converse-image-modal',
+                expect.objectContaining({ src: static_url }),
+                expect.anything(),
+            );
         }),
     );
 

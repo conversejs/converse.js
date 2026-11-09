@@ -11,4 +11,3 @@ export type XFormFieldOptions = {
     fixed_username?: string;
     new_password?: boolean;
 };
-

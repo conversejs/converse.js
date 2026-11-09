@@ -145,26 +145,21 @@ describe('The Chat app URL routing', function () {
 
     it(
         'stays dormant when URL routing is disabled (never writes the hash)',
-        mock.initConverse(
-            converse,
-            ['chatBoxesFetched'],
-            { view_mode: 'fullscreen' },
-            async function (_converse) {
-                const { api, state } = _converse;
-                await mock.waitForRoster(_converse, 'current', 1);
-                const mercutio = 'mercutio@montague.lit';
-                clearHash();
+        mock.initConverse(converse, ['chatBoxesFetched'], { view_mode: 'fullscreen' }, async function (_converse) {
+            const { api, state } = _converse;
+            await mock.waitForRoster(_converse, 'current', 1);
+            const mercutio = 'mercutio@montague.lit';
+            clearHash();
 
-                const el = mountChatApp();
-                await api.chats.open(mercutio, {}, true);
-                await u.waitUntil(() => state.chatboxes.get(mercutio)?.get('hidden') === false);
-                // Routing off: the URL is left untouched.
-                expect(location.hash).toBe('');
+            const el = mountChatApp();
+            await api.chats.open(mercutio, {}, true);
+            await u.waitUntil(() => state.chatboxes.get(mercutio)?.get('hidden') === false);
+            // Routing off: the URL is left untouched.
+            expect(location.hash).toBe('');
 
-                el.remove();
-                clearHash();
-            },
-        ),
+            el.remove();
+            clearHash();
+        }),
     );
 
     it(

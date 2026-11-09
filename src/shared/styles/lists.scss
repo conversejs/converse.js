@@ -1,5 +1,5 @@
 .conversejs {
-    @import "bootstrap/scss/list-group";
+    @import 'bootstrap/scss/list-group';
 
     .list-group-item {
         &.active {
@@ -119,7 +119,9 @@
                 .list-item-action {
                     opacity: 1;
                 }
-                .fa, .far, .fas {
+                .fa,
+                .far,
+                .fas {
                     opacity: 1;
                 }
             }

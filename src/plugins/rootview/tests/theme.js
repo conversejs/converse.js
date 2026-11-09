@@ -25,7 +25,7 @@ describe('The active theme', function () {
                 expect(api.theme.isDark()).toBe(is_dark);
                 // `color-scheme` inherits, so anything inside agrees.
                 expect(api.theme.isDark(root.querySelector('converse-modals'))).toBe(is_dark);
-            })
+            }),
         );
     }
 
@@ -41,6 +41,6 @@ describe('The active theme', function () {
             const root = document.querySelector('converse-root');
             expect(getComputedStyle(root).colorScheme).toBe('normal');
             expect(api.theme.isDark()).toBe(false);
-        })
+        }),
     );
 });

@@ -16,7 +16,7 @@ describe('XEP-0461 Message Replies', function () {
 
                 const firstMessageText = 'But soft, what light through yonder airlock breaks?';
 
-            await mock.setComposerText(view, firstMessageText);
+                await mock.setComposerText(view, firstMessageText);
                 await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
@@ -69,7 +69,7 @@ describe('XEP-0461 Message Replies', function () {
 
                 const firstMessageText = 'Hello world';
 
-            await mock.setComposerText(view, firstMessageText);
+                await mock.setComposerText(view, firstMessageText);
                 await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
@@ -231,7 +231,7 @@ describe('XEP-0461 Message Replies', function () {
 
                 // Send a message first
                 const firstMessageText = 'Original message';
-            await mock.setComposerText(view, firstMessageText);
+                await mock.setComposerText(view, firstMessageText);
                 await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
@@ -248,7 +248,7 @@ describe('XEP-0461 Message Replies', function () {
                     return send.call(api.connection.get(), stanza);
                 });
 
-            await mock.setComposerText(view, 'This is my reply');
+                await mock.setComposerText(view, 'This is my reply');
                 await mock.pressComposerKey(view, 'Enter');
 
                 await u.waitUntil(() => sent_stanzas.length === 1);
@@ -320,7 +320,7 @@ describe('XEP-0461 Message Replies', function () {
                 await mock.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
 
-            await mock.setComposerText(view, 'Original message');
+                await mock.setComposerText(view, 'Original message');
                 await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
@@ -335,7 +335,7 @@ describe('XEP-0461 Message Replies', function () {
                 });
 
                 const reply_text = 'This is my reply';
-            await mock.setComposerText(view, reply_text);
+                await mock.setComposerText(view, reply_text);
                 await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => sent_stanzas.length === 1);
 
@@ -373,7 +373,7 @@ describe('XEP-0461 Message Replies', function () {
 
                 const long_original =
                     'But soft, what light through yonder airlock breaks? It is the east and Juliet is the sun, arise fair sun';
-            await mock.setComposerText(view, long_original);
+                await mock.setComposerText(view, long_original);
                 await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => view.querySelectorAll('.chat-msg__text').length === 1);
 
@@ -388,7 +388,7 @@ describe('XEP-0461 Message Replies', function () {
                 });
 
                 const reply_text = 'Indeed it does';
-            await mock.setComposerText(view, reply_text);
+                await mock.setComposerText(view, reply_text);
                 await mock.pressComposerKey(view, 'Enter');
                 await u.waitUntil(() => sent_stanzas.length === 1);
 

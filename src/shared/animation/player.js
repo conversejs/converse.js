@@ -17,16 +17,16 @@ export default class AnimationPlayer {
                 autoplay: true,
                 loop: true,
                 show_progress_bar: true,
-                progress_bg_color: "rgba(0,0,0,0.4)",
-                progress_color: "rgba(255,0,22,.8)",
+                progress_bg_color: 'rgba(0,0,0,0.4)',
+                progress_color: 'rgba(255,0,22,.8)',
                 progress_bar_height: 5,
             },
-            opts
+            opts,
         );
 
         this.el = el;
-        this.canvas = el.querySelector("canvas");
-        this.ctx = this.canvas.getContext("2d");
+        this.canvas = el.querySelector('canvas');
+        this.ctx = this.canvas.getContext('2d');
 
         this.ctx_scaled = false;
         /** @type {any[]} */ this.frames = [];
@@ -162,9 +162,9 @@ export default class AnimationPlayer {
     }
 
     drawError() {
-        this.ctx.fillStyle = "black";
+        this.ctx.fillStyle = 'black';
         this.ctx.fillRect(0, 0, this.options.width, this.options.height);
-        this.ctx.strokeStyle = "red";
+        this.ctx.strokeStyle = 'red';
         this.ctx.lineWidth = 3;
         this.ctx.moveTo(0, 0);
         this.ctx.lineTo(this.options.width, this.options.height);
@@ -230,7 +230,7 @@ export default class AnimationPlayer {
         this.renderImage(false);
 
         // Draw dark overlay
-        this.ctx.fillStyle = "rgb(0, 0, 0, 0.25)";
+        this.ctx.fillStyle = 'rgb(0, 0, 0, 0.25)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         const icon_size = this.canvas.height * 0.1;
@@ -239,18 +239,18 @@ export default class AnimationPlayer {
         this.ctx.beginPath();
         this.ctx.moveTo(this.canvas.width / 2 - icon_size / 2, this.canvas.height / 2 - icon_size);
         this.ctx.lineTo(this.canvas.width / 2 - icon_size / 2, this.canvas.height / 2 + icon_size);
-        this.ctx.fillStyle = "rgb(200, 200, 200, 0.75)";
+        this.ctx.fillStyle = 'rgb(200, 200, 200, 0.75)';
         this.ctx.stroke();
 
         this.ctx.beginPath();
         this.ctx.moveTo(this.canvas.width / 2 + icon_size / 2, this.canvas.height / 2 - icon_size);
         this.ctx.lineTo(this.canvas.width / 2 + icon_size / 2, this.canvas.height / 2 + icon_size);
-        this.ctx.fillStyle = "rgb(200, 200, 200, 0.75)";
+        this.ctx.fillStyle = 'rgb(200, 200, 200, 0.75)';
         this.ctx.stroke();
 
         // Draw circle
         this.ctx.lineWidth = this.canvas.height * 0.02;
-        this.ctx.strokeStyle = "rgb(200, 200, 200, 0.75)";
+        this.ctx.strokeStyle = 'rgb(200, 200, 200, 0.75)';
         this.ctx.beginPath();
         this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, icon_size * 1.5, 0, 2 * Math.PI);
         this.ctx.stroke();
@@ -262,7 +262,7 @@ export default class AnimationPlayer {
         // Clear the potential pause button by re-rendering the current frame
         this.renderImage(false);
         // Draw dark overlay
-        this.ctx.fillStyle = "rgb(0, 0, 0, 0.25)";
+        this.ctx.fillStyle = 'rgb(0, 0, 0, 0.25)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Draw triangle
@@ -272,13 +272,13 @@ export default class AnimationPlayer {
         region.lineTo(this.canvas.width / 2 - triangle_size / 2, this.canvas.height / 2 + triangle_size);
         region.lineTo(this.canvas.width / 2 - triangle_size / 2, this.canvas.height / 2 - triangle_size);
         region.closePath();
-        this.ctx.fillStyle = "rgb(200, 200, 200, 0.75)";
+        this.ctx.fillStyle = 'rgb(200, 200, 200, 0.75)';
         this.ctx.fill(region);
 
         // Draw circle
         const circle_size = triangle_size * 1.5;
         this.ctx.lineWidth = this.canvas.height * 0.02;
-        this.ctx.strokeStyle = "rgb(200, 200, 200, 0.75)";
+        this.ctx.strokeStyle = 'rgb(200, 200, 200, 0.75)';
         this.ctx.beginPath();
         this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, circle_size, 0, 2 * Math.PI);
         this.ctx.stroke();

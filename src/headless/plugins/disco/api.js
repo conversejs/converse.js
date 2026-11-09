@@ -197,7 +197,7 @@ export default {
                             ${rsm ? Stanza.fromString(rsm.toString()) : ''}
                         </query>
                     </iq>`,
-                options?.timeout
+                options?.timeout,
             );
         },
 
@@ -272,7 +272,7 @@ export default {
                 }
                 const entity = disco_entities.get(jid);
                 if (entity || !create) {
-                    return /** @type {DiscoEntity} */(entity);
+                    return /** @type {DiscoEntity} */ (entity);
                 }
                 return api.disco.entities.create({ jid });
             },
@@ -352,7 +352,7 @@ export default {
                     // Happens during tests when disco lookups happen asynchronously after teardown.
                     log.warn(
                         `Tried to get feature ${feature} for ${jid} but ` +
-                            `_converse.disco_entities has been torn down`
+                            `_converse.disco_entities has been torn down`,
                     );
                     return [];
                 }

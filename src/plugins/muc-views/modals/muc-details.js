@@ -1,14 +1,12 @@
-import BaseModal from "plugins/modal/modal.js";
-import tplMUCDetails from "./templates/muc-details.js";
+import BaseModal from 'plugins/modal/modal.js';
+import tplMUCDetails from './templates/muc-details.js';
 import { __ } from 'i18n';
-import { api } from "@converse/headless";
+import { api } from '@converse/headless';
 
 import '../styles/muc-details-modal.scss';
 
-
 export default class MUCDetailsModal extends BaseModal {
-
-    initialize () {
+    initialize() {
         super.initialize();
         this.listenTo(this.model, 'change', () => this.requestUpdate());
         this.listenTo(this.model.features, 'change', () => this.requestUpdate());
@@ -16,14 +14,13 @@ export default class MUCDetailsModal extends BaseModal {
         this.listenTo(this.model.occupants, 'change', () => this.requestUpdate());
     }
 
-    renderModal () {
+    renderModal() {
         return tplMUCDetails(this.model);
     }
 
-    getModalTitle () {
+    getModalTitle() {
         return __('Groupchat info');
     }
-
 }
 
 api.elements.define('converse-muc-details-modal', MUCDetailsModal);

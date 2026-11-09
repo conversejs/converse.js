@@ -11,7 +11,7 @@ export default (el) => {
 
     return html` <div class="modal-body">
         ${error ? html`<div class="alert alert-danger" role="alert">${error}</div>` : ''}
-        <form @submit=${/** @param {SubmitEvent} ev */(ev) => el.startChatFromForm(ev)}>
+        <form @submit=${/** @param {SubmitEvent} ev */ (ev) => el.startChatFromForm(ev)}>
             <div class="mb-3">
                 <label class="form-label" for="jid">${i18n_xmpp_address}</label>
                 <input type="text" name="jid" class="form-control" required />

@@ -54,7 +54,7 @@ describe('XEP-0215 external service discovery', function () {
                 _converse,
                 _converse.domain,
                 [{ category: 'server', type: 'IM' }],
-                [EXTDISCO]
+                [EXTDISCO],
             );
             await answerServices(
                 _converse,
@@ -62,7 +62,7 @@ describe('XEP-0215 external service discovery', function () {
                     <service host="stun.montague.lit" port="3478" transport="udp" type="stun"/>
                     <service host="turn.montague.lit" port="3478" transport="udp"
                         type="turn" username="romeo" password="s3cret"/>
-                    <service host="files.montague.lit" port="5000" type="ftp"/>`
+                    <service host="files.montague.lit" port="5000" type="ftp"/>`,
             );
 
             await u.waitUntil(() => _converse.state.ice_servers?.servers.length);
@@ -70,7 +70,7 @@ describe('XEP-0215 external service discovery', function () {
                 { urls: 'stun:stun.montague.lit:3478' },
                 { urls: 'turn:turn.montague.lit:3478?transport=udp', username: 'romeo', credential: 's3cret' },
             ]);
-        })
+        }),
     );
 
     it(
@@ -83,7 +83,7 @@ describe('XEP-0215 external service discovery', function () {
 
             const conn = _converse.api.connection.get();
             expect(conn.IQ_stanzas.some((iq) => sizzle(`services[xmlns="${EXTDISCO}"]`, iq).length)).toBe(false);
-        })
+        }),
     );
 });
 
@@ -218,7 +218,7 @@ describe('serviceToIceServer', function () {
         // turn(s) with no username/password make RTCPeerConnection throw.
         expect(serviceToIceServer(service({ host: 'h', port: '3478', transport: 'udp', type: 'turn' }))).toBe(null);
         expect(
-            serviceToIceServer(service({ host: 'h', port: '3478', transport: 'udp', type: 'turn', username: 'u' }))
+            serviceToIceServer(service({ host: 'h', port: '3478', transport: 'udp', type: 'turn', username: 'u' })),
         ).toBe(null);
         // TLS can't run over UDP.
         expect(serviceToIceServer(service({ host: 'h', port: '5349', transport: 'udp', type: 'turns' }))).toBe(null);
@@ -231,24 +231,26 @@ describe('serviceToIceServer', function () {
         });
         expect(
             serviceToIceServer(
-                service({ host: 'h', port: '5349', transport: 'tcp', type: 'turns', username: 'u', password: 'p' })
-            )
+                service({ host: 'h', port: '5349', transport: 'tcp', type: 'turns', username: 'u', password: 'p' }),
+            ),
         ).toEqual({ urls: 'turns:h:5349?transport=tcp', username: 'u', credential: 'p' });
         expect(
             serviceToIceServer(
-                service({ host: 'h', port: '3478', transport: 'udp', type: 'turn', username: 'u', password: 'p' })
-            )
+                service({ host: 'h', port: '3478', transport: 'udp', type: 'turn', username: 'u', password: 'p' }),
+            ),
         ).toEqual({ urls: 'turn:h:3478?transport=udp', username: 'u', credential: 'p' });
     });
 
     it('brackets a raw IPv6 host', function () {
-        expect(serviceToIceServer(service({ host: '2001:db8::1', port: '3478', transport: 'udp', type: 'stun' }))).toEqual({
+        expect(
+            serviceToIceServer(service({ host: '2001:db8::1', port: '3478', transport: 'udp', type: 'stun' })),
+        ).toEqual({
             urls: 'stun:[2001:db8::1]:3478',
         });
         expect(
             serviceToIceServer(
-                service({ host: '::1', port: '3478', transport: 'udp', type: 'turn', username: 'u', password: 'p' })
-            )
+                service({ host: '::1', port: '3478', transport: 'udp', type: 'turn', username: 'u', password: 'p' }),
+            ),
         ).toEqual({ urls: 'turn:[::1]:3478?transport=udp', username: 'u', credential: 'p' });
     });
 });

@@ -1,11 +1,11 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
-@import "shared/styles/_variables.scss";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'shared/styles/_variables.scss';
 
-@import "./controlbox.scss";
-@import "./muc.scss";
-@import "./muc-audio-player.scss";
+@import './controlbox.scss';
+@import './muc.scss';
+@import './muc-audio-player.scss';
 
 converse-muc-disconnected,
 converse-muc-destroyed {
@@ -21,8 +21,8 @@ converse-muc-destroyed {
     }
 
     .add-chatroom {
-        input[type="submit"],
-        input[type="button"] {
+        input[type='submit'],
+        input[type='button'] {
             margin: 0.3em 0;
         }
     }
@@ -59,7 +59,6 @@ converse-muc-destroyed {
 
         &.converse-embedded,
         &.converse-fullscreen {
-
             .chatroom {
                 .box-flyout {
                     width: 100%;

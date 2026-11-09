@@ -38,11 +38,13 @@ export default class ImagePicker extends CustomElement {
                         width="${this.width}"
                     ></converse-avatar>
                 </a>
-                ${this.data?.data_uri || this.model?.vcard?.get('image')
-                    ? html`<button class="clear-image" @click=${this.clearImage} title="${i18n_clear_picture}">
-                          <converse-icon class="fa fa-trash-alt" size="1.5em"></converse-icon>
-                      </button>`
-                    : ''}
+                ${
+                    this.data?.data_uri || this.model?.vcard?.get('image')
+                        ? html`<button class="clear-image" @click=${this.clearImage} title="${i18n_clear_picture}">
+                              <converse-icon class="fa fa-trash-alt" size="1.5em"></converse-icon>
+                          </button>`
+                        : ''
+                }
                 <input @change=${this.updateFilePreview} class="hidden" name="avatar_image" type="file" />
             </div>
         `;

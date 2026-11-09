@@ -36,15 +36,17 @@ function tplRow(el, { jid, node, profile, label }) {
             <span class="social-following__name" title="${label_is_jid ? jid : label}">${heading}</span>
             ${address ? html`<span class="social-following__jid" title="${jid}">${address}</span>` : ''}
         </span>
-        ${el.isOwn
-            ? html`<button
-                  type="button"
-                  class="btn btn-secondary social-following__unfollow"
-                  @click=${(ev) => el.onUnfollow(ev, jid, node)}
-              >
-                  ${__('Unfollow')}
-              </button>`
-            : ''}
+        ${
+            el.isOwn
+                ? html`<button
+                      type="button"
+                      class="btn btn-secondary social-following__unfollow"
+                      @click=${(ev) => el.onUnfollow(ev, jid, node)}
+                  >
+                      ${__('Unfollow')}
+                  </button>`
+                : ''
+        }
     </li>`;
 }
 
@@ -74,8 +76,10 @@ export default (el) => {
         </p>`;
     }
     return html`<p class="social-feed__empty">
-        ${el.isOwn
-            ? __("You aren't following anyone yet.")
-            : __("%1$s isn't following anyone.", el.owner.getDisplayName())}
+        ${
+            el.isOwn
+                ? __("You aren't following anyone yet.")
+                : __("%1$s isn't following anyone.", el.owner.getDisplayName())
+        }
     </p>`;
 };

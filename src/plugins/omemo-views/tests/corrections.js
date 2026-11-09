@@ -122,7 +122,9 @@ describe('An OMEMO encrypted message', function () {
             const first_rcvd_msg_id = u.getUniqueId();
             let obj = await u.omemo.encryptMessage('This is an encrypted message from the contact');
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <message from="${contact_jid}"
                     to="${_converse.api.connection.get().jid}"
                     type="chat"
@@ -137,7 +139,8 @@ describe('An OMEMO encrypted message', function () {
                     </header>
                     <payload>${obj.payload}</payload>
                 </encrypted>
-            </message>`),
+            </message>`,
+                ),
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
             expect(view.model.messages.length).toBe(2);
@@ -148,7 +151,9 @@ describe('An OMEMO encrypted message', function () {
             const msg_id = u.getUniqueId();
             obj = await u.omemo.encryptMessage('This is an edited encrypted message from the contact');
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <message from="${contact_jid}"
                      to="${_converse.api.connection.get().jid}"
                      type="chat"
@@ -164,7 +169,8 @@ describe('An OMEMO encrypted message', function () {
                     </header>
                     <payload>${obj.payload}</payload>
                 </encrypted>
-            </message>`),
+            </message>`,
+                ),
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
             expect(view.model.messages.length).toBe(2);
@@ -368,7 +374,9 @@ describe('An OMEMO encrypted MUC message', function () {
             const first_received_message = 'This is an encrypted message from the contact';
             const first_obj = await u.omemo.encryptMessage(first_received_message);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <message from="${muc_jid}/newguy"
                      to="${_converse.api.connection.get().jid}"
                      type="groupchat"
@@ -382,7 +390,8 @@ describe('An OMEMO encrypted MUC message', function () {
                     </header>
                     <payload>${first_obj.payload}</payload>
                 </encrypted>
-            </message>`),
+            </message>`,
+                ),
             );
 
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
@@ -395,7 +404,9 @@ describe('An OMEMO encrypted MUC message', function () {
             const second_received_message = 'This is an edited encrypted message from the contact';
             const second_obj = await u.omemo.encryptMessage(second_received_message);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <message from="${muc_jid}/newguy"
                      to="${_converse.api.connection.get().jid}"
                      type="groupchat"
@@ -410,7 +421,8 @@ describe('An OMEMO encrypted MUC message', function () {
                     </header>
                     <payload>${second_obj.payload}</payload>
                 </encrypted>
-            </message>`),
+            </message>`,
+                ),
             );
             await new Promise((resolve) => view.model.messages.once('rendered', resolve));
 

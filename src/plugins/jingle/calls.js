@@ -46,7 +46,7 @@ export class Calls extends CustomElement {
                 setTimeout(() => {
                     this.ended = this.ended.filter((c) => c !== call);
                     this.requestUpdate();
-                }, DISMISS_DELAY)
+                }, DISMISS_DELAY),
             );
         }
         this.requestUpdate();
@@ -58,7 +58,7 @@ export class Calls extends CustomElement {
             calls,
             // Not the session id, which changes when the peer moves the call to a new session.
             (call) => call.cid,
-            (call) => html`<converse-call .model=${call}></converse-call>`
+            (call) => html`<converse-call .model=${call}></converse-call>`,
         )}`;
     }
 }

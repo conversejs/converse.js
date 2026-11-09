@@ -32,9 +32,9 @@ export default (el) => {
     const is_connected = el.model.get('connected');
     const show_settings_button = api.settings.get('show_client_info') || api.settings.get('allow_adhoc_commands');
     return html`<div class="btn-toolbar g-0" role="toolbar">
-            <div class="btn-group" role="group">
-                ${is_connected && show_settings_button ? tplUserSettingsButton(el) : ''}
-                ${api.settings.get('sticky_controlbox') ? '' : tplCloseButton(el)}
-            </div>
-        </div>`;
+        <div class="btn-group" role="group">
+            ${is_connected && show_settings_button ? tplUserSettingsButton(el) : ''}
+            ${api.settings.get('sticky_controlbox') ? '' : tplCloseButton(el)}
+        </div>
+    </div>`;
 };

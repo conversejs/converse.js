@@ -16,7 +16,8 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
             while (IQ_stanzas.length) IQ_stanzas.pop();
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence xmlns="jabber:client"
                                 to="${_converse.session.get('jid')}"
                                 from="${contact_jid}/resource">
@@ -45,7 +46,9 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
             const base64Image = btoa(String.fromCharCode(...byteArray));
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq from='${contact_jid}'
                         xmlns="jabber:client"
                         to='${_converse.session.get('jid')}'
@@ -66,7 +69,8 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
                             <BINVAL>${base64Image}</BINVAL>
                         </PHOTO>
                     </vCard>
-                </iq>`),
+                </iq>`,
+                ),
             );
 
             const { vcard } = await api.contacts.get(contact_jid);
@@ -74,7 +78,8 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
             while (IQ_stanzas.length) IQ_stanzas.pop();
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence xmlns="jabber:client"
                                 to="${_converse.session.get('jid')}"
                                 from="${contact_jid}/resource">
@@ -126,9 +131,7 @@ describe('A MUC occupant presence carrying a XEP-0153 avatar hash', function () 
             );
 
             await new Promise((resolve) => setTimeout(resolve, 250));
-            expect(
-                IQ_stanzas.filter((s) => sizzle('vCard', s).length && s.getAttribute('to') === room).length,
-            ).toBe(0);
+            expect(IQ_stanzas.filter((s) => sizzle('vCard', s).length && s.getAttribute('to') === room).length).toBe(0);
         }),
     );
 });
@@ -180,14 +183,17 @@ describe('An outgoing presence with a XEP-0153 vcard:update element', function (
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             let sent_stanza = await u.waitUntil(() => IQ_stanzas.filter((s) => sizzle(`vCard`, s).length).pop(), 500);
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq from='${own_jid}'
                         xmlns="jabber:client"
                         to='${_converse.session.get('jid')}'
                         type='result'
                         id='${sent_stanza.getAttribute('id')}'>
                     <vCard xmlns='vcard-temp'></vCard>
-                </iq>`),
+                </iq>`,
+                ),
             );
 
             const vcard = await u.waitUntil(() => _converse.state.vcards.get(own_bare_jid));
@@ -230,7 +236,8 @@ describe('An outgoing presence with a XEP-0153 vcard:update element', function (
             // Some servers send their own update presence, before sending the
             // return IQ. This should not create a new VCard get request
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<presence xmlns="jabber:client"
                                 to="${_converse.session.get('jid')}"
                                 from="${own_jid}">
@@ -242,12 +249,15 @@ describe('An outgoing presence with a XEP-0153 vcard:update element', function (
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq from='${own_bare_jid}'
                         xmlns="jabber:client"
                         to='${own_jid}'
                         type='result'
-                        id='${sent_stanza.getAttribute('id')}'></iq>`),
+                        id='${sent_stanza.getAttribute('id')}'></iq>`,
+                ),
             );
 
             // A new get IQ is sent out to fetch the latest VCard
@@ -258,7 +268,9 @@ describe('An outgoing presence with a XEP-0153 vcard:update element', function (
                 </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <iq from='${own_bare_jid}'
                         xmlns="jabber:client"
                         to='${own_jid}'
@@ -279,7 +291,8 @@ describe('An outgoing presence with a XEP-0153 vcard:update element', function (
                             <BINVAL>${base64Image}</BINVAL>
                         </PHOTO>
                     </vCard>
-                </iq>`),
+                </iq>`,
+                ),
             );
 
             await u.waitUntil(() => vcard.get('vcard_updated'));

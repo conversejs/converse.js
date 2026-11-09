@@ -1,10 +1,10 @@
-import { svg } from "lit";
-import { api } from "@converse/headless";
-import { CustomElement } from "shared/components/element.js";
-import { QRCodeModel } from "./generator.js";
-import { QRErrorCorrectLevelMap } from "./constants.js";
+import { svg } from 'lit';
+import { api } from '@converse/headless';
+import { CustomElement } from 'shared/components/element.js';
+import { QRCodeModel } from './generator.js';
+import { QRErrorCorrectLevelMap } from './constants.js';
 
-import "./qrcode.scss";
+import './qrcode.scss';
 
 class QRCodeComponent extends CustomElement {
     static get properties() {
@@ -24,8 +24,8 @@ class QRCodeComponent extends CustomElement {
         this.text = null;
         this.width = '200px';
         this.height = '200px';
-        this.colorDark = "#000000";
-        this.colorLight = "#ffffff";
+        this.colorDark = '#000000';
+        this.colorLight = '#ffffff';
         this.correctLevel = QRErrorCorrectLevelMap.H;
     }
 
@@ -66,6 +66,6 @@ class QRCodeComponent extends CustomElement {
     }
 }
 
-api.elements.define("converse-qr-code", QRCodeComponent);
+api.elements.define('converse-qr-code', QRCodeComponent);
 
 export default QRCodeComponent;

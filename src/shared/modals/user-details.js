@@ -139,11 +139,7 @@ export default class UserDetailsModal extends BaseModal {
     async acceptContactRequest(ev) {
         ev?.preventDefault?.();
         setTimeout(() => {
-            api.modal.show(
-                'converse-accept-contact-request-modal',
-                { contact: this.getContact() },
-                ev
-            );
+            api.modal.show('converse-accept-contact-request-modal', { contact: this.getContact() }, ev);
         });
         this.modal.hide();
     }

@@ -28,7 +28,7 @@ export default class BlockListModal extends BaseModal {
             () => {
                 /** @type {HTMLInputElement} */ (this.querySelector('input[name="blocklist_filter"]'))?.focus();
             },
-            false
+            false,
         );
         this.requestUpdate();
     }

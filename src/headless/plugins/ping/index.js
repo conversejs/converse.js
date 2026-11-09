@@ -13,15 +13,12 @@ import { addVisibilityListener } from '../../utils/environment.js';
 
 const { Strophe } = converse.env;
 
-
-Strophe.addNamespace('PING', "urn:xmpp:ping");
-
+Strophe.addNamespace('PING', 'urn:xmpp:ping');
 
 converse.plugins.add('converse-ping', {
-
-    initialize () {
+    initialize() {
         api.settings.extend({
-            ping_interval: 60 //in seconds
+            ping_interval: 60, //in seconds
         });
 
         Object.assign(api, ping_api);
@@ -31,5 +28,5 @@ converse.plugins.add('converse-ping', {
         api.listen.on('disconnected', unregisterIntervalHandler);
 
         addVisibilityListener(onWindowStateChanged);
-    }
+    },
 });

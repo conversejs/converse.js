@@ -41,35 +41,40 @@ describe('An incoming chat Message', function () {
 
     it(
         'can have styling disabled via the allow_message_styling setting',
-        mock.initConverse(converse, ['chatBoxesFetched'], { 'allow_message_styling': false }, async function (_converse) {
-            const { api } = _converse;
-            const include_nick = false;
-            await mock.waitForRoster(_converse, 'current', 2, include_nick);
-            await mock.openControlBox(_converse);
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { 'allow_message_styling': false },
+            async function (_converse) {
+                const { api } = _converse;
+                const include_nick = false;
+                await mock.waitForRoster(_converse, 'current', 2, include_nick);
+                await mock.openControlBox(_converse);
 
-            const msg_text = '> _ >';
-            const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            const msg = $msg({
-                'from': sender_jid,
-                'id': u.getUniqueId(),
-                'to': api.connection.get().jid,
-                'type': 'chat',
-                'xmlns': 'jabber:client',
-            })
-                .c('body')
-                .t(msg_text)
-                .tree();
-            await _converse.handleMessageStanza(msg);
+                const msg_text = '> _ >';
+                const sender_jid = mock.cur_names[1].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                const msg = $msg({
+                    'from': sender_jid,
+                    'id': u.getUniqueId(),
+                    'to': api.connection.get().jid,
+                    'type': 'chat',
+                    'xmlns': 'jabber:client',
+                })
+                    .c('body')
+                    .t(msg_text)
+                    .tree();
+                await _converse.handleMessageStanza(msg);
 
-            const view = _converse.chatboxviews.get(sender_jid);
-            await u.waitUntil(() => view.model.messages.length);
-            expect(view.model.messages.models[0].get('is_unstyled')).toBe(false);
+                const view = _converse.chatboxviews.get(sender_jid);
+                await u.waitUntil(() => view.model.messages.length);
+                expect(view.model.messages.models[0].get('is_unstyled')).toBe(false);
 
-            setTimeout(() => {
-                const msg_el = view.querySelector('converse-chat-message-body');
-                expect(msg_el.innerText).toBe(msg_text);
-            }, 500);
-        }),
+                setTimeout(() => {
+                    const msg_el = view.querySelector('converse-chat-message-body');
+                    expect(msg_el.innerText).toBe(msg_text);
+                }, 500);
+            },
+        ),
     );
 
     it(

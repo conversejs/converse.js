@@ -7,12 +7,11 @@ import { getNameAndValue } from 'utils/html.js';
 
 const { Strophe, sizzle } = converse.env;
 
-
 export default class AdHocCommands extends CustomElement {
-   /**
-    * @typedef {import('@converse/headless').AdHocCommandAction} AdHocCommandAction
-    * @typedef {import('./types').AdHocCommandUIProps} AdHocCommandUIProps
-    */
+    /**
+     * @typedef {import('@converse/headless').AdHocCommandAction} AdHocCommandAction
+     * @typedef {import('./types').AdHocCommandUIProps} AdHocCommandUIProps
+     */
 
     static get properties() {
         return {
@@ -165,7 +164,7 @@ export default class AdHocCommands extends CustomElement {
                 : sizzle(':input:not([type=button]):not([type=submit])', form)
                       .filter(
                           /** @param {HTMLInputElement} i */
-                          (i) => !['command_jid', 'command_node'].includes(i.getAttribute('name'))
+                          (i) => !['command_jid', 'command_node'].includes(i.getAttribute('name')),
                       )
                       .map(getNameAndValue)
                       .filter(/** @param {unknown} [n] */ (n) => n);
@@ -178,7 +177,7 @@ export default class AdHocCommands extends CustomElement {
             cmd.status = status;
             cmd.alert_type = 'danger';
             cmd.alert = __(
-                'Sorry, an error occurred while trying to execute the command. See the developer console for details'
+                'Sorry, an error occurred while trying to execute the command. See the developer console for details',
             );
             return this.requestUpdate();
         }
@@ -236,7 +235,7 @@ export default class AdHocCommands extends CustomElement {
         if (status === 'error') {
             cmd.alert_type = 'danger';
             cmd.alert = __(
-                'An error occurred while trying to cancel the command. See the developer console for details'
+                'An error occurred while trying to cancel the command. See the developer console for details',
             );
         } else if (status === 'canceled') {
             this.alert_type = '';

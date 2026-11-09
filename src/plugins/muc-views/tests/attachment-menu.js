@@ -7,7 +7,12 @@ const { Strophe, stx, u } = converse.env;
 // The voice-messages plugin is on by default and adds its own item to the menu.
 // These tests are about the built-in items, so it is left out here.
 function initConverse(converse, promise_names, settings, func) {
-    return mock.initConverse(converse, promise_names, { blacklisted_plugins: ['converse-voice-messages'], ...settings }, func);
+    return mock.initConverse(
+        converse,
+        promise_names,
+        { blacklisted_plugins: ['converse-voice-messages'], ...settings },
+        func,
+    );
 }
 
 const muc_jid = 'lounge@montague.lit';

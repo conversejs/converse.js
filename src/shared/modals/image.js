@@ -1,19 +1,17 @@
-import BaseModal from "plugins/modal/modal.js";
-import tplImageModal from "./templates/image.js";
+import BaseModal from 'plugins/modal/modal.js';
+import tplImageModal from './templates/image.js';
 import { __ } from 'i18n';
-import { api } from "@converse/headless";
+import { api } from '@converse/headless';
 import { getFileName } from 'utils/html.js';
-import { html, nothing } from "lit";
+import { html, nothing } from 'lit';
 
 import './styles/image.scss';
 
-
 export default class ImageModal extends BaseModal {
-
     /**
      * @param {Record<string, any>} options
      */
-    constructor (options) {
+    constructor(options) {
         super(options);
         this.src = options.src;
         // The original filename, used as the `download` name when `src` is an
@@ -21,11 +19,11 @@ export default class ImageModal extends BaseModal {
         this.filename = options.filename;
     }
 
-    renderModal () {
+    renderModal() {
         return tplImageModal({ 'src': this.src });
     }
 
-    getModalTitle () {
+    getModalTitle() {
         const filename = this.filename || getFileName(this.src);
         return html`${__('Image: ')}<a
                 target="_blank"

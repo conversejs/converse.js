@@ -94,10 +94,21 @@ export function postItem(id, body, publisher) {
  * @param {{ parent: string, ref?: string }} [reply] - When set, a threaded reply:
  *      adds a `<thr:in-reply-to>` pointing at `parent` (in this same node).
  */
-export function makeCommentEvent(service, node, id, body, author_jid, author_name, published = '2024-01-01T19:00:00Z', reply) {
+export function makeCommentEvent(
+    service,
+    node,
+    id,
+    body,
+    author_jid,
+    author_name,
+    published = '2024-01-01T19:00:00Z',
+    reply,
+) {
     const domain = Strophe.getDomainFromJid(author_jid);
     const thr = 'http://purl.org/syndication/thread/1.0';
-    const href = reply ? `xmpp:${service}?;node=${encodeURIComponent(node)};item=${encodeURIComponent(reply.parent)}` : '';
+    const href = reply
+        ? `xmpp:${service}?;node=${encodeURIComponent(node)};item=${encodeURIComponent(reply.parent)}`
+        : '';
     const ptr = !reply
         ? ''
         : reply.ref

@@ -80,12 +80,14 @@ class MessageActions extends CustomElement {
         const extra_content = await api.hook('getMessageActionContent', this, html``);
 
         if (items.length || extra_content) {
-            return html` ${items.length
-                ? html`<converse-dropdown
-                      class="chat-msg__actions btn-group dropstart"
-                      .items=${items}
-                  ></converse-dropdown>`
-                : ''}
+            return html` ${
+                items.length
+                    ? html`<converse-dropdown
+                          class="chat-msg__actions btn-group dropstart"
+                          .items=${items}
+                      ></converse-dropdown>`
+                    : ''
+            }
             ${extra_content}`;
         } else {
             return '';
@@ -313,9 +315,7 @@ class MessageActions extends CustomElement {
      * @returns {any}
      */
     getMessageForm() {
-        return u
-            .ancestor(this, '.chatbox')
-            ?.querySelector('converse-message-form, converse-muc-message-form');
+        return u.ancestor(this, '.chatbox')?.querySelector('converse-message-form, converse-muc-message-form');
     }
 
     /** @param {MouseEvent} [ev] */

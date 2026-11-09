@@ -19,7 +19,7 @@ export class ToastsContainer extends CustomElement {
                     title="${toast.title ?? ''}"
                     body="${toast.body ?? ''}"
                     type="${toast.type ?? ''}"
-                ></converse-toast>`
+                ></converse-toast>`,
         )}`;
     }
 }

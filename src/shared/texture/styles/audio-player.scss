@@ -1,6 +1,6 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "shared/styles/_mixins.scss";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'shared/styles/_mixins.scss';
 
 .conversejs {
     .audio-player {
@@ -55,7 +55,9 @@
             background-color: transparent;
             color: var(--foreground-color);
             cursor: pointer;
-            transition: color 0.2s ease, transform 0.1s ease;
+            transition:
+                color 0.2s ease,
+                transform 0.1s ease;
 
             &:hover:not(:disabled) {
                 color: var(--chat-color);
@@ -107,7 +109,7 @@
         }
 
         &__time {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-size: 0.6875rem;
             color: var(--subdued-color);
             white-space: nowrap;
@@ -155,7 +157,10 @@
             width: 0;
             opacity: 0;
             overflow: hidden;
-            transition: width 0.25s ease, opacity 0.25s ease, padding 0.25s ease;
+            transition:
+                width 0.25s ease,
+                opacity 0.25s ease,
+                padding 0.25s ease;
             border-radius: 1rem;
             padding: 0;
             margin-left: 0;
@@ -263,7 +268,9 @@
             height: 1.75rem;
             flex-shrink: 0;
             border-radius: 50%;
-            transition: color 0.2s ease, transform 0.15s ease;
+            transition:
+                color 0.2s ease,
+                transform 0.15s ease;
 
             &:hover:not(:disabled),
             &:focus:not(:disabled) {

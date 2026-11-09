@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from 'lit';
 import { __ } from 'i18n';
 
 /**
@@ -13,7 +13,7 @@ export default (el) => {
 
     return html`
         <form class="affiliation-form" @submit=${(/** @type {Event} */ ev) => el.assignAffiliation(ev)}>
-            ${el.alert_message ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert_message}</div>` : '' }
+            ${el.alert_message ? html`<div class="alert alert-${el.alert_type}" role="alert">${el.alert_message}</div>` : ''}
             <div class="mb-3">
                 <div class="row">
                     <div class="col-md-6">
@@ -24,7 +24,7 @@ export default (el) => {
                     </div>
                     <div class="col-md-6">
                         <label class="form-label"><strong>${i18n_reason}:</strong></label>
-                        <input class="form-control" type="text" name="reason" placeholder="${i18n_reason}"/>
+                        <input class="form-control" type="text" name="reason" placeholder="${i18n_reason}" />
                     </div>
                 </div>
             </div>
@@ -33,4 +33,4 @@ export default (el) => {
             </div>
         </form>
     `;
-}
+};

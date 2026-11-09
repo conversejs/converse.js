@@ -15,7 +15,14 @@ describe('Message Carbons', function () {
             ['chatBoxesInitialized'],
             // Trim the plugins whose own `connected` handlers would add noise when
             // we re-fire the event below. Carbons live in the (always-on) chat plugin.
-            { blacklisted_plugins: ['converse-omemo', 'converse-blocklist', 'converse-reactions', 'converse-bookmarks'] },
+            {
+                blacklisted_plugins: [
+                    'converse-omemo',
+                    'converse-blocklist',
+                    'converse-reactions',
+                    'converse-bookmarks',
+                ],
+            },
             async (_converse) => {
                 const { api } = _converse;
                 const conn = api.connection.get();

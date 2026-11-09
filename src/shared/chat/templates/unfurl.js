@@ -48,29 +48,38 @@ export default (el) => {
     const show_image = isValidImage(image);
     const has_body_info = title || description || url;
 
-    if ((show_image || has_body_info)) {
+    if (show_image || has_body_info) {
         return html`<div class="card card--unfurl">
             ${show_image ? tplImage(el) : ''}
-            ${has_body_info
-                ? html` <div class="card-body">
-                      ${title
-                          ? tplUrlWrapper(
-                                el,
-                                /** @param {string} title */ (title) => html`<h5 class="card-title">${title}</h5>`
-                            )
-                          : ''}
-                      ${description
-                          ? html`<p class="card-text">
-                                <converse-texture text=${description}></converse-texture>
-                            </p>`
-                          : ''}
-                      ${url && u.isValidURL(url)
-                          ? html`<p class="card-text">
-                                <a href="${url}" target="_blank" rel="noopener">${new URL(url).hostname}</a>
-                            </p>`
-                          : ''}
-                  </div>`
-                : ''}
+            ${
+                has_body_info
+                    ? html` <div class="card-body">
+                          ${
+                              title
+                                  ? tplUrlWrapper(
+                                        el,
+                                        /** @param {string} title */ (title) =>
+                                            html`<h5 class="card-title">${title}</h5>`,
+                                    )
+                                  : ''
+                          }
+                          ${
+                              description
+                                  ? html`<p class="card-text">
+                                        <converse-texture text=${description}></converse-texture>
+                                    </p>`
+                                  : ''
+                          }
+                          ${
+                              url && u.isValidURL(url)
+                                  ? html`<p class="card-text">
+                                        <a href="${url}" target="_blank" rel="noopener">${new URL(url).hostname}</a>
+                                    </p>`
+                                  : ''
+                          }
+                      </div>`
+                    : ''
+            }
         </div>`;
     } else {
         return '';

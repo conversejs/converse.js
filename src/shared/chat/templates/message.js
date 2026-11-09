@@ -55,12 +55,14 @@ export default (el) => {
         ...(el.model.get('is_encrypted') ? [__('Encrypted')] : []),
     ].join(', ');
 
-    return html`${is_first_unread
-            ? html`<div class="message separator" role="separator" aria-label="${i18n_new_messages}">
-                  <hr class="separator" />
-                  <span class="separator-text">${i18n_new_messages}</span>
-              </div>`
-            : ''}
+    return html`${
+            is_first_unread
+                ? html`<div class="message separator" role="separator" aria-label="${i18n_new_messages}">
+                      <hr class="separator" />
+                      <span class="separator-text">${i18n_new_messages}</span>
+                  </div>`
+                : ''
+        }
         <article
             class="message chat-msg ${el.getExtraMessageClasses()}"
             data-isodate="${time}"
@@ -72,70 +74,80 @@ export default (el) => {
             <!-- Anchor to allow us to scroll the message into view -->
             <a id="${msgid}" aria-hidden="true"></a>
 
-            ${should_show_avatar
-                ? html`<button
-                      type="button"
-                      class="show-msg-author-modal"
-                      @click=${el.showUserModal}
-                      aria-hidden="true"
-                      tabindex="-1"
-                  >
-                      <converse-avatar
-                          .model=${avatar_model}
-                          class="avatar align-self-center"
-                          name="${el.model.getDisplayName()}"
-                          nonce="${avatar_model.vcard?.get('vcard_updated')}"
-                          height="40"
-                          width="40"
+            ${
+                should_show_avatar
+                    ? html`<button
+                          type="button"
+                          class="show-msg-author-modal"
+                          @click=${el.showUserModal}
                           aria-hidden="true"
-                      ></converse-avatar>
-                  </button>`
-                : ''}
+                          tabindex="-1"
+                      >
+                          <converse-avatar
+                              .model=${avatar_model}
+                              class="avatar align-self-center"
+                              name="${el.model.getDisplayName()}"
+                              nonce="${avatar_model.vcard?.get('vcard_updated')}"
+                              height="40"
+                              width="40"
+                              aria-hidden="true"
+                          ></converse-avatar>
+                      </button>`
+                    : ''
+            }
 
             <div class="chat-msg__content chat-msg__content--${sender} ${is_action ? 'chat-msg__content--action' : ''}">
-                ${should_show_header
-                    ? html`<span class="chat-msg__heading">
-                          <span class="chat-msg__author">
-                              <button
-                                  type="button"
-                                  class="show-msg-author-modal"
-                                  @click=${el.showUserModal}
-                                  style="${author_style}"
-                              >${username}</button>
-                          </span>
-                          ${hats.map((h) => html`<span class="badge badge-secondary">${h.title}</span>`)}
+                ${
+                    should_show_header
+                        ? html`<span class="chat-msg__heading">
+                              <span class="chat-msg__author">
+                                  <button
+                                      type="button"
+                                      class="show-msg-author-modal"
+                                      @click=${el.showUserModal}
+                                      style="${author_style}"
+                                  >
+                                      ${username}
+                                  </button>
+                              </span>
+                              ${hats.map((h) => html`<span class="badge badge-secondary">${h.title}</span>`)}
 
-                          <converse-time timestamp="${display_time}" class="chat-msg__time"></converse-time>
-                          ${el.model.get('is_encrypted')
-                              ? html`<converse-icon
-                                  class="fa fa-lock"
-                                  size="1.1em"
-                                  aria-label="${__('Encrypted message')}"
-                                  role="img"
-                              ></converse-icon>`
-                              : ''}
-                      </span>`
-                    : ''}
-                ${el.model.get('reply_to_id')
-                    ? html`<converse-reply-context
-                          .model=${el.model}
-                          .model_with_messages=${el.model_with_messages}
-                      ></converse-reply-context>`
-                    : ''}
+                              <converse-time timestamp="${display_time}" class="chat-msg__time"></converse-time>
+                              ${
+                                  el.model.get('is_encrypted')
+                                      ? html`<converse-icon
+                                            class="fa fa-lock"
+                                            size="1.1em"
+                                            aria-label="${__('Encrypted message')}"
+                                            role="img"
+                                        ></converse-icon>`
+                                      : ''
+                              }
+                          </span>`
+                        : ''
+                }
+                ${
+                    el.model.get('reply_to_id')
+                        ? html`<converse-reply-context
+                              .model=${el.model}
+                              .model_with_messages=${el.model_with_messages}
+                          ></converse-reply-context>`
+                        : ''
+                }
 
                 <div
-                    class="chat-msg__body chat-msg__body--${el.model.get('message_type')} ${el.model.get('received')
-                        ? 'chat-msg__body--received'
-                        : ''} ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}"
+                    class="chat-msg__body chat-msg__body--${el.model.get('message_type')} ${
+                        el.model.get('received') ? 'chat-msg__body--received' : ''
+                    } ${el.model.get('is_delayed') ? 'chat-msg__body--delayed' : ''}"
                     style="position: relative;"
                 >
                     <div class="chat-msg__message">
-                        ${is_me_message
-                            ? html`<span class="chat-msg__author" style="${author_style}">**${username}</span>`
-                            : ''}
-                        ${is_retracted
-                            ? el.renderRetraction(tpl_action_time)
-                            : el.renderMessageText(tpl_action_time)}
+                        ${
+                            is_me_message
+                                ? html`<span class="chat-msg__author" style="${author_style}">**${username}</span>`
+                                : ''
+                        }
+                        ${is_retracted ? el.renderRetraction(tpl_action_time) : el.renderMessageText(tpl_action_time)}
                     </div>
                     ${el.model.get('send_status') === 'failed' ? tplSendFailed(el) : ''}
                     <converse-message-actions
@@ -146,26 +158,30 @@ export default (el) => {
 
                 <converse-reactions .model=${el.model}></converse-reactions>
 
-                ${!is_retracted
-                    ? el.model
-                          .get('ogp_metadata')
-                          ?.map((m) =>
-                              el.model.get('hide_url_previews') === true
-                                  ? ''
-                                  : html`<converse-message-unfurl
-                                        @animationend="${el.onUnfurlAnimationEnd}"
-                                        class="${el.model.get('url_preview_transition')}"
-                                        jid="${el.model_with_messages?.get('jid')}"
-                                        description="${m['og:description'] || ''}"
-                                        title="${m['og:title'] || ''}"
-                                        image="${m['og:image'] && shouldRenderMediaFromURL(m['og:image'], 'image')
-                                            ? m['og:image']
-                                            : nothing}"
-                                        site_name="${m['og:site_name'] || ''}"
-                                        url="${m['og:url'] || ''}"
-                                    ></converse-message-unfurl>`,
-                          )
-                    : ''}
+                ${
+                    !is_retracted
+                        ? el.model
+                              .get('ogp_metadata')
+                              ?.map((m) =>
+                                  el.model.get('hide_url_previews') === true
+                                      ? ''
+                                      : html`<converse-message-unfurl
+                                            @animationend="${el.onUnfurlAnimationEnd}"
+                                            class="${el.model.get('url_preview_transition')}"
+                                            jid="${el.model_with_messages?.get('jid')}"
+                                            description="${m['og:description'] || ''}"
+                                            title="${m['og:title'] || ''}"
+                                            image="${
+                                                m['og:image'] && shouldRenderMediaFromURL(m['og:image'], 'image')
+                                                    ? m['og:image']
+                                                    : nothing
+                                            }"
+                                            site_name="${m['og:site_name'] || ''}"
+                                            url="${m['og:url'] || ''}"
+                                        ></converse-message-unfurl>`,
+                              )
+                        : ''
+                }
             </div>
         </article>`;
 };

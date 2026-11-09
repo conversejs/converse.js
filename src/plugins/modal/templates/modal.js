@@ -22,10 +22,7 @@ export default (el) => {
                     <h5 class="modal-title">${el.getModalTitle()}</h5>
                     ${modal_header_close_button}
                 </div>
-                <div class="modal-body">
-                    ${alert ? tplAlert(alert.type, alert.message) : ''}
-                    ${el.renderModal()}
-                </div>
+                <div class="modal-body">${alert ? tplAlert(alert.type, alert.message) : ''} ${el.renderModal()}</div>
                 ${el.renderModalFooter()}
             </div>
         </div>

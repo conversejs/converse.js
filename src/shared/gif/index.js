@@ -1,6 +1,6 @@
-import { log, u } from "@converse/headless";
-import { parseGIF, decompressFrames } from "gifuct-js";
-import AnimationPlayer from "shared/animation/player.js";
+import { log, u } from '@converse/headless';
+import { parseGIF, decompressFrames } from 'gifuct-js';
+import AnimationPlayer from 'shared/animation/player.js';
 
 export default class ConverseGif extends AnimationPlayer {
     /**
@@ -10,12 +10,12 @@ export default class ConverseGif extends AnimationPlayer {
      */
     constructor(el, opts) {
         super(el, opts);
-        this.gif_el = el.querySelector("img");
+        this.gif_el = el.querySelector('img');
 
         // Offscreen canvas with full gif
-        this.offscreenCanvas = document.createElement("canvas");
+        this.offscreenCanvas = document.createElement('canvas');
         // Offscreen canvas for patches
-        this.patchCanvas = document.createElement("canvas");
+        this.patchCanvas = document.createElement('canvas');
 
         this.frameImageData = null;
         this.disposal_restore_from_idx = null;
@@ -39,9 +39,9 @@ export default class ConverseGif extends AnimationPlayer {
         super.setSizes(w, h);
         this.offscreenCanvas.width = w;
         this.offscreenCanvas.height = h;
-        this.offscreenCanvas.style.width = w + "px";
-        this.offscreenCanvas.style.height = h + "px";
-        this.offscreenCanvas.getContext("2d").setTransform(1, 0, 0, 1, 0, 0);
+        this.offscreenCanvas.style.width = w + 'px';
+        this.offscreenCanvas.style.height = h + 'px';
+        this.offscreenCanvas.getContext('2d').setTransform(1, 0, 0, 1, 0, 0);
     }
 
     /**
@@ -69,7 +69,7 @@ export default class ConverseGif extends AnimationPlayer {
     manageDisposal(i) {
         if (i <= 0) return;
 
-        const offscreenContext = this.offscreenCanvas.getContext("2d");
+        const offscreenContext = this.offscreenCanvas.getContext('2d');
         const disposal = this.frames[i - 1].disposalType;
         /*
          *  Disposal method indicates the way in which the graphic is to
@@ -107,7 +107,7 @@ export default class ConverseGif extends AnimationPlayer {
                 this.last_frame.dims.left,
                 this.last_frame.dims.top,
                 this.last_frame.dims.width,
-                this.last_frame.dims.height
+                this.last_frame.dims.height,
             );
         }
     }
@@ -121,8 +121,8 @@ export default class ConverseGif extends AnimationPlayer {
         this.manageDisposal(i);
 
         const frame = this.frames[i];
-        const patchContext = this.patchCanvas.getContext("2d");
-        const offscreenContext = this.offscreenCanvas.getContext("2d");
+        const patchContext = this.patchCanvas.getContext('2d');
+        const offscreenContext = this.offscreenCanvas.getContext('2d');
         const dims = frame.dims;
         if (
             !this.frameImageData ||
@@ -156,10 +156,10 @@ export default class ConverseGif extends AnimationPlayer {
     fetchGIF(url) {
         const promise = u.getOpenPromise();
         const h = new XMLHttpRequest();
-        h.open("GET", url, true);
-        h.responseType = "arraybuffer";
+        h.open('GET', url, true);
+        h.responseType = 'arraybuffer';
 
-        h?.overrideMimeType("text/plain; charset=x-user-defined");
+        h?.overrideMimeType('text/plain; charset=x-user-defined');
         h.onload = () => {
             if (h.status != 200) {
                 this.showError();

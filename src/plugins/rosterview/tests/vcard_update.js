@@ -9,7 +9,7 @@ describe('An incoming presence with a XEP-0153 vcard:update element', function (
         mock.initConverse(converse, ['chatBoxesFetched'], { no_vcard_mocks: true }, async function (_converse) {
             const { api } = _converse;
             const { u, sizzle } = _converse.env;
-                    mock.openControlBox(_converse);
+            mock.openControlBox(_converse);
             await mock.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
 

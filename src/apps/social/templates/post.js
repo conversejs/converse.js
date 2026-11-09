@@ -48,44 +48,48 @@ export default (el) => {
             ></converse-social-message>
 
             ${ancestors.map(
-                (c) => html`<converse-social-message
-                    class="social-comment social-post-detail__ancestor"
-                    .model=${c}
-                    ?threaditem=${true}
-                ></converse-social-message>`,
+                (c) =>
+                    html`<converse-social-message
+                        class="social-comment social-post-detail__ancestor"
+                        .model=${c}
+                        ?threaditem=${true}
+                    ></converse-social-message>`,
             )}
-
-            ${focused
-                ? html`<converse-social-message
-                      class="social-comment social-post-detail__focused"
-                      .model=${focused}
-                      ?threaditem=${true}
-                  ></converse-social-message>`
-                : likeCount
-                  ? html`<div class="social-post-detail__likes">
-                        <converse-icon size="0.9em" class="fa fa-heart"></converse-icon>
-                        <span>${likeCount === 1 ? __('1 like') : __('%1$s likes', likeCount)}</span>
-                    </div>`
-                  : ''}
+            ${
+                focused
+                    ? html`<converse-social-message
+                          class="social-comment social-post-detail__focused"
+                          .model=${focused}
+                          ?threaditem=${true}
+                      ></converse-social-message>`
+                    : likeCount
+                      ? html`<div class="social-post-detail__likes">
+                            <converse-icon size="0.9em" class="fa fa-heart"></converse-icon>
+                            <span>${likeCount === 1 ? __('1 like') : __('%1$s likes', likeCount)}</span>
+                        </div>`
+                      : ''
+            }
 
             <section class="social-comments">
                 <h4 class="social-comments__heading">${repliesHeading(replies.length, !!focused)}</h4>
 
                 <div class="social-comments__list">
-                    ${replies.length
-                        ? repeat(
-                              replies,
-                              /** @param {import('@converse/headless').PubSubMessage} c */ (c) => c.get('id'),
-                              (c) =>
-                                  html`<converse-social-message
-                                      class="social-comment"
-                                      .model=${c}
-                                      ?threaditem=${true}
-                                  ></converse-social-message>`,
-                          )
-                        : html`<p class="social-feed__empty">
-                              ${focused ? __('No replies yet.') : __('No comments yet. Be the first to reply.')}
-                          </p>`}
+                    ${
+                        replies.length
+                            ? repeat(
+                                  replies,
+                                  /** @param {import('@converse/headless').PubSubMessage} c */ (c) => c.get('id'),
+                                  (c) =>
+                                      html`<converse-social-message
+                                          class="social-comment"
+                                          .model=${c}
+                                          ?threaditem=${true}
+                                      ></converse-social-message>`,
+                              )
+                            : html`<p class="social-feed__empty">
+                                  ${focused ? __('No replies yet.') : __('No comments yet. Be the first to reply.')}
+                              </p>`
+                    }
                 </div>
 
                 <form class="social-comment-compose" @submit=${(ev) => el.onSubmit(ev)}>

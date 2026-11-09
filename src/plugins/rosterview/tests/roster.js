@@ -190,7 +190,9 @@ describe('The Contacts Roster', function () {
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
                 <query xmlns="jabber:iq:roster">
                     <item jid="juliet@example.net" name="Juliet" subscription="both">
@@ -204,7 +206,8 @@ describe('The Contacts Roster', function () {
                     </item>
                 </query>
             </iq>
-        `),
+        `,
+                ),
             );
 
             while (IQ_stanzas.length) IQ_stanzas.pop();
@@ -228,7 +231,9 @@ describe('The Contacts Roster', function () {
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
                 <query xmlns="jabber:iq:roster">
                     <item jid="juliet@example.net" name="Juliet" subscription="both">
@@ -239,7 +244,8 @@ describe('The Contacts Roster', function () {
                     </item>
                 </query>
             </iq>
-        `),
+        `,
+                ),
             );
 
             while (IQ_stanzas.length) IQ_stanzas.pop();
@@ -259,7 +265,9 @@ describe('The Contacts Roster', function () {
             );
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq to="${_converse.api.connection.get().jid}" type="result" id="${stanza.getAttribute('id')}" xmlns="jabber:client">
                 <query xmlns="jabber:iq:roster">
                     <item jid="juliet@example.net" name="Juliet" subscription="both">
@@ -270,7 +278,8 @@ describe('The Contacts Roster', function () {
                     </item>
                 </query>
             </iq>
-        `),
+        `,
+                ),
             );
 
             await u.waitUntil(() => _converse.roster.pluck('jid').includes('lord.capulet@example.net'));
@@ -853,9 +862,7 @@ describe('The Contacts Roster', function () {
                             .map((e) => e.querySelector('li')).length,
                     1000,
                 );
-                await mock.checkHeaderToggling(_converse,
-                    rosterview.querySelector('[data-group="Pending contacts"]'),
-                );
+                await mock.checkHeaderToggling(_converse, rosterview.querySelector('[data-group="Pending contacts"]'));
             }),
         );
 
@@ -1038,7 +1045,8 @@ describe('The Contacts Roster', function () {
                         _converse.api.connection
                             .get()
                             ._dataRecv(
-                                mock.createRequest(_converse, 
+                                mock.createRequest(
+                                    _converse,
                                     stx`<iq id="${stanza.getAttribute('id')}" type="result" xmlns="jabber:client"></iq>`,
                                 ),
                             );

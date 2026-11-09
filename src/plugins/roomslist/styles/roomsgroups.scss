@@ -10,7 +10,8 @@
             margin: 0.75em 0 0.25em 0;
         }
 
-        .muc-domain-group-toggle, .muc-domain-group-toggle .fa {
+        .muc-domain-group-toggle,
+        .muc-domain-group-toggle .fa {
             color: var(--muc-color);
             &:hover {
                 color: var(--muc-color-hover);

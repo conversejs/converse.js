@@ -553,9 +553,7 @@ describe('A Chat Message', function () {
             expect(msg_txt).toEqual(message);
 
             expect(view.querySelector('converse-chat-message:last-child .chat-msg__text').textContent).toEqual(message);
-            expect(
-                view.querySelector('converse-chat-message:last-child .chat-msg__time').textContent,
-            ).toBe('now');
+            expect(view.querySelector('converse-chat-message:last-child .chat-msg__time').textContent).toBe('now');
             expect(view.querySelector('converse-chat-message:last-child .chat-msg__author').textContent.trim()).toBe(
                 'Juliet Capulet',
             );
@@ -607,7 +605,8 @@ describe('A Chat Message', function () {
 
     it(
         'will remove url query parameters from hyperlinks as set',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesFetched'],
             { filter_url_query_params: ['utm_medium', 'utm_content', 's'] },
             async function (_converse) {
@@ -1340,7 +1339,9 @@ describe('A Chat Message', function () {
                     await _converse.handleMessageStanza(msg);
 
                     api.connection.get()._dataRecv(
-                        mock.createRequest(_converse, stx`
+                        mock.createRequest(
+                            _converse,
+                            stx`
                     <message xml:lang="en" type="error" from="${contact_jid}" xmlns="jabber:client">
                         <active xmlns="http://jabber.org/protocol/chatstates"/>
                         <no-store xmlns="urn:xmpp:hints"/>
@@ -1349,7 +1350,8 @@ describe('A Chat Message', function () {
                         <service-unavailable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                         <text xml:lang="en" xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">User session not found</text></error>
                     </message>
-                `),
+                `,
+                        ),
                     );
                     return new Promise((resolve) =>
                         setTimeout(() => {

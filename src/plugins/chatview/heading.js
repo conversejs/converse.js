@@ -111,7 +111,7 @@ export default class ChatHeading extends CustomElement {
                         const result = await api.confirm(__('Block user'), [
                             __(
                                 'Are you sure you want to prevent %1$s from contacting you further?',
-                                this.model.getDisplayName()
+                                this.model.getDisplayName(),
                             ),
                         ]);
                         if (result) {

@@ -12,7 +12,7 @@ function setVisibilityState(state) {
 }
 
 function restoreVisibilityState() {
-    delete (/** @type {any} */ (document)).visibilityState;
+    delete (/** @type {any} */ (document).visibilityState);
 }
 
 describe("An ObservableElement with observable='always' and observableRequireFocus", function () {

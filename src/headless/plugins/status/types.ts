@@ -9,14 +9,7 @@ export type PresenceAttrs = {
 };
 
 type PresenceType =
-    | 'error'
-    | 'offline'
-    | 'online'
-    | 'probe'
-    | 'subscribe'
-    | 'unavailable'
-    | 'unsubscribe'
-    | 'unsubscribed';
+    'error' | 'offline' | 'online' | 'probe' | 'subscribe' | 'unavailable' | 'unsubscribe' | 'unsubscribed';
 
 export type IdleStatus = {
     idle?: boolean;

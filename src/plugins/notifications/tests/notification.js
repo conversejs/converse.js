@@ -85,7 +85,9 @@ describe('Notifications', function () {
                             </message>`;
                         _converse.api.connection
                             .get()
-                            ._dataRecv(mock.createRequest(_converse, makeMsg('romeo: this will NOT show a notification')));
+                            ._dataRecv(
+                                mock.createRequest(_converse, makeMsg('romeo: this will NOT show a notification')),
+                            );
                         await new Promise((resolve) => view.model.messages.once('rendered', resolve));
                         expect(window.Notification).not.toHaveBeenCalled();
 

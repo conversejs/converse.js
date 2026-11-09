@@ -11,7 +11,10 @@ export default (_env, argv) => {
         new rspack.CopyRspackPlugin({
             patterns: [
                 { from: 'src/headless/plugins/emoji/emoji.json', to: 'emoji.json' },
-                { from: `node_modules/libomemo.js/dist/${isDev ? 'libomemo.esm.js' : 'libomemo.esm.min.js'}`, to: 'libomemo.esm.min.js' },
+                {
+                    from: `node_modules/libomemo.js/dist/${isDev ? 'libomemo.esm.js' : 'libomemo.esm.min.js'}`,
+                    to: 'libomemo.esm.min.js',
+                },
             ],
         }),
         new IgnoreChunkImportsPlugin(),

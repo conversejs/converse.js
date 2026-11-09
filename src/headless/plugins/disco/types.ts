@@ -1,13 +1,13 @@
 export type DiscoInfoOptions = {
     timeout?: number;
     node?: string; // A node to scope the disco#info query to (e.g. an XEP-0115 caps "node#ver")
-}
+};
 
 export type FetchEntityFeaturesOptions = {
     timeout?: number;
     ignore_cache?: boolean;
     node?: string; // A node to scope the disco#info query to (e.g. an XEP-0115 caps "node#ver")
-}
+};
 
 // A service-discovery identity (XEP-0030).
 export type DiscoIdentity = {

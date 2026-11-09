@@ -173,9 +173,7 @@ describe('The xmpp: protocol handler', function () {
                 const jid = 'mercutio@montague.lit';
                 /** @type {(answer: boolean) => void} */
                 let answer;
-                const confirm = vi
-                    .spyOn(api, 'confirm')
-                    .mockReturnValue(new Promise((resolve) => (answer = resolve)));
+                const confirm = vi.spyOn(api, 'confirm').mockReturnValue(new Promise((resolve) => (answer = resolve)));
 
                 location.hash = '#converse/room?jid=coven@chat.shakespeare.lit';
                 await u.waitUntil(() => confirm.mock.calls.length === 1);

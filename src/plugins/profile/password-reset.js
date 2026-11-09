@@ -5,35 +5,33 @@ import { _converse, api, converse, log } from '@converse/headless';
 
 const { Strophe, stx, sizzle, u } = converse.env;
 
-
 class PasswordReset extends CustomElement {
-
-    static get properties () {
+    static get properties() {
         return {
             passwords_mismatched: { type: Boolean },
-            alert_message: { type: String }
-        }
+            alert_message: { type: String },
+        };
     }
 
-    initialize () {
+    initialize() {
         this.passwords_mismatched = false;
         this.alert_message = '';
     }
 
-    render () {
+    render() {
         return tplPasswordReset(this);
     }
 
-    checkPasswordsMatch (ev) {
+    checkPasswordsMatch(ev) {
         const form_data = new FormData(ev.target.form ?? ev.target);
         const password = form_data.get('password');
         const password_check = form_data.get('password_check');
 
         this.passwords_mismatched = password && password !== password_check;
-        return this.passwords_mismatched
+        return this.passwords_mismatched;
     }
 
-    async onSubmit (ev) {
+    async onSubmit(ev) {
         ev.preventDefault();
 
         if (this.checkPasswordsMatch(ev)) return;
@@ -53,7 +51,7 @@ class PasswordReset extends CustomElement {
             return;
         } else if (u.isErrorStanza(iq_response)) {
             this.alert_message = __('Your server responded with an unknown error, check the console for details');
-            log.error("Could not set password");
+            log.error('Could not set password');
             log.error(iq_response);
             return;
         }

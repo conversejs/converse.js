@@ -61,13 +61,13 @@ export default class IgnoreChunkImportsPlugin {
                                 compilation.errors.push(
                                     new WebpackError(
                                         `IgnoreChunkImportsPlugin: no chunk-loading import() found in ${name}. ` +
-                                            'The rspack runtime output may have changed; update CHUNK_IMPORT.'
-                                    )
+                                            'The rspack runtime output may have changed; update CHUNK_IMPORT.',
+                                    ),
                                 );
                             }
                         }
                     }
-                }
+                },
             );
         });
     }

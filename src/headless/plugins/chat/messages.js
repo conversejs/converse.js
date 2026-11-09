@@ -5,8 +5,7 @@ import { Collection } from '@converse/skeletor';
  * @extends {Collection<Message>}
  */
 class Messages extends Collection {
-
-    constructor () {
+    constructor() {
         super();
         this.comparator = 'time';
         this.model = Message;

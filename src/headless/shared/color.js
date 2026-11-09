@@ -9,7 +9,6 @@ const { safeSave, colorize } = u;
  * @returns {T & import('./types').Constructor<import('./types').ColorAware>}
  */
 export default function ColorAwareModel(BaseModel) {
-
     return class ColorAwareModel extends BaseModel {
         async setColor() {
             const color = await colorize(this.getIdentifier());
@@ -27,8 +26,8 @@ export default function ColorAwareModel(BaseModel) {
         }
 
         /**
-        * @returns {Promise<string>}
-        */
+         * @returns {Promise<string>}
+         */
         async getColor() {
             if (!this.get('color')) {
                 await this.setColor();
@@ -37,9 +36,9 @@ export default function ColorAwareModel(BaseModel) {
         }
 
         /**
-        * @param {string} append_style
-        * @returns {Promise<string>}
-        */
+         * @param {string} append_style
+         * @returns {Promise<string>}
+         */
         async getAvatarStyle(append_style = '') {
             try {
                 const color = await this.getColor();
@@ -48,5 +47,5 @@ export default function ColorAwareModel(BaseModel) {
                 return `background-color: gray !important; ${append_style}`;
             }
         }
-    }
+    };
 }

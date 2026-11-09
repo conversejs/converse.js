@@ -33,7 +33,7 @@ function lastJingleIq(_converse, action) {
     return _converse.api.connection
         .get()
         .sent_stanzas.filter(
-            (s) => s.nodeName === 'iq' && sizzle(`jingle[xmlns="${JINGLE}"][action="${action}"]`, s).length
+            (s) => s.nodeName === 'iq' && sizzle(`jingle[xmlns="${JINGLE}"][action="${action}"]`, s).length,
         )
         .pop();
 }
@@ -85,7 +85,7 @@ function sentIq(_converse, type, id) {
     return _converse.api.connection
         .get()
         .sent_stanzas.filter(
-            (s) => s.nodeName === 'iq' && s.getAttribute('type') === type && s.getAttribute('id') === id
+            (s) => s.nodeName === 'iq' && s.getAttribute('type') === type && s.getAttribute('id') === id,
         )
         .pop();
 }
@@ -216,7 +216,7 @@ describe('A Jingle RTP session', function () {
             expect(call.local_stream).toBeTruthy();
             expect(local_fired).toBe(true);
             expect(webrtc_handle.pc.senders.length).toBe(1);
-        })
+        }),
     );
 
     it(
@@ -228,7 +228,10 @@ describe('A Jingle RTP session', function () {
             async (_converse) => {
                 const webrtc_handle = installFakeWebRTC();
                 const jid = await getContactJid(_converse);
-                _converse.state.ice_servers = { servers: [{ urls: 'stun:discovered.montague.lit:3478' }], expires_at: null };
+                _converse.state.ice_servers = {
+                    servers: [{ urls: 'stun:discovered.montague.lit:3478' }],
+                    expires_at: null,
+                };
                 const call = _converse.api.calls.dial(jid);
 
                 receive(_converse, `${jid}/phone`, stx`<proceed xmlns="${JMI}" id="${call.get('id')}"/>`);
@@ -259,7 +262,7 @@ describe('A Jingle RTP session', function () {
             expect(webrtc_handle.pc.remoteDescription.type).toBe('answer');
             expect(webrtc_handle.pc.remoteDescription.sdp).toContain('m=audio');
             expect(sentIq(_converse, 'result', 'accept-iq')).toBeDefined();
-        })
+        }),
     );
 
     it(
@@ -273,7 +276,7 @@ describe('A Jingle RTP session', function () {
             const error = sentIq(_converse, 'error', 'stray-iq');
             expect(error).toBeDefined();
             expect(sizzle('item-not-found', error).length).toBe(1);
-        })
+        }),
     );
 
     it(
@@ -301,7 +304,7 @@ describe('A Jingle RTP session', function () {
             // A null candidate marks the end of gathering and sends nothing further.
             webrtc_handle.pc.onicecandidate({ candidate: null });
             expect(lastJingleIq(_converse, 'transport-info')).toBe(ti);
-        })
+        }),
     );
 
     it(
@@ -336,7 +339,7 @@ describe('A Jingle RTP session', function () {
             await u.waitUntil(() => webrtc_handle.pc.candidates.length);
             expect(webrtc_handle.pc.candidates[0].candidate).toContain('192.0.2.9 20000 typ host');
             expect(webrtc_handle.pc.candidates[0].sdpMid).toBe('0');
-        })
+        }),
     );
 
     it(
@@ -363,7 +366,7 @@ describe('A Jingle RTP session', function () {
                 .get()
                 .sent_stanzas.filter((s) => sizzle(`jingle[action="session-terminate"]`, s).length);
             expect(terminates.length).toBe(1); // the hangup's own, no second one from a failure
-        })
+        }),
     );
 
     it(
@@ -388,7 +391,7 @@ describe('A Jingle RTP session', function () {
             await u.waitUntil(() => call.get('state') === 'failed');
             expect(call.get('ended_reason')).toBe('failed-application');
             expect(stop).toHaveBeenCalled();
-        })
+        }),
     );
 
     it(
@@ -399,7 +402,7 @@ describe('A Jingle RTP session', function () {
             receive(
                 _converse,
                 `${jid}/phone`,
-                stx`<propose xmlns="${JMI}" id="in5"><description xmlns="${RTP}" media="audio"/></propose>`
+                stx`<propose xmlns="${JMI}" id="in5"><description xmlns="${RTP}" media="audio"/></propose>`,
             );
             const call = _converse.state.calls.get('in5');
             call.accept();
@@ -413,7 +416,7 @@ describe('A Jingle RTP session', function () {
             expect(call.get('state')).toBe('ended');
             expect(call.get('ended_reason')).toBe('cancelled');
             expect(sentIq(_converse, 'result', 'term-iq')).toBeDefined();
-        })
+        }),
     );
 
     it(
@@ -424,7 +427,7 @@ describe('A Jingle RTP session', function () {
             receive(
                 _converse,
                 `${jid}/phone`,
-                stx`<propose xmlns="${JMI}" id="in6"><description xmlns="${RTP}" media="audio"/></propose>`
+                stx`<propose xmlns="${JMI}" id="in6"><description xmlns="${RTP}" media="audio"/></propose>`,
             );
             const call = _converse.state.calls.get('in6');
             call.accept();
@@ -434,7 +437,7 @@ describe('A Jingle RTP session', function () {
             expect(term.getAttribute('to')).toBe(`${jid}/phone`);
             expect(sizzle(`jingle[sid="in6"] > reason > cancel`, term).length).toBe(1);
             expect(call.get('state')).toBe('ended');
-        })
+        }),
     );
 
     it(
@@ -456,7 +459,7 @@ describe('A Jingle RTP session', function () {
 
             expect(call.get('state')).toBe('failed');
             expect(call.get('ended_reason')).toBe('connectivity-error');
-        })
+        }),
     );
 
     it(
@@ -491,7 +494,7 @@ describe('A Jingle RTP session', function () {
                 .sent_stanzas.filter((s) => s.getAttribute('type') === 'result' && s.getAttribute('id') === 'ti-iq');
             expect(results.length).toBe(1);
             expect(webrtc_handle.pc.candidates.length).toBe(1);
-        })
+        }),
     );
 
     it(
@@ -527,7 +530,7 @@ describe('A Jingle RTP session', function () {
             expect(webrtc_handle.pc.candidates.map((c) => c.candidate)).toEqual([
                 'candidate:1 1 udp 2113937151 192.0.2.8 20000 typ host generation 0',
             ]);
-        })
+        }),
     );
 
     it(
@@ -553,7 +556,7 @@ describe('A Jingle RTP session', function () {
             pc.onconnectionstatechange();
             expect(call.get('state')).toBe('active');
             expect(typeof call.get('started_at')).toBe('number');
-        })
+        }),
     );
 
     it(
@@ -574,7 +577,7 @@ describe('A Jingle RTP session', function () {
             call.toggleAudio();
             expect(call.get('muted_audio')).toBe(false);
             expect(track.enabled).toBe(true);
-        })
+        }),
     );
 
     it(
@@ -594,7 +597,7 @@ describe('A Jingle RTP session', function () {
             expect(call.get('state')).toBe('failed');
             expect(call.get('ended_reason')).toBe('connectivity-error');
             expect(lastJingleIq(_converse, 'session-terminate')).toBeDefined();
-        })
+        }),
     );
 
     it(
@@ -619,7 +622,7 @@ describe('A Jingle RTP session', function () {
             expect(sizzle('reason > success', term).length).toBe(1);
             expect(call.get('state')).toBe('ended');
             expect(call.get('ended_reason')).toBe('success');
-        })
+        }),
     );
 
     it(
@@ -642,7 +645,7 @@ describe('A Jingle RTP session', function () {
             await u.waitUntil(() => call.get('state') === 'ended');
             expect(call.get('ended_reason')).toBe('success');
             expect(sentIq(_converse, 'result', 'term-iq')).toBeDefined();
-        })
+        }),
     );
 
     it(
@@ -654,7 +657,7 @@ describe('A Jingle RTP session', function () {
             receive(
                 _converse,
                 `${jid}/phone`,
-                stx`<propose xmlns="${JMI}" id="in1"><description xmlns="${RTP}" media="audio"/></propose>`
+                stx`<propose xmlns="${JMI}" id="in1"><description xmlns="${RTP}" media="audio"/></propose>`,
             );
             const call = _converse.state.calls.get('in1');
             call.accept();
@@ -671,7 +674,7 @@ describe('A Jingle RTP session', function () {
             webrtc_handle.pc.connectionState = 'connected';
             webrtc_handle.pc.onconnectionstatechange();
             expect(call.get('state')).toBe('active');
-        })
+        }),
     );
 
     it(
@@ -687,7 +690,7 @@ describe('A Jingle RTP session', function () {
             expect(call.get('ended_reason')).toBe('no-media');
             // The peer is told, so it stops waiting for a session-initiate.
             expect(lastJingleIq(_converse, 'session-terminate')).toBeDefined();
-        })
+        }),
     );
 
     it(
@@ -707,7 +710,7 @@ describe('A Jingle RTP session', function () {
             expect(call.get('ended_reason')).toBe('failed-application');
             const term = lastJingleIq(_converse, 'session-terminate');
             expect(sizzle('reason > failed-application', term).length).toBe(1);
-        })
+        }),
     );
 
     it(
@@ -732,7 +735,7 @@ describe('A Jingle RTP session', function () {
             expect(sizzle('item-not-found', error).length).toBe(1);
             expect(sizzle(`unknown-session[xmlns="${JINGLE_ERRORS}"]`, error).length).toBe(1);
             expect(call.get('state')).toBe('connecting');
-        })
+        }),
     );
 
     it(
@@ -746,7 +749,7 @@ describe('A Jingle RTP session', function () {
             receive(
                 _converse,
                 `${jid}/phone`,
-                stx`<propose xmlns="${JMI}" id="in2"><description xmlns="${RTP}" media="audio"/></propose>`
+                stx`<propose xmlns="${JMI}" id="in2"><description xmlns="${RTP}" media="audio"/></propose>`,
             );
             const call = _converse.state.calls.get('in2');
             call.accept();
@@ -769,7 +772,7 @@ describe('A Jingle RTP session', function () {
             const accept = await u.waitUntil(() => lastJingleIq(_converse, 'session-accept'));
             expect(accept.getAttribute('to')).toBe(`${jid}/phone`);
             expect(sizzle(`jingle[xmlns="${JINGLE}"]`, accept).pop().getAttribute('initiator')).toBe(`${jid}/phone`);
-        })
+        }),
     );
 
     it(
@@ -793,7 +796,7 @@ describe('A Jingle RTP session', function () {
             expect(call.get('state')).toBe('connecting');
             expect(call.session).toBe(session);
             expect(webrtc_handle.pc).toBe(pc);
-        })
+        }),
     );
 
     it(
@@ -810,7 +813,7 @@ describe('A Jingle RTP session', function () {
             receive(
                 _converse,
                 `${jid}/phone`,
-                stx`<propose xmlns="${JMI}" id="in3"><description xmlns="${RTP}" media="audio"/></propose>`
+                stx`<propose xmlns="${JMI}" id="in3"><description xmlns="${RTP}" media="audio"/></propose>`,
             );
             const call = _converse.state.calls.get('in3');
 
@@ -823,7 +826,7 @@ describe('A Jingle RTP session', function () {
             expect(call.session).toBe(null);
             expect(captured).toBe(false);
             expect(lastJingleIq(_converse, 'session-accept')).toBeUndefined();
-        })
+        }),
     );
 
     it(
@@ -834,7 +837,7 @@ describe('A Jingle RTP session', function () {
             receive(
                 _converse,
                 `${jid}/phone`,
-                stx`<propose xmlns="${JMI}" id="in4"><description xmlns="${RTP}" media="audio"/></propose>`
+                stx`<propose xmlns="${JMI}" id="in4"><description xmlns="${RTP}" media="audio"/></propose>`,
             );
             const call = _converse.state.calls.get('in4');
             call.accept();
@@ -849,7 +852,7 @@ describe('A Jingle RTP session', function () {
             expect(sizzle(`out-of-order[xmlns="${JINGLE_ERRORS}"]`, error).length).toBe(1);
             expect(webrtc_handle.pc).toBe(pc);
             expect(call.local_stream).toBe(local_stream);
-        })
+        }),
     );
 
     it(
@@ -868,7 +871,7 @@ describe('A Jingle RTP session', function () {
             const error = sentIq(_converse, 'error', 'reverse-iq');
             expect(sizzle(`out-of-order[xmlns="${JINGLE_ERRORS}"]`, error).length).toBe(1);
             expect(lastJingleIq(_converse, 'session-accept')).toBeUndefined();
-        })
+        }),
     );
 
     describe('that never connects', function () {
@@ -1380,7 +1383,12 @@ describe('A Jingle RTP session', function () {
             mock.initConverse(converse, ['rosterInitialized', 'callsInitialized'], {}, async (_converse) => {
                 const { jid, sid } = await startSession(_converse);
 
-                receiveIq(_converse, `${jid}/phone`, 'ping-iq', stx`<jingle xmlns="${JINGLE}" action="session-info" sid="${sid}"/>`);
+                receiveIq(
+                    _converse,
+                    `${jid}/phone`,
+                    'ping-iq',
+                    stx`<jingle xmlns="${JINGLE}" action="session-info" sid="${sid}"/>`,
+                );
                 receiveIq(
                     _converse,
                     `${jid}/phone`,

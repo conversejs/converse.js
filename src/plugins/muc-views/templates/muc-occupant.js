@@ -54,50 +54,58 @@ export default (el) => {
             ></converse-dropdown>
         </div>
 
-        ${el.model
-            ? html`<div class="row">
-                  <div class="col">
-                      <a
-                          title="${i18n_show_details}"
-                          @click=${() => el.showOccupantModal()}
-                          ><converse-avatar
-                              .model=${el.model}
-                              class="avatar modal-avatar justify-content-center"
-                              name="${el.model.getDisplayName()}"
-                              nonce=${el.getVcard()?.get('vcard_updated')}
-                              height="120"
-                              width="120"
-                          ></converse-avatar>
-                      </a>
-                  </div>
-              </div>`
-            : ''}
+        ${
+            el.model
+                ? html`<div class="row">
+                      <div class="col">
+                          <a title="${i18n_show_details}" @click=${() => el.showOccupantModal()}
+                              ><converse-avatar
+                                  .model=${el.model}
+                                  class="avatar modal-avatar justify-content-center"
+                                  name="${el.model.getDisplayName()}"
+                                  nonce=${el.getVcard()?.get('vcard_updated')}
+                                  height="120"
+                                  width="120"
+                              ></converse-avatar>
+                          </a>
+                      </div>
+                  </div>`
+                : ''
+        }
         <ul class="occupant-details">
-            ${el.model
-                ? html` ${nick ? html`<li class="occupant-details-nickname">${nick}</li>` : ''}
-                      <li class="occupant-details-jid">
-                          ${jid ? html`<a @click="${() => el.openChat(jid)}">${jid}</a>` : ''}
-                      </li>
-                      <li>
-                          ${affiliation && affiliation !== 'None'
-                              ? html`<span class="badge text-bg-primary">${affiliation}</span>`
-                              : ''}
-                          ${role ? html`<span class="badge text-bg-secondary">${role}</span>` : ''}
-                          ${hats.length
-                              ? html`${hats.map((h) => html`<span class="badge text-bg-info">${h}</span>`)}`
-                              : ''}
-                      </li>`
-                : html`<li>${i18n_no_occupant}</li>`}
+            ${
+                el.model
+                    ? html` ${nick ? html`<li class="occupant-details-nickname">${nick}</li>` : ''}
+                          <li class="occupant-details-jid">
+                              ${jid ? html`<a @click="${() => el.openChat(jid)}">${jid}</a>` : ''}
+                          </li>
+                          <li>
+                              ${
+                                  affiliation && affiliation !== 'None'
+                                      ? html`<span class="badge text-bg-primary">${affiliation}</span>`
+                                      : ''
+                              }
+                              ${role ? html`<span class="badge text-bg-secondary">${role}</span>` : ''}
+                              ${
+                                  hats.length
+                                      ? html`${hats.map((h) => html`<span class="badge text-bg-info">${h}</span>`)}`
+                                      : ''
+                              }
+                          </li>`
+                    : html`<li>${i18n_no_occupant}</li>`
+            }
         </ul>
 
-        ${el.model
-            ? html`<div class="chat-body">
-                  <div class="chat-content chat-content-sendbutton" aria-live="polite">
-                      <converse-chat-content .model="${el.model}"></converse-chat-content>
-                  </div>
-                  <converse-occupant-bottom-panel .model=${el.model} .muc=${el.muc} class="bottom-panel">
-                  </converse-occupant-bottom-panel>
-              </div>`
-            : ''}
+        ${
+            el.model
+                ? html`<div class="chat-body">
+                      <div class="chat-content chat-content-sendbutton" aria-live="polite">
+                          <converse-chat-content .model="${el.model}"></converse-chat-content>
+                      </div>
+                      <converse-occupant-bottom-panel .model=${el.model} .muc=${el.muc} class="bottom-panel">
+                      </converse-occupant-bottom-panel>
+                  </div>`
+                : ''
+        }
     </span>`;
 };

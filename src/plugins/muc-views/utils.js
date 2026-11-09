@@ -112,23 +112,31 @@ export function getChatRoomBodyTemplate(model) {
         return html`<converse-muc-config-form class="muc-form-container" jid="${jid}"></converse-muc-config-form>`;
     } else {
         return html`
-            ${conn_status == RS.PASSWORD_REQUIRED
-                ? html`<converse-muc-password-form
-                      class="muc-form-container"
-                      jid="${jid}"
-                  ></converse-muc-password-form>`
-                : ''}
-            ${conn_status == RS.ENTERED
-                ? html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>`
-                : ''}
+            ${
+                conn_status == RS.PASSWORD_REQUIRED
+                    ? html`<converse-muc-password-form
+                          class="muc-form-container"
+                          jid="${jid}"
+                      ></converse-muc-password-form>`
+                    : ''
+            }
+            ${
+                conn_status == RS.ENTERED
+                    ? html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>`
+                    : ''
+            }
             ${conn_status == RS.CONNECTING ? tplSpinner({ class: 'vertically-centered' }) : ''}
             ${conn_status == RS.NICKNAME_REQUIRED ? getNicknameRequiredTemplate(model) : ''}
-            ${conn_status == RS.DISCONNECTED
-                ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>`
-                : ''}
-            ${conn_status == RS.BANNED
-                ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>`
-                : ''}
+            ${
+                conn_status == RS.DISCONNECTED
+                    ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>`
+                    : ''
+            }
+            ${
+                conn_status == RS.BANNED
+                    ? html`<converse-muc-disconnected jid="${jid}"></converse-muc-disconnected>`
+                    : ''
+            }
             ${conn_status == RS.DESTROYED ? html`<converse-muc-destroyed jid="${jid}"></converse-muc-destroyed>` : ''}
         `;
     }
@@ -163,15 +171,17 @@ export function getAutoCompleteListItem(muc, text, input) {
     const parts = input ? text.split(regex) : [text];
     return html`
         <li aria-selected="false">
-            ${show_avatar
-                ? html`<converse-avatar
-                      .model=${avatar_model}
-                      name="${avatar_model.getDisplayName()}"
-                      height="22"
-                      width="22"
-                      class="avatar avatar-autocomplete"
-                  ></converse-avatar>`
-                : ''}
+            ${
+                show_avatar
+                    ? html`<converse-avatar
+                          .model=${avatar_model}
+                          name="${avatar_model.getDisplayName()}"
+                          height="22"
+                          width="22"
+                          class="avatar avatar-autocomplete"
+                      ></converse-avatar>`
+                    : ''
+            }
             <span class="autocomplete-item">
                 ${parts.map(
                     /** @param {Suggestion|string} txt */ (txt) =>

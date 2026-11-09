@@ -34,7 +34,7 @@ converse.plugins.add('converse-pubsub', {
                     };
                 }
                 return extra;
-            }
+            },
         );
     },
 });

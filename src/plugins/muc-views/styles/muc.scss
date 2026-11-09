@@ -1,15 +1,15 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "shared/styles/_variables.scss";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'shared/styles/_variables.scss';
 // No `chatbox.scss` here: this plugin declares `converse-chatview` as a
 // dependency, so that stylesheet is always in the bundle already. Importing it
 // a second time emitted every one of its rules twice.
-@import "./muc-forms.scss";
+@import './muc-forms.scss';
 
 .conversejs {
     converse-muc.chatroom {
         width: var(--chatroom-width);
-        @media screen and (max-height: $mobile-landscape-height){
+        @media screen and (max-height: $mobile-landscape-height) {
             width: var(--mobile-chat-width);
         }
         @media screen and (max-width: $mobile-portrait-length) {
@@ -128,7 +128,6 @@
                         }
                     }
                 }
-
             }
         }
 

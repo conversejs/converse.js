@@ -1,13 +1,12 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
-@import "shared/styles/_variables.scss";
-@import "shared/styles/_mixins.scss";
-
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'shared/styles/_variables.scss';
+@import 'shared/styles/_mixins.scss';
 
 .conversejs {
     converse-app-chat.converse-embedded,
-    converse-app-chat.converse-fullscreen  {
+    converse-app-chat.converse-fullscreen {
         &.converse-singleton {
             .flyout {
                 border: none !important;
@@ -22,7 +21,7 @@
         }
     }
 
-    converse-app-chat.converse-fullscreen  {
+    converse-app-chat.converse-fullscreen {
         &.converse-singleton {
             .chatbox {
                 @include make-col-ready();

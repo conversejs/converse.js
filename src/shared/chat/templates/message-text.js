@@ -72,8 +72,7 @@ export default (el, tpl_time = '') => {
                 text="${text}"
             ></converse-chat-message-body>
             ${el.model.get('received') && !el.model.isMeCommand() && !is_groupchat_message ? tplCheckmark() : ''}
-            ${el.model.get('edited') ? tplEditedIcon(el) : ''}
-            ${tpl_time}
+            ${el.model.get('edited') ? tplEditedIcon(el) : ''} ${tpl_time}
         </span>
         ${
             show_oob

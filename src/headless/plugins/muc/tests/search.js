@@ -248,7 +248,7 @@ describe('XEP-0433 Extended Channel Search', function () {
     );
 
     it(
-        "stops querying a service that supports neither protocol",
+        'stops querying a service that supports neither protocol',
         mock.initConverse(converse, ['statusInitialized'], {}, async function (_converse) {
             const { api } = _converse;
             const seen = new Set();

@@ -13,7 +13,11 @@ export default (el) => {
     const registration_domain = api.settings.get('registration_domain');
 
     return html`
-        <form id="converse-register" class="converse-form rounded" @submit=${(/** @type {Event} */ ev) => el.onFormSubmission(ev)}>
+        <form
+            id="converse-register"
+            class="converse-form rounded"
+            @submit=${(/** @type {Event} */ ev) => el.onFormSubmission(ev)}
+        >
             <legend class="col-form-label">${i18n_legend} ${el.domain}</legend>
             <p class="title">${el.title}</p>
             <p class="form-help instructions">${el.instructions}</p>
@@ -22,16 +26,18 @@ export default (el) => {
 
             <fieldset class="buttons form-group">
                 ${el.fields ? html` <input type="submit" class="btn btn-primary" value="${i18n_register}" /> ` : ''}
-                ${registration_domain
-                    ? ''
-                    : html`
-                          <input
-                              type="button"
-                              class="btn btn-secondary button-cancel"
-                              value="${i18n_choose_provider}"
-                              @click=${(/** @type {Event} */ ev) => el.renderProviderChoiceForm(ev)}
-                          />
-                      `}
+                ${
+                    registration_domain
+                        ? ''
+                        : html`
+                              <input
+                                  type="button"
+                                  class="btn btn-secondary button-cancel"
+                                  value="${i18n_choose_provider}"
+                                  @click=${(/** @type {Event} */ ev) => el.renderProviderChoiceForm(ev)}
+                              />
+                          `
+                }
                 ${tplSwitchForm()}
             </fieldset>
         </form>

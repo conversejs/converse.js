@@ -1,4 +1,4 @@
-import log from "@converse/log";
+import log from '@converse/log';
 import { getOpenPromise } from '@converse/openpromise';
 import { settings_api } from '../shared/settings/api.js';
 import { getInitSettings } from '../shared/settings/utils.js';
@@ -11,11 +11,11 @@ const settings = settings_api;
  * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
  * MultiView means that multiple chats may be visible simultaneously.
  */
-export function isUniView () {
-    return ['fullscreen', 'embedded'].includes(settings.get("view_mode"));
+export function isUniView() {
+    return ['fullscreen', 'embedded'].includes(settings.get('view_mode'));
 }
 
-export function isTestEnv () {
+export function isTestEnv() {
     return getInitSettings()['bosh_service_url'] === 'montague.lit/http-bind';
 }
 
@@ -23,7 +23,7 @@ export function isTestEnv () {
  * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @param {string} name
  */
-export function replacePromise (_converse, name) {
+export function replacePromise(_converse, name) {
     const existing_promise = _converse.promises[name];
     if (!existing_promise) {
         throw new Error(`Tried to replace non-existing promise: ${name}`);
@@ -42,20 +42,18 @@ export function replacePromise (_converse, name) {
  * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @returns {boolean}
  */
-export function shouldClearCache (_converse) {
+export function shouldClearCache(_converse) {
     const { api } = _converse;
-    return !_converse.state.config.get('trusted') ||
-        api.settings.get('clear_cache_on_logout') ||
-        isTestEnv();
+    return !_converse.state.config.get('trusted') || api.settings.get('clear_cache_on_logout') || isTestEnv();
 }
 
 /**
  * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @returns {Promise<import('../shared/_converse.js').ConversePrivateGlobal>}
  */
-export async function tearDown (_converse) {
+export async function tearDown(_converse) {
     const { api } = _converse;
-    await api.trigger('beforeTearDown', {'synchronous': true});
+    await api.trigger('beforeTearDown', { 'synchronous': true });
     api.trigger('afterTearDown');
     return _converse;
 }
@@ -63,7 +61,7 @@ export async function tearDown (_converse) {
 /**
  * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  */
-export function clearSession (_converse) {
+export function clearSession(_converse) {
     if (shouldClearCache(_converse)) {
         _converse.api.user.settings.clear();
         _converse.state.login_info?.destroy();
@@ -75,5 +73,5 @@ export function clearSession (_converse) {
      * disconnected for some other reason.
      * @event _converse#clearSession
      */
-    return _converse.api.trigger('clearSession', {'synchronous': true});
+    return _converse.api.trigger('clearSession', { 'synchronous': true });
 }

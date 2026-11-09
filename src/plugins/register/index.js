@@ -26,14 +26,13 @@ Strophe.Status.CONFLICT = i + 3;
 Strophe.Status.NOTACCEPTABLE = i + 5;
 
 converse.plugins.add('converse-register', {
-
     dependencies: ['converse-controlbox'],
 
-    enabled () {
+    enabled() {
         return true;
     },
 
-    initialize () {
+    initialize() {
         CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
         CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
         CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
@@ -52,5 +51,5 @@ converse.plugins.add('converse-register', {
 
         routeToForm();
         addEventListener('hashchange', routeToForm);
-    }
+    },
 });

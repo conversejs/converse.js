@@ -29,4 +29,3 @@ export type DOMNavigatorDirection = {
     right: string;
     up: string;
 };
-

@@ -30,9 +30,7 @@ describe('A Chat Message', function () {
             });
             expect(mock.composerText(view)).toBe('');
             await mock.pressComposerKey(view, 'ArrowUp');
-            await u.waitUntil(
-                () => mock.composerText(view) === 'But soft, what light through yonder airlock breaks?',
-            );
+            await u.waitUntil(() => mock.composerText(view) === 'But soft, what light through yonder airlock breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.querySelectorAll('.chat-msg').length).toBe(1);
             await u.waitUntil(() => u.hasClass('correcting', view.querySelector('.chat-msg')), 500);

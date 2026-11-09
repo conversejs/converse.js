@@ -14,7 +14,7 @@ const NOW = new Date('2026-10-20T10:01:00.000Z');
 const HOSTILE = '\u001b[8m\u009b2K‮​\u{e0041}';
 
 /** Whether the text has a character, other than a newline, that a terminal doesn't print as itself. */
-const hasInvisible = (text) => (/(?![\n\u200d])[\p{Cc}\p{Cf}]/u).test(text);
+const hasInvisible = (text) => /(?![\n\u200d])[\p{Cc}\p{Cf}]/u.test(text);
 
 const message = {
     id: 'm1',

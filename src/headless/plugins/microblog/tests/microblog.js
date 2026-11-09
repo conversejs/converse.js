@@ -524,7 +524,7 @@ describe('The microblog plugin', function () {
     );
 
     it(
-        "ignores a follow-list push from a contact (never touches our own follows)",
+        'ignores a follow-list push from a contact (never touches our own follows)',
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
@@ -2342,7 +2342,10 @@ describe('The microblog plugin', function () {
             // comment, or activity on someone else's post.
             receive(_converse, makeCommentEvent(bare_jid, my_node, 'c1', 'nice post', 'bob@montague.lit', 'Bob'));
             receive(_converse, makeCommentEvent(bare_jid, my_node, 'c2', 'thanks!', bare_jid, 'Me'));
-            receive(_converse, makeCommentEvent('juliet@capulet.lit', their_node, 'x1', 'hi', 'bob@montague.lit', 'Bob'));
+            receive(
+                _converse,
+                makeCommentEvent('juliet@capulet.lit', their_node, 'x1', 'hi', 'bob@montague.lit', 'Bob'),
+            );
             await u.waitUntil(() => my_thread.messages.get('c2') && their_thread.messages.get('x1'));
             // Flush the addItems().then() that runs the notification check.
             await new Promise((r) => setTimeout(r, 50));

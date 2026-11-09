@@ -30,9 +30,7 @@ const stripTrailingSlashes = (v) => (typeof v === 'string' ? v.replace(/\/+$/, '
  * already-normalized value.
  * @type {Map<string, import('./types').StandardSchemaV1>}
  */
-const SETTING_SCHEMAS = new Map([
-    ['assets_path', coerce(stripTrailingSlashes)],
-]);
+const SETTING_SCHEMAS = new Map([['assets_path', coerce(stripTrailingSlashes)]]);
 
 /**
  * Register (or override) the schema for a setting. This is the seam through

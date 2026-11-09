@@ -50,7 +50,7 @@ export default class ProfileModal extends BaseModal {
             () => {
                 /** @type {HTMLInputElement} */ (this.querySelector('input[name="status_message"]'))?.focus();
             },
-            false
+            false,
         );
 
         /**
@@ -114,7 +114,7 @@ export default class ProfileModal extends BaseModal {
                 [
                     __('Sorry, an error happened while trying to save your profile data.'),
                     __("You can check your browser's developer console for any error output."),
-                ].join(' ')
+                ].join(' '),
             );
             return false;
         }

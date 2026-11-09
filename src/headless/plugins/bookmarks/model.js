@@ -23,7 +23,7 @@ class Bookmark extends Model {
     }
 
     getDisplayName() {
-        return this.get('name') && Strophe.xmlunescape(this.get('name')) || this.get('jid');
+        return (this.get('name') && Strophe.xmlunescape(this.get('name'))) || this.get('jid');
     }
 }
 

@@ -65,7 +65,11 @@ describe('buildCommentTree', () => {
         const comments = [
             fakeComment({ id: 'c1', atom_id: 'tag:example.org,2026:posts-c1', published: '2026-07-24T10:01:00Z' }),
             // href carried no item id, so only in_reply_to_ref is set.
-            fakeComment({ id: 'r1', in_reply_to_ref: 'tag:example.org,2026:posts-c1', published: '2026-07-24T10:02:00Z' }),
+            fakeComment({
+                id: 'r1',
+                in_reply_to_ref: 'tag:example.org,2026:posts-c1',
+                published: '2026-07-24T10:02:00Z',
+            }),
         ];
         const { roots, by_id } = buildCommentTree(comments);
         expect(ids(roots)).toEqual(['c1']);
@@ -75,7 +79,12 @@ describe('buildCommentTree', () => {
     it('keeps an orphan (parent not loaded) but does not surface it', () => {
         const comments = [
             fakeComment({ id: 'c1', published: '2026-07-24T10:01:00Z' }),
-            fakeComment({ id: 'r9', in_reply_to: 'missing', in_reply_to_node: NODE, published: '2026-07-24T10:05:00Z' }),
+            fakeComment({
+                id: 'r9',
+                in_reply_to: 'missing',
+                in_reply_to_node: NODE,
+                published: '2026-07-24T10:05:00Z',
+            }),
         ];
         const { roots, by_id } = buildCommentTree(comments);
         expect(ids(roots)).toEqual(['c1']); // orphan r9 not a root
@@ -86,7 +95,12 @@ describe('buildCommentTree', () => {
     });
 
     it('adopts a former orphan once its parent is loaded (recompute)', () => {
-        const orphan = fakeComment({ id: 'r9', in_reply_to: 'c1', in_reply_to_node: NODE, published: '2026-07-24T10:05:00Z' });
+        const orphan = fakeComment({
+            id: 'r9',
+            in_reply_to: 'c1',
+            in_reply_to_node: NODE,
+            published: '2026-07-24T10:05:00Z',
+        });
         expect(buildCommentTree([orphan]).roots.length).toBe(0); // hidden while parent absent
 
         const parent = fakeComment({ id: 'c1', published: '2026-07-24T10:01:00Z' });
@@ -169,14 +183,21 @@ describe('computeThreadCounts', () => {
         expect(byComment.get('r2').reply_count).toBe(0);
     });
 
-    it('dedupes a comment\'s likes by distinct liker and flags liked_by_me', () => {
+    it("dedupes a comment's likes by distinct liker and flags liked_by_me", () => {
         const items = [
             fakeItem({ id: 'c1', author: at('juliet') }),
             fakeItem({ id: 'L1', like: true, author: at('bob'), in_reply_to: 'c1', in_reply_to_node: NODE }),
             // Bob liked again from a second device: still one liker.
             fakeItem({ id: 'L2', like: true, author: at('bob'), in_reply_to: 'c1', in_reply_to_node: NODE }),
             // Our own like.
-            fakeItem({ id: 'L3', like: true, author: at('me'), is_mine: true, in_reply_to: 'c1', in_reply_to_node: NODE }),
+            fakeItem({
+                id: 'L3',
+                like: true,
+                author: at('me'),
+                is_mine: true,
+                in_reply_to: 'c1',
+                in_reply_to_node: NODE,
+            }),
         ];
         const c1 = computeThreadCounts(items).byComment.get('c1');
         expect(c1.like_count).toBe(2); // bob + me

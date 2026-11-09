@@ -48,7 +48,8 @@ describe('DiscoBrowser', function () {
             );
 
             connection._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<iq from="nonexistent.domain"
                         to="${_converse.session.get('jid')}"
                         id="${sent.getAttribute('id')}"
@@ -123,7 +124,9 @@ describe('DiscoBrowser', function () {
             const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
             <iq xmlns="jabber:client"
                 type='result'
                 from='montague.lit'
@@ -137,7 +140,8 @@ describe('DiscoBrowser', function () {
                     <item node='montague.lit' name='Wear your literary taste with pride'/>
                     <item jid='montague.lit' node='music' name='Music from the time of Shakespeare'/>
                 </query>
-            </iq>`),
+            </iq>`,
+                ),
             );
 
             await u.waitUntil(() => modal.querySelector('.items-list'));

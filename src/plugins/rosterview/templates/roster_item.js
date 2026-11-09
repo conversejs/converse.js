@@ -111,14 +111,16 @@ export default (el) => {
                     width="30"
                 ></converse-avatar>
 
-                ${['both', 'to'].includes(el.model.get('subscription'))
-                    ? html` <converse-icon
-                          title="${desc_status}"
-                          color="var(--${color})"
-                          size="1em"
-                          class="${classes} chat-status chat-status--avatar"
-                      ></converse-icon>`
-                    : ''}
+                ${
+                    ['both', 'to'].includes(el.model.get('subscription'))
+                        ? html` <converse-icon
+                              title="${desc_status}"
+                              color="var(--${color})"
+                              size="1em"
+                              class="${classes} chat-status chat-status--avatar"
+                          ></converse-icon>`
+                        : ''
+                }
             </span>
             ${num_unread ? html`<span class="msgs-indicator badge">${num_unread}</span>` : ''}
             <span class="contact-name contact-name--${show} ${num_unread ? 'unread-msgs' : ''}">${display_name}</span>

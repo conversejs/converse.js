@@ -61,7 +61,7 @@ describe('Jingle/SDP conversion', function () {
 
         expect(sizzle('rtcp-fb[type="transport-cc"]', payload).length).toBe(1);
         expect(sizzle('rtp-hdrext', description).pop().getAttribute('uri')).toBe(
-            'urn:ietf:params:rtp-hdrext:ssrc-audio-level'
+            'urn:ietf:params:rtp-hdrext:ssrc-audio-level',
         );
         expect(sizzle('rtcp-mux', description).length).toBe(1);
 
@@ -145,7 +145,10 @@ describe('Jingle/SDP conversion', function () {
     it('falls back to session-level ICE credentials', function () {
         const sdp = sample_sdp
             .replace('a=ice-ufrag:abc\r\na=ice-pwd:thispasswordisatleast22chars\r\n', '')
-            .replace('a=group:BUNDLE 0\r\n', 'a=group:BUNDLE 0\r\na=ice-ufrag:sess\r\na=ice-pwd:sessionpasswordatleast22chars\r\n');
+            .replace(
+                'a=group:BUNDLE 0\r\n',
+                'a=group:BUNDLE 0\r\na=ice-ufrag:sess\r\na=ice-pwd:sessionpasswordatleast22chars\r\n',
+            );
         const transport = sizzle('transport', sdpToJingle(parseSDP(sdp), { is_initiator: true }).tree()).pop();
         expect(transport.getAttribute('ufrag')).toBe('sess');
         expect(transport.getAttribute('pwd')).toBe('sessionpasswordatleast22chars');

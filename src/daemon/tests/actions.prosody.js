@@ -17,10 +17,9 @@ import { eventually, registerAccount, startDaemon } from './real-server.js';
  * @param {string} what
  */
 function waitForMessage(daemon, conversation, test, what) {
-    return eventually(
-        async () => (await daemon.requestFull('messages.list', { conversation })).messages.find(test),
-        { what },
-    );
+    return eventually(async () => (await daemon.requestFull('messages.list', { conversation })).messages.find(test), {
+        what,
+    });
 }
 
 describe('Acting on messages on a real Prosody', () => {
@@ -62,7 +61,7 @@ describe('Acting on messages on a real Prosody', () => {
             expect(reply.reply_to).toBe(original.id);
         });
 
-        it("reacts by stanza-id, and the other side sees who reacted", async () => {
+        it('reacts by stanza-id, and the other side sees who reacted', async () => {
             await romeo.requestFull('messages.react', { id: as_romeo_sees_it.id, emoji: '👍' });
 
             const reacted = await waitForMessage(
@@ -111,7 +110,12 @@ describe('Acting on messages on a real Prosody', () => {
             await romeo.requestFull('rooms.join', { room, nick: 'romeo' });
             await juliet.requestFull('rooms.join', { room, nick: 'juliet' });
             ({ message: original } = await juliet.requestFull('messages.send', { to: room, body: 'Who is there?' }));
-            as_romeo_sees_it = await waitForMessage(romeo, room, (m) => m.body === 'Who is there?', "Juliet's question");
+            as_romeo_sees_it = await waitForMessage(
+                romeo,
+                room,
+                (m) => m.body === 'Who is there?',
+                "Juliet's question",
+            );
             // Both see it by the stanza-id the room gave it.
             await waitForMessage(juliet, room, (m) => m.id === as_romeo_sees_it.id, 'the room echoing it back');
         });

@@ -6,7 +6,8 @@ const { u } = converse.env;
 describe('The list of MUC domains', function () {
     it(
         'is shown in controlbox',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesFetched'],
             {
                 muc_grouped_by_domain: true,
@@ -97,7 +98,8 @@ describe('The list of MUC domains', function () {
 describe('A MUC domain group', function () {
     it(
         'is collapsible',
-        mock.initConverse(converse, 
+        mock.initConverse(
+            converse,
             ['chatBoxesFetched'],
             {
                 muc_grouped_by_domain: true,

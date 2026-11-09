@@ -92,7 +92,7 @@ function getRoomAction(list, muc_jid, name) {
 
 function getGroupchatHeadings() {
     return Array.from(document.querySelectorAll('#controlbox .controlbox-heading')).filter((el) =>
-        (/groupchats/i).test(el.textContent),
+        /groupchats/i.test(el.textContent),
     );
 }
 
@@ -403,7 +403,9 @@ describe('Pinned groupchats in the list of open groupchats', function () {
                 expect(icon.classList.contains('fa-thumbtack')).toBe(true);
                 expect(icon.getAttribute('aria-hidden')).toBe('true');
             }
-            expect(list.querySelector('.available-chatroom .fa-bookmark, .available-chatroom .fa-bookmark-empty')).toBeNull();
+            expect(
+                list.querySelector('.available-chatroom .fa-bookmark, .available-chatroom .fa-bookmark-empty'),
+            ).toBeNull();
 
             await completeBookmarkOperation(
                 _converse,
@@ -427,7 +429,7 @@ describe('Pinned groupchats in the list of open groupchats', function () {
     );
 
     it(
-        'can be pinned with the keyboard from the room\'s menu',
+        "can be pinned with the keyboard from the room's menu",
         mock.initConverse(converse, ['connected', 'chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             await mock.waitUntilBookmarksReturned(_converse);

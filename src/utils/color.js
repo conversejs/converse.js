@@ -6,7 +6,6 @@ import { html } from 'lit';
 import { until } from 'lit/directives/until.js';
 import { api } from '@converse/headless';
 
-
 /**
  * @param {string} color
  * @param {string} append_style

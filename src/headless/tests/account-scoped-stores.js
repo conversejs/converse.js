@@ -40,12 +40,14 @@ describe('Session stores', function () {
             await u.waitUntil(() => romeos_entity.features.length);
 
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            api.connection.get()._dataRecv(
-                mock.createRequest(
-                    _converse,
-                    stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${contact_jid}/phone"/>`,
-                ),
-            );
+            api.connection
+                .get()
+                ._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<presence xmlns="jabber:client" to="romeo@montague.lit/orchard" from="${contact_jid}/phone"/>`,
+                    ),
+                );
             const romeos_contact = await api.contacts.get(contact_jid);
             await u.waitUntil(() => romeos_contact.presence.resources.length);
 

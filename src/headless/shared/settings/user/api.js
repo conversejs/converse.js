@@ -1,11 +1,7 @@
 /**
  * @typedef {import('@converse/skeletor').Model} Model
  */
-import {
-    clearUserSettings,
-    getUserSettings,
-    updateUserSettings,
-} from './utils.js';
+import { clearUserSettings, getUserSettings, updateUserSettings } from './utils.js';
 
 /**
  * API for accessing and setting user settings. User settings are
@@ -22,7 +18,7 @@ export const user_settings_api = {
      * @returns {Promise<Model>}
      * @example const settings = await api.user.settings.getModel();
      */
-    getModel () {
+    getModel() {
         return getUserSettings();
     },
 
@@ -34,7 +30,7 @@ export const user_settings_api = {
      * @returns {Promise} Promise which resolves with the value of the particular configuration setting.
      * @example api.user.settings.get("foo");
      */
-    async get (key, fallback) {
+    async get(key, fallback) {
         const user_settings = await getUserSettings();
         return user_settings.get(key) === undefined ? fallback : user_settings.get(key);
     },
@@ -52,13 +48,13 @@ export const user_settings_api = {
      *     "baz": "buz"
      * });
      */
-    set (key, val) {
+    set(key, val) {
         if (key instanceof Object) {
-            return updateUserSettings(key, {'promise': true});
+            return updateUserSettings(key, { 'promise': true });
         } else {
             const o = {};
             o[key] = val;
-            return updateUserSettings(o, {'promise': true});
+            return updateUserSettings(o, { 'promise': true });
         }
     },
 
@@ -67,7 +63,7 @@ export const user_settings_api = {
      * @async
      * @method api.user.settings.clear
      */
-    clear () {
+    clear() {
         return clearUserSettings();
-    }
-}
+    },
+};

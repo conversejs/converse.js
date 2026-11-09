@@ -12,8 +12,8 @@ const { callDuration } = u.jingle;
  * @param {string} title
  * @param {string} extra_class
  */
-const tplButton = (handler, icon, title, extra_class) => html`
-    <button type="button" class="btn call-action ${extra_class}" @click=${handler} title="${title}">
+const tplButton = (handler, icon, title, extra_class) =>
+    html` <button type="button" class="btn call-action ${extra_class}" @click=${handler} title="${title}">
         <converse-icon class="fa ${icon}" size="1.2em"></converse-icon>
     </button>`;
 
@@ -28,9 +28,8 @@ function tplActions(el) {
     const hangup = tplButton(() => el.hangup(), 'fa-times', __('Hang up'), 'hangup');
 
     if (state === CALL_STATES.RINGING && incoming) {
-        return html`
-            ${tplButton(() => el.accept(), 'fa-phone', __('Accept'), 'accept')}
-            ${tplButton(() => el.reject(), 'fa-times', __('Decline'), 'reject')}`;
+        return html` ${tplButton(() => el.accept(), 'fa-phone', __('Accept'), 'accept')}
+        ${tplButton(() => el.reject(), 'fa-times', __('Decline'), 'reject')}`;
     }
 
     if (state === CALL_STATES.ACTIVE) {
@@ -39,7 +38,7 @@ function tplActions(el) {
             () => el.toggleMute(),
             muted ? 'fa-microphone-slash' : 'fa-microphone',
             muted ? __('Unmute') : __('Mute'),
-            `mute ${muted ? 'is-muted' : ''}`
+            `mute ${muted ? 'is-muted' : ''}`,
         );
         return html`${mute}${hangup}`;
     }
@@ -84,15 +83,14 @@ export default (el) => {
     // The name is the caller's own choice (vCard or JID local part), so it can
     // imitate someone else. The JID can't.
     const jid = call.get('jid');
-    return html`
-        <div class="call-card call-card--${call.get('state')}">
-            <converse-avatar .model=${call} name="${name}" height="48" width="48" class="avatar"></converse-avatar>
-            <div class="call-info">
-                <span class="call-name">${name}</span>
-                ${name !== jid ? html`<span class="call-jid">${jid}</span>` : ''}
-                <span class="call-status">${statusText(el)}</span>
-            </div>
-            <div class="call-actions">${tplActions(el)}</div>
-            <audio autoplay .srcObject=${call.remote_stream}></audio>
-        </div>`;
+    return html` <div class="call-card call-card--${call.get('state')}">
+        <converse-avatar .model=${call} name="${name}" height="48" width="48" class="avatar"></converse-avatar>
+        <div class="call-info">
+            <span class="call-name">${name}</span>
+            ${name !== jid ? html`<span class="call-jid">${jid}</span>` : ''}
+            <span class="call-status">${statusText(el)}</span>
+        </div>
+        <div class="call-actions">${tplActions(el)}</div>
+        <audio autoplay .srcObject=${call.remote_stream}></audio>
+    </div>`;
 };

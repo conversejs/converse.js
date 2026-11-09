@@ -8,15 +8,14 @@ const helpers = {};
 
 const escapeRegexChars = (string, char) => string.replace(RegExp('\\' + char, 'ig'), '\\' + char);
 
-helpers.escapeCharacters = characters => string =>
-    characters.split('').reduce(escapeRegexChars, string);
+helpers.escapeCharacters = (characters) => (string) => characters.split('').reduce(escapeRegexChars, string);
 
 helpers.escapeRegexString = helpers.escapeCharacters('[\\^$.?*+(){}|');
 
 // `for` is ~25% faster than using `Array.find()`
-helpers.findFirstMatchInArray = array => text => {
+helpers.findFirstMatchInArray = (array) => (text) => {
     for (let i = 0; i < array.length; i++) {
-        if (text.localeCompare(array[i], undefined, {sensitivity: 'base'}) === 0) {
+        if (text.localeCompare(array[i], undefined, { sensitivity: 'base' }) === 0) {
             return array[i];
         }
     }
@@ -30,8 +29,8 @@ const reduceReferences = ([text, refs], ref, index) => {
     begin = begin - index;
     end = end - index - 1; // -1 to compensate for the removed @
     updated_text = `${updated_text.slice(0, begin)}${value}${updated_text.slice(end + 1)}`;
-    return [updated_text, [...refs, { ...ref, begin, end }]]
-}
+    return [updated_text, [...refs, { ...ref, begin, end }]];
+};
 
 helpers.reduceTextFromReferences = (text, refs) => refs.reduce(reduceReferences, [text, []]);
 

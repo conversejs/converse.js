@@ -38,24 +38,28 @@ export default (el) => {
         <form
             class="converse-form chatroom-form ${fieldTemplates.length ? '' : 'converse-form--spinner'}"
             autocomplete="off"
-            @submit=${ev => el.submitConfigForm(ev)}
+            @submit=${(ev) => el.submitConfigForm(ev)}
         >
             <fieldset>
                 <legend class="centered">${title}</legend>
                 ${title !== instructions ? html`<p class="form-help">${instructions}</p>` : ''}
-
-                ${fieldTemplates.length && el.model.features.get('vcard-temp') ? html`<div class="row py-2">
-                    <converse-image-picker .model=${el.model} width="96" height="96"></converse-image-picker>
-                </div>` : ''}
-
+                ${
+                    fieldTemplates.length && el.model.features.get('vcard-temp')
+                        ? html`<div class="row py-2">
+                              <converse-image-picker .model=${el.model} width="96" height="96"></converse-image-picker>
+                          </div>`
+                        : ''
+                }
                 ${fieldTemplates.length ? fieldTemplates : tplSpinner({ 'class': 'hor_centered' })}
             </fieldset>
 
-            ${fieldTemplates.length
-                ? html` <fieldset>
-                      <input type="submit" class="btn btn-primary" value="${i18n_save}" />
-                  </fieldset>`
-                : ''}
+            ${
+                fieldTemplates.length
+                    ? html` <fieldset>
+                          <input type="submit" class="btn btn-primary" value="${i18n_save}" />
+                      </fieldset>`
+                    : ''
+            }
         </form>
     `;
 };

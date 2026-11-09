@@ -7,8 +7,7 @@ import { _converse, api, log, constants, u, MAMPlaceholderMessage } from '@conve
 
 const { CHATROOMS_TYPE } = constants;
 
-
-export function getPlaceholderTemplate (message, tpl) {
+export function getPlaceholderTemplate(message, tpl) {
     if (message instanceof MAMPlaceholderMessage) {
         return html`<converse-mam-placeholder .model=${message}></converse-mam-placeholder>`;
     } else {
@@ -19,7 +18,7 @@ export function getPlaceholderTemplate (message, tpl) {
 /**
  * @param {ChatView|MUCView} view
  */
-export async function fetchMessagesOnScrollUp (view) {
+export async function fetchMessagesOnScrollUp(view) {
     if (view.model.ui.get('chat-content-spinner-top')) {
         return;
     }
@@ -43,7 +42,7 @@ export async function fetchMessagesOnScrollUp (view) {
                 return;
             }
             if (api.settings.get('allow_url_history_change')) {
-                history.pushState(null, '', `#${oldest_message.get('msgid')}`)
+                history.pushState(null, '', `#${oldest_message.get('msgid')}`);
             }
             setTimeout(() => view.model.ui.set('chat-content-spinner-top', false), 250);
         }

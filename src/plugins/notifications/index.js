@@ -12,14 +12,14 @@ import {
     handleMessageNotification,
     handleMicroblogNotification,
     requestPermission,
-    updateUnreadFavicon
+    updateUnreadFavicon,
 } from './utils.js';
 import notifications_api from './api.js';
 
 converse.plugins.add('converse-notification', {
     dependencies: ['converse-chatboxes'],
 
-    initialize () {
+    initialize() {
         api.settings.extend({
             // ^ a list of JIDs to ignore concerning chat state notifications
             chatstate_notification_blacklist: [],
@@ -31,7 +31,7 @@ converse.plugins.add('converse-notification', {
             show_chat_state_notifications: false,
             show_desktop_notifications: true,
             show_tab_notifications: true,
-            sounds_path: api.settings.get('assets_path') + '/sounds/'
+            sounds_path: api.settings.get('assets_path') + '/sounds/',
         });
 
         Object.assign(api, notifications_api);
@@ -41,7 +41,7 @@ converse.plugins.add('converse-notification', {
 
         api.waitUntil('chatBoxesInitialized').then(() => {
             const { chatboxes } = _converse.state;
-            chatboxes.on('change:num_unread', updateUnreadFavicon)
+            chatboxes.on('change:num_unread', updateUnreadFavicon);
         });
 
         api.listen.on('pluginsInitialized', function () {
@@ -55,5 +55,5 @@ converse.plugins.add('converse-notification', {
             api.listen.on('feedback', handleFeedback);
             api.listen.on('connected', requestPermission);
         });
-    }
+    },
 });

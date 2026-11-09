@@ -11,9 +11,7 @@ function tplField(f) {
               <label class="form-check-label" for="${f.name}">${f.label}</label>
           </div>`
         : html`<div class="mb-3">
-              <label class="form-label" for="${f.name}">
-                  ${f.label || ''}
-              </label>
+              <label class="form-label" for="${f.name}"> ${f.label || ''} </label>
               <input
                   type="text"
                   name="${f.name}"

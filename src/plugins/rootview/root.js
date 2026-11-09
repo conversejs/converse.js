@@ -2,7 +2,7 @@ import { i18n } from 'i18n';
 import { _converse, api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { getTheme } from './utils.js';
-import tplRoot from "./templates/root.js";
+import tplRoot from './templates/root.js';
 
 import './styles/root.scss';
 
@@ -14,24 +14,23 @@ import './styles/root.scss';
  * initialized.
  */
 export default class ConverseRoot extends CustomElement {
-
-    render () {
+    render() {
         return tplRoot();
     }
 
-    initialize () {
+    initialize() {
         this.setAttribute('id', 'conversejs');
         this.setThemeAttributes();
         const settings = api.settings.get();
-        this.listenTo(settings, 'change:view_mode', () => this.setThemeAttributes())
-        this.listenTo(settings, 'change:singleton', () => this.setThemeAttributes())
+        this.listenTo(settings, 'change:view_mode', () => this.setThemeAttributes());
+        this.listenTo(settings, 'change:singleton', () => this.setThemeAttributes());
         window.matchMedia('(prefers-color-scheme: dark)').addListener(() => this.setThemeAttributes());
         window.matchMedia('(prefers-color-scheme: light)').addListener(() => this.setThemeAttributes());
     }
 
     setThemeAttributes() {
         const theme = getTheme();
-        this.className = "";
+        this.className = '';
         this.classList.add('container-fluid');
         this.classList.add('g-0');
         this.classList.add('conversejs');

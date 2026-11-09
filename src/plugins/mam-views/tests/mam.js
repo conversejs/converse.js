@@ -13,7 +13,8 @@ describe('Message Archive Management', function () {
     describe('The XEP-0313 Archive', function () {
         it(
             'is queried when the user enters a new MUC',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['discoInitialized'],
                 {
                     archived_messages_page_size: 2,
@@ -231,7 +232,8 @@ describe('Message Archive Management', function () {
 
         it(
             'is queried correctly when a user leaves and re-enters a MUC',
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['discoInitialized'],
                 {
                     auto_fill_history_gaps: false,
@@ -471,7 +473,8 @@ describe('Message Archive Management', function () {
 
         it(
             "queries for messages using 'start' if there are cached messages in the MUC",
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['discoInitialized'],
                 {
                     auto_fill_history_gaps: false,
@@ -581,7 +584,8 @@ describe('Message Archive Management', function () {
 
         it(
             "queries with the right 'start' value if a new message is received before the MAM query is made",
-            mock.initConverse(converse, 
+            mock.initConverse(
+                converse,
                 ['discoInitialized'],
                 {
                     auto_fill_history_gaps: false,

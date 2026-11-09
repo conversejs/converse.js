@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { __ } from 'i18n';
 import { getUnreadMsgsDisplay } from 'shared/chat/utils.js';
-import {tplDetailsButton } from './roster_item.js';
+import { tplDetailsButton } from './roster_item.js';
 
 /**
  * @param {import('../contactview').default} el
@@ -15,23 +15,24 @@ export default (el) => {
     const i18n_chat = __('Click to chat with %1$s (XMPP address: %2$s)', display_name, jid);
     const btns = [
         html`<a
-                class="dropdown-item accept-xmpp-request"
-                role="button"
-                @click="${(ev) => el.acceptRequest(ev)}"
-                aria-label="${i18n_accept}"
-                title="${i18n_accept}"
-                href="#"
-            >
+            class="dropdown-item accept-xmpp-request"
+            role="button"
+            @click="${(ev) => el.acceptRequest(ev)}"
+            aria-label="${i18n_accept}"
+            title="${i18n_accept}"
+            href="#"
+        >
             <converse-icon class="fa fa-check" size="1em"></converse-icon>
             ${__('Accept as contact')}
         </a>`,
         tplDetailsButton(el),
-        html`<a class="dropdown-item decline-xmpp-request"
-                role="button"
-                @click="${(ev) => el.declineRequest(ev)}"
-                aria-label="${i18n_decline}"
-                title="${i18n_decline}"
-            >
+        html`<a
+            class="dropdown-item decline-xmpp-request"
+            role="button"
+            @click="${(ev) => el.declineRequest(ev)}"
+            aria-label="${i18n_decline}"
+            title="${i18n_decline}"
+        >
             <converse-icon class="fa fa-times" size="1em"></converse-icon>
             ${__('Remove')}
         </a>`,

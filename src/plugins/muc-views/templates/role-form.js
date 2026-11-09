@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from 'lit';
 import { __ } from 'i18n';
 
 /**
@@ -13,19 +13,19 @@ export default (el) => {
 
     return html`
         <form class="role-form" @submit=${el.assignRole}>
-            <input type="hidden" name="jid" value="${el.jid}"/>
-            <input type="hidden" name="nick" value="${el.nick}"/>
+            <input type="hidden" name="jid" value="${el.jid}" />
+            <input type="hidden" name="nick" value="${el.nick}" />
             <div class="mb-3">
                 <div class="row">
                     <div class="col-md-6">
                         <label class="form-label"><strong>${i18n_new_role}:</strong></label>
                         <select class="form-select select-role" name="role">
-                            ${assignable_roles.map(role => html`<option value="${role}" ?selected=${role === el.role}>${role}</option>`)}
+                            ${assignable_roles.map((role) => html`<option value="${role}" ?selected=${role === el.role}>${role}</option>`)}
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label"><strong>${i18n_reason}:</strong></label>
-                        <input class="form-control" type="text" name="reason" placeholder="${i18n_reason}"/>
+                        <input class="form-control" type="text" name="reason" placeholder="${i18n_reason}" />
                     </div>
                 </div>
             </div>
@@ -34,4 +34,4 @@ export default (el) => {
             </div>
         </form>
     `;
-}
+};

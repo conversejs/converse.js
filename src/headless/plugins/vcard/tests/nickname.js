@@ -18,7 +18,7 @@ function pepNickEvent(_converse, from, name) {
                         <item id="current">${nick}</item>
                     </items>
                 </event>
-            </message>`
+            </message>`,
     );
 }
 
@@ -45,7 +45,7 @@ describe('An XEP-0172 User Nickname received over PEP', function () {
 
             // The name is carried by the event itself; no vcard-temp refetch is needed to render it.
             expect(IQ_stanzas.filter((s) => sizzle('vCard', s).length).length).toBe(0);
-        })
+        }),
     );
 
     it(
@@ -61,7 +61,7 @@ describe('An XEP-0172 User Nickname received over PEP', function () {
             _converse.api.connection.get()._dataRecv(pepNickEvent(_converse, jid, 'Alice Nostrova'));
             await u.waitUntil(() => changed);
             expect(vcard.get('pep_nickname')).toBe('Alice Nostrova');
-        })
+        }),
     );
 
     it(
@@ -73,7 +73,7 @@ describe('An XEP-0172 User Nickname received over PEP', function () {
             // A later vcard-temp result arrives with a different FN; the nick must still win.
             vcard.save({ fullname: 'Alice FN' });
             expect(vcard.getDisplayName()).toBe('Alice Nostrova');
-        })
+        }),
     );
 
     it(
@@ -87,7 +87,7 @@ describe('An XEP-0172 User Nickname received over PEP', function () {
             _converse.api.connection.get()._dataRecv(pepNickEvent(_converse, jid, ''));
             await u.waitUntil(() => !vcard.get('pep_nickname'));
             expect(vcard.getDisplayName()).toBe('Alice FN');
-        })
+        }),
     );
 
     it(
@@ -101,7 +101,7 @@ describe('An XEP-0172 User Nickname received over PEP', function () {
 
             // jid_a's event must not touch jid_b's identity.
             expect(vcard_b.get('pep_nickname')).toBe('Bob');
-        })
+        }),
     );
 
     it(
@@ -115,7 +115,7 @@ describe('An XEP-0172 User Nickname received over PEP', function () {
             _converse.api.connection.get()._dataRecv(pepNickEvent(_converse, jid, 'Alice Nostrova'));
             await new Promise((resolve) => setTimeout(resolve, 250));
             expect(changed).toBe(false);
-        })
+        }),
     );
 
     it(
@@ -124,7 +124,7 @@ describe('An XEP-0172 User Nickname received over PEP', function () {
             const features = await u.waitUntil(() => _converse.api.disco.own.features.get());
             const values = features.map((f) => (typeof f === 'string' ? f : f.get('var')));
             expect(values.includes(`${Strophe.NS.NICK}+notify`)).toBe(true);
-        })
+        }),
     );
 });
 
@@ -134,15 +134,18 @@ describe('Our own XEP-0172 User Nickname', function () {
         mock.initConverse(converse, ['statusInitialized'], { nickname: 'Romey' }, async function (_converse) {
             const bare_jid = _converse.session.get('bare_jid');
             // publishOwnNickname first confirms PEP support via disco.
-            await mock.waitUntilDiscoConfirmed(_converse, bare_jid, [{ category: 'pubsub', type: 'pep' }], [
-                'http://jabber.org/protocol/pubsub#publish-options',
-            ]);
+            await mock.waitUntilDiscoConfirmed(
+                _converse,
+                bare_jid,
+                [{ category: 'pubsub', type: 'pep' }],
+                ['http://jabber.org/protocol/pubsub#publish-options'],
+            );
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const publish = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle(`iq publish[node="${NICK_NS}"]`, s).length).pop()
+                IQ_stanzas.filter((s) => sizzle(`iq publish[node="${NICK_NS}"]`, s).length).pop(),
             );
             expect(sizzle(`item nick[xmlns="${NICK_NS}"]`, publish).pop()?.textContent).toBe('Romey');
-        })
+        }),
     );
 
     it(
@@ -155,7 +158,7 @@ describe('Our own XEP-0172 User Nickname', function () {
 
             const available = (await profile.constructPresence({})).tree();
             expect(sizzle(`nick[xmlns="${NICK_NS}"]`, available).length).toBe(0);
-        })
+        }),
     );
 
     it(
@@ -165,7 +168,7 @@ describe('Our own XEP-0172 User Nickname', function () {
             const vcard = await u.waitUntil(() => profile.vcard);
             vcard.save({ pep_nickname: 'Cross Device' });
             expect(profile.getNickname()).toBe('Cross Device');
-        })
+        }),
     );
 });
 
@@ -179,13 +182,13 @@ describe('An XEP-0172 nickname carried in another way', function () {
                     _converse,
                     stx`<presence xmlns="jabber:client" from="${jid}/res" to="${_converse.session.get('jid')}">
                             <nick xmlns="${NICK_NS}">Presence Pat</nick>
-                        </presence>`
-                )
+                        </presence>`,
+                ),
             );
             const vcard = await u.waitUntil(() => _converse.state.vcards.get(jid));
             await u.waitUntil(() => vcard.get('pep_nickname') === 'Presence Pat');
             expect(vcard.getDisplayName()).toBe('Presence Pat');
-        })
+        }),
     );
 
     it(
@@ -200,12 +203,12 @@ describe('An XEP-0172 nickname carried in another way', function () {
                                 <item affiliation="member" role="participant"/>
                             </x>
                             <nick xmlns="${NICK_NS}">Should Be Ignored</nick>
-                        </presence>`
-                )
+                        </presence>`,
+                ),
             );
             await new Promise((resolve) => setTimeout(resolve, 250));
             expect(_converse.state.vcards.get(room)?.get('pep_nickname')).toBeUndefined();
-        })
+        }),
     );
 
     it(
@@ -219,7 +222,7 @@ describe('An XEP-0172 nickname carried in another way', function () {
             api.vcard.update(contact_jid, true);
             const IQ_stanzas = _converse.api.connection.get().IQ_stanzas;
             const nick_iq = await u.waitUntil(() =>
-                IQ_stanzas.filter((s) => sizzle(`iq items[node="${NICK_NS}"]`, s).length).pop()
+                IQ_stanzas.filter((s) => sizzle(`iq items[node="${NICK_NS}"]`, s).length).pop(),
             );
 
             _converse.api.connection.get()._dataRecv(
@@ -232,12 +235,12 @@ describe('An XEP-0172 nickname carried in another way', function () {
                                 <item id="current"><nick xmlns="${NICK_NS}">Retrieved Rita</nick></item>
                             </items>
                         </pubsub>
-                    </iq>`
-                )
+                    </iq>`,
+                ),
             );
 
             const vcard = await u.waitUntil(() => _converse.state.vcards.get(contact_jid));
             await u.waitUntil(() => vcard.get('pep_nickname') === 'Retrieved Rita');
-        })
+        }),
     );
 });

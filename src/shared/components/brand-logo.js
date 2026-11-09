@@ -4,7 +4,6 @@ import { html } from 'lit';
 import 'shared/components/logo.js';
 
 export class ConverseBrandLogo extends CustomElement {
-
     static get properties() {
         return {
             hide_byline: { type: Boolean },
@@ -24,11 +23,7 @@ export class ConverseBrandLogo extends CustomElement {
                     <converse-logo class="converse-svg-logo"></converse-logo>
                     <span class="brand-name">
                         <span class="brand-name__text">converse<span class="subdued">.js</span></span>
-                        ${is_fullscreen && !this.hide_byline
-                            ? html`
-                                <p class="byline">messaging freedom</p>
-                            `
-                            : ''}
+                        ${is_fullscreen && !this.hide_byline ? html` <p class="byline">messaging freedom</p> ` : ''}
                     </span>
                 </span>
             </a>

@@ -230,13 +230,13 @@
                 line-height: var(--line-height-small);
                 padding: 0 1em 0.3em;
                 &:before {
-                    content: " ";
+                    content: ' ';
                 }
             }
 
             progress {
                 margin: 0.5em 0;
-                width: 100%
+                width: 100%;
             }
         }
 

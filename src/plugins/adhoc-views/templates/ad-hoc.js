@@ -12,7 +12,7 @@ import { html } from 'lit';
 export default (el) => {
     const i18n_choose_service = __('On which entity do you want to run commands?');
     const i18n_choose_service_instructions = __(
-        'Certain XMPP services and entities allow privileged users to execute ad-hoc commands on them.'
+        'Certain XMPP services and entities allow privileged users to execute ad-hoc commands on them.',
     );
     const i18n_commands_found = __('Commands found');
     const i18n_fetch_commands = __('List available commands');
@@ -37,20 +37,24 @@ export default (el) => {
                 </label>
             </fieldset>
             <fieldset>
-                ${el.fetching
-                    ? html`<converse-spinner></converse-spinner>`
-                    : html`<input type="submit" class="btn btn-primary" value="${i18n_fetch_commands}" />`}
+                ${
+                    el.fetching
+                        ? html`<converse-spinner></converse-spinner>`
+                        : html`<input type="submit" class="btn btn-primary" value="${i18n_fetch_commands}" />`
+                }
             </fieldset>
-            ${el.view === 'list-commands'
-                ? html` <fieldset>
-                      <ul class="list-group">
-                          <li class="list-group-item active">
-                              ${el.commands.length ? i18n_commands_found : i18n_no_commands_found}:
-                          </li>
-                          ${el.commands.map((cmd) => tplCommand(el, cmd))}
-                      </ul>
-                  </fieldset>`
-                : ''}
+            ${
+                el.view === 'list-commands'
+                    ? html` <fieldset>
+                          <ul class="list-group">
+                              <li class="list-group-item active">
+                                  ${el.commands.length ? i18n_commands_found : i18n_no_commands_found}:
+                              </li>
+                              ${el.commands.map((cmd) => tplCommand(el, cmd))}
+                          </ul>
+                      </fieldset>`
+                    : ''
+            }
         </form>
     `;
 };

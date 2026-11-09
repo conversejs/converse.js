@@ -1,5 +1,5 @@
-import { Collection } from "@converse/skeletor";
-import DeviceList from "./devicelist.js";
+import { Collection } from '@converse/skeletor';
+import DeviceList from './devicelist.js';
 
 /**
  * @extends {Collection<DeviceList>}

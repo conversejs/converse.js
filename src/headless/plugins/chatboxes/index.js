@@ -5,28 +5,21 @@
 import ChatBoxes from './chatboxes.js';
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
-import converse from "../../shared/api/public.js";
+import converse from '../../shared/api/public.js';
 import { isUniView } from '../../utils/session.js';
 import chatboxes_api from './api.js';
 import { onClearSession } from './utils.js';
-import "../emoji/index.js";
+import '../emoji/index.js';
 
 const { Strophe } = converse.env;
 
-
 converse.plugins.add('converse-chatboxes', {
+    dependencies: ['converse-emoji', 'converse-roster', 'converse-vcard'],
 
-    dependencies: ["converse-emoji", "converse-roster", "converse-vcard"],
+    initialize() {
+        api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized', 'privateChatsAutoJoined']);
 
-    initialize () {
-
-        api.promises.add([
-            'chatBoxesFetched',
-            'chatBoxesInitialized',
-            'privateChatsAutoJoined'
-        ]);
-
-        Object.assign(api, { chatboxes: chatboxes_api});
+        Object.assign(api, { chatboxes: chatboxes_api });
 
         Object.assign(_converse, { ChatBoxes }); // TODO: DEPRECATED
         Object.assign(_converse.exports, { ChatBoxes });
@@ -54,7 +47,7 @@ converse.plugins.add('converse-chatboxes', {
         });
 
         api.listen.on('presencesInitialized', (reconnecting) => chatboxes.onConnected(reconnecting));
-        api.listen.on('reconnected', () => chatboxes.forEach(m => m.onReconnection()));
+        api.listen.on('reconnected', () => chatboxes.forEach((m) => m.onReconnection()));
         api.listen.on('clearSession', onClearSession);
 
         // XXX: Would be nice to keep track of the last open chat and to show that again.
@@ -63,6 +56,5 @@ converse.plugins.add('converse-chatboxes', {
                 _converse.state.chatboxes.find((c) => c.get('jid'))?.maybeShow();
             }
         });
-
-    }
+    },
 });

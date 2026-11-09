@@ -146,9 +146,7 @@ describe('The OMEMO module', function () {
 
             // Return a fresh Response each call, since the body stream can only
             // be read once and the image is fetched again when re-shown.
-            spyOn(window, 'fetch').and.callFake(() =>
-                Promise.resolve(new Response(png_bytes.buffer, { status: 200 })),
-            );
+            spyOn(window, 'fetch').and.callFake(() => Promise.resolve(new Response(png_bytes.buffer, { status: 200 })));
             spyOn(crypto.subtle, 'importKey').and.returnValue(Promise.resolve(/** @type {CryptoKey} */ ({})));
             spyOn(crypto.subtle, 'decrypt').and.returnValue(Promise.resolve(png_bytes.buffer));
 

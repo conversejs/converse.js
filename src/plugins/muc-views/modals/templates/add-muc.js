@@ -62,11 +62,13 @@ export default (el) => {
                     required
                 ></converse-autocomplete>
             </div>
-            ${policy_hint
-                ? html`<div class="mb-3">
-                      ${unsafeHTML(DOMPurify.sanitize(policy_hint, { 'ALLOWED_TAGS': ['b', 'br', 'em'] }))}
-                  </div>`
-                : ''}
+            ${
+                policy_hint
+                    ? html`<div class="mb-3">
+                          ${unsafeHTML(DOMPurify.sanitize(policy_hint, { 'ALLOWED_TAGS': ['b', 'br', 'em'] }))}
+                      </div>`
+                    : ''
+            }
         </div>
         ${!api.settings.get('locked_muc_nickname') ? nickname_input() : ''}
         <input type="submit" class="btn btn-primary mt-3" name="join" value="${i18n_join || ''}" />

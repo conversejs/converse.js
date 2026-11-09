@@ -1,7 +1,7 @@
 import debounce from 'lodash-es/debounce.js';
-import { _converse, api, u, RosterFilter } from "@converse/headless";
+import { _converse, api, u, RosterFilter } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
-import tplMUCOccupants from "./templates/muc-occupants.js";
+import tplMUCOccupants from './templates/muc-occupants.js';
 import 'shared/autocomplete/index.js';
 import './modals/muc-invite.js';
 import './occupant.js';
@@ -12,16 +12,15 @@ import './styles/muc-occupants.scss';
 const { initStorage } = u;
 
 export default class MUCOccupants extends CustomElement {
-
-    constructor () {
+    constructor() {
         super();
         this.jid = null;
     }
 
-    static get properties () {
+    static get properties() {
         return {
-            jid: { type: String }
-        }
+            jid: { type: String },
+        };
     }
 
     initialize() {
@@ -36,7 +35,7 @@ export default class MUCOccupants extends CustomElement {
 
         // To avoid rendering continuously the participant list in case of massive joins/leaves:
         const debouncedRequestUpdate = debounce(() => this.requestUpdate(), 200, {
-            maxWait: 1000
+            maxWait: 1000,
         });
 
         this.listenTo(this.model, 'change', () => this.requestUpdate());
@@ -49,26 +48,26 @@ export default class MUCOccupants extends CustomElement {
         this.model.initialized.then(() => this.requestUpdate());
     }
 
-    render () {
+    render() {
         return tplMUCOccupants(this);
     }
 
     /**
      * @param {MouseEvent} ev
      */
-    showInviteModal (ev) {
+    showInviteModal(ev) {
         ev.preventDefault();
         api.modal.show('converse-muc-invite-modal', { muc: this.model }, ev);
     }
 
     /** @param {MouseEvent} ev */
-    toggleFilter (ev) {
+    toggleFilter(ev) {
         ev?.preventDefault?.();
         u.safeSave(this.model, { 'filter_visible': !this.model.get('filter_visible') });
     }
 
     /** @param {MouseEvent} ev */
-    closeSidebar (ev) {
+    closeSidebar(ev) {
         ev?.preventDefault?.();
         u.safeSave(this.model, { 'hidden_occupants': true });
     }

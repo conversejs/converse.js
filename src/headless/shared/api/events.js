@@ -1,7 +1,6 @@
 import _converse from '../_converse.js';
 import { isFunction } from '../../utils/object.js';
 
-
 export default {
     /**
      * Lets you trigger events, which can be listened to via
@@ -18,16 +17,16 @@ export default {
      * @method _converse.api.trigger
      * @param {string} name - The event name
      */
-    async trigger (name) {
+    async trigger(name) {
         if (!_converse._events) {
             return;
         }
         const args = Array.from(arguments);
-        const options = /** @type {Options} */(args.pop());
+        const options = /** @type {Options} */ (args.pop());
         if (options && options.synchronous) {
             const events = _converse._events[name] || [];
             const event_args = args.splice(1);
-            await Promise.all(events.map(e => e.callback.apply(e.ctx, event_args)));
+            await Promise.all(events.map((e) => e.callback.apply(e.ctx, event_args)));
         } else {
             _converse.trigger.apply(_converse, arguments);
         }
@@ -51,13 +50,13 @@ export default {
      * @param {...any} extra_args - Additional passthrough arguments for hook listeners.
      * @returns {Promise<any>} - A promise that resolves with the modified data structure.
      */
-    hook (name, context, data, ...extra_args) {
+    hook(name, context, data, ...extra_args) {
         const events = _converse._events[name] || [];
         if (events.length) {
             // Create a chain of promises, with each one feeding its output to
             // the next. The first input is a promise with the original data
             // sent to this hook.
-            return events.reduce((o, e) => o.then(d => e.callback(context, d, ...extra_args)), Promise.resolve(data));
+            return events.reduce((o, e) => o.then((d) => e.callback(context, d, ...extra_args)), Promise.resolve(data));
         } else {
             return data;
         }
@@ -122,22 +121,16 @@ export default {
          * @param {MatchingOptions|Function} options Matching options or callback
          * @param {function} handler The callback method to be called when the stanza appears
          */
-        stanza (name, options, handler) {
+        stanza(name, options, handler) {
             if (isFunction(options)) {
-                handler = /** @type {Function} */(options);
+                handler = /** @type {Function} */ (options);
                 options = {};
             } else {
                 options = options || {};
             }
-            _converse.api.connection.get().addHandler(
-                handler,
-                options.ns,
-                name,
-                options.type,
-                options.id,
-                options.from,
-                options
-            );
-        }
+            _converse.api.connection
+                .get()
+                .addHandler(handler, options.ns, name, options.type, options.id, options.from, options);
+        },
     },
-}
+};

@@ -51,29 +51,31 @@ export default class EmojiPickerDropdown extends DropdownBase {
             </button>
             <ul class="dropdown-menu">
                 <li>
-                    ${this.chatbox?.emoji_picker
-                        ? html`
-                              <converse-emoji-picker
-                                  .state=${this.chatbox.emoji_picker}
-                                  .model=${this.chatbox}
-                                  .allowed_emojis=${this.allowed_emojis}
-                                  @emojiSelected=${(ev) => {
-                                      ev.stopPropagation();
-                                      this.dispatchEvent(
-                                          new CustomEvent('emoji-picker-selected', {
-                                              detail: { emoji: ev.detail.value },
-                                              bubbles: true,
-                                              composed: true,
-                                          }),
-                                      );
-                                  }}
-                                  ?render_emojis=${true}
-                                  current_category="${this.chatbox.emoji_picker.get('current_category') || ''}"
-                                  current_skintone="${this.chatbox.emoji_picker.get('current_skintone') || ''}"
-                                  query="${this.chatbox.emoji_picker.get('query') || ''}"
-                              ></converse-emoji-picker>
-                          `
-                        : ''}
+                    ${
+                        this.chatbox?.emoji_picker
+                            ? html`
+                                  <converse-emoji-picker
+                                      .state=${this.chatbox.emoji_picker}
+                                      .model=${this.chatbox}
+                                      .allowed_emojis=${this.allowed_emojis}
+                                      @emojiSelected=${(ev) => {
+                                          ev.stopPropagation();
+                                          this.dispatchEvent(
+                                              new CustomEvent('emoji-picker-selected', {
+                                                  detail: { emoji: ev.detail.value },
+                                                  bubbles: true,
+                                                  composed: true,
+                                              }),
+                                          );
+                                      }}
+                                      ?render_emojis=${true}
+                                      current_category="${this.chatbox.emoji_picker.get('current_category') || ''}"
+                                      current_skintone="${this.chatbox.emoji_picker.get('current_skintone') || ''}"
+                                      query="${this.chatbox.emoji_picker.get('query') || ''}"
+                                  ></converse-emoji-picker>
+                              `
+                            : ''
+                    }
                 </li>
             </ul>
         `;

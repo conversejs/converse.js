@@ -137,7 +137,9 @@ describe('The calls UI', function () {
                 vi.useRealTimers();
             }
 
-            const msg = await u.waitUntil(() => _converse.state.chatboxes.get(jid)?.messages.findWhere({ type: 'info' }));
+            const msg = await u.waitUntil(() =>
+                _converse.state.chatboxes.get(jid)?.messages.findWhere({ type: 'info' }),
+            );
             expect(msg.get('message')).toBe('Outgoing call · 2:14');
         }),
     );

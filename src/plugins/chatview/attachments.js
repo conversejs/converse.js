@@ -82,7 +82,9 @@ const pending = new WeakSet();
  */
 export async function shareLocation(model) {
     if (!navigator.geolocation) {
-        api.alert('error', __('Location Error'), [__('Your browser or device does not support sharing your location.')]);
+        api.alert('error', __('Location Error'), [
+            __('Your browser or device does not support sharing your location.'),
+        ]);
         return;
     }
     if (pending.has(model)) return;

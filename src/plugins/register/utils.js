@@ -1,6 +1,6 @@
 import { _converse, api, log } from '@converse/headless';
 
-export async function setActiveForm (value) {
+export async function setActiveForm(value) {
     await api.waitUntil('controlBoxInitialized');
 
     const { chatboxes } = _converse.state;
@@ -8,7 +8,7 @@ export async function setActiveForm (value) {
     controlbox.set({ 'active-form': value });
 }
 
-export function routeToForm (event) {
+export function routeToForm(event) {
     if (location.hash === '#converse/login') {
         event?.preventDefault();
         setActiveForm('login');
@@ -25,7 +25,7 @@ let providers_fetch_promise = null;
  * @param {string} url
  * @returns {Promise<import('./types.ts').XMPPProvider[]>}
  */
-async function fetchProviderData (url) {
+async function fetchProviderData(url) {
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -34,8 +34,8 @@ async function fetchProviderData (url) {
         const data = await response.json();
         if (Array.isArray(data)) {
             const providers = data
-                .map(item => typeof item === 'string' ? { jid: item, category: '' } : item)
-                .filter(item => item.jid);
+                .map((item) => (typeof item === 'string' ? { jid: item, category: '' } : item))
+                .filter((item) => item.jid);
             log.debug(`Fetched ${providers.length} XMPP providers`);
             return providers;
         }
@@ -51,7 +51,7 @@ async function fetchProviderData (url) {
  * The list is cached after the first successful fetch.
  * @returns {Promise<import('./types.ts').XMPPProvider[]>} - Array of provider objects
  */
-export async function fetchXMPPProviders () {
+export async function fetchXMPPProviders() {
     if (providers_fetch_promise) return providers_fetch_promise;
 
     const url = api.settings.get('xmpp_providers_url');

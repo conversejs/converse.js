@@ -26,7 +26,7 @@
                 document.body.scrollHeight,
                 document.documentElement.clientHeight,
                 document.documentElement.offsetHeight,
-                document.documentElement.scrollHeight
+                document.documentElement.scrollHeight,
             );
         };
 

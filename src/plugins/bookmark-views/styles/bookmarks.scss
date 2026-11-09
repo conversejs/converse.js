@@ -1,6 +1,7 @@
 .conversejs {
     #controlbox {
-        .bookmarks-toggle, .bookmarks-toggle .fa {
+        .bookmarks-toggle,
+        .bookmarks-toggle .fa {
             color: var(--muc-color) !important;
             &:hover {
                 color: var(--muc-color-hover) !important;

@@ -1,6 +1,6 @@
-import { html } from "lit";
+import { html } from 'lit';
 
-import "../components/audio-player.js";
+import '../components/audio-player.js';
 
 /**
  * Renders an accessible audio player for the given URL.
@@ -12,7 +12,7 @@ import "../components/audio-player.js";
 export default (url, hide_url, title) => {
     return html`<converse-audio-player
         src="${url}"
-        title="${title || ""}"
+        title="${title || ''}"
         ?hide_url="${hide_url}"
     ></converse-audio-player>`;
 };

@@ -6,7 +6,14 @@ const { CALL_DIRECTION, CALL_STATES } = constants;
 // in (`[from, to]` in ms), and how often (ms) the pattern repeats.
 
 // The callee hears a double ring, as on a British phone line.
-const RING = { frequencies: [400, 450], bursts: [[0, 400], [600, 1000]], period: 3000 };
+const RING = {
+    frequencies: [400, 450],
+    bursts: [
+        [0, 400],
+        [600, 1000],
+    ],
+    period: 3000,
+};
 // The caller hears the ITU ringback tone while the callee's phone rings.
 const RINGBACK = { frequencies: [425], bursts: [[0, 1000]], period: 5000 };
 

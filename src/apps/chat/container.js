@@ -51,4 +51,3 @@ class ChatBoxViews {
 }
 
 export default ChatBoxViews;
-

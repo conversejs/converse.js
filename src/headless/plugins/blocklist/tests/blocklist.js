@@ -79,7 +79,8 @@ describe('A blocklist', function () {
 
             // The server sends a push IQ stanza
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`
                     <iq xmlns="jabber:client"
                         to="${api.connection.get().jid}"
@@ -96,7 +97,8 @@ describe('A blocklist', function () {
 
             // The server sends a push IQ stanza
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`
                     <iq xmlns="jabber:client"
                         to="${api.connection.get().jid}"
@@ -131,7 +133,8 @@ describe('A blocklist', function () {
             let sent_stanza = await u.waitUntil(() => IQ_stanzas.find((s) => s.querySelector('iq blocklist')));
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     stx`<iq xmlns="jabber:client"
                         to="${api.connection.get().jid}"
                         type="result"
@@ -159,7 +162,8 @@ describe('A blocklist', function () {
             _converse.api.connection
                 .get()
                 ._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<iq xmlns="jabber:client" type="result" id="${sent_stanza.getAttribute('id')}"/>`,
                     ),
                 );
@@ -180,7 +184,8 @@ describe('A blocklist', function () {
             _converse.api.connection
                 .get()
                 ._dataRecv(
-                    mock.createRequest(_converse, 
+                    mock.createRequest(
+                        _converse,
                         stx`<iq xmlns="jabber:client" type="result" id="${sent_stanza.getAttribute('id')}"/>`,
                     ),
                 );
@@ -205,7 +210,9 @@ describe('A Chat Message', function () {
             const message = await chat.sendMessage({ body: msg_text });
 
             api.connection.get()._dataRecv(
-                mock.createRequest(_converse, stx`
+                mock.createRequest(
+                    _converse,
+                    stx`
                 <message xmlns="jabber:client"
                     to="${api.connection.get().jid}"
                     type="error"
@@ -215,7 +222,8 @@ describe('A Chat Message', function () {
                         <not-acceptable xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
                         <blocked xmlns='urn:xmpp:blocking:errors'/>
                     </error>
-                </message>`),
+                </message>`,
+                ),
             );
 
             await u.waitUntil(() => message.get('is_error') === true);

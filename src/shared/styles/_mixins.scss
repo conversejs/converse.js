@@ -1,7 +1,7 @@
-@import "bootstrap/scss/mixins";
+@import 'bootstrap/scss/mixins';
 
 @mixin fade-in {
-    opacity: 0;  /* make things invisible upon start */
+    opacity: 0; /* make things invisible upon start */
     animation-name: fadein;
     animation-fill-mode: forwards;
     animation-duration: 0.5s;

@@ -151,7 +151,7 @@ describe('Threaded comments', function () {
     );
 
     it(
-        'notifies a live reply to our own comment on someone else\'s post',
+        "notifies a live reply to our own comment on someone else's post",
         mock.initConverse(converse, [], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current', 0);
             const { api } = _converse;
@@ -180,7 +180,11 @@ describe('Threaded comments', function () {
             await u.waitUntil(() => events.length === 1);
             expect(events[0].type).toBe('comment');
             expect(events[0].comment.get('in_reply_to')).toBe(mine.get('id'));
-            expect(events[0].ref).toEqual({ feedJid: 'juliet@capulet.lit', node: 'urn:xmpp:microblog:0', itemId: 'p9' });
+            expect(events[0].ref).toEqual({
+                feedJid: 'juliet@capulet.lit',
+                node: 'urn:xmpp:microblog:0',
+                itemId: 'p9',
+            });
         }),
     );
 });

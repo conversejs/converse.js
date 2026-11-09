@@ -5,12 +5,10 @@ const { Strophe } = converse.env;
 
 Strophe.addNamespace('ADHOC', 'http://jabber.org/protocol/commands');
 
-
 converse.plugins.add('converse-adhoc', {
+    dependencies: ['converse-disco'],
 
-    dependencies: ["converse-disco"],
-
-    initialize () {
+    initialize() {
         Object.assign(this._converse.api, adhoc_api);
-    }
+    },
 });

@@ -1,11 +1,11 @@
-import { html } from "lit";
-import { api, u } from "@converse/headless";
-import tplSpinner from "templates/spinner.js";
-import { CustomElement } from "../components/element.js";
-import { onScrolledDown } from "./utils.js";
-import "./message-history.js";
+import { html } from 'lit';
+import { api, u } from '@converse/headless';
+import tplSpinner from 'templates/spinner.js';
+import { CustomElement } from '../components/element.js';
+import { onScrolledDown } from './utils.js';
+import './message-history.js';
 
-import "./styles/chat-content.scss";
+import './styles/chat-content.scss';
 
 const WINDOW_DELTA = 5; // How much the window should move at a time.
 const WINDOW_SIZE = 100;
@@ -54,15 +54,15 @@ export default class ChatContent extends CustomElement {
         await this.model.initialized;
         await this.model.messages.fetched;
 
-        this.listenTo(this.model.messages, "add", () => this.#onNumMessagesChanged());
-        this.listenTo(this.model.messages, "remove", () => this.#onNumMessagesChanged());
-        this.listenTo(this.model.messages, "reset", () => this.#onNumMessagesChanged());
-        this.listenTo(this.model.messages, "change", () => this.requestUpdate());
-        this.listenTo(this.model.messages, "rendered", () => u.debounce(() => this.requestUpdate(), 50));
-        this.listenTo(this.model, "historyPruned", () => this.#setWindow());
-        this.listenTo(this.model.notifications, "change", () => this.requestUpdate());
-        this.listenTo(this.model.ui, "change", () => this.requestUpdate());
-        this.listenTo(this.model.ui, "change:scrolled", () => this.scrollDown());
+        this.listenTo(this.model.messages, 'add', () => this.#onNumMessagesChanged());
+        this.listenTo(this.model.messages, 'remove', () => this.#onNumMessagesChanged());
+        this.listenTo(this.model.messages, 'reset', () => this.#onNumMessagesChanged());
+        this.listenTo(this.model.messages, 'change', () => this.requestUpdate());
+        this.listenTo(this.model.messages, 'rendered', () => u.debounce(() => this.requestUpdate(), 50));
+        this.listenTo(this.model, 'historyPruned', () => this.#setWindow());
+        this.listenTo(this.model.notifications, 'change', () => this.requestUpdate());
+        this.listenTo(this.model.ui, 'change', () => this.requestUpdate());
+        this.listenTo(this.model.ui, 'change:scrolled', () => this.scrollDown());
 
         this.window_bottom = this.model.messages.length - 1;
         this.window_top = Math.max(0, this.window_bottom - WINDOW_SIZE);
@@ -71,7 +71,7 @@ export default class ChatContent extends CustomElement {
     }
 
     render() {
-        if (!this.model) return "";
+        if (!this.model) return '';
 
         return html`
             <div class="chat-content__messages" @scroll="${/** @param {Event} ev */ (ev) => this.scrollHandler(ev)}">
@@ -81,7 +81,7 @@ export default class ChatContent extends CustomElement {
                     .messages="${this.model.messages.slice(this.window_top, this.window_bottom + 1)}"
                 ></converse-message-history>
             </div>
-            ${this.model.ui?.get("chat-content-spinner-top") ? tplSpinner() : ""}
+            ${this.model.ui?.get('chat-content-spinner-top') ? tplSpinner() : ''}
         `;
     }
 
@@ -115,9 +115,9 @@ export default class ChatContent extends CustomElement {
              * @property { _converse.ChatBoxView | MUCView } view
              * @example _converse.api.listen.on('chatBoxScrolledUp', obj => { ... });
              */
-            api.trigger("chatBoxScrolledUp", el);
+            api.trigger('chatBoxScrolledUp', el);
         }
-        if (this.model.get("scrolled") !== scrolled) {
+        if (this.model.get('scrolled') !== scrolled) {
             this.model.ui.set({ scrolled });
         }
     }
@@ -128,7 +128,7 @@ export default class ChatContent extends CustomElement {
      */
     #setWindow() {
         const total_messages = this.model.messages.length;
-        const container = /** @type {HTMLElement} */ (this.querySelector(".chat-content__messages"));
+        const container = /** @type {HTMLElement} */ (this.querySelector('.chat-content__messages'));
 
         // The amount before the actual top/bottom where we are close enough to
         // want to update the window. Set to 25% of the scrollable container.
@@ -158,11 +158,11 @@ export default class ChatContent extends CustomElement {
     }
 
     scrollDown() {
-        if (this.model.ui.get("scrolled")) {
+        if (this.model.ui.get('scrolled')) {
             return;
         }
         if (this.scrollTo) {
-            const behavior = this.scrollTop ? "smooth" : "auto";
+            const behavior = this.scrollTop ? 'smooth' : 'auto';
             this.scrollTo({ top: 0, behavior });
         } else {
             this.scrollTop = 0;
@@ -174,8 +174,8 @@ export default class ChatContent extends CustomElement {
          * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
          * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
          */
-        api.trigger("chatBoxScrolledDown", { chatbox: this.model });
+        api.trigger('chatBoxScrolledDown', { chatbox: this.model });
     }
 }
 
-api.elements.define("converse-chat-content", ChatContent);
+api.elements.define('converse-chat-content', ChatContent);

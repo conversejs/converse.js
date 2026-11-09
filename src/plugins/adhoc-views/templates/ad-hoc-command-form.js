@@ -24,7 +24,7 @@ const NOTE_ALERT_MAP = {
 /**
  * @param {AdHocCommandUIProps} command
  */
-function tplReportedTable (command) {
+function tplReportedTable(command) {
     return html`
         <table class="table">
             <thead class="thead-light">
@@ -32,8 +32,11 @@ function tplReportedTable (command) {
             </thead>
             <tbody>
                 ${command.items?.map(
-                    (fields) => html`<tr>${fields.map((f) => html`<td data-var="${f.var}">${f.value}</td>`)
-                }</tr>`)}
+                    (fields) =>
+                        html`<tr>
+                            ${fields.map((f) => html`<td data-var="${f.var}">${f.value}</td>`)}
+                        </tr>`,
+                )}
             </tbody>
         </table>
     `;
@@ -52,18 +55,23 @@ export default (el, command) => {
                 if it contains an <input> with name "remove" -->
         <span>
             <form class="converse-form">
-                ${command.alert
-                    ? html`<div class="alert alert-${command.alert_type}" role="alert">${command.alert}</div>`
-                    : ''}
-                ${command.note
-                    ? html`<div class="alert alert-${NOTE_ALERT_MAP[command.note.type || 'info']}" role="alert">
-                          ${command.note.text}
-                      </div>`
-                    : ''}
-
-                ${command.type === 'result' && command.title ?
-                        html`<div class="alert alert-info">${command.title}</div>` : ''}
-
+                ${
+                    command.alert
+                        ? html`<div class="alert alert-${command.alert_type}" role="alert">${command.alert}</div>`
+                        : ''
+                }
+                ${
+                    command.note
+                        ? html`<div class="alert alert-${NOTE_ALERT_MAP[command.note.type || 'info']}" role="alert">
+                              ${command.note.text}
+                          </div>`
+                        : ''
+                }
+                ${
+                    command.type === 'result' && command.title
+                        ? html`<div class="alert alert-info">${command.title}</div>`
+                        : ''
+                }
                 ${command.type === 'form' && command.title ? html`<h6>${command.title}</h6>` : ''}
 
                 <fieldset>
@@ -71,37 +79,39 @@ export default (el, command) => {
                     <input type="hidden" name="command_jid" value="${command.jid}" />
                     ${command.instructions ? html`<p class="form-instructions">${command.instructions}</p>` : ''}
                     ${command.type === 'result' ? tplReportedTable(command) : ''}
-                    ${command.fields?.map(f => xFormField2TemplateResult(f), { domain: command.jid }) ?? ''}
+                    ${command.fields?.map((f) => xFormField2TemplateResult(f), { domain: command.jid }) ?? ''}
                 </fieldset>
-                ${command.status === 'completed'
-                    ? html` <fieldset>
-                          <input
-                              type="button"
-                              class="btn btn-secondary button-cancel"
-                              value="${__('Close')}"
-                              @click=${(ev) => el.close(ev, command)}
-                          />
-                      </fieldset>`
-                    : command.actions?.length
-                    ? html` <fieldset>
-                          ${command.actions?.map(
-                              (action) =>
-                                  html`<input
-                                      data-action="${action}"
-                                      @click=${(ev) => el.executeAction(ev)}
-                                      type="button"
-                                      class="btn btn-primary"
-                                      value="${ACTION_MAP[action]}"
-                                  />`
-                          )}
-                          <input
-                              type="button"
-                              class="btn btn-secondary button-cancel"
-                              value="${i18n_cancel}"
-                              @click=${(ev) => el.cancel(ev)}
-                          />
-                      </fieldset>`
-                    : ''}
+                ${
+                    command.status === 'completed'
+                        ? html` <fieldset>
+                              <input
+                                  type="button"
+                                  class="btn btn-secondary button-cancel"
+                                  value="${__('Close')}"
+                                  @click=${(ev) => el.close(ev, command)}
+                              />
+                          </fieldset>`
+                        : command.actions?.length
+                          ? html` <fieldset>
+                                ${command.actions?.map(
+                                    (action) =>
+                                        html`<input
+                                            data-action="${action}"
+                                            @click=${(ev) => el.executeAction(ev)}
+                                            type="button"
+                                            class="btn btn-primary"
+                                            value="${ACTION_MAP[action]}"
+                                        />`,
+                                )}
+                                <input
+                                    type="button"
+                                    class="btn btn-secondary button-cancel"
+                                    value="${i18n_cancel}"
+                                    @click=${(ev) => el.cancel(ev)}
+                                />
+                            </fieldset>`
+                          : ''
+                }
             </form>
         </span>
     `;

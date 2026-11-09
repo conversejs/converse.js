@@ -139,19 +139,20 @@ export default class AttachmentMenu extends DropdownBase {
             </button>
             <ul class="dropdown-menu attachment-menu" role="menu" aria-labelledby="${this.#button_id}">
                 ${this.items.map(
-                    (item) => html`<li role="none">
-                        <button
-                            type="button"
-                            class="dropdown-item attachment-menu__item"
-                            role="menuitem"
-                            data-name="${item.name}"
-                            @mousemove=${(/** @type {MouseEvent} */ ev) => this.#onItemHover(ev)}
-                            @click=${(/** @type {MouseEvent} */ ev) => this.#activate(ev, item)}
-                        >
-                            <converse-icon color="var(${color})" class="fa ${item.icon}" size="1em"></converse-icon>
-                            <span>${item.label}</span>
-                        </button>
-                    </li>`,
+                    (item) =>
+                        html`<li role="none">
+                            <button
+                                type="button"
+                                class="dropdown-item attachment-menu__item"
+                                role="menuitem"
+                                data-name="${item.name}"
+                                @mousemove=${(/** @type {MouseEvent} */ ev) => this.#onItemHover(ev)}
+                                @click=${(/** @type {MouseEvent} */ ev) => this.#activate(ev, item)}
+                            >
+                                <converse-icon color="var(${color})" class="fa ${item.icon}" size="1em"></converse-icon>
+                                <span>${item.label}</span>
+                            </button>
+                        </li>`,
                 )}
             </ul>
             <input type="file" class="fileupload" multiple hidden @change=${this.#onFileSelection} />`;

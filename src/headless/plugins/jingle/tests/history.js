@@ -15,8 +15,7 @@ function receive(_converse, from, child, extra = '') {
     _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
 }
 
-const propose = (sid) =>
-    stx`<propose xmlns="${JMI}" id="${sid}"><description xmlns="${RTP}" media="audio"/></propose>`;
+const propose = (sid) => stx`<propose xmlns="${JMI}" id="${sid}"><description xmlns="${RTP}" media="audio"/></propose>`;
 
 async function getContactJid(_converse, i = 0) {
     await mock.waitForRoster(_converse, 'current');
@@ -25,9 +24,7 @@ async function getContactJid(_converse, i = 0) {
 
 /** The call history line in the chat with `jid`, once written. */
 async function historyIn(_converse, jid) {
-    const msg = await u.waitUntil(() =>
-        _converse.state.chatboxes.get(jid)?.messages.findWhere({ type: 'info' }),
-    );
+    const msg = await u.waitUntil(() => _converse.state.chatboxes.get(jid)?.messages.findWhere({ type: 'info' }));
     return msg.get('message');
 }
 

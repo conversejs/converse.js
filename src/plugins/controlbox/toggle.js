@@ -1,13 +1,11 @@
-import { _converse, api } from "@converse/headless";
+import { _converse, api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
-import tplControlboxToggle from "./templates/toggle.js";
-
+import tplControlboxToggle from './templates/toggle.js';
 
 class ControlBoxToggle extends CustomElement {
-
-    async connectedCallback () {
+    async connectedCallback() {
         super.connectedCallback();
-        await api.waitUntil('initialized')
+        await api.waitUntil('initialized');
 
         const { chatboxes } = _converse.state;
         this.model = chatboxes.get('controlbox');
@@ -15,7 +13,7 @@ class ControlBoxToggle extends CustomElement {
         this.requestUpdate();
     }
 
-    render () {
+    render() {
         return tplControlboxToggle(this);
     }
 }

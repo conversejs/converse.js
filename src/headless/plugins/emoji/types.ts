@@ -13,5 +13,5 @@ export type EmojiReference = {
     begin: number;
     end: number;
     shortname: string;
-    emoji: string | null
+    emoji: string | null;
 };

@@ -96,11 +96,13 @@ export default (el) => {
         <div class="fingerprints">
             <ul class="list-group mb-3">
                 <li class="list-group-item active">${i18n_fingerprints}</li>
-                ${el.loading
-                    ? html`<li class="list-group-item">${tplSpinner()}</li>`
-                    : active_devices.length
-                      ? active_devices.map((device) => device_fingerprint(el, device))
-                      : html`<li class="list-group-item">${i18n_no_devices}</li>`}
+                ${
+                    el.loading
+                        ? html`<li class="list-group-item">${tplSpinner()}</li>`
+                        : active_devices.length
+                          ? active_devices.map((device) => device_fingerprint(el, device))
+                          : html`<li class="list-group-item">${i18n_no_devices}</li>`
+                }
                 <li class="list-group-item">
                     <div class="form-check">
                         <input
@@ -112,9 +114,11 @@ export default (el) => {
                         <label class="form-check-label mt-1" for="show-inactive-devices">${i18n_show_inactive}</label>
                     </div>
                 </li>
-                ${inactive_devices.length && el.show_inactive_devices
-                    ? html`${inactive_devices.map((device) => device_fingerprint(el, device))}`
-                    : ''}
+                ${
+                    inactive_devices.length && el.show_inactive_devices
+                        ? html`${inactive_devices.map((device) => device_fingerprint(el, device))}`
+                        : ''
+                }
             </ul>
         </div>
     `;

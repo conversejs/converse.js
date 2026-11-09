@@ -152,13 +152,15 @@ class DOMNavigator {
                 const left = this.selected.offsetLeft;
                 const top = this.selected.offsetTop + this.selected.offsetHeight;
                 const els = this.elementsAfter(0, top);
-                const getDistance = /** @param {HTMLElement} el */ (el) => Math.abs(el.offsetLeft - left) + Math.abs(el.offsetTop - top);
+                const getDistance = /** @param {HTMLElement} el */ (el) =>
+                    Math.abs(el.offsetLeft - left) + Math.abs(el.offsetTop - top);
                 el = DOMNavigator.getClosestElement(els, getDistance);
             } else if (direction == DOMNavigator.DIRECTION.up) {
                 const left = this.selected.offsetLeft;
                 const top = this.selected.offsetTop - 1;
                 const els = this.elementsBefore(Infinity, top);
-                const getDistance = /** @param {HTMLElement} el */ (el) => Math.abs(left - el.offsetLeft) + Math.abs(top - el.offsetTop);
+                const getDistance = /** @param {HTMLElement} el */ (el) =>
+                    Math.abs(left - el.offsetLeft) + Math.abs(top - el.offsetTop);
                 el = DOMNavigator.getClosestElement(els, getDistance);
             } else {
                 throw new Error('getNextElement: invalid direction value');
@@ -328,7 +330,7 @@ class DOMNavigator {
      */
     elementsBefore(left, top) {
         return this.getElements(DOMNavigator.DIRECTION.up).filter(
-            /** @param {HTMLElement} el */ (el) => el.offsetLeft <= left && el.offsetTop <= top
+            /** @param {HTMLElement} el */ (el) => el.offsetLeft <= left && el.offsetTop <= top,
         );
     }
 

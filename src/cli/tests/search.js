@@ -50,7 +50,11 @@ describe('converse-cli search', () => {
 
     it('says what it searched even when nothing matches, and that nothing did, on stderr', async () => {
         const { code, stdout, stderr } = await run(daemon.env, 'search', 'hamlet');
-        expect({ code, stdout, stderr }).toEqual({ code: EXIT.OK, stdout: `${SERVER}\n`, stderr: 'No messages match.\n' });
+        expect({ code, stdout, stderr }).toEqual({
+            code: EXIT.OK,
+            stdout: `${SERVER}\n`,
+            stderr: 'No messages match.\n',
+        });
     });
 
     it('prints one JSON object with the method and the messages, with --json', async () => {

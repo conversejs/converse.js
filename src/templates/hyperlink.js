@@ -1,6 +1,6 @@
-import { html } from "lit";
-import { invitationToXMPPURI, isHandledXMPPURI } from "shared/xmpp-uri.js";
-import { dispatchXMPPURI } from "shared/xmpp-uri-dispatch.js";
+import { html } from 'lit';
+import { invitationToXMPPURI, isHandledXMPPURI } from 'shared/xmpp-uri.js';
+import { dispatchXMPPURI } from 'shared/xmpp-uri-dispatch.js';
 
 /**
  * The `xmpp:` URI a link is handled in-app as: a handled XEP-0147 `xmpp:` URI
@@ -10,7 +10,7 @@ import { dispatchXMPPURI } from "shared/xmpp-uri-dispatch.js";
  * @returns {string|null}
  */
 function getHandledXMPPURI(url) {
-    const xmpp_uri = url.protocol === "xmpp:" ? url.href : invitationToXMPPURI(url);
+    const xmpp_uri = url.protocol === 'xmpp:' ? url.href : invitationToXMPPURI(url);
     return xmpp_uri && isHandledXMPPURI(xmpp_uri) ? xmpp_uri : null;
 }
 

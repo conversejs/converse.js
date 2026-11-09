@@ -17,19 +17,14 @@ import { getUniqueId } from '../../utils/index.js';
 
 const { u } = converse.env;
 
-
 /**
  * A list of {@link MUCOccupant} instances, representing participants in a MUC.
  * @memberOf _converse
  * @extends {Collection<MUCOccupant>}
  */
 class MUCOccupants extends Collection {
-
-    constructor (attrs, options) {
-        super(
-            attrs,
-            Object.assign({ comparator: occupantsComparator }, options)
-        );
+    constructor(attrs, options) {
+        super(attrs, Object.assign({ comparator: occupantsComparator }, options));
         this.chatroom = null;
     }
 
@@ -42,7 +37,7 @@ class MUCOccupants extends Collection {
         this.on('change:role', () => this.sort());
     }
 
-    static getAutoFetchedAffiliationLists () {
+    static getAutoFetchedAffiliationLists() {
         const affs = api.settings.get('muc_fetch_members');
         return Array.isArray(affs) ? affs : affs ? MEMBER_AFFILIATIONS : [];
     }
@@ -51,7 +46,7 @@ class MUCOccupants extends Collection {
      * @param {Model|ModelAttributes} attrs
      * @param {Options} [options]
      */
-    create (attrs, options) {
+    create(attrs, options) {
         if (attrs.id || attrs instanceof Model) {
             return super.create(attrs, options);
         }
@@ -59,7 +54,7 @@ class MUCOccupants extends Collection {
         return super.create(attrs, options);
     }
 
-    async fetchMembers () {
+    async fetchMembers() {
         if (!MEMBER_AFFILIATIONS.includes(this.getOwnOccupant()?.get('affiliation'))) {
             // https://xmpp.org/extensions/xep-0045.html#affil-priv
             return;
@@ -69,7 +64,7 @@ class MUCOccupants extends Collection {
             return;
         }
         const muc_jid = this.chatroom.get('jid');
-        const aff_lists = await Promise.all(affiliations.map(a => getAffiliationList(a, muc_jid)));
+        const aff_lists = await Promise.all(affiliations.map((a) => getAffiliationList(a, muc_jid)));
 
         const new_members = aff_lists.reduce(
             /**
@@ -82,18 +77,18 @@ class MUCOccupants extends Collection {
                     return acc;
                 }
                 return [...val, ...acc];
-            }, []
+            },
+            [],
         );
 
-        const known_affiliations = affiliations.filter(
-            a => !u.isErrorObject(aff_lists[affiliations.indexOf(a)])
-        );
-        const new_jids = /** @type {MemberListItem[]} */(new_members).map(m => m.jid).filter(m => m !== undefined);
+        const known_affiliations = affiliations.filter((a) => !u.isErrorObject(aff_lists[affiliations.indexOf(a)]));
+        const new_jids = /** @type {MemberListItem[]} */ (new_members).map((m) => m.jid).filter((m) => m !== undefined);
 
-        const new_nicks = /** @type {MemberListItem[]} */(new_members).map(
-            (m) => (!m.jid && m.nick) || undefined).filter(m => m !== undefined);
+        const new_nicks = /** @type {MemberListItem[]} */ (new_members)
+            .map((m) => (!m.jid && m.nick) || undefined)
+            .filter((m) => m !== undefined);
 
-        const removed_members = this.filter(m => {
+        const removed_members = this.filter((m) => {
             return (
                 known_affiliations.includes(m.get('affiliation')) &&
                 !new_nicks.includes(m.get('nick')) &&
@@ -102,7 +97,7 @@ class MUCOccupants extends Collection {
         });
 
         const bare_jid = _converse.session.get('bare_jid');
-        removed_members.forEach(occupant => {
+        removed_members.forEach((occupant) => {
             if (occupant.get('jid') === bare_jid) {
                 return;
             } else if (occupant.get('show') === 'offline') {
@@ -111,7 +106,7 @@ class MUCOccupants extends Collection {
                 occupant.save('affiliation', null);
             }
         });
-        /** @type {MemberListItem[]} */(new_members).forEach(attrs => {
+        /** @type {MemberListItem[]} */ (new_members).forEach((attrs) => {
             const occupant = this.findOccupant(attrs);
             occupant ? occupant.save(attrs) : this.create(attrs);
         });
@@ -133,14 +128,13 @@ class MUCOccupants extends Collection {
      * @param {import('./types').OccupantData} data
      * @returns {MUCOccupant}
      */
-    findOccupant (data) {
+    findOccupant(data) {
         if (data.occupant_id) {
             return this.get(data.occupant_id);
         }
 
         const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
-        const occupant = jid && this.findWhere({ jid }) ||
-            data.nick && this.findWhere({ 'nick': data.nick });
+        const occupant = (jid && this.findWhere({ jid })) || (data.nick && this.findWhere({ 'nick': data.nick }));
 
         return occupant;
     }
@@ -161,7 +155,7 @@ class MUCOccupants extends Collection {
      * @param {import('./types').OccupantData} data
      * @returns {MUCOccupant|undefined}
      */
-    findOccupantWithoutId (data) {
+    findOccupantWithoutId(data) {
         if (!data.occupant_id) return;
 
         const jid = data.jid && Strophe.getBareJidFromJid(data.jid);
@@ -192,14 +186,13 @@ class MUCOccupants extends Collection {
      * @method _converse.MUCOccupants#getOwnOccupant
      * @returns {MUCOccupant}
      */
-    getOwnOccupant () {
+    getOwnOccupant() {
         return this.findOccupant({
             jid: _converse.session.get('bare_jid'),
-            occupant_id: this.chatroom.get('occupant_id')
+            occupant_id: this.chatroom.get('occupant_id'),
         });
     }
 }
-
 
 // @ts-ignore
 export default MUCOccupants;

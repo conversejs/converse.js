@@ -43,23 +43,25 @@ function tplFollowingBar(el) {
         >
             <converse-icon size="0.9em" class="fa fa-search"></converse-icon> ${__('Discover')}
         </button>
-        ${count
-            ? html`<button
-                  type="button"
-                  class="social-feed__following-btn"
-                  @click=${() =>
-                      el.dispatchEvent(
-                          new CustomEvent('profileselected', {
-                              detail: { jid, tab: 'following' },
-                              bubbles: true,
-                              composed: true,
-                          }),
-                      )}
-              >
-                  <converse-icon size="0.9em" class="fa fa-users"></converse-icon>
-                  ${__('Following')} <span class="social-feed__following-count">${count}</span>
-              </button>`
-            : ''}
+        ${
+            count
+                ? html`<button
+                      type="button"
+                      class="social-feed__following-btn"
+                      @click=${() =>
+                          el.dispatchEvent(
+                              new CustomEvent('profileselected', {
+                                  detail: { jid, tab: 'following' },
+                                  bubbles: true,
+                                  composed: true,
+                              }),
+                          )}
+                  >
+                      <converse-icon size="0.9em" class="fa fa-users"></converse-icon>
+                      ${__('Following')} <span class="social-feed__following-count">${count}</span>
+                  </button>`
+                : ''
+        }
     </div>`;
 }
 
@@ -83,55 +85,59 @@ export default (el) => {
 
     return html`
         <div class="social-feed">
-            ${filtering
-                ? tplFilterBar(el)
-                : html`
-                      <div class="social-feed__header">
-                          <div class="social-feed__profile">
-                              <a
-                                  href="#"
-                                  @click="${(ev) => {
-                                      ev.preventDefault();
-                                      el.dispatchEvent(
-                                          new CustomEvent('profileselected', {
-                                              detail: { jid: own_jid, tab: 'posts' },
-                                              bubbles: true,
-                                              composed: true,
-                                          }),
-                                      );
-                                  }}"
-                                  title="${i18n_view_feed}"
-                              >
-                                  <converse-avatar
-                                      class="avatar align-self-center"
-                                      .model=${own_profile}
-                                      name="${own_profile.getDisplayName()}"
-                                      nonce=${own_profile.vcard?.get('vcard_updated')}
-                                      height="40"
-                                      width="40"
-                                  ></converse-avatar>
-                              </a>
+            ${
+                filtering
+                    ? tplFilterBar(el)
+                    : html`
+                          <div class="social-feed__header">
+                              <div class="social-feed__profile">
+                                  <a
+                                      href="#"
+                                      @click="${(ev) => {
+                                          ev.preventDefault();
+                                          el.dispatchEvent(
+                                              new CustomEvent('profileselected', {
+                                                  detail: { jid: own_jid, tab: 'posts' },
+                                                  bubbles: true,
+                                                  composed: true,
+                                              }),
+                                          );
+                                      }}"
+                                      title="${i18n_view_feed}"
+                                  >
+                                      <converse-avatar
+                                          class="avatar align-self-center"
+                                          .model=${own_profile}
+                                          name="${own_profile.getDisplayName()}"
+                                          nonce=${own_profile.vcard?.get('vcard_updated')}
+                                          height="40"
+                                          width="40"
+                                      ></converse-avatar>
+                                  </a>
+                              </div>
+                              ${tplFollowingBar(el)}
                           </div>
-                          ${tplFollowingBar(el)}
-                      </div>
-                      <converse-social-compose-rich .model=${el.model}></converse-social-compose-rich>
-                  `}
+                          <converse-social-compose-rich .model=${el.model}></converse-social-compose-rich>
+                      `
+            }
             <div class="social-feed__posts">
-                ${posts.length
-                    ? repeat(
-                          posts,
-                          /** @param {import('@converse/headless').PubSubMessage} p */ (p) => p.get('id'),
-                          (p) => {
-                              if (p instanceof _converse.exports.PubsubPlaceholderMessage) {
-                                  return html`<converse-history-placeholder
-                                      .model=${p}
-                                  ></converse-history-placeholder>`;
-                              } else {
-                                  return html`<converse-social-message .model=${p}></converse-social-message>`;
-                              }
-                          },
-                      )
-                    : empty}
+                ${
+                    posts.length
+                        ? repeat(
+                              posts,
+                              /** @param {import('@converse/headless').PubSubMessage} p */ (p) => p.get('id'),
+                              (p) => {
+                                  if (p instanceof _converse.exports.PubsubPlaceholderMessage) {
+                                      return html`<converse-history-placeholder
+                                          .model=${p}
+                                      ></converse-history-placeholder>`;
+                                  } else {
+                                      return html`<converse-social-message .model=${p}></converse-social-message>`;
+                                  }
+                              },
+                          )
+                        : empty
+                }
             </div>
         </div>
     `;

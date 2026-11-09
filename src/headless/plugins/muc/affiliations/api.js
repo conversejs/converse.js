@@ -40,7 +40,7 @@ export default {
          *      ]
          *  )
          */
-        set (muc_jids, users) {
+        set(muc_jids, users) {
             users = !Array.isArray(users) ? [users] : users;
             muc_jids = !Array.isArray(muc_jids) ? [muc_jids] : muc_jids;
             return setAffiliations(muc_jids, users);
@@ -54,8 +54,8 @@ export default {
          * @param {string} jid - The JID of the MUC for which the affiliation list should be fetched
          * @returns {Promise<MemberListItem[]|Error>}
          */
-        get (affiliation, jid) {
+        get(affiliation, jid) {
             return getAffiliationList(affiliation, jid);
-        }
-    }
-}
+        },
+    },
+};

@@ -38,7 +38,8 @@ describe('The profile modal', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     u.toStanza(`
                     <iq type='result' id='${query_iq.getAttribute('id')}'>
                         <query xmlns='jabber:iq:register'>
@@ -62,7 +63,12 @@ describe('The profile modal', function () {
 
             _converse.api.connection
                 .get()
-                ._dataRecv(mock.createRequest(_converse, u.toStanza(`<iq type='result' id='${set_iq.getAttribute('id')}'></iq>`)));
+                ._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        u.toStanza(`<iq type='result' id='${set_iq.getAttribute('id')}'></iq>`),
+                    ),
+                );
 
             const alert = await u.waitUntil(() => document.querySelector('converse-alert-modal'));
             await u.waitUntil(() => u.isVisible(alert));
@@ -86,7 +92,8 @@ describe('The profile modal', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     u.toStanza(`
                 <iq type='result' id="${query_iq.getAttribute('id')}">
                     <error type="cancel"><service-unavailable xmlns="${Strophe.NS.STANZAS}"/></error>
@@ -115,7 +122,8 @@ describe('The profile modal', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     u.toStanza(`
                     <iq type='result' id='${query_iq.getAttribute('id')}'>
                         <query xmlns='jabber:iq:register'>
@@ -138,7 +146,8 @@ describe('The profile modal', function () {
             </iq>`);
 
             _converse.api.connection.get()._dataRecv(
-                mock.createRequest(_converse, 
+                mock.createRequest(
+                    _converse,
                     u.toStanza(`
                 <iq type='result' id="${set_iq.getAttribute('id')}">
                     <error type="modify"><forbidden xmlns="${Strophe.NS.STANZAS}"/></error>

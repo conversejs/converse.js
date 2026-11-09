@@ -39,7 +39,7 @@ function setVisibilityState(state) {
 }
 
 function restoreVisibilityState() {
-    delete (/** @type {any} */ (document)).visibilityState;
+    delete (/** @type {any} */ (document).visibilityState);
 }
 
 describe('OMEMO 2 message reception', function () {

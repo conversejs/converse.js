@@ -2,14 +2,7 @@ import converse from '../../shared/api/public.js';
 import u from '../../utils/index.js';
 import Call from './model.js';
 import Calls from './calls.js';
-import {
-    directionToSenders,
-    jingleToSDP,
-    parseSDP,
-    sdpToJingle,
-    sendersToDirection,
-    writeSDP,
-} from './sdp.js';
+import { directionToSenders, jingleToSDP, parseSDP, sdpToJingle, sendersToDirection, writeSDP } from './sdp.js';
 import RTPSession, { webrtc } from './rtp.js';
 import { fetchExternalServices, getIceServers, serviceToIceServer } from './extdisco.js';
 import { callDuration, reasonText } from './history.js';

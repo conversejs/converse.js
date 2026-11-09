@@ -232,9 +232,11 @@ export async function waitUntilBookmarksReturned(
                                     autojoin="${b.autojoin ?? false}">
                             ${b.nick ? stx`<nick>${b.nick}</nick>` : ''}
                             ${b.password ? stx`<password>${b.password}</password>` : ''}
-                            ${b.extensions?.length
-                                ? stx`<extensions>${b.extensions.map((e) => Stanza.fromString(e))}</extensions>`
-                                : ''}
+                            ${
+                                b.extensions?.length
+                                    ? stx`<extensions>${b.extensions.map((e) => Stanza.fromString(e))}</extensions>`
+                                    : ''
+                            }
                         </conference>
                     </item>`,
                 )};

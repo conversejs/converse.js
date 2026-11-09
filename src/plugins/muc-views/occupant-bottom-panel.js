@@ -43,7 +43,7 @@ export default class OccupantBottomPanel extends BottomPanel {
     invite() {
         const jid = this.model.get('jid');
         api.listen.once('roomInviteSent', () =>
-            api.alert('info', __('Success'), __('The user has been invited to join this groupchat'))
+            api.alert('info', __('Success'), __('The user has been invited to join this groupchat')),
         );
         return jid ? this.muc.directInvite(jid) : api.alert('error', __('Error'), 'Could not find XMPP address');
     }

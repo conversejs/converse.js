@@ -26,12 +26,12 @@ export default {
      * @param {Object} attrs An object containing configuration attributes
      * @param {ModelClass} model - The type of chatbox that should be created
      */
-    async create (jids=[], attrs={}, model) {
+    async create(jids = [], attrs = {}, model) {
         await waitUntil('chatBoxesFetched');
         if (typeof jids === 'string') {
             return createChatBox(jids, attrs, model);
         } else {
-            return Promise.all(jids.map(jid => createChatBox(jid, attrs, model)));
+            return Promise.all(jids.map((jid) => createChatBox(jid, attrs, model)));
         }
     },
 
@@ -39,7 +39,7 @@ export default {
      * @method api.chatboxes.get
      * @param {string|string[]} [jids] - A JID or array of JIDs
      */
-    async get (jids) {
+    async get(jids) {
         await waitUntil('chatBoxesFetched');
         const { chatboxes } = _converse.state;
         if (jids === undefined) {
@@ -47,8 +47,8 @@ export default {
         } else if (typeof jids === 'string') {
             return chatboxes.get(jids.toLowerCase());
         } else {
-            jids = jids.map(j => j.toLowerCase());
-            return chatboxes.models.filter(m => jids.includes(m.get('jid')));
+            jids = jids.map((j) => j.toLowerCase());
+            return chatboxes.models.filter((m) => jids.includes(m.get('jid')));
         }
     },
 
@@ -60,7 +60,6 @@ export default {
      * @memberOf api.chatboxes
      */
     registry: {
-
         /**
          * @method api.chatboxes.registry.add
          * Add another type of chatbox that can be added to this collection.
@@ -81,6 +80,6 @@ export default {
          */
         get(type) {
             return _chatBoxTypes[type];
-        }
-    }
-}
+        },
+    },
+};

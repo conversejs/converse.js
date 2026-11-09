@@ -11,7 +11,7 @@ describe('A controlbox section heading', function () {
             await mock.openControlBox(_converse);
 
             const heading = await u.waitUntil(() =>
-                document.querySelector('#controlbox .controlbox-heading--contacts')
+                document.querySelector('#controlbox .controlbox-heading--contacts'),
             );
             const dropdown = heading.parentElement.querySelector('converse-dropdown');
             expect(dropdown).toBeTruthy();
@@ -19,7 +19,7 @@ describe('A controlbox section heading', function () {
             // The heading grows into leftover space rather than claiming the row,
             // so the dropdown keeps its place.
             expect(heading.getBoundingClientRect().right).toBeLessThanOrEqual(
-                dropdown.getBoundingClientRect().left + 0.5
+                dropdown.getBoundingClientRect().left + 0.5,
             );
 
             // `min-width: 0` lets it shrink past its own text, and these headings
@@ -41,10 +41,10 @@ describe('A controlbox section heading', function () {
             // Truncated on one line, still clear of the dropdown.
             expect(Math.round(heading.getBoundingClientRect().height)).toBe(one_line);
             expect(heading.getBoundingClientRect().right).toBeLessThanOrEqual(
-                dropdown.getBoundingClientRect().left + 0.5
+                dropdown.getBoundingClientRect().left + 0.5,
             );
             expect(dropdown.getBoundingClientRect().right).toBeLessThanOrEqual(
-                document.querySelector('#controlbox').getBoundingClientRect().right + 0.5
+                document.querySelector('#controlbox').getBoundingClientRect().right + 0.5,
             );
         }),
     );

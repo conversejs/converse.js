@@ -263,8 +263,12 @@ check-readme-xeps:
 eslint: node_modules
 	npm run lint
 
+.PHONY: check-format
+check-format: node_modules
+	npm run format:check
+
 .PHONY: check
-check: check-workspace-versions check-headless-package check-readme-xeps eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
+check: check-workspace-versions check-headless-package check-readme-xeps check-format eslint | src/headless/dist/converse-headless.js dist/converse.js dist/converse.css
 	npm run types
 	npm run test:all
 

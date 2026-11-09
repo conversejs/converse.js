@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from 'lit';
 import { api, constants } from '@converse/headless';
 import 'shared/chat/help-messages.js';
 import 'shared/components/split-resize.js';
@@ -28,26 +28,29 @@ export default (el) => {
         sidebar_classes = 'col-4';
     }
 
-    return html`
-        <div class="chat-area ${el.shouldShowSidebar() ? chat_area_classes : 'col-xs-12' }">
+    return html` <div class="chat-area ${el.shouldShowSidebar() ? chat_area_classes : 'col-xs-12'}">
             <div class="chat-content ${show_send_button ? 'chat-content-sendbutton' : ''}" aria-live="polite">
-                <converse-muc-chat-content
-                    .model="${el.model}"></converse-muc-chat-content>
+                <converse-muc-chat-content .model="${el.model}"></converse-muc-chat-content>
 
-                ${(el.model?.get('show_help_messages')) ?
-                    html`<div class="chat-content__help">
-                        <converse-chat-help
-                            .model=${el.model}
-                            .messages=${el.getHelpMessages()}
-                            type="info"
-                            chat_type="${CHATROOMS_TYPE}"
-                        ></converse-chat-help></div>` : '' }
+                ${
+                    el.model?.get('show_help_messages')
+                        ? html`<div class="chat-content__help">
+                              <converse-chat-help
+                                  .model=${el.model}
+                                  .messages=${el.getHelpMessages()}
+                                  type="info"
+                                  chat_type="${CHATROOMS_TYPE}"
+                              ></converse-chat-help>
+                          </div>`
+                        : ''
+                }
             </div>
             <converse-muc-bottom-panel .model=${el.model} class="bottom-panel"></converse-muc-bottom-panel>
         </div>
-        ${el.model && el.shouldShowSidebar() ? html`
-            <converse-split-resize></converse-split-resize>
-            <converse-muc-sidebar
-                class="${sidebar_classes}"
-                jid=${el.jid}></converse-muc-sidebar>` : '' }`
+        ${
+            el.model && el.shouldShowSidebar()
+                ? html` <converse-split-resize></converse-split-resize>
+                      <converse-muc-sidebar class="${sidebar_classes}" jid=${el.jid}></converse-muc-sidebar>`
+                : ''
+        }`;
 };

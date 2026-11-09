@@ -1,17 +1,17 @@
 import { __ } from 'i18n';
 import { _converse, api } from '@converse/headless';
 
-export async function clearMessages (chat) {
+export async function clearMessages(chat) {
     const result = await api.confirm(
         __('Confirm'),
-        __('Are you sure you want to clear the messages from this conversation?')
+        __('Are you sure you want to clear the messages from this conversation?'),
     );
     if (result) {
         await chat.clearMessages();
     }
 }
 
-export async function parseMessageForCommands (chat, text) {
+export async function parseMessageForCommands(chat, text) {
     const match = text.replace(/^\s*/, '').match(/^\/(.*)\s*$/);
     if (match) {
         let handled = false;
@@ -50,7 +50,7 @@ export async function parseMessageForCommands (chat, text) {
     return false;
 }
 
-export function resetElementHeight (ev) {
+export function resetElementHeight(ev) {
     if (window.CSS?.supports('field-sizing', 'content')) {
         return;
     }

@@ -1,5 +1,5 @@
-import log from "@converse/log";
-import { settings_api } from "../shared/settings/api.js";
+import log from '@converse/log';
+import { settings_api } from '../shared/settings/api.js';
 
 const settings = settings_api;
 
@@ -21,7 +21,7 @@ const URL_REGEXES = {
  */
 export function isValidURL(text) {
     try {
-        if (text.startsWith("www.")) {
+        if (text.startsWith('www.')) {
             return !!getURL(`http://${text}`);
         }
         return !!getURL(text);
@@ -38,7 +38,7 @@ export function getURL(url) {
     if (url instanceof URL) {
         return url;
     }
-    return url.toLowerCase().startsWith("www.") ? getURL(`http://${url}`) : new URL(url);
+    return url.toLowerCase().startsWith('www.') ? getURL(`http://${url}`) : new URL(url);
 }
 
 /**
@@ -57,7 +57,7 @@ export function checkFileTypes(types, url) {
     } catch (error) {
         throw new Error(`checkFileTypes: could not parse url ${url}`);
     }
-    const filename = parsed_url.pathname.split("/").pop().toLowerCase();
+    const filename = parsed_url.pathname.split('/').pop().toLowerCase();
     return !!types.filter((ext) => filename.endsWith(ext)).length;
 }
 
@@ -66,14 +66,14 @@ export function checkFileTypes(types, url) {
  * @returns {boolean}
  */
 export function isURLWithImageExtension(url) {
-    return checkFileTypes([".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp"], url);
+    return checkFileTypes(['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg', '.webp'], url);
 }
 
 /**
  * @param {string|URL} url
  */
 export function isGIFURL(url) {
-    return checkFileTypes([".gif"], url);
+    return checkFileTypes(['.gif'], url);
 }
 
 /**
@@ -81,10 +81,10 @@ export function isGIFURL(url) {
  * @param {Headers} [headers]
  */
 export function isAudioURL(url, headers) {
-    if (headers?.get("content-type")?.startsWith("audio")) {
+    if (headers?.get('content-type')?.startsWith('audio')) {
         return true;
     }
-    return checkFileTypes([".ogg", ".mp3", ".m4a", ".weba"], url);
+    return checkFileTypes(['.ogg', '.mp3', '.m4a', '.weba'], url);
 }
 
 /**
@@ -92,10 +92,10 @@ export function isAudioURL(url, headers) {
  * @param {Headers} [headers]
  */
 export function isVideoURL(url, headers) {
-    if (headers?.get("content-type")?.startsWith("video")) {
+    if (headers?.get('content-type')?.startsWith('video')) {
         return true;
     }
-    return checkFileTypes([".mp4", ".webm"], url);
+    return checkFileTypes(['.mp4', '.webm'], url);
 }
 
 /**
@@ -104,10 +104,10 @@ export function isVideoURL(url, headers) {
  * @returns {boolean}
  */
 export function isWebPURL(url, headers) {
-    if (headers?.get("content-type")?.startsWith("image/webp")) {
+    if (headers?.get('content-type')?.startsWith('image/webp')) {
         return true;
     }
-    return checkFileTypes([".webp"], url);
+    return checkFileTypes(['.webp'], url);
 }
 
 /**
@@ -116,10 +116,10 @@ export function isWebPURL(url, headers) {
  * @returns {boolean}
  */
 export function isImageURL(url, headers) {
-    if (headers?.get("content-type")?.startsWith("image")) {
+    if (headers?.get('content-type')?.startsWith('image')) {
         return true;
     }
-    const regex = settings.get("image_urls_regex");
+    const regex = settings.get('image_urls_regex');
     return regex?.test(url) || isURLWithImageExtension(url);
 }
 
@@ -127,7 +127,7 @@ export function isImageURL(url, headers) {
  * @param {string|URL} url
  */
 export function isEncryptedFileURL(url) {
-    return getURL(url).href.startsWith("aesgcm://");
+    return getURL(url).href.startsWith('aesgcm://');
 }
 
 /**
@@ -175,9 +175,9 @@ export function withinString(string, callback, options) {
         }
 
         if (parensEnd > -1) {
-            slice = slice.slice(0, parensEnd) + slice.slice(parensEnd).replace(_trim, "");
+            slice = slice.slice(0, parensEnd) + slice.slice(parensEnd).replace(_trim, '');
         } else {
-            slice = slice.replace(_trim, "");
+            slice = slice.replace(_trim, '');
         }
 
         if (slice.length <= match[0].length) continue;
@@ -204,7 +204,7 @@ export function withinString(string, callback, options) {
  */
 export async function getHeaders(url) {
     try {
-        const response = await fetch(url, { method: "HEAD" });
+        const response = await fetch(url, { method: 'HEAD' });
         return response.headers;
     } catch (e) {
         console.debug(`Error calling HEAD on url ${url}: ${e}`);
@@ -217,7 +217,7 @@ export async function getHeaders(url) {
  * @returns {Promise<import("./types").MediaURLMetadata>}
  */
 export async function getMetadataForURL(o) {
-    const fetch_headers = settings_api.get("fetch_url_headers");
+    const fetch_headers = settings_api.get('fetch_url_headers');
     const headers = fetch_headers ? await getHeaders(o.url) : null;
     return {
         ...o,
@@ -250,11 +250,11 @@ export async function getMediaURLsMetadata(text, offset = 0) {
              * @returns {string|undefined}
              */
             (url, start, end) => {
-                if (url.startsWith("_")) {
+                if (url.startsWith('_')) {
                     url = url.slice(1);
                     start += 1;
                 }
-                if (url.endsWith("_")) {
+                if (url.endsWith('_')) {
                     url = url.slice(0, url.length - 1);
                     end -= 1;
                 }
@@ -263,7 +263,7 @@ export async function getMediaURLsMetadata(text, offset = 0) {
                     objs.push({ url, start: start + offset, end: end + offset });
                 }
                 return url;
-            }
+            },
         );
     } catch (error) {
         log.debug(error);
@@ -309,7 +309,7 @@ export function addMediaURLsOffset(arr, text, offset = 0) {
             return Object.assign({}, o, {
                 start,
                 end,
-                url: text.substring(o.start-offset, o.end-offset), // BBB
+                url: text.substring(o.start - offset, o.end - offset), // BBB
             });
         })
         .filter((o) => o);

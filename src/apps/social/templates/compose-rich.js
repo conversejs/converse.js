@@ -44,36 +44,39 @@ export default (el) => html`
             ${el.typeahead.is_open ? tplTypeahead(el.typeahead) : ''}
         </div>
 
-        ${el._attachments.length || el._uploading
-            ? html`<div class="social-rich__attachments">
-                  ${el._attachments.map(
-                      (att, i) => html`<div class="social-rich__attachment" title="${att.title ?? ''}">
-                          ${att.type?.startsWith('image/')
-                              ? html`<img
-                                    class="social-rich__attachment-thumb"
-                                    src="${att.href}"
-                                    alt="${att.title ?? ''}"
-                                />`
-                              : html`<span class="social-rich__attachment-name">
-                                    <converse-icon size="1em" class="fa fa-paperclip"></converse-icon>
-                                    ${att.title ?? att.href}
-                                </span>`}
-                          <button
-                              type="button"
-                              class="social-rich__attachment-remove"
-                              title="${__('Remove attachment')}"
-                              aria-label="${__('Remove attachment')}"
-                              @click=${() => el.removeAttachment(i)}
-                          >
-                              <converse-icon size="0.8em" class="fa fa-times"></converse-icon>
-                          </button>
-                      </div>`,
-                  )}
-                  ${el._uploading
-                      ? html`<span class="social-rich__uploading">${__('Uploading…')}</span>`
-                      : ''}
-              </div>`
-            : ''}
+        ${
+            el._attachments.length || el._uploading
+                ? html`<div class="social-rich__attachments">
+                      ${el._attachments.map(
+                          (att, i) =>
+                              html`<div class="social-rich__attachment" title="${att.title ?? ''}">
+                                  ${
+                                      att.type?.startsWith('image/')
+                                          ? html`<img
+                                                class="social-rich__attachment-thumb"
+                                                src="${att.href}"
+                                                alt="${att.title ?? ''}"
+                                            />`
+                                          : html`<span class="social-rich__attachment-name">
+                                                <converse-icon size="1em" class="fa fa-paperclip"></converse-icon>
+                                                ${att.title ?? att.href}
+                                            </span>`
+                                  }
+                                  <button
+                                      type="button"
+                                      class="social-rich__attachment-remove"
+                                      title="${__('Remove attachment')}"
+                                      aria-label="${__('Remove attachment')}"
+                                      @click=${() => el.removeAttachment(i)}
+                                  >
+                                      <converse-icon size="0.8em" class="fa fa-times"></converse-icon>
+                                  </button>
+                              </div>`,
+                      )}
+                      ${el._uploading ? html`<span class="social-rich__uploading">${__('Uploading…')}</span>` : ''}
+                  </div>`
+                : ''
+        }
 
         <div class="social-rich__toolbar">
             ${fmtButton(el, 'bold', __('Bold'), 'bold')} ${fmtButton(el, 'italic', __('Italic'), 'italic')}
@@ -111,29 +114,25 @@ export default (el) => html`
 
             <span class="social-rich__spacer"></span>
 
-            ${el.post
-                ? html`<button
-                      type="button"
-                      class="btn btn-secondary social-rich__cancel"
-                      ?disabled=${el._publishing}
-                      @click=${() => el.onCancel()}
-                  >
-                      ${__('Cancel')}
-                  </button>`
-                : ''}
+            ${
+                el.post
+                    ? html`<button
+                          type="button"
+                          class="btn btn-secondary social-rich__cancel"
+                          ?disabled=${el._publishing}
+                          @click=${() => el.onCancel()}
+                      >
+                          ${__('Cancel')}
+                      </button>`
+                    : ''
+            }
             <button
                 type="button"
                 class="btn btn-primary social-rich__post"
                 ?disabled=${el._publishing || el._uploading || (el._empty && !el._attachments.length)}
                 @click=${(/** @type {Event} */ ev) => el.onSubmit(ev)}
             >
-                ${el._publishing
-                    ? el.post
-                        ? __('Saving…')
-                        : __('Posting…')
-                    : el.post
-                      ? __('Save')
-                      : __('Post')}
+                ${el._publishing ? (el.post ? __('Saving…') : __('Posting…')) : el.post ? __('Save') : __('Post')}
             </button>
         </div>
     </div>

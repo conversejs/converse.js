@@ -7,20 +7,14 @@ import converse from '../../shared/api/public.js';
 import chatboxes_api from '../chatboxes/api.js';
 import chat_api from './api.js';
 import { PRIVATE_CHAT_TYPE } from '../../shared/constants.js';
-import {
-    autoJoinChats,
-    enableCarbons,
-    handleMessageStanza,
-    registerMessageHandlers,
-} from './utils.js';
+import { autoJoinChats, enableCarbons, handleMessageStanza, registerMessageHandlers } from './utils.js';
 
 const { Strophe } = converse.env;
-
 
 converse.plugins.add('converse-chat', {
     dependencies: ['converse-chatboxes', 'converse-disco'],
 
-    initialize () {
+    initialize() {
         // Configuration values for this plugin
         // ====================================
         // Refer to docs/source/configuration.rst for explanations of these

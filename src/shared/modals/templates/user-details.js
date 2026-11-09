@@ -249,158 +249,187 @@ export function tplUserDetailsModal(el) {
                         width="140"
                     ></converse-avatar>
                 </div>
-                ${o.fullname
-                    ? html`
-                          <div class="row mb-2">
-                              <div class="col-sm-4"><label>${i18n_full_name}:</label></div>
-                              <div class="col-sm-8">${o.fullname}</div>
-                          </div>
-                      `
-                    : ''}
+                ${
+                    o.fullname
+                        ? html`
+                              <div class="row mb-2">
+                                  <div class="col-sm-4"><label>${i18n_full_name}:</label></div>
+                                  <div class="col-sm-8">${o.fullname}</div>
+                              </div>
+                          `
+                        : ''
+                }
                 <div class="row mb-2">
                     <div class="col-sm-4"><label>${i18n_address}:</label></div>
                     <div class="col-sm-8">${tplCopyableAddress(o.jid)}</div>
                 </div>
-                ${share_link
-                    ? html`<div class="row mb-2">
-                          <div class="col-sm-4"><label>${__('Shareable link')}:</label></div>
-                          <div class="col-sm-8">${tplShareableLink(share_link)}</div>
-                      </div>`
-                    : ''}
-
-                ${contact
-                    ? html` <div class="row mb-2">
-                          <div class="col-sm-4"><label>${__('Presence')}:</label></div>
-                          <div class="col-sm-8">${getPrettySubscription(contact)}</div>
-                      </div>`
-                    : ''}
-                ${contact_time
-                    ? html` <div class="row mb-2 local-time">
-                          <div class="col-sm-4"><label>${__('Local time')}:</label></div>
-                          <div class="col-sm-8 local-time__value">
-                              <converse-icon
-                                  class="fa ${contact_time.is_off_hours ? 'fa-moon' : 'fa-clock'}"
-                                  color="${contact_time.is_off_hours ? 'var(--warning-color)' : ''}"
-                                  size="1em"
-                              ></converse-icon>
-                              ${contact_time.time} (UTC${contact_time.tzo})
-                          </div>
-                      </div>`
-                    : ''}
-                ${o.nickname
-                    ? html`
-                          <div class="row mb-2">
-                              <div class="col-sm-4"><label>${i18n_nickname}:</label></div>
-                              <div class="col-sm-8">${o.nickname}</div>
-                          </div>
-                      `
-                    : ''}
-                ${o.url
-                    ? html`
-                          <div class="row mb-2">
-                              <div class="col-sm-4"><label>${i18n_url}:</label></div>
-                              <div class="col-sm-8">
-                                  <a target="_blank" rel="noopener" href="${o.url}">${o.url}</a>
+                ${
+                    share_link
+                        ? html`<div class="row mb-2">
+                              <div class="col-sm-4"><label>${__('Shareable link')}:</label></div>
+                              <div class="col-sm-8">${tplShareableLink(share_link)}</div>
+                          </div>`
+                        : ''
+                }
+                ${
+                    contact
+                        ? html` <div class="row mb-2">
+                              <div class="col-sm-4"><label>${__('Presence')}:</label></div>
+                              <div class="col-sm-8">${getPrettySubscription(contact)}</div>
+                          </div>`
+                        : ''
+                }
+                ${
+                    contact_time
+                        ? html` <div class="row mb-2 local-time">
+                              <div class="col-sm-4"><label>${__('Local time')}:</label></div>
+                              <div class="col-sm-8 local-time__value">
+                                  <converse-icon
+                                      class="fa ${contact_time.is_off_hours ? 'fa-moon' : 'fa-clock'}"
+                                      color="${contact_time.is_off_hours ? 'var(--warning-color)' : ''}"
+                                      size="1em"
+                                  ></converse-icon>
+                                  ${contact_time.time} (UTC${contact_time.tzo})
                               </div>
-                          </div>
-                      `
-                    : ''}
-                ${o.email
-                    ? html`
-                          <div class="row mb-2">
-                              <div class="col-sm-4"><label>${i18n_email}:</label></div>
-                              <div class="col-sm-8"><a href="mailto:${o.email}">${o.email}</a></div>
-                          </div>
-                      `
-                    : ''}
-                ${o.role
-                    ? html`
-                          <div class="row mb-2">
-                              <div class="col-sm-4"><label>${i18n_role}:</label></div>
-                              <div class="col-sm-8">${o.role}</div>
-                          </div>
-                      `
-                    : ''}
-                ${groups.length
-                    ? html`
-                          <div class="row mb-2">
-                              <div class="col-sm-4"><label>${i18n_groups}:</label></div>
-                              <div class="col-sm-8">
-                                  ${groups.map(
-                                      /** @param {string} group */ (group) =>
-                                          html`<span class="badge badge-roster-group me-1">${group}</span>`,
-                                  )}
+                          </div>`
+                        : ''
+                }
+                ${
+                    o.nickname
+                        ? html`
+                              <div class="row mb-2">
+                                  <div class="col-sm-4"><label>${i18n_nickname}:</label></div>
+                                  <div class="col-sm-8">${o.nickname}</div>
                               </div>
-                          </div>
-                      `
-                    : ''}
+                          `
+                        : ''
+                }
+                ${
+                    o.url
+                        ? html`
+                              <div class="row mb-2">
+                                  <div class="col-sm-4"><label>${i18n_url}:</label></div>
+                                  <div class="col-sm-8">
+                                      <a target="_blank" rel="noopener" href="${o.url}">${o.url}</a>
+                                  </div>
+                              </div>
+                          `
+                        : ''
+                }
+                ${
+                    o.email
+                        ? html`
+                              <div class="row mb-2">
+                                  <div class="col-sm-4"><label>${i18n_email}:</label></div>
+                                  <div class="col-sm-8"><a href="mailto:${o.email}">${o.email}</a></div>
+                              </div>
+                          `
+                        : ''
+                }
+                ${
+                    o.role
+                        ? html`
+                              <div class="row mb-2">
+                                  <div class="col-sm-4"><label>${i18n_role}:</label></div>
+                                  <div class="col-sm-8">${o.role}</div>
+                              </div>
+                          `
+                        : ''
+                }
+                ${
+                    groups.length
+                        ? html`
+                              <div class="row mb-2">
+                                  <div class="col-sm-4"><label>${i18n_groups}:</label></div>
+                                  <div class="col-sm-8">
+                                      ${groups.map(
+                                          /** @param {string} group */ (group) =>
+                                              html`<span class="badge badge-roster-group me-1">${group}</span>`,
+                                      )}
+                                  </div>
+                              </div>
+                          `
+                        : ''
+                }
                 ${contact?.get('requesting') || !is_roster_contact || !contact ? html`<hr />` : ''}
-                ${contact?.get('requesting')
-                    ? html`<div class="row mb-2">
-                          <div class="col-sm-4"><label>${__('Contact Request')}:</label></div>
-                          <div class="col-sm-8">${tplAcceptButton(el)} ${tplDeclineButton(el)}</div>
-                      </div>`
-                    : ''}
+                ${
+                    contact?.get('requesting')
+                        ? html`<div class="row mb-2">
+                              <div class="col-sm-4"><label>${__('Contact Request')}:</label></div>
+                              <div class="col-sm-8">${tplAcceptButton(el)} ${tplDeclineButton(el)}</div>
+                          </div>`
+                        : ''
+                }
                 ${!is_roster_contact ? tplAddButton(el) : ''}
-                ${!contact
-                    ? until(
-                          blocking_supported.then(() => tplBlockButton(el)),
-                          '',
-                      )
-                    : ''}
+                ${
+                    !contact
+                        ? until(
+                              blocking_supported.then(() => tplBlockButton(el)),
+                              '',
+                          )
+                        : ''
+                }
             </div>
 
-            ${is_roster_contact
-                ? html` <div
-                      class="tab-pane ${el.tab === 'edit' ? 'active' : ''}"
-                      id="edit-tabpanel"
-                      role="tabpanel"
-                      aria-labelledby="edit-tab"
-                  >
-                      ${el.tab === 'edit'
-                          ? html`<form
-                                    class="converse-form"
-                                    @submit=${/** @param {MouseEvent} ev */ (ev) => el.updateContact(ev)}
-                                >
-                                    <div class="mb-3">
-                                        <label class="form-label clearfix" for="name">${__('Name')}:</label>
-                                        <input type="text" name="name" value="${name}" class="form-control" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label clearfix" for="name">${i18n_groups}:</label>
-                                        <div class="mb-1">
-                                            <small class="form-text text-muted">${i18n_groups_help}</small>
-                                        </div>
-                                        <converse-autocomplete
-                                            .list=${getGroupsAutoCompleteList()}
-                                            name="groups"
-                                            value="${groups}"
-                                        ></converse-autocomplete>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">${__('Update')}</button>
-                                </form>
-                                <hr />
+            ${
+                is_roster_contact
+                    ? html` <div
+                          class="tab-pane ${el.tab === 'edit' ? 'active' : ''}"
+                          id="edit-tabpanel"
+                          role="tabpanel"
+                          aria-labelledby="edit-tab"
+                      >
+                          ${
+                              el.tab === 'edit'
+                                  ? html`<form
+                                            class="converse-form"
+                                            @submit=${/** @param {MouseEvent} ev */ (ev) => el.updateContact(ev)}
+                                        >
+                                            <div class="mb-3">
+                                                <label class="form-label clearfix" for="name">${__('Name')}:</label>
+                                                <input type="text" name="name" value="${name}" class="form-control" />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label clearfix" for="name">${i18n_groups}:</label>
+                                                <div class="mb-1">
+                                                    <small class="form-text text-muted">${i18n_groups_help}</small>
+                                                </div>
+                                                <converse-autocomplete
+                                                    .list=${getGroupsAutoCompleteList()}
+                                                    name="groups"
+                                                    value="${groups}"
+                                                ></converse-autocomplete>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">${__('Update')}</button>
+                                        </form>
+                                        <hr />
 
-                                ${allow_contact_removal && is_roster_contact ? tplRemoveButton(el) : ''}
-                                ${until(
-                                    blocking_supported.then(() => tplBlockButton(el)),
-                                    '',
-                                )}`
-                          : ''}
-                  </div>`
-                : ''}
-            ${_converse.pluggable.plugins['converse-omemo']?.enabled(_converse)
-                ? html`<div
-                      class="tab-pane ${el.tab === 'omemo' ? 'active' : ''}"
-                      id="omemo-tabpanel"
-                      role="tabpanel"
-                      aria-labelledby="omemo-tab"
-                  >
-                      ${el.tab === 'omemo'
-                          ? html`<converse-omemo-fingerprints jid=${o.jid}></converse-omemo-fingerprints>`
-                          : ''}
-                  </div>`
-                : ''}
+                                        ${allow_contact_removal && is_roster_contact ? tplRemoveButton(el) : ''}
+                                        ${until(
+                                            blocking_supported.then(() => tplBlockButton(el)),
+                                            '',
+                                        )}`
+                                  : ''
+                          }
+                      </div>`
+                    : ''
+            }
+            ${
+                _converse.pluggable.plugins['converse-omemo']?.enabled(_converse)
+                    ? html`<div
+                          class="tab-pane ${el.tab === 'omemo' ? 'active' : ''}"
+                          id="omemo-tabpanel"
+                          role="tabpanel"
+                          aria-labelledby="omemo-tab"
+                      >
+                          ${
+                              el.tab === 'omemo'
+                                  ? html`<converse-omemo-fingerprints jid=${o.jid}></converse-omemo-fingerprints>`
+                                  : ''
+                          }
+                      </div>`
+                    : ''
+            }
         </div>
     `;
 }

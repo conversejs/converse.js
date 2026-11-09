@@ -161,10 +161,14 @@ describe('A headlines box', function () {
 
     it(
         'will not show a headline messages from a full JID if allow_non_roster_messaging is false',
-        mock.initConverse(converse, ['chatBoxesFetched'], { 'allow_non_roster_messaging': false }, async function (_converse) {
-            await mock.waitForRoster(_converse, 'current', 0);
-            const { stx } = converse.env;
-            const stanza = stx`
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { 'allow_non_roster_messaging': false },
+            async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 0);
+                const { stx } = converse.env;
+                const stanza = stx`
                 <message type="headline"
                          from="andre5114@jabber.snc.ru/Spark"
                          to="romeo@montague.lit"
@@ -173,8 +177,9 @@ describe('A headlines box', function () {
                     <nick>gpocy</nick>
                     <body>Здравствуйте друзья</body>
                 </message>`;
-            _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
-            expect(_converse.chatboxviews.keys().filter((k) => k !== 'controlbox').length).toBe(0);
-        }),
+                _converse.api.connection.get()._dataRecv(mock.createRequest(_converse, stanza));
+                expect(_converse.chatboxviews.keys().filter((k) => k !== 'controlbox').length).toBe(0);
+            },
+        ),
     );
 });

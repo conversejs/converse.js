@@ -42,9 +42,7 @@ describe('A chat with a bare-host JID', function () {
             await mock.waitForRoster(_converse, 'current', 1);
             await api_open(_converse, service_jid);
 
-            await _converse.handleMessageStanza(
-                messageFrom(_converse, service_jid, 'PubSub Service on montague.lit'),
-            );
+            await _converse.handleMessageStanza(messageFrom(_converse, service_jid, 'PubSub Service on montague.lit'));
 
             const chatbox = _converse.state.chatboxes.get(service_jid);
             await u.waitUntil(() => chatbox.messages.length);
@@ -78,9 +76,7 @@ describe('A chat with a bare-host JID', function () {
             // mod_watchregistrations sends registration notices as type="chat".
             // With no roster entry and no open chat, they must NOT open a chatbox
             // with a textarea the user can't usefully reply into.
-            await _converse.handleMessageStanza(
-                messageFrom(_converse, 'montague.lit', 'User romeo just registered'),
-            );
+            await _converse.handleMessageStanza(messageFrom(_converse, 'montague.lit', 'User romeo just registered'));
 
             await new Promise((resolve) => setTimeout(resolve, 250));
             expect(_converse.state.chatboxes.get('montague.lit')).toBeUndefined();

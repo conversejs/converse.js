@@ -40,19 +40,36 @@ export const STYLING_TRANSFORMERS = [
     INLINE_CODE,
 ];
 
-// Lexical escapes markdown-special characters when serializing, so a URL like
-// `.../Ender's_Game` comes out as `.../Ender's\_Game`. XEP-0393 defines no escape syntax
-// at all, so that backslash is not an escape on the wire: it is a literal character the
-// recipient would render. Undo it.
-const MARKDOWN_ESCAPE = /\\([\\*_~`>])/g;
+// Lexical escapes markdown-special characters when serializing: a URL like
+// `.../Ender's_Game` comes out as `.../Ender's\_Game`, and `<`, `[`, `]` and a `&` that
+// could start a reference come out as numeric character references (`&#60;` and so on).
+// XEP-0393 defines no escape syntax at all, so on the wire these would be literal text
+// the recipient renders. Undo them, the way Lexical's own (unexported) `unescapeText`
+// does: in a single pass, so a literally typed `&#60;`, exported as `&#38;#60;`, comes
+// back as typed rather than as `<`.
+const MARKDOWN_ESCAPE = /\\([!-/:-@[-`{-~])|&#(?:(\d{1,7})|[xX]([\da-fA-F]{1,6}));/g;
 
 /**
- * Strip the backslash escapes Lexical adds, which XEP-0393 has no notion of.
+ * @param {string} [digits]
+ * @param {string} [hex]
+ * @returns {string}
+ */
+function decodeCharacterReference(digits, hex) {
+    const code_point = digits !== undefined ? Number(digits) : parseInt(hex, 16);
+    const invalid = code_point === 0 || (code_point >= 0xd800 && code_point <= 0xdfff) || code_point > 0x10ffff;
+    return invalid ? '\uFFFD' : String.fromCodePoint(code_point);
+}
+
+/**
+ * Strip the escapes Lexical adds, which XEP-0393 has no notion of.
  * @param {string} text
  * @returns {string}
  */
 export function stripMarkdownEscapes(text) {
-    return text.replace(MARKDOWN_ESCAPE, '$1');
+    return text.replace(
+        MARKDOWN_ESCAPE,
+        (_match, escaped, digits, hex) => escaped ?? decodeCharacterReference(digits, hex),
+    );
 }
 
 /**

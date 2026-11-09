@@ -1,6 +1,7 @@
 import { html } from 'lit';
 
-export default (o) => html`
+export default (o) =>
+    html`
     <div class="mb-3">
         ${
             o.type !== 'hidden'

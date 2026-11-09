@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "printWidth": 120,
+  "quoteProps": "preserve",
+  "tabWidth": 4,
+  "useTabs": false,
+  "bracketSpacing": true,
+  "sortPackageJson": false,
+  "overrides": [
+    {
+      "files": ["*.json"],
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "package-lock.json",
+    "src/headless/plugins/emoji/emoji.json",
+    "*.md",
+    "*.html",
+    "docs/",
+    ".github/",
+    "composer.json",
+    ".scratch/",
+    ".vitest/",
+    "reports/",
+    "research_notes/"
+  ]
+}

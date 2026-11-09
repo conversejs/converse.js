@@ -3,8 +3,8 @@ title: Software Style Guide
 description: Coding conventions and style guide for Converse development.
 ---
 
-Converse uses [Prettier](https://prettier.io/) to enforce a consistent code style
-across the codebase. The configuration lives in `.prettierrc` at the project root.
+Converse uses [oxfmt](https://oxc.rs/docs/guide/usage/formatter) to enforce a consistent code style
+across the codebase. The configuration lives in `.oxfmtrc.json` at the project root.
 
 Format the codebase before committing:
 
@@ -13,16 +13,16 @@ npm run format
 ```
 
 CI runs `npm run format:check` (part of `make check`) and fails on unformatted
-files. Paths listed in `.prettierignore` (Markdown, HTML pages, the docs site and
-generated files) are not formatted.
+files. Paths listed under `ignorePatterns` in `.oxfmtrc.json` (Markdown, HTML pages,
+the docs site and generated files) are not formatted.
 
-Many of the conventions below are enforced by Prettier automatically. Where Prettier
+Many of the conventions below are enforced by oxfmt automatically. Where oxfmt
 doesn't cover something (naming conventions, architectural patterns), the rules below
 apply.
 
-## Prettier configuration
+## oxfmt configuration
 
-Our Prettier settings:
+Our oxfmt settings:
 
 | Setting | Value |
 |---------|-------|

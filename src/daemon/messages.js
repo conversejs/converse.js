@@ -9,7 +9,7 @@ import { hasArchivedMessages, isMessage } from './history.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 import { searchMessages } from './search.js';
-import { requireConnected, rosterLoaded } from './session.js';
+import { getChats, getRooms, requireConnected, rosterLoaded } from './session.js';
 import {
     attempt,
     checkMessage,
@@ -61,7 +61,7 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"since" must be an ISO 8601 time.');
             }
 
-            const room = await api.rooms.get(jid);
+            const room = await getRooms(jid);
             if (room) {
                 const messages = await readPage(room, { limit, before, since: since_ms });
                 return {
@@ -70,7 +70,7 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
                 };
             }
 
-            let chat = await api.chats.get(jid);
+            let chat = await getChats(jid);
             // Without the roster, which only a first connection loads, nobody is known to be a contact.
             const contact = rosterLoaded() ? await api.contacts.get(jid) : null;
             if (!chat) {
@@ -92,7 +92,7 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
                             'has no messages with them. Check the JID, or send them a message to start a conversation.',
                     );
                 }
-                chat = await api.chats.get(jid, {}, true);
+                chat = await getChats(jid, {}, true);
                 await chat.initialized;
             }
 

@@ -28,13 +28,58 @@ export function requireConnected(consequence) {
 }
 
 /**
+ * @param {string} name - The name of a promise of headless's
+ */
+function isSettled(name) {
+    // `waitUntil` hands back the open promise itself, which says whether it has settled.
+    const promise = /** @type {{ isResolved?: boolean }|null} */ (api.waitUntil(name));
+    return !!promise?.isResolved;
+}
+
+/**
  * Whether the roster has been loaded. Headless loads it when the daemon first
  * connects, so until then, waiting for it, as `api.contacts.get` does, never ends.
  */
 export function rosterLoaded() {
-    // `waitUntil` hands back the open promise itself, which says whether it has settled.
-    const fetched = /** @type {{ isResolved?: boolean }|null} */ (api.waitUntil('rosterContactsFetched'));
-    return !!fetched?.isResolved;
+    return isSettled('rosterContactsFetched');
+}
+
+/**
+ * Whether the conversations have been loaded, which headless does when the
+ * daemon first connects. Until then, waiting for them, as `api.rooms.get` and
+ * `api.chats.get` do, never ends.
+ */
+export function chatsLoaded() {
+    return isSettled('chatBoxesFetched');
+}
+
+/**
+ * Refuses what needs the conversations when they aren't loaded and there's no
+ * connection to load them. While connected, they're on their way.
+ * @param {string} [consequence] - What didn't happen because of it, such as "nothing was sent"
+ */
+export function requireChats(consequence = "your conversations haven't been loaded yet") {
+    if (!chatsLoaded()) requireConnected(consequence);
+}
+
+/**
+ * `api.rooms.get`, refusing where that would wait forever.
+ * @param {Parameters<typeof api.rooms.get>} args
+ * @returns {ReturnType<typeof api.rooms.get>}
+ */
+export function getRooms(...args) {
+    requireChats();
+    return api.rooms.get(...args);
+}
+
+/**
+ * `api.chats.get`, refusing where that would wait forever.
+ * @param {Parameters<typeof api.chats.get>} args
+ * @returns {ReturnType<typeof api.chats.get>}
+ */
+export function getChats(...args) {
+    requireChats();
+    return api.chats.get(...args);
 }
 
 /**

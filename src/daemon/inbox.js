@@ -10,7 +10,7 @@ import { _converse, api, constants } from '@converse/headless';
 import { isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
-import { rosterLoaded } from './session.js';
+import { getChats, getRooms, rosterLoaded } from './session.js';
 
 /**
  * The message attribute holding when the daemon got the message, as a mark
@@ -59,7 +59,7 @@ export function inboxMethods(cursors, events) {
      */
     async function survey(only) {
         const surveyed = [];
-        const conversations = [...((await api.chats.get()) ?? []), ...((await api.rooms.get()) ?? [])];
+        const conversations = [...((await getChats()) ?? []), ...((await getRooms()) ?? [])];
         for (const chat of conversations) {
             if (only && chat.get('jid') !== only) continue;
 

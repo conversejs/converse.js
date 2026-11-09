@@ -8,7 +8,7 @@
  */
 import { api, converse } from '@converse/headless';
 import { ERRORS, RPCError } from './protocol.js';
-import { requireConnected } from './session.js';
+import { chatsLoaded, getRooms, requireChats, requireConnected, rosterLoaded } from './session.js';
 
 const { Strophe, u } = converse.env;
 
@@ -41,8 +41,7 @@ export async function resolveJID(value, name) {
     }
     if (u.isValidJID(text)) return checkJIDIsNotAName(parseJID(text, name), text);
 
-    // Names are looked up in the roster and the rooms, which only the server can supply.
-    requireConnection(text);
+    requireNames(text);
 
     const matches = await matchNames(text);
     if (matches.length === 1) return matches[0].jid.toLowerCase();
@@ -75,7 +74,7 @@ export async function resolveRoomJID(value, name) {
     }
     if (u.isValidJID(text)) return parseJID(text, name);
 
-    requireConnection(text);
+    requireChats(`the name "${text}" can't be looked up in your rooms. Use a JID instead`);
     const matches = await roomsNamed(text);
     if (matches.length === 1) return matches[0].jid;
     if (matches.length === 0) {
@@ -91,14 +90,14 @@ export async function resolveRoomJID(value, name) {
 
 /**
  * Refuses a JID that is also the name of another contact, since the text could
- * mean either. Without a connection there's no roster to check, so the JID is
- * taken as it is.
+ * mean either. With no roster, and no connection to load one, there's nothing
+ * to check, so the JID is taken as it is.
  * @param {string} jid - The bare JID the text parses to
  * @param {string} text - What the client typed
  * @returns {Promise<string>}
  */
 async function checkJIDIsNotAName(jid, text) {
-    if (!api.connection.connected()) return jid;
+    if (!rosterLoaded() && !api.connection.connected()) return jid;
 
     const named = (await api.contacts.resolve({ name: text })).filter((match) => match.jid !== jid);
     if (named.length === 0) return jid;
@@ -111,10 +110,13 @@ async function checkJIDIsNotAName(jid, text) {
 }
 
 /**
- * Names are looked up in the roster and the rooms, which only the server can supply.
+ * Names are looked up in the roster and the rooms. Once loaded, those outlast
+ * the connection, and while connected they're on their way.
  * @param {string} text
  */
-function requireConnection(text) {
+function requireNames(text) {
+    if (rosterLoaded() && chatsLoaded()) return;
+
     requireConnected(`the name "${text}" can't be looked up in your contacts and rooms. Use a JID instead`);
 }
 
@@ -137,7 +139,7 @@ async function matchNames(text) {
  */
 async function roomsNamed(text) {
     const wanted = text.toLowerCase();
-    const rooms = /** @type {import('@converse/headless').MUC[]} */ (await api.rooms.get());
+    const rooms = /** @type {import('@converse/headless').MUC[]} */ (await getRooms());
     return rooms
         .filter((room) => (room.get('name') ?? '').trim().toLowerCase() === wanted)
         .map((room) => ({ jid: room.get('jid'), name: room.get('name').trim() }));

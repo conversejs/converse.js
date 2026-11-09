@@ -11,6 +11,7 @@ import { getUploadService, uploadFile } from '@converse/headless';
 import { sendMessage } from './send.js';
 import { ERRORS, MAX_UPLOAD_SIZE, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
+import { requireConnected } from './session.js';
 
 const CONTENT_TYPE = 'application/octet-stream';
 const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
@@ -91,6 +92,8 @@ function checkUpload(params) {
  * @returns {ReturnType<typeof uploadFile>}
  */
 async function uploadContents({ name, content, size }) {
+    requireConnected('nothing was uploaded');
+
     const service = await getUploadService();
     if (!service) {
         throw new RPCError(

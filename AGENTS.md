@@ -114,7 +114,7 @@ Two caveats, independent of style:
 
 ## Code Style and Conventions
 
-Formatting is set by `.prettierrc` and enforced in CI: run `npm run format` before
+Formatting is set by `.oxfmtrc.json` and enforced in CI: run `npm run format` before
 committing (`npm run format:check` only reports). Naming conventions:
 
 - **Files**: `kebab-case.js`

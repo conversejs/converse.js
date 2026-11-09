@@ -367,7 +367,8 @@ export type MessageListener = (
  * event is sent to subscribers of type "draft", whatever the draft's action.
  */
 export type Event = { subscription: number } & (
-    { type: 'message'; message: MessageDTO } | { type: 'draft'; action: 'queued' | 'sent' | 'rejected'; draft: Draft }
+    | { type: 'message'; message: MessageDTO }
+    | { type: 'draft'; action: 'queued' | 'sent' | 'rejected'; draft: Draft }
 );
 
 /**

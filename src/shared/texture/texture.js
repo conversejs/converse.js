@@ -438,7 +438,7 @@ class StylingDirective extends Directive {
 
 const renderStyling = directive(StylingDirective);
 
-// prettier-ignore
+// oxfmt-ignore
 /* eslint-disable max-len */
 const styling_templates = {
     // m is the chatbox model

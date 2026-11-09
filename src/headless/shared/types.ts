@@ -214,7 +214,14 @@ type XFormJIDTypes = 'jid-single' | 'jid-multi';
 type XFormTextTypes = 'text-multi' | 'text-private' | 'text-single';
 type XFormDateTypes = 'date' | 'datetime';
 type XFormFieldTypes =
-    XFormListTypes | XFormJIDTypes | XFormTextTypes | XFormDateTypes | 'fixed' | 'boolean' | 'url' | 'hidden';
+    | XFormListTypes
+    | XFormJIDTypes
+    | XFormTextTypes
+    | XFormDateTypes
+    | 'fixed'
+    | 'boolean'
+    | 'url'
+    | 'hidden';
 
 export type XFormField = {
     var: string;

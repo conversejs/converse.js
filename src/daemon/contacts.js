@@ -30,7 +30,7 @@ export function contactMethods() {
             if (query !== undefined && typeof query !== 'string') {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"query" must be text.');
             }
-            requireRoster('Listing contacts');
+            await requireRoster('Listing contacts');
             const wanted = (query ?? '').trim().toLowerCase();
             const contacts = (await api.contacts.get()).map(toContactSummary);
             const matching = contacts.filter(({ jid, name }) => `${name ?? ''} ${jid}`.toLowerCase().includes(wanted));
@@ -47,7 +47,7 @@ export function contactMethods() {
          * @returns {Promise<import('./types').ContactDetails>}
          */
         async 'contacts.whois'({ jid }) {
-            requireRoster('Looking someone up');
+            await requireRoster('Looking someone up');
             const bare_jid = await resolveJID(jid, 'jid');
             const contact = await api.contacts.get(bare_jid);
             const presence = await api.presences.get(bare_jid);

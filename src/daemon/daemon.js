@@ -25,6 +25,7 @@ import { createPolicy } from './policy.js';
 import { createSendRouter } from './routing.js';
 import { scheduleMethods } from './schedules.js';
 import { getPassword, getRoomPasswords } from './secrets.js';
+import { whileStarting } from './session.js';
 import { TIMED_OUT, withTimeout } from './timeout.js';
 import { createLineBudget, listen, serveClient } from './transport.js';
 
@@ -225,7 +226,7 @@ async function serve(config, gid) {
 
     // Automatic, so that a session it remembers is resumed from its cache,
     // for clients to read while the server can't be reached.
-    await api.user.login(`${config.jid}/${config.resource}`, password, { automatic: true });
+    await whileStarting(() => api.user.login(`${config.jid}/${config.resource}`, password, { automatic: true }));
     // Not awaited: a room that takes a while to confirm mustn't hold up the socket.
     rejoinRooms(rooms, room_passwords, joining);
 

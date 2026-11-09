@@ -2,10 +2,10 @@
  * Finding the messages that a request names by id.
  * @module @converse/daemon/find
  */
-import { api } from '@converse/headless';
 import { conversationOf, getID, getIDs } from './dto.js';
 import { isMessage } from './history.js';
 import { ERRORS, RPCError } from './protocol.js';
+import { getChats, getRooms } from './session.js';
 
 /**
  * Finds a message by its id, or a unique prefix of it, among those held for
@@ -33,8 +33,8 @@ export async function findTarget(id, jid) {
  */
 export async function heldConversations(jid) {
     const chatboxes = jid
-        ? [(await api.rooms.get(jid)) ?? (await api.chats.get(jid))].filter(Boolean)
-        : [...((await api.chats.get()) ?? []), ...((await api.rooms.get()) ?? [])];
+        ? [(await getRooms(jid)) ?? (await getChats(jid))].filter(Boolean)
+        : [...((await getChats()) ?? []), ...((await getRooms()) ?? [])];
     await Promise.all(chatboxes.map((c) => c.messages.fetched));
     return chatboxes;
 }

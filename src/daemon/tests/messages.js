@@ -138,6 +138,21 @@ describe('Messages in a 1:1 chat', () => {
             }
         });
 
+        it('reports a send that lost the connection as not connected, like one refused up front', async () => {
+            const chat = await daemon.api.chats.get(JULIET, {}, true);
+            const send = vi
+                .spyOn(chat, 'sendMessage')
+                .mockRejectedValue(Object.assign(new Error('Headless words, not ours'), { code: 'not-connected' }));
+            try {
+                await expect(client.request('messages.send', { to: JULIET, body: 'x' })).rejects.toMatchObject({
+                    code: ERRORS.NOT_CONNECTED,
+                    data: { code: 'not-connected', see: ['daemon.status'] },
+                });
+            } finally {
+                send.mockRestore();
+            }
+        });
+
         it('never passes headless wording on, even for a failure without a code', async () => {
             const chat = await daemon.api.chats.get(JULIET, {}, true);
             const send = vi.spyOn(chat, 'sendMessage').mockRejectedValue(new Error('Internal detail'));

@@ -26,6 +26,9 @@ export function getSendErrorMessages(code, details = {}) {
         const messages = makeMessages(code, details);
         if (messages) return messages;
     }
+    if (code === 'not-connected') {
+        return [__('Your message could not be sent because you are not connected.')];
+    }
     return [__('Your message could not be sent.')];
 }
 

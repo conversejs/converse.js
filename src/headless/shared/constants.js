@@ -195,3 +195,19 @@ export const XFORM_VALIDATE_TYPE_MAP = {
     'xs:integer': 'number',
     'xs:time': 'time',
 };
+
+// What a correction replaces on the message, to bring back if the correction fails and is discarded.
+export const CORRECTED_ATTRS = [
+    'body',
+    'edited',
+    'is_encrypted',
+    'is_only_emojis',
+    'media_urls',
+    'message',
+    'ogp_metadata',
+    'older_versions',
+    'origin_id',
+    'plaintext',
+    'received',
+    'references',
+];

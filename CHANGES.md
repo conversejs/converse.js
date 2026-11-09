@@ -7,6 +7,7 @@
   attachment button, which opens an attachment menu listing what can be attached in that chat.
   Plugins add an entry through the new `getAttachmentMenuItems` hook.
 - feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
+- fix: A message sent without a connection was silently lost while looking sent. It now stays in the conversation as a failed message.
 - The unused `errors.UserFacingError` class is removed.
 - `@converse/log` is bumped to 0.1.0, because its API changed to variadic `log(level, ...args)` and `debug(...args)` without a version bump.
 - `strophe.js` is bumped to 6.0.0, whose types resolve under `"moduleResolution": "nodenext"`.

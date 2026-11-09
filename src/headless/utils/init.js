@@ -470,6 +470,9 @@ async function connect(credentials) {
     const { api } = _converse;
     const jid = _converse.session.get('jid');
     const connection = api.connection.get();
+    // Fetching the credentials can outlast the connection, for example if the user logs out.
+    if (!connection) return;
+
     if ([ANONYMOUS, EXTERNAL].includes(api.settings.get('authentication'))) {
         if (!jid) {
             throw new Error(

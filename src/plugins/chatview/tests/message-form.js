@@ -157,6 +157,24 @@ describe('The rich chat composer', function () {
     );
 
     it(
+        'attaches only one editor when torn down while Lexical loads',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const view = await openChat(_converse);
+            await u.waitUntil(() => view.querySelector('.chat-rich__editable'));
+            const form = view.querySelector('converse-message-form');
+
+            // Lexical is loaded with a dynamic import, so the first call is still pending
+            // when the composer goes away. Two editors on one host make Lexical loop.
+            const pending = form.ensureEditor();
+            form.remove();
+            const current = form.ensureEditor();
+
+            expect(await pending).toBe(await current);
+            (await current).destroy();
+        }),
+    );
+
+    it(
         'restores a draft into the editor',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const view = await openChat(_converse);

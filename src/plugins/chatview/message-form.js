@@ -130,7 +130,11 @@ export default class MessageForm extends CustomElement {
 
         const host = /** @type {HTMLElement} */ (this.querySelector('.chat-rich__editable'));
 
-        this._init = import('./lexical-editor.js').then((m) => {
+        const init = import('./lexical-editor.js').then((m) => {
+            // Torn down while Lexical loaded. Attaching now would leave an editor that
+            // nothing destroys, sharing its host with the one the next call attaches.
+            if (this._init !== init) return this.ensureEditor();
+
             const handle = m.createChatEditor(host, { onChange: () => this.onChange() });
             this._handle = handle;
             const draft = this.model?.get('draft');
@@ -139,8 +143,8 @@ export default class MessageForm extends CustomElement {
             this.onChange();
             return handle;
         });
-
-        return this._init;
+        this._init = init;
+        return init;
     }
 
     /** Reflect emptiness so the placeholder shows only when there is nothing to send. */

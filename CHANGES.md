@@ -71,6 +71,8 @@
   with the input taking up the remaining width.
 - #4132: The emoji picker no longer crashes when emoji.json can't be loaded, and the logged error
   names the `assets_path` it was loaded from.
+- fix(emojis): A `loadEmojis` hook listener that throws no longer leaves emoji support, and with it
+  sending and receiving messages, waiting forever. Its changes are ignored and the error is logged.
 - fix(chatview): The contact's name and status message in a chat header were painted the same
   colour as the header itself.
 - fix(chatview): Show the contact's status message in the chat header again. It was read off the

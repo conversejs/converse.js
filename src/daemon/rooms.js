@@ -295,6 +295,8 @@ export async function rejoinRooms(store, passwords, joining) {
                 const room = await getRoom(jid, roomAttrs(passwords, jid, nick), true);
                 // A leave while we were getting the room means it's not to be rejoined.
                 if (!store.get(jid)) return;
+                // Headless joins the rooms it has once it connects.
+                if (!api.connection.connected()) return;
 
                 try {
                     await joining.during(jid, () => enter(room, nick));

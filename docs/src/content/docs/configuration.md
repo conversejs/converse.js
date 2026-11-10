@@ -1545,6 +1545,10 @@ By default, a connection that was never established is given up on after one ret
 
 Errors that retrying can't fix still stop it: wrong credentials, a domain the server doesn't host (`host-unknown`), malformed XML from the server (`not-well-formed`), and a server that offers no supported authentication mechanism.
 
+With this setting, the contacts, chats and profile that an earlier session cached are also loaded as soon as the user is known, before connecting, so that they can be read while there's no connection. The connection then updates what was loaded, and rooms are joined once connected. Presences aren't cached, so contacts show as offline until then.
+
+The cache isn't loaded unless [authentication](#authentication) is set to `login`, on an untrusted device, or with [clear_cache_on_logout](#clear_cache_on_logout). It's loaded before the credentials have been checked, so this setting isn't suited to a device shared between users.
+
 ### reuse_scram_keys
 
 - Default: `true`

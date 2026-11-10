@@ -136,7 +136,8 @@ async function serve(config, gid) {
         // would join the account's bookmarked rooms, and bookmark every room
         // it joins, for the account's other clients to join too.
         allow_bookmarks: false,
-        // The daemon outlives outages, including one that's going on when it starts.
+        // The daemon outlives outages, including one that's going on when it
+        // starts, with what it has cached there for clients in the meantime.
         retry_initial_connection: true,
         ...config.settings,
     });

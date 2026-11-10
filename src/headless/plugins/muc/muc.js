@@ -132,9 +132,13 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         this.listenTo(this.occupants, 'change:affiliation', this.createAffiliationChangeMessage);
         this.listenTo(this.occupants, 'change:role', this.createRoleChangeMessage);
 
-        const restored = await this.restoreFromCache();
-        if (!restored) {
-            await this.join();
+        if (api.connection.connected()) {
+            const restored = await this.restoreFromCache();
+            if (!restored) await this.join();
+        } else {
+            // We can't tell whether we're still in the room. It's joined on connecting.
+            this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
+            await this.fetchMessages().catch(/** @param {Error} e */ (e) => log.error(e));
         }
 
         /**
@@ -195,6 +199,10 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             // We have restored a groupchat from session storage,
             // so we don't send out a presence stanza again.
             log.info(`MUC ${this.get('jid')} join() early return: isEntered=true`);
+            return;
+        }
+        if (!api.connection.connected()) {
+            log.info(`MUC ${this.get('jid')} join() early return: there is no connection`);
             return;
         }
         log.info(`MUC ${this.get('jid')} join() called, setting status to CONNECTING`);

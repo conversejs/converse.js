@@ -9,14 +9,6 @@ declare global {
 
 export type OMEMOVersion = 'eu.siacs.conversations.axolotl' | 'urn:xmpp:omemo:2';
 
-export type OMEMOProfile = {
-    version: OMEMOVersion;
-    readonly devicelist_node: string;
-    readonly bundle_node_prefix: string;
-    usesSCE: boolean;
-    encodePubKey: (b64: string) => string;
-};
-
 export type CounterpartyPreKey = {
     id: number;
     key: string;

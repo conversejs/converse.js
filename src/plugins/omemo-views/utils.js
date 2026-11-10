@@ -264,16 +264,6 @@ export async function generateFingerprints(jid) {
 }
 
 /**
- * @param {string} jid
- * @param {string} device_id
- * @returns {Promise<import('@converse/headless').Device[]>}
- */
-export async function getDeviceForContact(jid, device_id) {
-    const devices = await u.omemo.getDevicesForContact(jid);
-    return devices.get(device_id);
-}
-
-/**
  * @param {MouseEvent} ev
  */
 function toggleOMEMO(ev) {

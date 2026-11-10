@@ -5,7 +5,6 @@ import converse from '../../shared/api/public.js';
 import api from '../../shared/api/index.js';
 import { getCrypto } from './crypto.js';
 import { getDeviceList } from './utils.js';
-export { VersionedOMEMOStore } from './versioned-store.js';
 
 const { Strophe, stx, u } = converse.env;
 

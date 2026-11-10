@@ -13,7 +13,7 @@ import { api, constants, converse, log } from '@converse/headless';
 import { toRoomDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { parseJID, resolveRoomJID } from './resolve.js';
-import { requireConnected } from './session.js';
+import { getRooms, requireConnected } from './session.js';
 import { readStateFile, writeStateFile } from './state-file.js';
 
 const { ROOMSTATUS } = converse;
@@ -241,7 +241,7 @@ const forgetting = new Map();
  */
 async function getRoom(jid, attrs, create) {
     await forgetting.get(jid)?.catch(() => {});
-    return api.rooms.get(jid, attrs, create);
+    return getRooms(jid, attrs, create);
 }
 
 /**
@@ -420,7 +420,7 @@ export function roomMethods({ config, policy, store, passwords, joining }) {
          */
         async 'rooms.occupants'({ room }) {
             const jid = await resolveRoomJID(room, 'room');
-            const model = await api.rooms.get(jid);
+            const model = await getRooms(jid);
             if (!model?.isEntered()) {
                 throw new RPCError(ERRORS.NOT_FOUND, `We aren't in ${jid}, so we can't see who is in it.`);
             }

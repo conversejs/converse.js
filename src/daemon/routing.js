@@ -3,8 +3,8 @@
  * read, upload, or send its content.
  * @module @converse/daemon/routing
  */
-import { api } from '@converse/headless';
 import { ERRORS, RPCError } from './protocol.js';
+import { getRooms } from './session.js';
 
 /**
  * @param {Object} deps
@@ -27,7 +27,7 @@ export function createSendRouter({ policy, audit, mode }) {
     return async function routeSend(client, to, { direct, draft, cannot_draft, action, consume = true }) {
         if (client.access === 'full') return direct();
 
-        const room = await api.rooms.get(to);
+        const room = await getRooms(to);
         if (room && !room.isEntered()) throw notJoined(to);
 
         const verdict = policy[consume ? 'admit' : 'check'](to, { room: !!room });

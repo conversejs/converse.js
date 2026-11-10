@@ -196,8 +196,9 @@ export async function startDaemon({
          * first connection.
          * @param {Object} [options]
          * @param {Record<string, { password?: string }>} [options.room_config] - A new "rooms" map for the config file
+         * @param {boolean} [options.offline] - Don't play the server, for a daemon that isn't let connect
          */
-        async restart({ room_config } = {}) {
+        async restart({ room_config, offline = false } = {}) {
             await this.daemon.stop();
             if (room_config) {
                 const raw = JSON.parse(fs.readFileSync(config.paths.config, 'utf8'));
@@ -208,8 +209,17 @@ export async function startDaemon({
             this.daemon = await start(config);
             connection = api.connection.get();
             this.connection = connection;
-            await answerServer();
+            if (!offline) await answerServer();
         },
+        /** Makes the first connection of a daemon restarted `offline`, without answering it yet. */
+        connectFirstTime() {
+            // A restart in this process keeps these, where a new process starts without them.
+            _converse.session.save('roster_cached', false);
+            connection.IQ_stanzas.length = 0;
+            connection.connect(JID, 'secret');
+        },
+        /** Plays the server for a daemon that made its first connection with `connectFirstTime`. */
+        answerServer,
         async stop() {
             await this.daemon.stop();
             await remove();

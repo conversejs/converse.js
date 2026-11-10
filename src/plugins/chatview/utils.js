@@ -49,19 +49,3 @@ export async function parseMessageForCommands(chat, text) {
     }
     return false;
 }
-
-export function resetElementHeight(ev) {
-    if (window.CSS?.supports('field-sizing', 'content')) {
-        return;
-    }
-
-    if (ev.target.value) {
-        const height = ev.target.scrollHeight + 'px';
-        if (ev.target.style.height != height) {
-            ev.target.style.height = 'auto';
-            ev.target.style.height = height;
-        }
-    } else {
-        ev.target.style = '';
-    }
-}

@@ -5,7 +5,7 @@ import converse from '../../shared/api/public.js';
 import { IQError } from '../../shared/errors.js';
 import { UNDECIDED } from './constants.js';
 import { parseBundle, parseBundleV2 } from './parsers.js';
-import { OMEMOVersionAwareModel } from './profiles.js';
+import { OMEMOVersionAwareModel } from './version-aware-model.js';
 
 const { Strophe, sizzle, stx, u } = converse.env;
 

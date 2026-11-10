@@ -33,17 +33,6 @@ const stripTrailingSlashes = (v) => (typeof v === 'string' ? v.replace(/\/+$/, '
 const SETTING_SCHEMAS = new Map([['assets_path', coerce(stripTrailingSlashes)]]);
 
 /**
- * Register (or override) the schema for a setting. This is the seam through
- * which `api.settings.extend` can eventually let plugins declare validation for
- * their own settings.
- * @param {string} key
- * @param {import('./types').StandardSchemaV1} schema
- */
-export function registerSettingSchema(key, schema) {
-    SETTING_SCHEMAS.set(key, schema);
-}
-
-/**
  * Validate/coerce a single value against its registered schema. Returns the
  * value unchanged when no schema is registered for the key.
  *

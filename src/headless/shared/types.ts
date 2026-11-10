@@ -43,12 +43,6 @@ export type RSMQueryOptions = {
     max?: number; // The maximum number of items to return.
 };
 
-export type RSMResult = {
-    count?: string;
-    first?: string;
-    last?: string;
-};
-
 // Types for mixins.
 // -----------------
 

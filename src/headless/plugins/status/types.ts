@@ -1,5 +1,4 @@
 export type ConnectionStatus = 'online' | 'unavailable' | 'offline';
-export type ProfileShow = 'dnd' | 'away' | 'xa' | 'chat';
 
 export type PresenceAttrs = {
     type?: PresenceType;

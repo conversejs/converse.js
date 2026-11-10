@@ -1,6 +1,5 @@
 import { html } from 'lit';
 import { api, u } from '@converse/headless';
-import tplSpinner from 'templates/spinner.js';
 import { CustomElement } from '../components/element.js';
 import { onScrolledDown } from './utils.js';
 import './message-history.js';
@@ -81,7 +80,6 @@ export default class ChatContent extends CustomElement {
                     .messages="${this.model.messages.slice(this.window_top, this.window_bottom + 1)}"
                 ></converse-message-history>
             </div>
-            ${this.model.ui?.get('chat-content-spinner-top') ? tplSpinner() : ''}
         `;
     }
 

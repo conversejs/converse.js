@@ -155,7 +155,6 @@ export const FOLLOWING_PUBLISH_OPTIONS = {
 // is independent of plugin-initialization order.
 export const NS_ATOM = 'http://www.w3.org/2005/Atom';
 export const NS_THREAD = 'http://purl.org/syndication/thread/1.0';
-export const NS_XHTML = 'http://www.w3.org/1999/xhtml';
 
 /**
  * The Skeletor model `type` used by microblog posts, distinguishing them from

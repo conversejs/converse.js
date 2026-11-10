@@ -147,22 +147,6 @@ export type BrowseFeedsResult = {
     has_more: boolean; // Whether a further page exists (a full page plus a fresh cursor)
 };
 
-/**
- * Attributes of a {@link PubSubFeed} — one PubSub node at one JID.
- */
-export type PubSubFeedAttrs = {
-    id: string; // `${jid}/${node}`
-    jid: string; // The service/owner JID (bare JID for own PEP)
-    node: string; // The PubSub node
-    title?: string;
-    supports_rsm?: boolean; // Whether the server echoed an RSM `<set>` (else max_items paging)
-    history_complete?: boolean; // Whether the oldest post in the node has been loaded
-
-    // Comment-thread bookkeeping (CommentFeed / CommentFeeds):
-    last_viewed?: number; // Epoch ms of last explicit access, for LRU eviction
-    pinned?: boolean; // Exempt from LRU eviction (own posts, subscribed for live updates)
-};
-
 export type LikeTarget = {
     feed: CommentFeed;
     model: PubSubMessage;

@@ -5,7 +5,7 @@ import { CustomElement } from './element.js';
 
 const { dayjs } = converse.env;
 
-export default class Time extends CustomElement {
+class Time extends CustomElement {
     static get properties() {
         return {
             timestamp: { type: String },

@@ -4,7 +4,7 @@ import { __ } from 'i18n';
 import { api } from '@converse/headless';
 import { html } from 'lit';
 
-export default class ModeratorToolsModal extends BaseModal {
+class ModeratorToolsModal extends BaseModal {
     constructor(options) {
         super(options);
         this.id = 'converse-modtools-modal';

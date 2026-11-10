@@ -14,7 +14,7 @@ import Dropdown from 'shared/components/dropdown.js';
 import { shortnamesToEmojis } from 'shared/chat/utils.js';
 import 'shared/chat/emoji-picker.js';
 
-export default class SocialEmojiDropdown extends Dropdown {
+class SocialEmojiDropdown extends Dropdown {
     static get properties() {
         return {
             ...super.properties,

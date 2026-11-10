@@ -3,7 +3,7 @@ import { api } from '@converse/headless';
 import { __ } from 'i18n';
 import BaseModal from 'plugins/modal/modal.js';
 
-export default class MUCNicknameModal extends BaseModal {
+class MUCNicknameModal extends BaseModal {
     renderModal() {
         return html`<converse-muc-nickname-form jid="${this.model.get('jid')}"></converse-muc-nickname-form>`;
     }

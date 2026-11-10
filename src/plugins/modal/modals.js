@@ -9,5 +9,3 @@ export class ModalsContainer extends CustomElement {
 }
 
 api.elements.define('converse-modals', ModalsContainer);
-
-export default ModalsContainer;

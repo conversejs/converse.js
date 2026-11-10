@@ -6,7 +6,7 @@ import tplMUCEmpty from './templates/muc-empty.js';
  * Shown inside a MUC the user has entered which has no messages yet.
  * Rendered by {@link MUCChatContent}.
  */
-export default class MUCEmpty extends CustomElement {
+class MUCEmpty extends CustomElement {
     static get properties() {
         return {
             model: { type: Object },

@@ -14,7 +14,7 @@ import './styles/reply-preview.scss';
 /**
  * A custom element that displays a preview of the message being replied to.
  */
-export default class ReplyPreview extends CustomElement {
+class ReplyPreview extends CustomElement {
     static get properties() {
         return {
             model: { type: Object },

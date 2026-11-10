@@ -20,5 +20,3 @@ class ControlBoxNavback extends CustomElement {
 }
 
 api.elements.define('converse-controlbox-navback', ControlBoxNavback);
-
-export default ControlBoxNavback;

@@ -8,7 +8,7 @@ import { api } from '@converse/headless';
 import { __ } from 'i18n';
 import BaseModal from 'plugins/modal/modal.js';
 
-export default class KeyboardShortcutsModal extends BaseModal {
+class KeyboardShortcutsModal extends BaseModal {
     getModalTitle() {
         return __('Keyboard shortcuts');
     }

@@ -10,7 +10,7 @@ import { FILTER_CONTAINS } from 'shared/autocomplete/utils.js';
 
 const { sizzle } = converse.env;
 
-export default class EmojiPickerContent extends CustomElement {
+class EmojiPickerContent extends CustomElement {
     static get properties() {
         return {
             'search_results': { type: Array },

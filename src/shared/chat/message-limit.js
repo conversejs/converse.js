@@ -2,7 +2,7 @@ import tplMessageLimit from './templates/message-limit.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api } from '@converse/headless';
 
-export default class MessageLimitIndicator extends CustomElement {
+class MessageLimitIndicator extends CustomElement {
     static get properties() {
         return {
             model: { type: Object },

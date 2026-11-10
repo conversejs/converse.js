@@ -8,7 +8,7 @@ import { MUCOccupant, api, converse, log } from '@converse/headless';
 import MessageForm from 'plugins/chatview/message-form.js';
 import { makeMentionSource } from './mention-source.js';
 
-export default class MUCMessageForm extends MessageForm {
+class MUCMessageForm extends MessageForm {
     getTypeaheadSources() {
         return [
             ...super.getTypeaheadSources(),

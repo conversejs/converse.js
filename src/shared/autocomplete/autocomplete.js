@@ -11,7 +11,7 @@ import { helpers, getAutoCompleteItem, FILTER_CONTAINS, SORT_BY_QUERY_POSITION }
 
 const { siblingIndex } = u;
 
-export class AutoComplete extends EventEmitter(Object) {
+class AutoComplete extends EventEmitter(Object) {
     /**
      * @param {HTMLElement} el
      * @param {import('./types').AutoCompleteConfig} config

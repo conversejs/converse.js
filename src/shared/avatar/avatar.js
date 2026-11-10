@@ -7,7 +7,7 @@ import tplAvatar from './templates/avatar.js';
 
 import './avatar.scss';
 
-export default class Avatar extends CustomElement {
+class Avatar extends CustomElement {
     static get properties() {
         return {
             model: { type: Object },

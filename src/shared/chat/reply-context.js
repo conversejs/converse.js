@@ -11,7 +11,7 @@ import { __ } from 'i18n';
 /**
  * A custom element that displays the context of the message being replied to.
  */
-export default class ReplyContext extends CustomElement {
+class ReplyContext extends CustomElement {
     static get properties() {
         return {
             model: { type: Object },

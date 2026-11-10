@@ -6,7 +6,7 @@ import tplImage from '../templates/image.js';
 
 const { isGIFURL } = u;
 
-export default class Image extends CustomElement {
+class Image extends CustomElement {
     static get properties() {
         return {
             src: { type: String },

@@ -39,5 +39,3 @@ class MUCPasswordForm extends CustomElement {
 }
 
 api.elements.define('converse-muc-password-form', MUCPasswordForm);
-
-export default MUCPasswordForm;

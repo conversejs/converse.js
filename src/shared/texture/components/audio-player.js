@@ -43,7 +43,7 @@ function formatSpeed(speed) {
  * Accessible audio player component
  * Provides custom controls that work with screen readers like NVDA and JAWS
  */
-export default class AudioPlayer extends CustomElement {
+class AudioPlayer extends CustomElement {
     static get properties() {
         return {
             src: { type: String },

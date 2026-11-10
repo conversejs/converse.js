@@ -6,7 +6,7 @@ import renderTexture from 'shared/texture/directives/texture.js';
 
 import './styles/message-body.scss';
 
-export default class MessageBody extends CustomElement {
+class MessageBody extends CustomElement {
     static get properties() {
         return {
             // We make this a string instead of a boolean, since we want to

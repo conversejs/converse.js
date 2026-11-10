@@ -18,6 +18,16 @@
 - `strophe.js` is bumped to 6.0.0, whose types resolve under `"moduleResolution": "nodenext"`.
 - fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
 - fix(profile): The status icons in the profile modal's status form are colored again.
+- Unused exports are removed from the source exported as `converse.js/src/*`:
+    - Many UI components no longer have a default export, among them `Avatar`, `MUCMessageForm`,
+      `MUCChatContent`, `HeadlinesHeading` and the MUC and bookmark modals. They are still
+      registered as custom elements: to subclass one, get its class with
+      `customElements.get('converse-muc-message-form')`.
+    - The `AutoComplete` named export of `shared/autocomplete/autocomplete.js`.
+    - The default exports of `utils/index.js` and `shared/texture/utils.js`. Their named
+      exports remain.
+    - The utility functions `getAutoCompleteListItem`, `showOccupantModal`,
+      `fetchMessagesOnScrollUp`, `resetElementHeight`, `getHeaders` and `getDeviceForContact`.
 - Projects can bundle `dist/converse.js` themselves: it no longer pulls all of `dist/` into a
   webpack build. Serve `dist/chunkjs/` and `dist/libomemo.esm.min.js` next to your bundle.
 - The source is exported as `converse.js/src/*`, with its dependencies (including

@@ -4,7 +4,7 @@ import BaseModal from '../../modal/modal.js';
 import '../components/bookmark-form.js';
 import { __ } from 'i18n';
 
-export default class BookmarkFormModal extends BaseModal {
+class BookmarkFormModal extends BaseModal {
     /**
      * @param {import('@converse/skeletor').ModelOptions} options
      */

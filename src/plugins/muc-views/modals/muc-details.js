@@ -5,7 +5,7 @@ import { api } from '@converse/headless';
 
 import '../styles/muc-details-modal.scss';
 
-export default class MUCDetailsModal extends BaseModal {
+class MUCDetailsModal extends BaseModal {
     initialize() {
         super.initialize();
         this.listenTo(this.model, 'change', () => this.requestUpdate());

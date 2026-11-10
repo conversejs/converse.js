@@ -6,7 +6,7 @@ import { __ } from 'i18n';
 
 const u = converse.env.utils;
 
-export default class MUCInviteModal extends BaseModal {
+class MUCInviteModal extends BaseModal {
     constructor(options) {
         super(options);
         this.id = 'converse-muc-invite-modal';

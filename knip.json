@@ -1,0 +1,45 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreExportsUsedInFile": true,
+  "ignoreBinaries": ["mkfifo"],
+  "rules": {
+    "duplicates": "off",
+    "subpaths": "off"
+  },
+  "workspaces": {
+    ".": {
+      "entry": [
+        "src/website.js!",
+        "src/shared/styles/website.scss!",
+        "src/**/tests/**/*.js",
+        "vitest/*.js",
+        "scripts/*.{js,mjs}"
+      ],
+      "project": ["src/**/*.{js,ts,scss,sass}!", "!src/types/**"],
+      "includeSubpathExports": true,
+      "ignoreUnresolved": ["../../../../dist/converse.js"],
+      "ignoreDependencies": ["@converse/skeletor", "strophe.js", "lit-html", "@vitest/browser", "clean-css-cli"],
+      "rspack": {
+        "config": ["rspack/rspack.*.js"]
+      },
+      "rollup": {
+        "config": ["rollup.types.config.js"]
+      }
+    },
+    "src/headless": {
+      "entry": ["**/tests/**/*.js"],
+      "project": ["**/*.{js,ts}!", "!types/**"],
+      "ignoreDependencies": ["@types/lodash"],
+      "ignoreUnresolved": ["./libomemo.esm.min.js"]
+    },
+    "src/log": {
+      "project": ["**/*.{js,ts}!", "!types/**"]
+    },
+    "src/daemon": {
+      "entry": ["tests/**/*.js"]
+    },
+    "src/cli": {
+      "entry": ["tests/**/*.js"]
+    }
+  }
+}

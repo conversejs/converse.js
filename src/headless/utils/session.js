@@ -67,6 +67,7 @@ export function clearSession(_converse) {
         _converse.state.login_info?.destroy();
     }
     _converse.initSession();
+    delete _converse.state.session_cache_loaded;
     /**
      * Synchronouse event triggered once the user session has been cleared,
      * for example when the user has logged out or when Converse has

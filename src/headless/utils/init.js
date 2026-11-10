@@ -385,6 +385,34 @@ async function getLoginCredentialsFromSCRAMKeys() {
 }
 
 /**
+ * Loads what an earlier session left in the cache, so that it's available
+ * before the first connection is made. Does nothing unless
+ * `retry_initial_connection` is set, or if this device shouldn't keep a cache.
+ * Plugins do the loading, by listening for `loadSessionCache`.
+ * @returns {Promise<void>}
+ */
+export async function loadSessionCache() {
+    const { api, state } = _converse;
+    if (
+        state.session_cache_loaded ||
+        !api.settings.get('retry_initial_connection') ||
+        api.settings.get('authentication') !== LOGIN ||
+        !state.config.get('trusted') ||
+        api.settings.get('clear_cache_on_logout')
+    ) {
+        return;
+    }
+    state.session_cache_loaded = true;
+    /**
+     * Synchronous event triggered once the user's session exists and before
+     * connecting, for plugins to load what they've cached. Nothing may be sent
+     * in response, since there's no connection yet.
+     * @event _converse#loadSessionCache
+     */
+    await api.trigger('loadSessionCache', { synchronous: true });
+}
+
+/**
  * @param {import('./types').Credentials} [credentials]
  * @param {boolean} [automatic]
  */

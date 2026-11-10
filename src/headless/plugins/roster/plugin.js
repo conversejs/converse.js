@@ -14,6 +14,7 @@ import Presence from './presence.js';
 import Presences from './presences.js';
 import {
     isUnsavedContact,
+    loadCachedRoster,
     onClearSession,
     onPresencesInitialized,
     onRosterContactsFetched,
@@ -62,6 +63,7 @@ converse.plugins.add('converse-roster', {
         Object.assign(_converse.exports, exports);
 
         api.listen.on('beforeTearDown', () => unregisterPresenceHandler());
+        api.listen.on('loadSessionCache', loadCachedRoster);
         api.listen.on('clearSession', onClearSession);
         api.listen.on('presencesInitialized', onPresencesInitialized);
         api.listen.on('statusInitialized', onStatusInitialized);

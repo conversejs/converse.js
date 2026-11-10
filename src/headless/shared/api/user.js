@@ -6,7 +6,7 @@ import presence_api from './presence.js';
 import connection_api from '../connection/api.js';
 import { replacePromise } from '../../utils/session.js';
 import { removeLocalStorageItem } from '../../utils/environment.js';
-import { attemptNonPreboundSession, setUserJID } from '../../utils/init.js';
+import { attemptNonPreboundSession, loadSessionCache, setUserJID } from '../../utils/init.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { user_settings_api } from '../settings/user/api.js';
 import { LOGOUT } from '../constants.js';
@@ -62,6 +62,7 @@ const api = {
             }
             if (jid) {
                 jid = await setUserJID(jid);
+                await loadSessionCache();
             }
 
             /**

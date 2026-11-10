@@ -132,6 +132,9 @@ export async function resendUnencrypted(chatbox, message) {
  */
 function unsent(e) {
     const code = /** @type {{code?: string}} */ (e)?.code;
+    if (code === 'not-connected') {
+        return new RPCError(ERRORS.NOT_CONNECTED, UNSENT[code], { code, see: ['daemon.status'] });
+    }
     return new RPCError(ERRORS.INTERNAL_ERROR, UNSENT[code] ?? UNSENT.unexpected, { code: code ?? null });
 }
 
@@ -154,6 +157,7 @@ export function ownMessagesOnly(verb) {
  * Scripts can branch on the `code` in the error's data instead of reading these words.
  */
 const UNSENT = {
+    'not-connected': "Nothing was sent: the daemon isn't connected to the server. Try again.",
     'no-omemo-devices': 'Nothing was sent: there are no OMEMO devices to encrypt for.',
     'omemo-key-fetch-failed': "Nothing was sent: the recipient's encryption keys couldn't be fetched. Try again.",
     'omemo-subscription-required': "Nothing was sent: the recipient's encryption keys need a presence subscription.",

@@ -114,6 +114,7 @@ describe('An OMEMO encrypted message', function () {
                 () => view.querySelector('.chat-msg__text').textContent.replace(/<!-.*?->/g, '') === newest_text,
             );
 
+            older_versions = first_msg.get('older_versions');
             keys = Object.keys(older_versions);
             expect(keys.length).toBe(2);
             expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');

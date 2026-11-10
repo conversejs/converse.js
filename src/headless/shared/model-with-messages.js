@@ -18,6 +18,7 @@ import { getStanzaIDsByJID } from './parsers.js';
 import { isUploadableFile } from './http-upload.js';
 
 const { Strophe, stx, u } = converse.env;
+const { CORRECTED_ATTRS } = constants;
 
 // How many code points of the replied-to message to quote in the XEP-0461
 // compatibility fallback. Matches the preview length shown by the reply-context
@@ -464,7 +465,8 @@ export default function ModelWithMessages(BaseModel) {
         async sendMessage(attrs, { replying_to, correcting } = {}) {
             await api.emojis.initialize();
 
-            if (!this.canPostMessages()) {
+            // A room we lost with the connection can't post either, but its message is kept as a failed one.
+            if (api.connection.authenticated() && !this.canPostMessages()) {
                 log.warn('sendMessage was called but canPostMessages is false');
                 return;
             }
@@ -483,9 +485,14 @@ export default function ModelWithMessages(BaseModel) {
             attrs = await this.getOutgoingMessageAttributes(attrs);
             let message = correcting ?? this.messages.findWhere('correcting');
             if (message) {
-                const older_versions = message.get('older_versions') || {};
+                const older_versions = { ...message.get('older_versions') };
                 const edited_time = message.get('edited') || message.get('time');
                 older_versions[edited_time] = message.getMessageText();
+                // A message that's already failed was never delivered, so there's nothing new to go back to.
+                const before_correction =
+                    message.get('send_status') === 'failed'
+                        ? message.get('before_correction')
+                        : pick(message.attributes, CORRECTED_ATTRS);
 
                 message.save({
                     ...['body', 'is_only_emojis', 'media_urls', 'references', 'is_encrypted'].reduce((obj, k) => {
@@ -493,6 +500,7 @@ export default function ModelWithMessages(BaseModel) {
                         return obj;
                     }, {}),
                     ...{
+                        before_correction,
                         correcting: false,
                         edited: new Date().toISOString(),
                         message: attrs.body,
@@ -523,14 +531,28 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
+         * Tests `authenticated` because `connected` is already true before SASL and
+         * resource binding, when the server won't accept a message.
+         */
+        #throwIfNotConnected() {
+            if (!api.connection.authenticated()) {
+                throw new errors.CodedError('not-connected', 'Message not sent, there is no connection');
+            }
+        }
+
+        /**
          * Builds and sends the stanza for a stored message. On failure the message
          * is kept, marked as failed with the error's code, and the error is re-thrown.
          * @param {BaseMessage} message
          */
         async #sendStoredMessage(message) {
             try {
+                this.#throwIfNotConnected();
                 const stanza = await this.createMessageStanza(message);
+                // The connection can drop during the build, and api.send drops the stanza silently.
+                this.#throwIfNotConnected();
                 api.send(stanza);
+                if (message.get('before_correction')) message.save({ before_correction: undefined });
             } catch (e) {
                 const { code, iq, can_send_unencrypted } =
                     /** @type {{code?: string, iq?: Element, can_send_unencrypted?: boolean}} */ (e);
@@ -569,11 +591,22 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * Removes a failed message from the history.
+         * Removes a failed message from the history. A failed correction goes back
+         * to the version that was delivered instead, since that one still exists for others.
          * @param {BaseMessage} message
          */
         discardFailedMessage(message) {
-            if (message.get('send_status') === 'failed') message.destroy();
+            if (message.get('send_status') !== 'failed') return;
+
+            const before_correction = message.get('before_correction');
+            if (before_correction) {
+                this.#clearSendFailure(message);
+                // By name, so that what the correction added and the original lacked is cleared too.
+                const restored = Object.fromEntries(CORRECTED_ATTRS.map((k) => [k, before_correction[k]]));
+                message.save({ ...restored, before_correction: undefined });
+            } else {
+                message.destroy();
+            }
         }
 
         /**

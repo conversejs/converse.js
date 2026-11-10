@@ -341,11 +341,14 @@ export default class MessageForm extends CustomElement {
             return;
         }
 
-        if (!api.connection.get().authenticated) {
-            const err_msg = __('Sorry, the connection has been lost, and your message could not be sent');
-            api.alert('error', __('Error'), err_msg);
+        if (!api.connection.authenticated()) {
             api.connection.reconnect();
-            return;
+            // A message goes on to be kept as a failed one, which a command can't be.
+            if (message_text.trimStart().startsWith('/')) {
+                const err_msg = __('Sorry, the connection has been lost, and your message could not be sent');
+                api.alert('error', __('Error'), err_msg);
+                return;
+            }
         }
 
         let spoiler_hint,

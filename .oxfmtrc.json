@@ -21,6 +21,7 @@
     "*.md",
     "*.html",
     "docs/",
+    "src/log/types/",
     ".github/",
     "composer.json",
     ".scratch/",

@@ -48,6 +48,26 @@ function initRoster() {
 }
 
 /**
+ * Loads the contacts an earlier session left in the cache.
+ *
+ * `rosterContactsFetched` only fires if the cache held contacts, since an empty
+ * cache can't be told apart from a roster that was never fetched.
+ */
+export async function loadCachedRoster() {
+    initRoster();
+    const roster = /** @type {RosterContacts} */ (_converse.state.roster);
+    try {
+        await new Promise((resolve, reject) => {
+            roster.fetch({ add: true, silent: true, success: resolve, error: (_, e) => reject(e) });
+        });
+    } catch (e) {
+        log.error(e);
+        return;
+    }
+    if (roster.length) api.trigger('rosterContactsFetched', roster);
+}
+
+/**
  * Fetch all the roster groups, and then the roster contacts.
  * Emit an event after fetching is done in each case.
  * @param {boolean} ignore_cache - If set to to true, the local cache
@@ -137,7 +157,7 @@ export function onPresencesInitialized(reconnecting) {
          * @example _converse.api.listen.on('rosterReadyAfterReconnection', () => { ... });
          */
         api.trigger('rosterReadyAfterReconnection');
-    } else {
+    } else if (!_converse.state.session_cache_loaded) {
         initRoster();
     }
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);

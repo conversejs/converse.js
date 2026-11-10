@@ -49,13 +49,27 @@ class ChatBoxes extends Collection {
      * @param {boolean} reconnecting
      */
     onConnected(reconnecting) {
-        if (reconnecting) return;
+        if (reconnecting || _converse.state.session_cache_loaded) return;
 
+        this.fetchCached();
+    }
+
+    /**
+     * Loads the chats from the cache.
+     * @returns {Promise<void>}
+     */
+    fetchCached() {
         const bare_jid = _converse.session.get('bare_jid');
         initStorage(this, `converse.chatboxes-${bare_jid}`);
-        this.fetch({
-            add: true,
-            success: (c) => this.onChatBoxesFetched(c),
+        return new Promise((resolve) => {
+            this.fetch({
+                add: true,
+                success: (c) => {
+                    this.onChatBoxesFetched(c);
+                    resolve();
+                },
+                error: () => resolve(),
+            });
         });
     }
 

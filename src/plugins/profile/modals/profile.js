@@ -9,6 +9,7 @@ import tplLogoutButton from '../templates/logout_button.js';
 import tplProfileModal from '../templates/profile_modal.js';
 
 import './styles/profile.scss';
+import '../styles/chat-status-form.scss';
 
 export default class ProfileModal extends BaseModal {
     /**

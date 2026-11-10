@@ -17,6 +17,7 @@
 - `@converse/log` is bumped to 0.1.0, because its API changed to variadic `log(level, ...args)` and `debug(...args)` without a version bump.
 - `strophe.js` is bumped to 6.0.0, whose types resolve under `"moduleResolution": "nodenext"`.
 - fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
+- fix(profile): The status icons in the profile modal's status form are colored again.
 - Projects can bundle `dist/converse.js` themselves: it no longer pulls all of `dist/` into a
   webpack build. Serve `dist/chunkjs/` and `dist/libomemo.esm.min.js` next to your bundle.
 - The source is exported as `converse.js/src/*`, with its dependencies (including

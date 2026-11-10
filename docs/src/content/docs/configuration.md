@@ -1535,6 +1535,16 @@ This setting, together with the three allowed domain settings above, obsolete th
 
 :::
 
+### retry_initial_connection
+
+- Default: `false`
+
+Keep trying to connect when the XMPP server can't be reached at startup, for as long as it takes.
+
+By default, a connection that was never established is given up on after one retry, so that for example a mistyped address is reported to the user. Set this to `true` for a client that runs unattended. It only has an effect when [auto_reconnect](#auto_reconnect) is on.
+
+Errors that retrying can't fix still stop it: wrong credentials, a domain the server doesn't host (`host-unknown`), malformed XML from the server (`not-well-formed`), and a server that offers no supported authentication mechanism.
+
 ### reuse_scram_keys
 
 - Default: `true`

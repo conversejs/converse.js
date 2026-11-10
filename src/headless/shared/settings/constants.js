@@ -8,6 +8,7 @@
  * @property {Boolean} [auto_login=false] - Currently only used in connection with anonymous login
  * @property {Boolean} [reuse_scram_keys=true] - Save SCRAM keys after login to allow for future auto login
  * @property {Boolean} [auto_reconnect=true]
+ * @property {Boolean} [retry_initial_connection=false]
  * @property {Array<String>} [blacklisted_plugins]
  * @property {Boolean} [clear_cache_on_logout=false]
  * @property {Object} [connection_options]
@@ -42,6 +43,7 @@ export const DEFAULT_SETTINGS = {
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
     auto_login: false, // Currently only used in connection with anonymous login
     auto_reconnect: true,
+    retry_initial_connection: false,
     blacklisted_plugins: [],
     clear_cache_on_logout: false,
     connection_options: {},

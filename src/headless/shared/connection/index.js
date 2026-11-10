@@ -1,4 +1,3 @@
-import debounce from 'lodash-es/debounce.js';
 import log from '@converse/log';
 import sizzle from '#sizzle';
 import _converse from '../_converse.js';
@@ -10,12 +9,28 @@ import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID } from '../../utils/init.js';
 import { setLocalStorageItem } from '../../utils/environment.js';
 
+const RETRY_BASE_DELAY = 3000;
+const RETRY_MAX_DELAY = 60000;
+
 /**
  * The Connection class manages the connection to the XMPP server. It's
  * agnostic concerning the underlying protocol (i.e. websocket, long-polling
  * via BOSH or websocket inside a shared worker).
  */
 export class Connection extends /** @type {import('../types').StropheConnectionConstructor} */ (Strophe.Connection) {
+    // Set once this connection has been given up on. A later one replaces it.
+    #finished = false;
+    // How many retries have been scheduled since the connection last came up.
+    #retries = 0;
+    /** @type {ReturnType<typeof setTimeout>|null} */
+    #retry_timer = null;
+    // When the scheduled retry is due, in milliseconds since the epoch.
+    #retry_at = 0;
+    // Set while a retry is getting ready to log in, before Strophe reports on it.
+    #preparing_retry = false;
+    // Set when an attempt fails, so that the next one uses the other transport.
+    #switch_transport = false;
+
     /**
      * @param {string} service - The BOSH or WebSocket service URL.
      * @param {import('strophe.js').ConnectionOptions} options
@@ -27,8 +42,67 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         // When re-attaching to an existing session we don't need to again send out a presence stanza,
         // because it's as if "we never left" (see onConnectStatusChanged).
         this.send_initial_presence = true;
-        /** @type {import('lodash-es').DebouncedFunc<() => Promise<any>>} */
-        this.debouncedReconnect = debounce(this.reconnect, 3000);
+        // Whether this connection has ever been established.
+        this.has_connected = false;
+    }
+
+    /**
+     * Reconnects straight away after losing a working connection. After a
+     * failed attempt it waits instead, because Strophe still has a disconnect
+     * pending which would tear down an attempt that's started straight away.
+     *
+     * @param {object} [options]
+     * @param {boolean} [options.explicit] - Whether this was asked for, rather
+     *  than being the response to a failed attempt. It then doesn't interrupt
+     *  an attempt that's underway, and doesn't wait out a long backoff.
+     */
+    requestReconnect({ explicit = false } = {}) {
+        if (explicit && this.#isRetrying()) return;
+
+        const wait =
+            !!this.reconnecting ||
+            this.status === Strophe.Status.CONNFAIL ||
+            this.status === Strophe.Status.RECONNECTING;
+
+        this.setConnectionStatus(Strophe.Status.RECONNECTING, 'The connection has dropped, attempting to reconnect.');
+        if (!wait) return this.reconnect();
+        return this.#scheduleReconnect(explicit ? RETRY_BASE_DELAY : RETRY_MAX_DELAY);
+    }
+
+    /**
+     * Whether a retry has started and hasn't succeeded or failed yet.
+     * @returns {boolean}
+     */
+    #isRetrying() {
+        if (this.#preparing_retry) return true;
+        if (!this.reconnecting) return false;
+        return this.status === Strophe.Status.CONNECTING || this.status === Strophe.Status.AUTHENTICATING;
+    }
+
+    /**
+     * Retries the connection after a delay, which doubles with each retry up
+     * to {@link RETRY_MAX_DELAY}. While a retry is scheduled, further calls do
+     * nothing, unless it's due later than `max_delay` from now, in which case
+     * it's brought forward.
+     * @param {number} [max_delay]
+     */
+    #scheduleReconnect(max_delay = RETRY_MAX_DELAY) {
+        const is_scheduled = this.#retry_timer !== null;
+        if (is_scheduled && this.#retry_at - Date.now() <= max_delay) return;
+
+        this.#cancelScheduledReconnect();
+        const delay = Math.min(RETRY_BASE_DELAY * 2 ** this.#retries, max_delay);
+        if (!is_scheduled) this.#retries += 1;
+        this.#retry_at = Date.now() + delay;
+        this.#retry_timer = setTimeout(() => {
+            this.#retry_timer = null;
+            this.reconnect();
+        }, delay);
+    }
+
+    #cancelScheduledReconnect() {
+        if (this.#retry_timer !== null) clearTimeout(this.#retry_timer);
+        this.#retry_timer = null;
     }
 
     /** @param {Element} body */
@@ -176,21 +250,33 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
     }
 
     async reconnect() {
+        this.#preparing_retry = true;
+        try {
+            return await this.#prepareAndLogIn();
+        } finally {
+            this.#preparing_retry = false;
+        }
+    }
+
+    async #prepareAndLogIn() {
         const { api } = _converse;
 
         log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
         this.reconnecting = true;
         await tearDown(_converse);
+        if (this.#finished) return;
 
         const conn_status = _converse.state.connfeedback.get('connection_status');
-        if (conn_status === Strophe.Status.CONNFAIL) {
-            this.switchTransport();
+        if (this.#switch_transport) {
+            this.#switch_transport = false;
+            await this.switchTransport();
         } else if (conn_status === Strophe.Status.AUTHFAIL && api.settings.get('authentication') === ANONYMOUS) {
             // When reconnecting anonymously, we need to connect with only
             // the domain, not the full JID that we had in our previous
             // (now failed) session.
             await setUserJID(api.settings.get('jid'));
         }
+        if (this.#finished) return;
 
         /**
          * Triggered when the connection has dropped, but Converse will attempt
@@ -201,6 +287,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
 
         if (api.settings.get('authentication') === ANONYMOUS) {
             await clearSession(_converse);
+            if (this.#finished) return;
         }
         const jid = _converse.session.get('jid');
         return api.user.login(jid);
@@ -285,6 +372,8 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
     }
 
     async finishDisconnection() {
+        this.#finished = true;
+        this.#cancelScheduledReconnect();
         this.setConnectionStatus(Strophe.Status.DISCONNECTED, this.disconnection_reason);
         const { api } = _converse;
         // Properly tear down the session so that it's possible to manually connect again.
@@ -305,15 +394,49 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
     }
 
     /**
+     * Whether to stop trying a connection that was never established, so that
+     * for example a wrong address is reported instead of being retried forever.
+     * One retry is still made after a failure, since it may use the other transport.
+     * @returns {boolean}
+     */
+    #shouldGiveUp() {
+        const { api } = _converse;
+        if (this.has_connected || api.settings.get('retry_initial_connection')) return false;
+
+        return this.status === Strophe.Status.CONNECTING || !!this.reconnecting;
+    }
+
+    /**
+     * Whether the reason for this disconnection is one that retrying can't fix.
+     * @returns {boolean}
+     */
+    #isUnrecoverable() {
+        const reason = this.disconnection_reason;
+        if (reason === 'remote-connection-failed') {
+            // A gateway reports this while its XMPP server is down, which
+            // `retry_initial_connection` is there to wait out.
+            return this.has_connected || !_converse.api.settings.get('retry_initial_connection');
+        }
+        return (
+            this.disconnection_cause === LOGOUT ||
+            reason === Strophe.ErrorCondition.NO_AUTH_MECH ||
+            reason === 'host-unknown' ||
+            reason === 'not-well-formed'
+        );
+    }
+
+    /**
      * Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
      * Will either start a teardown process for converse.js or attempt
      * to reconnect.
      * @method onDisconnected
      */
     onDisconnected() {
+        // Strophe can report a failed attempt as disconnected more than once.
+        if (this.#finished) return;
+
         const { api } = _converse;
         if (api.settings.get('auto_reconnect')) {
-            const reason = this.disconnection_reason;
             if (this.disconnection_cause === Strophe.Status.AUTHFAIL) {
                 if (api.settings.get('credentials_url') || api.settings.get('authentication') === ANONYMOUS) {
                     // If `credentials_url` is set, we reconnect, because we might
@@ -322,30 +445,21 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
                     // If `authentication` is anonymous, we reconnect because we
                     // might have tried to attach with stale BOSH session tokens
                     // or with a cached JID and password
-                    return api.connection.reconnect();
+                    return this.requestReconnect();
                 } else {
                     return this.finishDisconnection();
                 }
-            } else if (this.status === Strophe.Status.CONNECTING) {
-                // Don't try to reconnect if we were never connected to begin
-                // with, otherwise an infinite loop can occur (e.g. when the
-                // BOSH service URL returns a 404).
+            } else if (this.#shouldGiveUp()) {
                 const { __ } = _converse;
                 this.setConnectionStatus(
                     Strophe.Status.CONNFAIL,
                     __('An error occurred while connecting to the chat server.'),
                 );
                 return this.finishDisconnection();
-            } else if (
-                this.disconnection_cause === LOGOUT ||
-                reason === Strophe.ErrorCondition.NO_AUTH_MECH ||
-                reason === 'host-unknown' ||
-                reason === 'remote-connection-failed' ||
-                reason === 'not-well-formed'
-            ) {
+            } else if (this.#isUnrecoverable()) {
                 return this.finishDisconnection();
             }
-            api.connection.reconnect();
+            this.requestReconnect();
         } else {
             return this.finishDisconnection();
         }
@@ -378,7 +492,12 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
                 // we're restoring an existing session (e.g. via SMACKS resume).
                 this.send_initial_presence = false;
             }
-            if (this.reconnecting) {
+            // A retry of a connection that never came up is still its first connection.
+            const reconnected = this.reconnecting && this.has_connected;
+            this.has_connected = true;
+            this.#retries = 0;
+            this.#cancelScheduledReconnect();
+            if (reconnected) {
                 log.debug(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                 this.onConnected(true);
             } else {
@@ -417,6 +536,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
             }
             this.setConnectionStatus(status, feedback);
             this.setDisconnectionCause(status, condition);
+            this.#switch_transport = true;
         } else if (status === Strophe.Status.DISCONNECTING) {
             this.setConnectionStatus(status);
             this.setDisconnectionCause(status, condition);

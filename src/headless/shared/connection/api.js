@@ -1,7 +1,6 @@
 import events_api from '../api/events.js';
 import { Connection, MockConnection } from './index.js';
 import { PREBIND } from '../constants.js';
-import { Strophe } from 'strophe.js';
 import { getConnectionServiceURL, setStropheLogLevel } from './utils.js';
 import { isSameDomain } from '../../utils/jid.js';
 import { isTestEnv } from '../../utils/session.js';
@@ -105,22 +104,15 @@ export default {
     /**
      * Can be called once the XMPP connection has dropped and we want
      * to attempt reconnection.
-     * Only needs to be called once, if reconnect fails Converse will
-     * attempt to reconnect every two seconds, alternating between BOSH and
-     * Websocket if URLs for both were provided.
+     * Only needs to be called once, if reconnect fails Converse will keep
+     * attempting to reconnect, waiting 3 seconds at first and twice as long
+     * each time up to a minute, alternating between BOSH and Websocket if URLs
+     * for both were provided.
      * @method reconnect
      * @memberOf api.connection
      */
     reconnect() {
-        connection.setConnectionStatus(
-            Strophe.Status.RECONNECTING,
-            'The connection has dropped, attempting to reconnect.',
-        );
-        if (connection?.reconnecting) {
-            return connection.debouncedReconnect();
-        } else {
-            return connection.reconnect();
-        }
+        return connection.requestReconnect({ explicit: true });
     },
 
     /**

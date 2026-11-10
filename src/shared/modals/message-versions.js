@@ -4,7 +4,7 @@ import { __ } from 'i18n';
 import { html } from 'lit';
 import { api } from '@converse/headless';
 
-export default class MessageVersionsModal extends BaseModal {
+class MessageVersionsModal extends BaseModal {
     renderModal() {
         return html`<converse-message-versions .model=${this.model}></converse-message-versions>`;
     }

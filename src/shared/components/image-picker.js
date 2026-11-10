@@ -7,7 +7,7 @@ import './styles/image-picker.scss';
 const i18n_profile_picture = __('Click to set a new picture');
 const i18n_clear_picture = __('Clear picture');
 
-export default class ImagePicker extends CustomElement {
+class ImagePicker extends CustomElement {
     constructor() {
         super();
         this.model = null;

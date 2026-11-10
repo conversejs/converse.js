@@ -5,7 +5,7 @@ import { api } from '@converse/headless';
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
-export default class ChatHelp extends CustomElement {
+class ChatHelp extends CustomElement {
     constructor() {
         super();
         this.messages = [];

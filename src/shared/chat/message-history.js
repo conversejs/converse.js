@@ -6,7 +6,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { getDayIndicator } from './utils.js';
 import './message.js';
 
-export default class MessageHistory extends CustomElement {
+class MessageHistory extends CustomElement {
     /**
      * @typedef {import('@converse/headless').Message} Message
      */

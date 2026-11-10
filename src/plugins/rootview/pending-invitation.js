@@ -95,7 +95,7 @@ function tplApps() {
  * them and offers both. A link handed over by the browser's protocol handler
  * already chose this Converse as the app, so it only says what's waiting.
  */
-export default class PendingInvitation extends CustomElement {
+class PendingInvitation extends CustomElement {
     constructor() {
         super();
         this.onHashChange = () => this.requestUpdate();

@@ -25,5 +25,3 @@ export class ToastsContainer extends CustomElement {
 }
 
 api.elements.define('converse-toasts', ToastsContainer);
-
-export default ToastsContainer;

@@ -8,7 +8,7 @@ import { until } from 'lit/directives/until.js';
 import { CustomElement } from 'shared/components/element.js';
 import { sendReaction, getReactorNames, getEmojiKeyedReactions } from './utils.js';
 
-export default class Reactions extends CustomElement {
+class Reactions extends CustomElement {
     static get properties() {
         return {
             model: { type: Object },

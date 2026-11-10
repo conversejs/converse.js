@@ -6,7 +6,7 @@ import { fetchAnimatedWebP } from 'shared/webp/utils.js';
 
 import './styles.scss';
 
-export default class ConverseWebPElement extends ConverseGIFElement {
+class ConverseWebPElement extends ConverseGIFElement {
     static get properties() {
         return {
             ...super.properties,

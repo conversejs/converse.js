@@ -14,7 +14,7 @@ import 'shared/components/icons.js';
 import 'shared/chat/emoji-picker.js';
 import 'shared/chat/styles/emoji.scss';
 
-export default class EmojiPickerDropdown extends DropdownBase {
+class EmojiPickerDropdown extends DropdownBase {
     static get properties() {
         return {
             'message_model': { type: Object },

@@ -67,5 +67,3 @@ class QRCodeComponent extends CustomElement {
 }
 
 api.elements.define('converse-qr-code', QRCodeComponent);
-
-export default QRCodeComponent;

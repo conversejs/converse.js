@@ -17,7 +17,7 @@ const NOOP = () => false;
 
 const global = typeof window !== 'undefined' ? window : null;
 
-export default class SplitResize extends CustomElement {
+class SplitResize extends CustomElement {
     initialize() {
         super.initialize();
     }

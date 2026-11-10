@@ -3,7 +3,7 @@ import { CustomElement } from 'shared/components/element.js';
 import { __ } from 'i18n';
 import tplChatHead from './templates/chat-head.js';
 
-export default class HeadlinesHeading extends CustomElement {
+class HeadlinesHeading extends CustomElement {
     constructor() {
         super();
         this.jid = null;

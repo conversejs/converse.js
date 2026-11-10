@@ -7,7 +7,7 @@ import { html, nothing } from 'lit';
 
 import './styles/image.scss';
 
-export default class ImageModal extends BaseModal {
+class ImageModal extends BaseModal {
     /**
      * @param {Record<string, any>} options
      */

@@ -8,7 +8,7 @@ import './styles/muc-chat-content.scss';
 
 const { ROOMSTATUS } = constants;
 
-export default class MUCChatContent extends ChatContent {
+class MUCChatContent extends ChatContent {
     async initialize() {
         await super.initialize();
         this.listenTo(this.model, 'change:hidden_occupants', () => this.requestUpdate());

@@ -59,7 +59,7 @@ function toggleRoomInfo(ev) {
     }
 }
 
-export default class MUCListModal extends BaseModal {
+class MUCListModal extends BaseModal {
     /**
      * @typedef {import('shared/types').EventWithInputTarget} EventWithInputTarget
      */

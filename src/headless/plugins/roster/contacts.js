@@ -92,11 +92,10 @@ class RosterContacts extends Collection {
     }
 
     /**
-     * Fetches the roster contacts, first by trying the browser cache,
-     * and if that's empty, then by querying the XMPP server.
-     * @returns {promise} Promise which resolves once the contacts have been fetched.
+     * Reads the roster contacts from the cache.
+     * @returns {Promise<any>}
      */
-    async fetchRosterContacts() {
+    async fetchCachedContacts() {
         const result = await new Promise((resolve, reject) => {
             this.fetch({
                 add: true,
@@ -111,6 +110,18 @@ class RosterContacts extends Collection {
             _converse.session.save('roster_cached', false);
             this.data.save('version', undefined);
         }
+        return result;
+    }
+
+    /**
+     * Fetches the roster contacts, first by trying the browser cache,
+     * and if that's empty, then by querying the XMPP server.
+     * @param {boolean} [read_cache=true] - Whether to read the cache, which
+     *  can be left out if it has already been read.
+     * @returns {promise} Promise which resolves once the contacts have been fetched.
+     */
+    async fetchRosterContacts(read_cache = true) {
+        const result = read_cache ? await this.fetchCachedContacts() : this;
 
         if (_converse.session.get('roster_cached')) {
             /**

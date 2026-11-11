@@ -119,7 +119,8 @@ export function getChatRoomBodyTemplate(model) {
                     : ''
             }
             ${
-                conn_status == RS.ENTERED
+                // A MUC loaded from the cache shows its messages while there's no connection.
+                conn_status == RS.ENTERED || conn_status == RS.OFFLINE
                     ? html`<converse-muc-chatarea class="row g-0" jid="${jid}"></converse-muc-chatarea>`
                     : ''
             }

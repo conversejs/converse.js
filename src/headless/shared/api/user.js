@@ -2,11 +2,11 @@
  * @module:shared.api.user
  */
 import _converse from '../_converse.js';
+import log from '@converse/log';
 import presence_api from './presence.js';
 import connection_api from '../connection/api.js';
-import { replacePromise } from '../../utils/session.js';
-import { removeLocalStorageItem } from '../../utils/environment.js';
-import { attemptNonPreboundSession, loadSessionCache, setUserJID } from '../../utils/init.js';
+import { endSession } from '../../utils/session.js';
+import { attemptNonPreboundSession, resumeSession, setUserJID } from '../../utils/init.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { user_settings_api } from '../settings/user/api.js';
 import { LOGOUT } from '../constants.js';
@@ -62,7 +62,12 @@ const api = {
             }
             if (jid) {
                 jid = await setUserJID(jid);
-                await loadSessionCache();
+            }
+            // Only a start-up resumes a session. A login from the form is
+            // checked by the server before anything is loaded.
+            if (automatic) {
+                const resumed = await resumeSession(jid, password);
+                if (resumed?.credentials) ({ jid, password } = resumed.credentials);
             }
 
             /**
@@ -97,10 +102,17 @@ const api = {
 
         /**
          * Logs the user out of the current XMPP session.
+         *
+         * This device then forgets the session, so that the next start doesn't
+         * resume it. A client that is merely closing, rather than being logged
+         * out of, passes `remember`, so that its next start resumes the session
+         * (see the `auto_reconnect` setting).
          * @method _converse.api.user.logout
+         * @param {object} [options]
+         * @param {boolean} [options.remember=false] - Whether to keep remembering the session.
          * @example _converse.api.user.logout();
          */
-        async logout() {
+        async logout({ remember = false } = {}) {
             const { api } = _converse;
             /**
              * Triggered before the user is logged out
@@ -109,27 +121,23 @@ const api = {
             await api.trigger('beforeLogout', { 'synchronous': true });
 
             const promise = getOpenPromise();
-            const complete = () => {
-                // Recreate all the promises
-                Object.keys(_converse.promises).forEach((p) => replacePromise(_converse, p));
-
-                // Remove the session JID, otherwise the user would just be logged
-                // in again upon reload. See #2759
-                removeLocalStorageItem('conversejs-session-jid');
-
-                /**
-                 * Triggered once the user has logged out.
-                 * @event _converse#logout
-                 */
-                api.trigger('logout');
-                promise.resolve();
-            };
+            const complete = () =>
+                endSession(_converse, { remember })
+                    .catch((e) => log.error(e))
+                    .finally(() => promise.resolve());
 
             const connection = connection_api.get();
             if (connection) {
                 connection.setDisconnectionCause(LOGOUT, undefined, true);
                 api.listen.once('disconnected', () => complete());
-                connection.disconnect();
+                if (connection.connect_callback) {
+                    connection.disconnect();
+                } else {
+                    // A session resumed from the cache can be logged out of
+                    // before Strophe was asked to connect. It then has nothing
+                    // to tear down, and no callback to report through.
+                    connection.finishDisconnection();
+                }
             } else {
                 complete();
             }

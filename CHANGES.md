@@ -15,7 +15,9 @@
 - fix: With both BOSH and websocket configured, a failed connection attempt is now retried with the other transport.
 - fix: The `connected` event fires when the first connection only succeeds on a retry. It used to be `reconnected`, which left plugins uninitialized.
 - feat: The `retry_initial_connection` setting keeps retrying when the server can't be reached at startup. The daemon uses it, and no longer exits in that case.
-- feat: With `retry_initial_connection`, cached contacts, chats and the profile are also loaded before connecting, so that they can be read while there's no connection.
+- feat: A remembered session's cached data can be accessed while offline.
+- fix: Rooms are no longer joined before logging in.
+- docs: `auto_reconnect` defaults to `true`, not `false`.
 - The unused `errors.UserFacingError` class is removed.
 - `@converse/log` is bumped to 0.1.0, because its API changed to variadic `log(level, ...args)` and `debug(...args)` without a version bump.
 - `strophe.js` is bumped to 6.0.0, whose types resolve under `"moduleResolution": "nodenext"`.

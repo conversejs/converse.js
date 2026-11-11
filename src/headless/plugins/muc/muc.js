@@ -117,7 +117,6 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         this.initOccupants();
         this.initDiscoModels(); // sendChatState depends on this.features
-        this.registerHandlers();
 
         this.on('change:chat_state', this.sendChatState, this);
         this.on('change:hidden', this.onHiddenChange, this);
@@ -132,13 +131,13 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         this.listenTo(this.occupants, 'change:affiliation', this.createAffiliationChangeMessage);
         this.listenTo(this.occupants, 'change:role', this.createRoleChangeMessage);
 
-        if (api.connection.connected()) {
-            const restored = await this.restoreFromCache();
-            if (!restored) await this.join();
+        if (api.connection.authenticated()) {
+            await this.enter();
         } else {
-            // We can't tell whether we're still in the room. It's joined on connecting.
-            this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
-            await this.fetchMessages().catch(/** @param {Error} e */ (e) => log.error(e));
+            await this.loadOffline();
+            // The connection may have come up while loading, before this MUC
+            // was in the chatboxes for enterOfflineRooms() to find.
+            if (api.connection.authenticated()) await this.#enterIfOffline();
         }
 
         /**
@@ -163,21 +162,77 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
+     * Restores the MUC from the cache if we're still in it, subscribes to
+     * Room Activity Indicators if it's hidden, and otherwise joins it.
+     * @param {boolean} [was_entered] - Whether we were in the MUC.
+     * @returns {Promise<void>}
+     */
+    async enter(was_entered = this.isEntered()) {
+        // Registered now, on the connection that's used, since a reset of
+        // the connection while offline drops them.
+        this.registerHandlers();
+        const restored = await this.restoreFromCache(was_entered);
+        if (!restored) await this.join();
+    }
+
+    /**
+     * Loads the MUC's cached messages and occupants while there's no
+     * connection. It's entered once the connection comes up.
+     * @returns {Promise<void>}
+     */
+    async loadOffline() {
+        const status = this.session.get('connection_status');
+        // Whether we were in the MUC, so that it's restored rather than joined
+        // if the server still has us in it, for example after stream resumption.
+        const was_entered =
+            status === ROOMSTATUS.ENTERED || (status === ROOMSTATUS.OFFLINE && !!this.session.get('was_entered'));
+        this.session.save({ connection_status: ROOMSTATUS.OFFLINE, was_entered });
+        await this.fetchOccupants().catch(/** @param {Error} e */ (e) => log.error(e));
+        await this.fetchMessages().catch(/** @param {Error} e */ (e) => log.error(e));
+    }
+
+    /**
+     * Enters the MUC now that the connection has come up, if it was loaded
+     * while there was none.
+     * @returns {Promise<void>}
+     */
+    async enterIfOffline() {
+        await this.initialized;
+        return this.#enterIfOffline();
+    }
+
+    async #enterIfOffline() {
+        // A closed MUC has no session.
+        if (this.session?.get('connection_status') !== ROOMSTATUS.OFFLINE) return;
+        // Our presence in the MUC is built from our status.
+        await api.waitUntil('statusInitialized');
+        if (this.session.get('connection_status') !== ROOMSTATUS.OFFLINE) return;
+
+        const was_entered = !!this.session.get('was_entered');
+        this.session.save('was_entered', false);
+        await this.enter(was_entered);
+    }
+
+    /**
      * Checks whether we're still joined and if so, restores the MUC state from cache.
+     * @param {boolean} [was_entered] - Whether we were in the MUC, and might still be.
      * @returns {Promise<boolean>} Returns `true` if we're still joined, otherwise returns `false`.
      */
-    async restoreFromCache() {
-        if (this.isEntered()) {
+    async restoreFromCache(was_entered = this.isEntered()) {
+        if (was_entered) {
             await this.fetchOccupants().catch(/** @param {Error} e */ (e) => log.error(e));
 
             if (this.isRAICandidate()) {
                 this.session.save('connection_status', ROOMSTATUS.DISCONNECTED);
                 this.enableRAI();
                 return true;
-            } else if (await this.isJoined()) {
+            } else if (await this.isJoined(was_entered)) {
                 await new Promise((r) => this.config.fetch({ 'success': r, 'error': r }));
                 await new Promise((r) => this.features.fetch({ 'success': r, 'error': r }));
                 await this.fetchMessages().catch(/** @param {Error} e */ (e) => log.error(e));
+                // Only now that the server has confirmed it, so that a MUC
+                // loaded while offline is shown as entered.
+                this.session.save('connection_status', ROOMSTATUS.ENTERED);
                 return true;
             }
         }
@@ -201,8 +256,9 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             log.info(`MUC ${this.get('jid')} join() early return: isEntered=true`);
             return;
         }
-        if (!api.connection.connected()) {
-            log.info(`MUC ${this.get('jid')} join() early return: there is no connection`);
+        if (!api.connection.authenticated()) {
+            // The stream may be open, but nothing's sent before logging in.
+            log.info(`MUC ${this.get('jid')} join() early return: not logged in`);
             return;
         }
         log.info(`MUC ${this.get('jid')} join() called, setting status to CONNECTING`);
@@ -420,6 +476,10 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
     async onConnectionStatusChanged() {
         if (this.isEntered()) {
+            // A MUC loaded while offline, which was restored from the cache,
+            // fetching what entering it would.
+            if (this.session.previous('connection_status') === ROOMSTATUS.OFFLINE) return;
+
             if (this.isRAICandidate()) {
                 try {
                     await this.leave();
@@ -2132,10 +2192,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     /**
      * Send a MUC-0410 MUC Self-Ping stanza to room to determine
      * whether we're still joined.
+     * @param {boolean} [was_entered] - Whether we were in the MUC. If not, there's no need to ask.
      * @returns {Promise<boolean>}
      */
-    async isJoined() {
-        if (!this.isEntered()) {
+    async isJoined(was_entered = this.isEntered()) {
+        if (!was_entered) {
             log.info(`isJoined: not pinging MUC ${this.get('jid')} since we're not entered`);
             return false;
         }

@@ -328,13 +328,27 @@ If the value is negative or `0`, the function is disabled.
 
 ### auto_reconnect
 
-- Default: `false`
+- Default: `true`
 
 Automatically reconnect to the XMPP server if the connection drops unexpectedly.
 
 This option works best when you have [authentication](#authentication) set to `prebind` and have also specified a `prebind_url` URL, from where Converse can fetch the BOSH tokens. In this case, Converse will automatically reconnect when the connection drops but also reestablish earlier lost connections (due to network outages, closing your laptop etc.).
 
 When [authentication](#authentication) is set to <span class="title-ref">login</span>, then this option will only work when the page hasn't been reloaded yet, because then the user's password has been wiped from memory. This configuration can however still be useful when using Converse in desktop apps, for example those based on [CEF](https://bitbucket.org/chromiumembedded/cef) or [electron](http://electron.atom.io/).
+
+#### Resuming a session without a connection
+
+With this setting on, a session is also resumed when Converse starts without a connection, for example when a laptop is opened on a train or a mobile app is restarted in a tunnel. Its contacts, chats, rooms and profile are loaded from the cache straight away, so that they can be read, and Converse connects in the background, retrying for as long as it takes. Presences aren't cached, so contacts show as offline until the connection is up. Rooms are joined once connected.
+
+Converse remembers a session on this device once it has logged in, until the user logs out, so the next start after a logout shows the login form instead. A session is only resumed when all of these hold:
+
+- [authentication](#authentication) is set to `login`,
+- the device is trusted and [clear_cache_on_logout](#clear_cache_on_logout) is off,
+- Converse can log in again without asking the user: with stored SCRAM keys (see [reuse_scram_keys](#reuse_scram_keys)), with [credentials_url](#credentials_url), with a password passed in, or with a password for the account that the browser's credential store hands over without asking the user (only browsers that store passwords for sites, through `PasswordCredential`, do).
+
+If the server rejects the stored credentials once the connection is up, for example because the password was changed elsewhere, or if no credentials are left to log in with, the session ends as if the user had logged out, and the login form shows why. A network failure, a timeout or an unavailable server never ends it. If the credentials log in to another account than the one that was resumed, what was loaded is dropped and that account's session starts afresh.
+
+A front end can retry the connection straight away with `api.connection.retry()`, for example when the browser fires its `online` event.
 
 ### auto_register_muc_nickname
 
@@ -1545,9 +1559,7 @@ By default, a connection that was never established is given up on after one ret
 
 Errors that retrying can't fix still stop it: wrong credentials, a domain the server doesn't host (`host-unknown`), malformed XML from the server (`not-well-formed`), and a server that offers no supported authentication mechanism.
 
-With this setting, the contacts, chats and profile that an earlier session cached are also loaded as soon as the user is known, before connecting, so that they can be read while there's no connection. The connection then updates what was loaded, and rooms are joined once connected. Presences aren't cached, so contacts show as offline until then.
-
-The cache isn't loaded unless [authentication](#authentication) is set to `login`, on an untrusted device, or with [clear_cache_on_logout](#clear_cache_on_logout). It's loaded before the credentials have been checked, so this setting isn't suited to a device shared between users.
+A session that is resumed from the cache keeps retrying regardless of this setting (see [auto_reconnect](#auto_reconnect)).
 
 ### reuse_scram_keys
 

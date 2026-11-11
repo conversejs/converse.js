@@ -4,7 +4,7 @@ import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import status_api from './api.js';
 import { shouldClearCache } from '../../utils/session.js';
-import { fetchProfile, initStatus } from './utils.js';
+import { initStatus, loadCachedProfile } from './utils.js';
 
 converse.plugins.add('converse-status', {
     initialize() {
@@ -28,7 +28,7 @@ converse.plugins.add('converse-status', {
             }
         });
 
-        api.listen.on('loadSessionCache', fetchProfile);
+        api.listen.on('loadSessionCache', loadCachedProfile);
         api.listen.on('connected', () => initStatus(false));
         api.listen.on('reconnected', () => initStatus(true));
     },

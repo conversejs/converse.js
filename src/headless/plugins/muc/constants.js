@@ -78,6 +78,9 @@ export const ROOMSTATUS = {
     DESTROYED: 6,
     BANNED: 7,
     CLOSING: 8,
+    // Not joined, because there's no connection yet, but loaded from the cache.
+    // Unlike DISCONNECTED, it's entered as soon as the connection comes up.
+    OFFLINE: 9,
 };
 
 export const ROOM_FEATURES = [

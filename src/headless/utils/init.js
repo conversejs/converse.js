@@ -9,8 +9,9 @@ import { local_driver, sync_driver } from './extension-storage.js';
 import { getNodeStore } from './node-store.js';
 import { generateResource, getConnectionServiceURL } from '../shared/connection/utils.js';
 import { isValidJID } from './jid.js';
-import { addUnloadListener, getLocalStorageItem, hasCredentialsAPI, IS_BROWSER } from './environment.js';
-import { isTestEnv } from './session.js';
+import { addUnloadListener, hasCredentialsAPI, IS_BROWSER } from './environment.js';
+import { getRememberedSession } from './remembered-session.js';
+import { isCacheKept, isTestEnv } from './session.js';
 import { isPersistableModel } from './object.js';
 
 /**
@@ -355,7 +356,7 @@ async function getLoginCredentialsFromURL() {
 }
 
 async function getLoginCredentialsFromBrowser() {
-    const jid = getLocalStorageItem('conversejs-session-jid');
+    const jid = await getRememberedSession();
     if (!jid) return null;
 
     try {
@@ -374,7 +375,7 @@ async function getLoginCredentialsFromBrowser() {
 }
 
 async function getLoginCredentialsFromSCRAMKeys() {
-    const jid = getLocalStorageItem('conversejs-session-jid');
+    const jid = await getRememberedSession();
     if (!jid) return null;
 
     await setUserJID(jid);
@@ -385,31 +386,87 @@ async function getLoginCredentialsFromSCRAMKeys() {
 }
 
 /**
- * Loads what an earlier session left in the cache, so that it's available
- * before the first connection is made. Does nothing unless
- * `retry_initial_connection` is set, or if this device shouldn't keep a cache.
- * Plugins do the loading, by listening for `loadSessionCache`.
- * @returns {Promise<void>}
+ * Whether the session can connect again without asking the user anything,
+ * other than with a password from the browser's credential store.
+ * @param {string} jid
+ * @param {string} [password]
+ * @returns {Promise<boolean>}
  */
-export async function loadSessionCache() {
-    const { api, state } = _converse;
-    if (
-        state.session_cache_loaded ||
-        !api.settings.get('retry_initial_connection') ||
-        api.settings.get('authentication') !== LOGIN ||
-        !state.config.get('trusted') ||
-        api.settings.get('clear_cache_on_logout')
-    ) {
-        return;
+async function canLogInUnattended(jid, password) {
+    const { api } = _converse;
+    if (password || api.settings.get('password') || api.settings.get('credentials_url')) return true;
+    return !!(api.settings.get('reuse_scram_keys') && (await savedLoginInfo(jid)).get('scram_keys'));
+}
+
+/**
+ * Gets the password the browser's credential store holds for the JID, if it
+ * hands it over without asking the user, which only browsers that store
+ * passwords for sites (`PasswordCredential`) do.
+ * @param {string} jid - A bare JID
+ * @returns {Promise<import('./types').Credentials|null>}
+ */
+async function getUnattendedBrowserCredentials(jid) {
+    if (!IS_BROWSER || !('PasswordCredential' in window)) return null;
+    try {
+        const creds = /** @type {Credential & { password?: string }} */ (
+            await navigator.credentials.get(
+                /** @type {CredentialRequestOptions} */ ({ password: true, mediation: 'silent' }),
+            )
+        );
+        if (creds?.type === 'password' && creds.password && Strophe.getBareJidFromJid(creds.id).toLowerCase() === jid) {
+            return { jid: creds.id, password: creds.password };
+        }
+    } catch (e) {
+        log.error(e);
     }
-    state.session_cache_loaded = true;
+    return null;
+}
+
+/**
+ * Loads the remembered session from the cache, before connecting, if this
+ * start-up is to resume it. Plugins do the loading, by listening for
+ * `loadSessionCache`, and the connection then retries for as long as the
+ * session is remembered.
+ *
+ * @param {string} [jid] - The JID that the session is started for, if one was given.
+ *  A session for another account isn't resumed.
+ * @param {string} [password]
+ * @returns {Promise<{ credentials: import('./types').Credentials|null }|null>} The
+ *  resumed session, with the credentials to log in with if they came from the
+ *  browser's credential store, or `null` if it wasn't resumed.
+ */
+export async function resumeSession(jid, password) {
+    const { api } = _converse;
+    const remembered = await getRememberedSession();
+    if (!remembered) return null;
+    if (jid && Strophe.getBareJidFromJid(jid).toLowerCase() !== remembered) return null;
+    if (api.settings.get('authentication') !== LOGIN) return null;
+    if (!isCacheKept(_converse) || !api.settings.get('auto_reconnect')) return null;
+
+    let credentials = null;
+    if (!(await canLogInUnattended(remembered, password))) {
+        // Asked now, rather than when connecting, so that a session is only
+        // resumed if it can log in again.
+        credentials = await getUnattendedBrowserCredentials(remembered);
+        if (!credentials) return null;
+    }
+
+    await setUserJID(jid || credentials?.jid || remembered);
+    api.connection.get().cached_jid = remembered;
     /**
-     * Synchronous event triggered once the user's session exists and before
-     * connecting, for plugins to load what they've cached. Nothing may be sent
-     * in response, since there's no connection yet.
+     * Synchronous event triggered when a remembered session is resumed,
+     * before connecting, for plugins to load what they've cached. Nothing may
+     * be sent in response, since there's no connection yet.
      * @event _converse#loadSessionCache
      */
-    await api.trigger('loadSessionCache', { synchronous: true });
+    try {
+        await api.trigger('loadSessionCache', { synchronous: true });
+    } catch (e) {
+        // What a plugin couldn't load, it loads once connected, as it does
+        // for a session that isn't resumed.
+        log.error(e);
+    }
+    return { credentials };
 }
 
 /**
@@ -457,6 +514,20 @@ export async function attemptNonPreboundSession(credentials, automatic) {
         }
 
         if (!isTestEnv()) log.debug("attemptNonPreboundSession: Couldn't find credentials to log in with");
+
+        const connection = api.connection.get();
+        if (connection?.cached_jid) {
+            // A resumed session that can't log in again would otherwise stay
+            // on screen without ever connecting. It ends as one whose
+            // credentials are rejected does, so that the user is asked to log in.
+            const { __ } = _converse;
+            connection.setDisconnectionCause(
+                Strophe.Status.AUTHFAIL,
+                __('Your session has ended, please log in again.'),
+                true,
+            );
+            await connection.finishDisconnection();
+        }
     } else if (
         [ANONYMOUS, EXTERNAL].includes(api.settings.get('authentication')) &&
         (!automatic || api.settings.get('auto_login'))
@@ -476,10 +547,16 @@ export async function attemptNonPreboundSession(credentials, automatic) {
  *  used login keys.
  */
 export async function savedLoginInfo(jid) {
-    const id = `converse.scram-keys-${Strophe.getBareJidFromJid(jid)}`;
+    const bare_jid = Strophe.getBareJidFromJid(jid);
+    const id = `converse.scram-keys-${bare_jid}`;
     if (_converse.state.login_info?.get('id') === id) {
         return _converse.state.login_info;
     }
+
+    // A resumed start-up looks for the keys before setUserJID() has opened
+    // the account's persistent store.
+    if (!_converse.storage.persistent) await initPersistentStorage(_converse, bare_jid.toLowerCase());
+
     const login_info = /** @type {Model} */ (new Model({ id }));
     _converse.state.login_info = login_info;
     initStorage(login_info, id, 'persistent');
@@ -489,6 +566,7 @@ export async function savedLoginInfo(jid) {
 
 /**
  * @param {Object} [credentials]
+ * @param {string} [credentials.jid]
  * @param {string} credentials.password
  * @param {Object} credentials.password
  * @param {string} credentials.password.ck
@@ -500,6 +578,21 @@ async function connect(credentials) {
     const connection = api.connection.get();
     // Fetching the credentials can outlast the connection, for example if the user logs out.
     if (!connection) return;
+
+    const login_jid = credentials?.jid ?? jid;
+    if (
+        connection.cached_jid &&
+        login_jid &&
+        Strophe.getBareJidFromJid(login_jid).toLowerCase() !== connection.cached_jid
+    ) {
+        // The credentials are for another account than the session resumed
+        // from the cache, for example from `credentials_url` after another
+        // user logged into the hosting site. That session ends first, as if
+        // logged out, and the other account logs in afresh.
+        const password = credentials?.password ?? (connection.pass || api.settings.get('password'));
+        await api.user.logout();
+        return api.user.login(login_jid, password);
+    }
 
     if ([ANONYMOUS, EXTERNAL].includes(api.settings.get('authentication'))) {
         if (!jid) {
@@ -539,13 +632,14 @@ async function connect(credentials) {
             const login_info = await savedLoginInfo(jid);
             callback =
                 /**
-                 * @param {string} status
+                 * @param {number} status
                  * @param {string} message
+                 * @param {Element} [elem]
                  */
-                (status, message) => {
+                (status, message, elem) => {
                     const { scram_keys } = connection;
                     if (scram_keys) login_info.save({ scram_keys });
-                    connection.onConnectStatusChanged(status, message);
+                    connection.onConnectStatusChanged(status, message, elem);
                 };
         }
         connection.connect(jid, password, callback);

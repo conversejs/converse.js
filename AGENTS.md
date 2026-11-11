@@ -147,6 +147,9 @@ Keep commit messages short: a `type(scope): summary` subject (e.g.
 `fix(reactions): …`, `feat(muc): …`) that states what was fixed or which feature was
 implemented. Don't explain how; the code and its comments document that.
 
+A `CHANGES.md` entry is one line of at most 80 characters, including the leading
+`- `. Like a commit subject, it says what changed for the user, not how.
+
 ## Architecture
 
 ### Plugin System

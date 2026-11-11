@@ -239,7 +239,20 @@ export function onAddClientFeatures() {
 export function onBeforeTearDown() {
     _converse.state.chatboxes
         .where({ 'type': CHATROOMS_TYPE })
+        // A MUC loaded while there was no connection is still waiting to be entered.
+        .filter((muc) => muc.session?.get('connection_status') !== converse.ROOMSTATUS.OFFLINE)
         .forEach((muc) => safeSave(muc.session, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED }));
+}
+
+/**
+ * Enters the MUCs that were loaded while there was no connection yet, for
+ * example from the cache of a resumed session, including those still being
+ * initialized.
+ */
+export function enterOfflineRooms() {
+    _converse.state.chatboxes
+        .where({ 'type': CHATROOMS_TYPE })
+        .forEach((muc) => muc.enterIfOffline().catch(/** @param {Error} e */ (e) => log.error(e)));
 }
 
 /**

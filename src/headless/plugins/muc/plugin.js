@@ -22,6 +22,7 @@ import { addVisibilityListener } from '../../utils/environment.js';
 import {
     autoJoinRooms,
     disconnectChatRooms,
+    enterOfflineRooms,
     getDefaultMUCNickname,
     getMUCDuplicateMessageQueries,
     isInfoVisible,
@@ -202,6 +203,7 @@ converse.plugins.add('converse-muc', {
         api.listen.on('addClientFeatures', onAddClientFeatures);
         api.listen.on('beforeTearDown', onBeforeTearDown);
         api.listen.on('chatBoxesFetched', autoJoinRooms);
+        api.listen.on('connected', enterOfflineRooms);
         api.listen.on('disconnected', disconnectChatRooms);
         api.listen.on('statusInitialized', onStatusInitialized);
         api.listen.on('parsePresence', onParsePresence);

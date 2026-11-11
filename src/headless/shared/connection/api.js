@@ -116,6 +116,26 @@ export default {
     },
 
     /**
+     * Retries the connection now, because whatever kept it from connecting
+     * has gone away, and starts the waits between retries from 3 seconds
+     * again. A front end calls it when the network comes back, for example on
+     * the browser's `online` event, or when an app is brought back to the
+     * foreground.
+     *
+     * Unlike {@link api.connection.reconnect}, this restarts the backoff.
+     * A working connection is checked rather than replaced, with a ping if the
+     * `converse-ping` plugin is loaded. An attempt that's underway is started
+     * anew, since it most likely started while the network was down, unless
+     * an earlier call started it. One that has just failed is retried within
+     * 3 seconds.
+     * @method retry
+     * @memberOf api.connection
+     */
+    retry() {
+        return connection?.retry();
+    },
+
+    /**
      * Utility method to determine the type of connection we have
      * @method isType
      * @memberOf api.connection

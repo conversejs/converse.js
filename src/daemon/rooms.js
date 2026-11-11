@@ -155,7 +155,13 @@ export function createJoins() {
  */
 export async function enter(room, nick) {
     if (room.isEntered()) return;
-    await room.join(nick);
+    if (room.session.get('connection_status') === ROOMSTATUS.OFFLINE) {
+        // Loaded before connecting, for example by a resumed session, so
+        // headless enters it once connected, however long that takes.
+        await leftOffline(room);
+    } else {
+        await room.join(nick);
+    }
     const status = await settledStatus(room);
     if (status === ROOMSTATUS.ENTERED) return;
 
@@ -172,6 +178,40 @@ export async function enter(room, nick) {
             'leave it. Check "daemon.status", then try again.',
         { see: ['daemon.status'] },
     );
+}
+
+/**
+ * Waits for headless to start entering a room that was loaded before
+ * connecting, or to let go of it, as it does when the session ends first.
+ * @param {import('@converse/headless').MUC} room
+ * @returns {Promise<void>}
+ */
+function leftOffline(room) {
+    return new Promise((resolve, reject) => {
+        const check = () => {
+            if (room.session.get('connection_status') === ROOMSTATUS.OFFLINE) return;
+
+            stop();
+            resolve();
+        };
+        const onGone = () => {
+            stop();
+            reject(
+                new RPCError(
+                    ERRORS.NOT_CONNECTED,
+                    `The session ended before we could join ${room.get('jid')}. Check "daemon.status", then try again.`,
+                    { see: ['daemon.status'] },
+                ),
+            );
+        };
+        const stop = () => {
+            room.session.off('change:connection_status', check);
+            room.off('destroy remove', onGone);
+        };
+        room.session.on('change:connection_status', check);
+        // Destroyed when the cache is cleared, and otherwise removed from the chats.
+        room.on('destroy remove', onGone);
+    });
 }
 
 /**
@@ -295,8 +335,6 @@ export async function rejoinRooms(store, passwords, joining) {
                 const room = await getRoom(jid, roomAttrs(passwords, jid, nick), true);
                 // A leave while we were getting the room means it's not to be rejoined.
                 if (!store.get(jid)) return;
-                // Headless joins the rooms it has once it connects.
-                if (!api.connection.connected()) return;
 
                 try {
                     await joining.during(jid, () => enter(room, nick));

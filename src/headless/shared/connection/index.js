@@ -4,13 +4,31 @@ import _converse from '../_converse.js';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants.js';
 import { MemoryStorageBackend, Strophe } from 'strophe.js';
-import { clearSession, tearDown } from '../../utils/session.js';
+import { clearSession, endSession, tearDown } from '../../utils/session.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID } from '../../utils/init.js';
-import { setLocalStorageItem } from '../../utils/environment.js';
+import { rememberSession } from '../../utils/remembered-session.js';
 
 const RETRY_BASE_DELAY = 3000;
 const RETRY_MAX_DELAY = 60000;
+
+/**
+ * Whether an authentication failure means that the server rejected the
+ * credentials, rather than that authenticating failed for now
+ * (`temporary-auth-failure`) or that binding a resource failed.
+ * @param {Element} [elem] - What Strophe reported the failure with.
+ * @returns {boolean}
+ */
+function isCredentialRejection(elem) {
+    // Strophe reports a failure without an element when it gives up on SCRAM
+    // itself, for example because the stored keys no longer match the
+    // server's, or the server's signature doesn't verify. Retrying won't help.
+    if (!elem) return true;
+
+    if (elem.namespaceURI !== Strophe.NS.SASL || elem.localName !== 'failure') return false;
+
+    return !Array.from(elem.children).some((c) => c.localName === 'temporary-auth-failure');
+}
 
 /**
  * The Connection class manages the connection to the XMPP server. It's
@@ -26,10 +44,14 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
     #retry_timer = null;
     // When the scheduled retry is due, in milliseconds since the epoch.
     #retry_at = 0;
-    // Set while a retry is getting ready to log in, before Strophe reports on it.
-    #preparing_retry = false;
+    // How many logins are getting ready, before Strophe reports on them.
+    #preparing = 0;
     // Set when an attempt fails, so that the next one uses the other transport.
     #switch_transport = false;
+    // Whether the last authentication failure was the server rejecting the credentials.
+    #credentials_rejected = false;
+    // Set while an attempt that `retry()` started is underway.
+    #retrying = false;
 
     /**
      * @param {string} service - The BOSH or WebSocket service URL.
@@ -44,6 +66,11 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         this.send_initial_presence = true;
         // Whether this connection has ever been established.
         this.has_connected = false;
+        // The bare JID of the session that was loaded from the cache before
+        // connecting, because it was remembered from an earlier start-up.
+        // Such a session retries for as long as it's remembered.
+        /** @type {string|null} */
+        this.cached_jid = null;
     }
 
     /**
@@ -57,7 +84,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
      *  an attempt that's underway, and doesn't wait out a long backoff.
      */
     requestReconnect({ explicit = false } = {}) {
-        if (explicit && this.#isRetrying()) return;
+        if (explicit && this.#isReconnecting()) return;
 
         const wait =
             !!this.reconnecting ||
@@ -70,11 +97,67 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
     }
 
     /**
-     * Whether a retry has started and hasn't succeeded or failed yet.
+     * Retries now, because whatever kept the connection from coming up has
+     * gone away, for example the network is back. The waits between retries
+     * start from the shortest again.
+     *
+     * A working connection is checked rather than replaced, since it may have
+     * died unnoticed. An attempt that's underway is started anew, since it
+     * most likely started while the network was down and may never finish,
+     * unless this started it.
+     * @returns {Promise<unknown>|void}
+     */
+    retry() {
+        // Nothing to retry before logging in, for example while the login
+        // form is shown, also for an account it knows: Strophe hasn't been
+        // asked to connect, since there was nothing to log in with.
+        if (!this.connect_callback) return;
+
+        this.#retries = 0;
+        const { CONNECTED, ATTACHED } = Strophe.Status;
+        if ((this.status === CONNECTED || this.status === ATTACHED) && this.authenticated) {
+            /**
+             * Triggered when a working connection should be checked, because
+             * it may have died unnoticed, for example while the network was
+             * down. The ping plugin pings the server, which reconnects if
+             * the ping times out.
+             * @event _converse#checkConnection
+             */
+            return _converse.api.trigger('checkConnection');
+        }
+        // Getting ready to log in, so it hasn't tried the network yet.
+        if (this.#preparing) return;
+
+        const attempting = this.status === Strophe.Status.CONNECTING || this.status === Strophe.Status.AUTHENTICATING;
+        if (attempting && this.#retrying) return;
+
+        // A retry that's already due this soon isn't put off.
+        const is_due = this.#retry_timer !== null && this.#retry_at - Date.now() <= RETRY_BASE_DELAY;
+        if (!attempting && is_due) return;
+
+        this.#cancelScheduledReconnect();
+        this.#retrying = true;
+        if (attempting) {
+            // An attempt that's underway hasn't failed, so there's no
+            // disconnect pending that would tear down one started straight
+            // away. It's dropped first, so that nothing of it carries over:
+            // its socket or BOSH requests, and its handlers, such as those of
+            // its SASL exchange. Strophe isn't asked to disconnect, since it
+            // would report that as a failed attempt.
+            this._proto._abortAllRequests();
+            this._proto._doDisconnect();
+            this.reset();
+            return this.reconnect();
+        }
+        return this.requestReconnect({ explicit: true });
+    }
+
+    /**
+     * Whether a reconnection attempt has started and hasn't succeeded or failed yet.
      * @returns {boolean}
      */
-    #isRetrying() {
-        if (this.#preparing_retry) return true;
+    #isReconnecting() {
+        if (this.#preparing) return true;
         if (!this.reconnecting) return false;
         return this.status === Strophe.Status.CONNECTING || this.status === Strophe.Status.AUTHENTICATING;
     }
@@ -192,7 +275,9 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
 
         if (api.settings.get('discover_connection_methods')) {
             const domain = Strophe.getDomainFromJid(jid);
-            await this.discoverConnectionMethods(domain);
+            await this.whilePreparing(() => this.discoverConnectionMethods(domain));
+            // Logged out of while looking up how to connect.
+            if (this.#finished) return;
         }
         if (!api.settings.get('bosh_service_url') && !api.settings.get('websocket_url')) {
             // If we don't have a connection URL, we show an input for the user
@@ -249,13 +334,24 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         }
     }
 
-    async reconnect() {
-        this.#preparing_retry = true;
+    /**
+     * Runs what gets a login ready, before Strophe is asked to connect. Until
+     * it's done, `retry()` leaves the login alone.
+     * @template T
+     * @param {() => Promise<T>} prepare
+     * @returns {Promise<T>}
+     */
+    async whilePreparing(prepare) {
+        this.#preparing += 1;
         try {
-            return await this.#prepareAndLogIn();
+            return await prepare();
         } finally {
-            this.#preparing_retry = false;
+            this.#preparing -= 1;
         }
+    }
+
+    reconnect() {
+        return this.whilePreparing(() => this.#prepareAndLogIn());
     }
 
     async #prepareAndLogIn() {
@@ -313,8 +409,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         // Save the current JID in persistent storage so that we can attempt to
         // recreate the session from SCRAM keys
         if (_converse.state.config.get('trusted')) {
-            const bare_jid = _converse.session.get('bare_jid');
-            setLocalStorageItem('conversejs-session-jid', bare_jid);
+            await rememberSession(_converse.session.get('bare_jid'));
         }
 
         /**
@@ -368,6 +463,11 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
      */
     setConnectionStatus(status, message) {
         this.status = status;
+        const { CONNECTING, AUTHENTICATING, RECONNECTING } = Strophe.Status;
+        if (status !== CONNECTING && status !== AUTHENTICATING && status !== RECONNECTING) {
+            // The attempt that `retry()` started has succeeded or failed.
+            this.#retrying = false;
+        }
         _converse.state.connfeedback.set({ connection_status: status, message });
     }
 
@@ -382,6 +482,10 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         this.reset();
         tearDown(_converse);
         await clearSession(_converse);
+        // The server rejected the credentials of a session that was resumed,
+        // or there are none left to log in with, so it ends as if the user
+        // had logged out.
+        const ends = !!this.cached_jid && this.disconnection_cause === Strophe.Status.AUTHFAIL;
         api.connection.destroy();
 
         /**
@@ -391,6 +495,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
          * @example _converse.api.listen.on('disconnected', () => { ... });
          */
         api.trigger('disconnected');
+        if (ends) await endSession(_converse);
     }
 
     /**
@@ -401,7 +506,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
      */
     #shouldGiveUp() {
         const { api } = _converse;
-        if (this.has_connected || api.settings.get('retry_initial_connection')) return false;
+        if (this.has_connected || this.cached_jid || api.settings.get('retry_initial_connection')) return false;
 
         return this.status === Strophe.Status.CONNECTING || !!this.reconnecting;
     }
@@ -414,7 +519,8 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         const reason = this.disconnection_reason;
         if (reason === 'remote-connection-failed') {
             // A gateway reports this while its XMPP server is down, which
-            // `retry_initial_connection` is there to wait out.
+            // `retry_initial_connection` and a resumed session wait out.
+            if (this.cached_jid) return false;
             return this.has_connected || !_converse.api.settings.get('retry_initial_connection');
         }
         return (
@@ -435,6 +541,9 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         // Strophe can report a failed attempt as disconnected more than once.
         if (this.#finished) return;
 
+        // The attempt that `retry()` started, if any, has ended.
+        this.#retrying = false;
+
         const { api } = _converse;
         if (api.settings.get('auto_reconnect')) {
             if (this.disconnection_cause === Strophe.Status.AUTHFAIL) {
@@ -445,6 +554,11 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
                     // If `authentication` is anonymous, we reconnect because we
                     // might have tried to attach with stale BOSH session tokens
                     // or with a cached JID and password
+                    return this.requestReconnect();
+                } else if (this.cached_jid && !this.#credentials_rejected) {
+                    // A resumed session only ends when the server rejects its
+                    // credentials, not when authenticating fails for now
+                    // (`temporary-auth-failure`) or binding a resource fails.
                     return this.requestReconnect();
                 } else {
                     return this.finishDisconnection();
@@ -471,8 +585,13 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
      * connection.
      * @param {Number} status
      * @param {String} [condition]
+     * @param {Element} [elem] - The stanza that caused the change, for example a SASL `<failure>`.
      */
-    onConnectStatusChanged(status, condition) {
+    onConnectStatusChanged(status, condition, elem) {
+        // Tearing down a connection that has been given up on still reports
+        // on it, which would overwrite the reason it ended with.
+        if (this.#finished) return;
+
         const { __ } = _converse;
         log.debug(`Status changed to: ${CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.ATTACHFAIL) {
@@ -516,6 +635,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         } else if (status === Strophe.Status.AUTHENTICATING) {
             this.setConnectionStatus(status);
         } else if (status === Strophe.Status.AUTHFAIL) {
+            this.#credentials_rejected = isCredentialRejection(elem);
             if (!condition) {
                 condition = __('Your XMPP address and/or password is incorrect. Please try again.');
             }

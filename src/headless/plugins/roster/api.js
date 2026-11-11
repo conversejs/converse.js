@@ -47,6 +47,9 @@ export default {
         async get(jids) {
             await api.waitUntil('rosterContactsFetched');
             const { roster } = _converse.state;
+            // The session ended while we were waiting.
+            if (!roster) return typeof jids === 'string' ? undefined : [];
+
             const _getter = /** @param {string} jid */ (jid) => roster.get(Strophe.getBareJidFromJid(jid));
             if (jids === undefined) {
                 jids = roster.pluck('jid');

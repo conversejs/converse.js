@@ -29,6 +29,10 @@ export function navigateToControlBox(jid) {
 }
 
 export function disconnect() {
+    // A session loaded from the cache is shown while it connects, and kept
+    // through the retries, rather than swapped for the login form on each.
+    if (api.connection.get()?.cached_jid) return;
+
     // Upon disconnection, set connected to `false`, so that if
     // we reconnect, "onConnected" will be called,
     // to fetch the roster again and to send out a presence stanza.

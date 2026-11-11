@@ -3,6 +3,7 @@
  * @typedef {import('../muc/muc').default} MUC
  * @typedef {import('../../shared/message').default} BaseMessage
  */
+import api from '../../shared/api/index.js';
 import MAMPlaceholderMessage from './placeholder.js';
 import { fetchArchivedMessages } from './utils.js';
 
@@ -37,6 +38,9 @@ export async function getPage(chat, { limit, before, since, filter = isNotPlaceh
     for (let fetches = 0; ; fetches++) {
         const { page, gap, reached_start } = collect(chat, { limit, before, since, filter });
         if (fetches === MAX_FETCHES) return page;
+        // There's no archive to fetch from until we're logged in, for example
+        // while a session loaded from the cache is still connecting.
+        if (!api.connection.authenticated()) return page;
 
         if (gap) {
             await gap.fetchMissingMessages();

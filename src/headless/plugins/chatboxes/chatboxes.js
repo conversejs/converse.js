@@ -3,8 +3,10 @@
  */
 import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
+import log from '@converse/log';
 import { Collection } from '@converse/skeletor';
 import { initStorage } from '../../utils/storage.js';
+import { isResumed } from '../../utils/session.js';
 
 /**
  * @extends {Collection<ChatBoxBase>}
@@ -49,26 +51,35 @@ class ChatBoxes extends Collection {
      * @param {boolean} reconnecting
      */
     onConnected(reconnecting) {
-        if (reconnecting || _converse.state.session_cache_loaded) return;
+        // A resumed session read its chats before connecting, unless that failed.
+        if (reconnecting || (isResumed(_converse) && this.#read)) return;
 
         this.fetchCached();
     }
 
+    // Whether the last read of the chats from the cache succeeded.
+    #read = false;
+
     /**
      * Loads the chats from the cache.
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>} Whether the cache could be read.
      */
     fetchCached() {
         const bare_jid = _converse.session.get('bare_jid');
         initStorage(this, `converse.chatboxes-${bare_jid}`);
+        this.#read = false;
         return new Promise((resolve) => {
             this.fetch({
                 add: true,
                 success: (c) => {
+                    this.#read = true;
                     this.onChatBoxesFetched(c);
-                    resolve();
+                    resolve(true);
                 },
-                error: () => resolve(),
+                error: (_c, e) => {
+                    log.error(e);
+                    resolve(false);
+                },
             });
         });
     }

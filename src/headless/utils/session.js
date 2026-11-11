@@ -2,6 +2,7 @@ import log from '@converse/log';
 import { getOpenPromise } from '@converse/openpromise';
 import { settings_api } from '../shared/settings/api.js';
 import { getInitSettings } from '../shared/settings/utils.js';
+import { forgetSession } from './remembered-session.js';
 
 const settings = settings_api;
 
@@ -39,12 +40,34 @@ export function replacePromise(_converse, name) {
 }
 
 /**
+ * Whether this device keeps a session's cache once the session has ended.
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
+ * @returns {boolean}
+ */
+export function isCacheKept(_converse) {
+    const { api } = _converse;
+    return !!_converse.state.config.get('trusted') && !api.settings.get('clear_cache_on_logout');
+}
+
+/**
+ * Whether this session was resumed: loaded from the cache before it
+ * connected. Plugins read it on the first connection, to take over what they
+ * loaded rather than load it again.
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
+ * @returns {boolean}
+ */
+export function isResumed(_converse) {
+    return !!_converse.api.connection.get()?.cached_jid;
+}
+
+/**
+ * Whether a session's cache is cleared once the session ends. Tests always
+ * clear it, to keep them apart.
  * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @returns {boolean}
  */
 export function shouldClearCache(_converse) {
-    const { api } = _converse;
-    return !_converse.state.config.get('trusted') || api.settings.get('clear_cache_on_logout') || isTestEnv();
+    return !isCacheKept(_converse) || isTestEnv();
 }
 
 /**
@@ -67,7 +90,6 @@ export function clearSession(_converse) {
         _converse.state.login_info?.destroy();
     }
     _converse.initSession();
-    delete _converse.state.session_cache_loaded;
     /**
      * Synchronouse event triggered once the user session has been cleared,
      * for example when the user has logged out or when Converse has
@@ -75,4 +97,23 @@ export function clearSession(_converse) {
      * @event _converse#clearSession
      */
     return _converse.api.trigger('clearSession', { 'synchronous': true });
+}
+
+/**
+ * Ends the session as logging out does, once there's no connection: the
+ * promises are made anew for the next session, this device forgets the
+ * session unless it's to be remembered, and `logout` is triggered.
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
+ * @param {object} [options]
+ * @param {boolean} [options.remember=false] - Whether to keep remembering the session.
+ */
+export async function endSession(_converse, { remember = false } = {}) {
+    Object.keys(_converse.promises).forEach((p) => replacePromise(_converse, p));
+    // Otherwise the next start would resume it. See #2759
+    if (!remember) await forgetSession();
+    /**
+     * Triggered once the user has logged out.
+     * @event _converse#logout
+     */
+    _converse.api.trigger('logout');
 }

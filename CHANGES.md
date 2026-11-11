@@ -30,6 +30,7 @@
       exports remain.
     - The utility functions `getAutoCompleteListItem`, `showOccupantModal`,
       `fetchMessagesOnScrollUp`, `resetElementHeight`, `getHeaders` and `getDeviceForContact`.
+- fix(roster): Clearing the cache could empty the roster on the next login.
 - Projects can bundle `dist/converse.js` themselves: it no longer pulls all of `dist/` into a
   webpack build. Serve `dist/chunkjs/` and `dist/libomemo.esm.min.js` next to your bundle.
 - The source is exported as `converse.js/src/*`, with its dependencies (including

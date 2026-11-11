@@ -32,8 +32,8 @@ function initRoster() {
     roster_filter.fetch();
 
     id = `converse-roster-model-${bare_jid}`;
-    roster.data = new Model();
-    roster.data.id = id;
+    // With the id as an attribute, so that destroying it removes it from storage.
+    roster.data = new Model({ id });
     initStorage(roster.data, id);
     roster.data.fetch();
     /**

@@ -8,14 +8,33 @@ import { shouldClearCache } from '../../utils/session.js';
 import * as constants from '../../shared/constants.js';
 
 export async function onClearSession() {
+    const { chatboxes } = _converse.state;
+    let cleared;
     if (shouldClearCache(_converse)) {
-        const { chatboxes } = _converse.state;
-        await Promise.all(chatboxes.map(/** @param {ChatBox} c */ (c) => c.messages?.clearStore({ 'silent': true })));
-        chatboxes.clearStore(
+        await Promise.all(chatboxes.map(/** @param {ChatBox} c */ (c) => c.clearCache?.()));
+        cleared = chatboxes.clearStore(
             { silent: true },
             /** @param {import('../../shared/chatbox').default} o */ (o) => o.get('type') !== constants.CONTROLBOX_TYPE,
         );
     }
+    // An anonymous reconnection also clears the session, but keeps its chats
+    // and rooms, to rejoin them.
+    if (_converse.api.connection.get()?.reconnecting) return;
+
+    // Whatever is left is kept in the cache, but not in memory, since the
+    // session has ended.
+    const chats = chatboxes.filter((c) => c.get('type') !== constants.CONTROLBOX_TYPE);
+    chatboxes.remove(chats);
+    chats.forEach((c) => c.unload());
+
+    if (cleared) await cleared;
+
+    // The store is let go of as well, until the next login. Saving what's
+    // still in memory, such as the control box, would otherwise replace the
+    // stored list of chats with one that leaves them out.
+    chatboxes.trigger('unload');
+    // Skeletor's `storage` setter only takes a store.
+    chatboxes._storage = undefined;
 }
 
 /**

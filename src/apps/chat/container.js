@@ -44,10 +44,6 @@ class ChatBoxViews {
     filter(f) {
         return Object.values(this.views).filter(f);
     }
-
-    closeAllChatBoxes() {
-        return Promise.all(Object.values(this.views).map((v) => v.close({ 'name': 'closeAllChatBoxes' })));
-    }
 }
 
 export default ChatBoxViews;

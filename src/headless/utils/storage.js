@@ -75,9 +75,10 @@ export function initStorage(model, id, type) {
     type = type || getDefaultStorageType();
     model.storage = createStore(id, type);
     if (storeUsesIndexedDB(type)) {
-        const flush = () => model.storage.flush();
+        const flush = () => model.storage?.flush();
         addUnloadListener(flush);
-        model.on('destroy', () => removeUnloadListener(flush));
+        // Unloaded when it's let go of in memory while its store is kept.
+        model.on('destroy unload', () => removeUnloadListener(flush));
         model.listenTo(_converse, 'beforeLogout', flush);
     }
 }

@@ -32,6 +32,10 @@ class Placeholder extends ObservableElement {
      */
     fetchMissingMessages(ev) {
         ev?.preventDefault?.();
+        // The session may have ended, and its messages been cleared, while
+        // this is still on screen.
+        if (!this.model.collection) return;
+
         this.model.fetchMissingMessages();
     }
 

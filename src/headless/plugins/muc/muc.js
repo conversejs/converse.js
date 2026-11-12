@@ -1032,12 +1032,15 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         }
     }
 
-    /**
-     * @typedef {Object} CloseEvent
-     * @property {string} name
-     * @param {CloseEvent} [ev]
-     */
-    async close(ev) {
+    unload() {
+        this.removeHandlers();
+        this.debouncedRejoin?.cancel();
+        this.session?.off();
+        [this.features, this.config, this.occupants].forEach((m) => m?.stopListening());
+        super.unload();
+    }
+
+    async close() {
         const { ENTERED, CLOSING } = ROOMSTATUS;
         const was_entered = this.session.get('connection_status') === ENTERED;
 
@@ -1047,20 +1050,17 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         this.occupants.clearStore();
 
-        const is_closed_by_user = ev?.name !== 'closeAllChatBoxes';
-        if (is_closed_by_user) {
-            await this.unregisterNickname();
-            if (api.settings.get('muc_clear_messages_on_leave')) {
-                this.clearMessages();
-            }
-            /**
-             * Triggered when the user leaves a MUC
-             * @event _converse#leaveRoom
-             * @type {MUC}
-             * @example _converse.api.listen.on('leaveRoom', model => { ... });
-             */
-            api.trigger('leaveRoom', this);
+        await this.unregisterNickname();
+        if (api.settings.get('muc_clear_messages_on_leave')) {
+            this.clearMessages();
         }
+        /**
+         * Triggered when the user leaves a MUC
+         * @event _converse#leaveRoom
+         * @type {MUC}
+         * @example _converse.api.listen.on('leaveRoom', model => { ... });
+         */
+        api.trigger('leaveRoom', this);
 
         // Delete the session model
         await new Promise((success) =>

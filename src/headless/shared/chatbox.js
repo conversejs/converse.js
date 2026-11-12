@@ -98,6 +98,18 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
     }
 
     /**
+     * Lets go of the chat in memory without closing it: nothing is sent, and
+     * what's stored of it is kept, for the next time its account logs in on
+     * a device that keeps its cache.
+     */
+    unload() {
+        clearTimeout(this.chat_state_timeout);
+        delete this.chat_state_timeout;
+        this.messages?.stopListening();
+        this.stopListening();
+    }
+
+    /**
      * @param {Object} [_ev]
      */
     async close(_ev) {

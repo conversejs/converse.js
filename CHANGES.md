@@ -16,6 +16,8 @@
 - fix: The `connected` event fires when the first connection only succeeds on a retry. It used to be `reconnected`, which left plugins uninitialized.
 - feat: The `retry_initial_connection` setting keeps retrying when the server can't be reached at startup. The daemon uses it, and no longer exits in that case.
 - feat: A remembered session's cached data can be accessed while offline.
+- feat: On trusted devices, a dropped session stays shown and keeps retrying.
+- feat: New API: `api.connection.remembered()` and `api.connection.retry()`.
 - fix: Rooms are no longer joined before logging in.
 - docs: `auto_reconnect` defaults to `true`, not `false`.
 - The unused `errors.UserFacingError` class is removed.

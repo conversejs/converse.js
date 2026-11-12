@@ -11,7 +11,7 @@ import { generateResource, getConnectionServiceURL } from '../shared/connection/
 import { isValidJID } from './jid.js';
 import { addUnloadListener, hasCredentialsAPI, IS_BROWSER } from './environment.js';
 import { getRememberedSession } from './remembered-session.js';
-import { isCacheKept, isTestEnv } from './session.js';
+import { isResumable, isTestEnv } from './session.js';
 import { isPersistableModel } from './object.js';
 
 /**
@@ -440,8 +440,7 @@ export async function resumeSession(jid, password) {
     const remembered = await getRememberedSession();
     if (!remembered) return null;
     if (jid && Strophe.getBareJidFromJid(jid).toLowerCase() !== remembered) return null;
-    if (api.settings.get('authentication') !== LOGIN) return null;
-    if (!isCacheKept(_converse) || !api.settings.get('auto_reconnect')) return null;
+    if (!isResumable(_converse)) return null;
 
     // The URL decides which account logs in, which is only known to be the
     // remembered one if the session is started for that account.
@@ -456,7 +455,9 @@ export async function resumeSession(jid, password) {
     }
 
     await setUserJID(jid || credentials?.jid || remembered);
-    api.connection.get().cached_jid = remembered;
+    const connection = api.connection.get();
+    connection.resumed_jid = remembered;
+    connection.remembered = true;
     /**
      * Synchronous event triggered when a remembered session is resumed,
      * before connecting, for plugins to load what they've cached. Nothing may
@@ -520,10 +521,11 @@ export async function attemptNonPreboundSession(credentials, automatic) {
         if (!isTestEnv()) log.debug("attemptNonPreboundSession: Couldn't find credentials to log in with");
 
         const connection = api.connection.get();
-        if (connection?.cached_jid) {
-            // A resumed session that can't log in again would otherwise stay
-            // on screen without ever connecting. It ends as one whose
-            // credentials are rejected does, so that the user is asked to log in.
+        if (connection?.remembered) {
+            // A remembered session that can't log in again, for example a
+            // resumed one, would otherwise stay on screen without ever
+            // connecting. It ends as one whose credentials are rejected does,
+            // so that the user is asked to log in.
             const { __ } = _converse;
             connection.setDisconnectionCause(
                 Strophe.Status.AUTHFAIL,
@@ -585,9 +587,9 @@ async function connect(credentials) {
 
     const login_jid = credentials?.jid ?? jid;
     if (
-        connection.cached_jid &&
+        connection.resumed_jid &&
         login_jid &&
-        Strophe.getBareJidFromJid(login_jid).toLowerCase() !== connection.cached_jid
+        Strophe.getBareJidFromJid(login_jid).toLowerCase() !== connection.resumed_jid
     ) {
         // The credentials are for another account than the session resumed
         // from the cache, for example from `credentials_url` after another

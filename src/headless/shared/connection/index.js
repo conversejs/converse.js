@@ -4,7 +4,7 @@ import _converse from '../_converse.js';
 import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants.js';
 import { MemoryStorageBackend, Strophe } from 'strophe.js';
-import { clearSession, endSession, tearDown } from '../../utils/session.js';
+import { clearSession, endSession, isResumable, tearDown } from '../../utils/session.js';
 import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID } from '../../utils/init.js';
 import { rememberSession } from '../../utils/remembered-session.js';
@@ -68,9 +68,13 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         this.has_connected = false;
         // The bare JID of the session that was loaded from the cache before
         // connecting, because it was remembered from an earlier start-up.
-        // Such a session retries for as long as it's remembered.
         /** @type {string|null} */
         this.cached_jid = null;
+        // Whether this device remembers the session and can resume it from
+        // the cache, either because it was resumed or because it logged in
+        // on a trusted device. It's kept through dropped connections,
+        // retrying for as long as it's remembered.
+        this.remembered = false;
     }
 
     /**
@@ -392,6 +396,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         if (_converse.state.config.get('trusted')) {
             await rememberSession(_converse.session.get('bare_jid'));
         }
+        this.remembered = isResumable(_converse);
 
         /**
          * Synchronous event triggered after we've sent an IQ to bind the
@@ -463,10 +468,10 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         this.reset();
         tearDown(_converse);
         await clearSession(_converse);
-        // The server rejected the credentials of a session that was resumed,
-        // or there are none left to log in with, so it ends as if the user
-        // had logged out.
-        const ends = !!this.cached_jid && this.disconnection_cause === Strophe.Status.AUTHFAIL;
+        // The server rejected the credentials of a remembered session, or
+        // there are none left to log in with, so it ends as if the user had
+        // logged out, and isn't resumed on the next start-up.
+        const ends = this.remembered && this.disconnection_cause === Strophe.Status.AUTHFAIL;
         api.connection.destroy();
 
         /**
@@ -487,7 +492,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
      */
     #shouldGiveUp() {
         const { api } = _converse;
-        if (this.has_connected || this.cached_jid || api.settings.get('retry_initial_connection')) return false;
+        if (this.has_connected || this.remembered || api.settings.get('retry_initial_connection')) return false;
 
         return this.status === Strophe.Status.CONNECTING || !!this.reconnecting;
     }
@@ -500,8 +505,8 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         const reason = this.disconnection_reason;
         if (reason === 'remote-connection-failed') {
             // A gateway reports this while its XMPP server is down, which
-            // `retry_initial_connection` and a resumed session wait out.
-            if (this.cached_jid) return false;
+            // `retry_initial_connection` and a remembered session wait out.
+            if (this.remembered) return false;
             return this.has_connected || !_converse.api.settings.get('retry_initial_connection');
         }
         return (
@@ -536,8 +541,8 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
                     // might have tried to attach with stale BOSH session tokens
                     // or with a cached JID and password
                     return this.requestReconnect();
-                } else if (this.cached_jid && !this.#credentials_rejected) {
-                    // A resumed session only ends when the server rejects its
+                } else if (this.remembered && !this.#credentials_rejected) {
+                    // A remembered session only ends when the server rejects its
                     // credentials, not when authenticating fails for now
                     // (`temporary-auth-failure`) or binding a resource fails.
                     return this.requestReconnect();

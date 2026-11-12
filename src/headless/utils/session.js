@@ -1,5 +1,6 @@
 import log from '@converse/log';
 import { getOpenPromise } from '@converse/openpromise';
+import { LOGIN } from '../shared/constants.js';
 import { settings_api } from '../shared/settings/api.js';
 import { getInitSettings } from '../shared/settings/utils.js';
 import { forgetSession } from './remembered-session.js';
@@ -47,6 +48,20 @@ export function replacePromise(_converse, name) {
 export function isCacheKept(_converse) {
     const { api } = _converse;
     return !!_converse.state.config.get('trusted') && !api.settings.get('clear_cache_on_logout');
+}
+
+/**
+ * Whether a session that this device remembers can be resumed from the cache
+ * on a later start-up. Such a session is also kept through dropped
+ * connections, retrying for as long as it's remembered.
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
+ * @returns {boolean}
+ */
+export function isResumable(_converse) {
+    const { api } = _converse;
+    return (
+        api.settings.get('authentication') === LOGIN && isCacheKept(_converse) && !!api.settings.get('auto_reconnect')
+    );
 }
 
 /**

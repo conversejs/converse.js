@@ -11,7 +11,7 @@ import { generateResource, getConnectionServiceURL } from '../shared/connection/
 import { isValidJID } from './jid.js';
 import { addUnloadListener, hasCredentialsAPI, IS_BROWSER } from './environment.js';
 import { getRememberedSession } from './remembered-session.js';
-import { isCacheKept, isTestEnv } from './session.js';
+import { isResumable, isTestEnv } from './session.js';
 import { isPersistableModel } from './object.js';
 
 /**
@@ -440,8 +440,7 @@ export async function resumeSession(jid, password) {
     const remembered = await getRememberedSession();
     if (!remembered) return null;
     if (jid && Strophe.getBareJidFromJid(jid).toLowerCase() !== remembered) return null;
-    if (api.settings.get('authentication') !== LOGIN) return null;
-    if (!isCacheKept(_converse) || !api.settings.get('auto_reconnect')) return null;
+    if (!isResumable(_converse)) return null;
 
     let credentials = null;
     if (!(await canLogInUnattended(remembered, password))) {
@@ -452,7 +451,9 @@ export async function resumeSession(jid, password) {
     }
 
     await setUserJID(jid || credentials?.jid || remembered);
-    api.connection.get().cached_jid = remembered;
+    const connection = api.connection.get();
+    connection.cached_jid = remembered;
+    connection.remembered = true;
     /**
      * Synchronous event triggered when a remembered session is resumed,
      * before connecting, for plugins to load what they've cached. Nothing may

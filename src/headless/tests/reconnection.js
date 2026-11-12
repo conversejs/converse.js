@@ -13,6 +13,16 @@ function spyOnOutcomes(connection) {
     };
 }
 
+/**
+ * Makes the connection look as if it never came up, so that it isn't
+ * remembered either: only a session that has connected is.
+ * @param {any} connection
+ */
+function neverConnected(connection) {
+    connection.has_connected = false;
+    connection.remembered = false;
+}
+
 describe('A connection that fails', function () {
     it(
         'keeps retrying when a retry dies before login has finished',
@@ -37,7 +47,7 @@ describe('A connection that fails', function () {
             const { api } = _converse;
             const connection = api.connection.get();
             const { finish, reconnect } = spyOnOutcomes(connection);
-            connection.has_connected = false;
+            neverConnected(connection);
 
             connection.status = Strophe.Status.CONNECTING;
             connection.onDisconnected();
@@ -66,7 +76,7 @@ describe('A connection that fails', function () {
             const connection = api.connection.get();
             const finish = vi.spyOn(connection, 'finishDisconnection');
             const retry = vi.spyOn(connection, 'reconnect').mockResolvedValue(undefined);
-            connection.has_connected = false;
+            neverConnected(connection);
             connection.status = Strophe.Status.CONNECTING;
 
             // A retry that's still scheduled is cancelled too.
@@ -123,7 +133,7 @@ describe('A connection that fails', function () {
             const { api } = _converse;
             const connection = api.connection.get();
             const { finish, reconnect } = spyOnOutcomes(connection);
-            connection.has_connected = false;
+            neverConnected(connection);
 
             connection.reconnecting = true;
             connection.status = Strophe.Status.CONNECTING;
@@ -142,7 +152,7 @@ describe('A connection that fails', function () {
             const { api } = _converse;
             const connection = api.connection.get();
             const { finish, reconnect } = spyOnOutcomes(connection);
-            connection.has_connected = false;
+            neverConnected(connection);
             connection.status = Strophe.Status.CONNFAIL;
 
             connection.setDisconnectionCause(Strophe.Status.CONNFAIL, 'remote-connection-failed', true);
@@ -172,7 +182,7 @@ describe('A connection that fails', function () {
             const { api } = _converse;
             const connection = api.connection.get();
             const { finish, reconnect } = spyOnOutcomes(connection);
-            connection.has_connected = false;
+            neverConnected(connection);
             connection.status = Strophe.Status.CONNFAIL;
 
             connection.setDisconnectionCause(Strophe.Status.CONNFAIL, 'remote-connection-failed', true);
@@ -342,7 +352,7 @@ describe('A connection that fails', function () {
             const finish = vi.spyOn(connection, 'finishDisconnection');
             const login = vi.spyOn(api.user, 'login').mockResolvedValue(undefined);
             vi.spyOn(connection, 'switchTransport').mockResolvedValue(undefined);
-            connection.has_connected = false;
+            neverConnected(connection);
 
             vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
             try {
@@ -406,7 +416,7 @@ describe('A connection that comes up', function () {
             const connection = api.connection.get();
             const onConnected = vi.spyOn(connection, 'onConnected').mockResolvedValue(undefined);
 
-            connection.has_connected = false;
+            neverConnected(connection);
             connection.reconnecting = true;
             connection.onConnectStatusChanged(Strophe.Status.CONNECTED);
             expect(onConnected).toHaveBeenLastCalledWith();

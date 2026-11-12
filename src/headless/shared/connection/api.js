@@ -92,6 +92,17 @@ export default {
     },
 
     /**
+     * @method api.connection.remembered
+     * @memberOf api.connection
+     * @returns {boolean} Whether this device remembers the session, so that
+     *  it's kept through dropped connections and retried for as long as it's
+     *  remembered, rather than given up on.
+     */
+    remembered() {
+        return !!connection?.remembered;
+    },
+
+    /**
      * Terminates the connection.
      *
      * @method api.connection.disconnect

@@ -7,6 +7,9 @@ export interface DragResizableElement {
     width: number;
     prev_pageX: number;
     prev_pageY: number;
+    is_drag_resizable: boolean;
+    onViewModeChanged: () => void;
+    onWindowResize: () => void;
     initDragResize(): void;
     setupDragResize(): this;
     getDefaultDimensions(): { default_height: number; default_width: number };

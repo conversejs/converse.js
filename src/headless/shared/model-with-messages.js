@@ -144,6 +144,15 @@ export default function ModelWithMessages(BaseModel) {
             this.listenTo(this.messages, 'change:correcting', (m) => this.onMessageCorrecting(m));
         }
 
+        /**
+         * Lets go of the messages in memory, keeping what's stored of them.
+         */
+        unload() {
+            this.messages?.trigger('unload');
+            this.messages?.stopListening();
+            this.stopListening();
+        }
+
         fetchMessages() {
             if (this.messages.fetched_flag) {
                 log.info(`Not re-fetching messages for ${this.get('jid')}`);

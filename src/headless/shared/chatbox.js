@@ -98,6 +98,25 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
     }
 
     /**
+     * Removes what's stored of the chat, other than the chat itself, when the
+     * session ends on a device that doesn't keep its cache.
+     */
+    async clearCache() {
+        await this.messages?.clearStore({ silent: true });
+    }
+
+    /**
+     * Lets go of the chat in memory without closing it: nothing is sent, and
+     * what's stored of it is kept, for the next time its account logs in on
+     * a device that keeps its cache.
+     */
+    unload() {
+        clearTimeout(this.chat_state_timeout);
+        delete this.chat_state_timeout;
+        super.unload();
+    }
+
+    /**
      * @param {Object} [_ev]
      */
     async close(_ev) {

@@ -1,11 +1,9 @@
-import { _converse, api, constants, u } from '@converse/headless';
+import { _converse, api, u } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
 import { MOBILE_CUTOFF } from 'shared/constants.js';
 import DragResizable from 'plugins/dragresize/mixin.js';
 import tplControlbox from './templates/controlbox.js';
 import './navbar.js';
-
-const { LOGOUT } = constants;
 
 /**
  * The ControlBox is the section of the chat that contains the open groupchats,
@@ -63,13 +61,6 @@ class ControlBoxView extends DragResizable(CustomElement) {
 
     close(ev) {
         ev?.preventDefault?.();
-        const connection = api.connection.get();
-        if (
-            ev?.name === 'closeAllChatBoxes' &&
-            (connection.disconnection_cause !== LOGOUT || api.settings.get('show_controlbox_by_default'))
-        ) {
-            return;
-        }
         if (api.settings.get('sticky_controlbox') || api.settings.get('view_mode') !== 'overlayed') {
             return;
         }

@@ -45,6 +45,7 @@ class ChatApp extends CustomElement {
         this.listenTo(this.model, 'change:hidden', onBoxesChanged);
         this.listenTo(this.model, 'change:jid', onBoxesChanged);
         this.listenTo(this.model, 'destroy', onBoxesChanged);
+        this.listenTo(this.model, 'remove', onBoxesChanged);
 
         // Use listenTo instead of api.listen.to so that event handlers
         // automatically get deregistered when the component is dismounted

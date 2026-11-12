@@ -1033,11 +1033,42 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
-     * @typedef {Object} CloseEvent
-     * @property {string} name
-     * @param {CloseEvent} [ev]
+     * Also removes what's stored of the room's occupants, including the
+     * private messages exchanged with them, and of the room itself.
      */
-    async close(ev) {
+    async clearCache() {
+        const occupants = this.occupants?.models ?? [];
+        await Promise.all([super.clearCache(), ...occupants.map((o) => o.messages?.clearStore({ silent: true }))]);
+        // They're removed below, out of reach of `unload()`.
+        occupants.forEach((o) => o.unload());
+        await this.occupants?.clearStore({ silent: true });
+        await Promise.all(
+            [this.session, this.features, this.config].map(
+                (m) =>
+                    m &&
+                    new Promise((resolve) =>
+                        m.destroy({
+                            success: resolve,
+                            error: (_, e) => {
+                                log.error(e);
+                                resolve();
+                            },
+                        }),
+                    ),
+            ),
+        );
+    }
+
+    unload() {
+        this.removeHandlers();
+        this.debouncedRejoin?.cancel();
+        this.session?.off();
+        this.occupants?.forEach((o) => o.unload());
+        [this.features, this.config, this.occupants].forEach((m) => m?.stopListening());
+        super.unload();
+    }
+
+    async close() {
         const { ENTERED, CLOSING } = ROOMSTATUS;
         const was_entered = this.session.get('connection_status') === ENTERED;
 
@@ -1047,20 +1078,17 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         this.occupants.clearStore();
 
-        const is_closed_by_user = ev?.name !== 'closeAllChatBoxes';
-        if (is_closed_by_user) {
-            await this.unregisterNickname();
-            if (api.settings.get('muc_clear_messages_on_leave')) {
-                this.clearMessages();
-            }
-            /**
-             * Triggered when the user leaves a MUC
-             * @event _converse#leaveRoom
-             * @type {MUC}
-             * @example _converse.api.listen.on('leaveRoom', model => { ... });
-             */
-            api.trigger('leaveRoom', this);
+        await this.unregisterNickname();
+        if (api.settings.get('muc_clear_messages_on_leave')) {
+            this.clearMessages();
         }
+        /**
+         * Triggered when the user leaves a MUC
+         * @event _converse#leaveRoom
+         * @type {MUC}
+         * @example _converse.api.listen.on('leaveRoom', model => { ... });
+         */
+        api.trigger('leaveRoom', this);
 
         // Delete the session model
         await new Promise((success) =>

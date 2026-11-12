@@ -14,7 +14,26 @@ export default function DragResizable(BaseCustomElement) {
         constructor(...args) {
             super(args);
             this.model = null;
-            api.settings.listen.on('change:view_mode', () => this.initDragResize());
+            this.onViewModeChanged = () => this.initDragResize();
+            this.onWindowResize = u.debounce(() => this.setDimensions(), 250);
+            // Whether it's been set up to be resized, in overlayed mode.
+            this.is_drag_resizable = false;
+        }
+
+        // The listeners on what outlives the element are added while it's in
+        // the page, so that they don't keep it, and its model, alive once it's
+        // gone. Its model can outlive it without being destroyed, for example
+        // when it's unloaded on logging out of a device that keeps its cache.
+        connectedCallback() {
+            super.connectedCallback();
+            api.settings.listen.on('change:view_mode', this.onViewModeChanged);
+            if (this.is_drag_resizable) window.addEventListener('resize', this.onWindowResize);
+        }
+
+        disconnectedCallback() {
+            super.disconnectedCallback();
+            api.settings.listen.not('change:view_mode', this.onViewModeChanged);
+            window.removeEventListener('resize', this.onWindowResize);
         }
 
         /**
@@ -35,9 +54,9 @@ export default function DragResizable(BaseCustomElement) {
         }
 
         setupDragResize() {
-            const debouncedSetDimensions = u.debounce(() => this.setDimensions(), 250);
-            window.addEventListener('resize', debouncedSetDimensions);
-            this.listenTo(this.model, 'destroy', () => window.removeEventListener('resize', debouncedSetDimensions));
+            this.is_drag_resizable = true;
+            // Always the same listener, so that it's only added once.
+            window.addEventListener('resize', this.onWindowResize);
 
             const flyout = /** @type {HTMLElement} */ (this.querySelector('.box-flyout'));
             this.model.set(this.getDefaultDimensions());

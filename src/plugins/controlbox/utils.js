@@ -1,7 +1,8 @@
-import { _converse, api, converse } from '@converse/headless';
+import { _converse, api, constants, converse } from '@converse/headless';
 import { __ } from 'i18n/index.js';
 
 const { Strophe, u } = converse.env;
+const { LOGOUT } = constants;
 
 export function addControlBox() {
     const m = _converse.state.chatboxes.add(new _converse.exports.ControlBox({ 'id': 'controlbox' }));
@@ -44,6 +45,9 @@ export function clearSession() {
             view.controlbox_pane.remove();
             delete view.controlbox_pane;
         }
+        // Logging out closes the control box, unless it's shown by default.
+        const logged_out = api.connection.get()?.disconnection_cause === LOGOUT;
+        if (logged_out && !api.settings.get('show_controlbox_by_default')) view.close();
     }
 }
 

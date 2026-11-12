@@ -29,9 +29,9 @@ export function navigateToControlBox(jid) {
 }
 
 export function disconnect() {
-    // A session loaded from the cache is shown while it connects, and kept
-    // through the retries, rather than swapped for the login form on each.
-    if (api.connection.get()?.cached_jid) return;
+    // A remembered session stays on screen through the retries, rather than
+    // being swapped for a spinner or the login form on each.
+    if (api.connection.remembered()) return;
 
     // Upon disconnection, set connected to `false`, so that if
     // we reconnect, "onConnected" will be called,

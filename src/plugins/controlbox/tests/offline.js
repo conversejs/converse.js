@@ -5,15 +5,14 @@ const { u } = converse.env;
 
 describe('The Controlbox, while a connection is retried', function () {
     it(
-        'keeps showing a session loaded from the cache',
+        'keeps showing a session that this device remembers',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { api } = _converse;
             await mock.openControlBox(_converse);
             const view = _converse.chatboxviews.get('controlbox');
             await u.waitUntil(() => view.querySelector('converse-user-profile'));
 
-            // As for a session resumed from the cache
-            api.connection.get().cached_jid = 'romeo@montague.lit';
+            expect(api.connection.remembered()).toBe(true);
             api.trigger('will-reconnect');
             expect(view.model.get('connected')).toBe(true);
             await view.updateComplete;
@@ -23,11 +22,13 @@ describe('The Controlbox, while a connection is retried', function () {
     );
 
     it(
-        'shows that it is disconnected otherwise',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        'shows that it is disconnected on a device that clears its cache',
+        mock.initConverse(converse, ['chatBoxesFetched'], { clear_cache_on_logout: true }, async function (_converse) {
+            const { api } = _converse;
             await mock.openControlBox(_converse);
             const view = _converse.chatboxviews.get('controlbox');
-            _converse.api.trigger('will-reconnect');
+            expect(api.connection.remembered()).toBe(false);
+            api.trigger('will-reconnect');
             expect(view.model.get('connected')).toBe(false);
         }),
     );

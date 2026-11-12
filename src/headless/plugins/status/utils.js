@@ -47,7 +47,7 @@ export function initStatus(reconnecting) {
     // begin with, so we set reconnecting to false.
     reconnecting = _converse.state.profile === undefined ? false : reconnecting;
     // A resumed session loaded its profile before connecting.
-    const loaded = !reconnecting && isResumed(_converse) && !!_converse.state.profile;
+    const loaded = isResumed(_converse) && !!_converse.state.profile;
     if (reconnecting || loaded) {
         onStatusInitialized(reconnecting);
     } else {

@@ -555,6 +555,109 @@ describe('A resumed session', function () {
     );
 });
 
+describe('A session logged into on a trusted device', function () {
+    it(
+        'ends, as if logged out, when it no longer has credentials to reconnect with',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+            const { api, state } = _converse;
+            const trigger = vi.spyOn(api, 'trigger');
+
+            // For example, the stored password was removed while it was connected.
+            api.settings.set('password', '');
+            delete api.connection.get().pass;
+            await api.connection.reconnect();
+            await u.waitUntil(() => countEvents(trigger, 'logout') === 1);
+            expect(state.connfeedback.get('message')).toMatch(/log in again/);
+        }),
+    );
+
+    it(
+        'is remembered, and kept through a remote connection failure',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+            const { api } = _converse;
+            const connection = api.connection.get();
+            expect(api.connection.remembered()).toBe(true);
+            const finish = vi.spyOn(connection, 'finishDisconnection').mockResolvedValue(undefined);
+            const reconnect = vi.spyOn(connection, 'requestReconnect').mockImplementation(() => {});
+
+            connection.setDisconnectionCause(Strophe.Status.CONNFAIL, 'remote-connection-failed', true);
+            connection.onDisconnected();
+            expect(finish).not.toHaveBeenCalled();
+            expect(reconnect).toHaveBeenCalledOnce();
+            connection.setDisconnectionCause();
+        }),
+    );
+
+    it(
+        'is not remembered on a device that clears its cache, and stops on a remote connection failure',
+        mock.initConverse(converse, ['chatBoxesFetched'], { clear_cache_on_logout: true }, async (_converse) => {
+            const { api } = _converse;
+            const connection = api.connection.get();
+            expect(api.connection.remembered()).toBe(false);
+            const finish = vi.spyOn(connection, 'finishDisconnection').mockResolvedValue(undefined);
+            const reconnect = vi.spyOn(connection, 'requestReconnect').mockImplementation(() => {});
+
+            connection.setDisconnectionCause(Strophe.Status.CONNFAIL, 'remote-connection-failed', true);
+            connection.onDisconnected();
+            expect(finish).toHaveBeenCalledOnce();
+            expect(reconnect).not.toHaveBeenCalled();
+            connection.setDisconnectionCause();
+        }),
+    );
+
+    it(
+        'keeps retrying when authenticating fails for now',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+            const { api } = _converse;
+            const connection = api.connection.get();
+            const finish = vi.spyOn(connection, 'finishDisconnection');
+            const reconnect = vi.spyOn(connection, 'requestReconnect').mockImplementation(() => {});
+
+            connection.onConnectStatusChanged(Strophe.Status.AUTHFAIL, null, saslFailure('temporary-auth-failure'));
+            expect(reconnect).toHaveBeenCalledOnce();
+            expect(finish).not.toHaveBeenCalled();
+        }),
+    );
+
+    it(
+        'ends, as if logged out, when the server rejects its credentials',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+            const { api } = _converse;
+            await runFirstSession(_converse);
+            const trigger = vi.spyOn(api, 'trigger');
+
+            // For example, the password was changed on another device.
+            api.connection.get().onConnectStatusChanged(Strophe.Status.AUTHFAIL, null, saslFailure('not-authorized'));
+            await u.waitUntil(() => countEvents(trigger, 'logout') === 1);
+
+            // Nor is it resumed the next time
+            trigger.mockClear();
+            await reloadOffline(_converse);
+            expect(countEvents(trigger, 'loadSessionCache')).toBe(0);
+        }),
+    );
+
+    it(
+        'can be logged out of while it retries without a network',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+            const { api } = _converse;
+            await runFirstSession(_converse);
+            await reloadOffline(_converse);
+            const connection = api.connection.get();
+            expect(connection.connected).toBeFalsy();
+            const trigger = vi.spyOn(api, 'trigger');
+
+            await api.user.logout();
+            expect(countEvents(trigger, 'logout')).toBe(1);
+            expect(api.connection.get()).toBeUndefined();
+
+            trigger.mockClear();
+            await reloadOffline(_converse);
+            expect(countEvents(trigger, 'loadSessionCache')).toBe(0);
+        }),
+    );
+});
+
 describe('Retrying the connection now (api.connection.retry)', function () {
     it(
         'starts the waits between retries from the shortest again',

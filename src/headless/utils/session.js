@@ -1,5 +1,6 @@
 import log from '@converse/log';
 import { getOpenPromise } from '@converse/openpromise';
+import { LOGIN } from '../shared/constants.js';
 import { settings_api } from '../shared/settings/api.js';
 import { getInitSettings } from '../shared/settings/utils.js';
 import { forgetSession } from './remembered-session.js';
@@ -50,14 +51,28 @@ export function isCacheKept(_converse) {
 }
 
 /**
+ * Whether a session that this device remembers can be resumed from the cache
+ * on a later start-up. Such a session is also kept through dropped
+ * connections, retrying for as long as it's remembered.
+ * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
+ * @returns {boolean}
+ */
+export function isResumable(_converse) {
+    const { api } = _converse;
+    return (
+        api.settings.get('authentication') === LOGIN && isCacheKept(_converse) && !!api.settings.get('auto_reconnect')
+    );
+}
+
+/**
  * Whether this session was resumed: loaded from the cache before it
- * connected. Plugins read it on the first connection, to take over what they
- * loaded rather than load it again.
+ * connected, and not reconnected since. Plugins read it on the first
+ * connection, to take over what they loaded rather than load it again.
  * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @returns {boolean}
  */
 export function isResumed(_converse) {
-    return !!_converse.api.connection.get()?.cached_jid;
+    return !!_converse.api.connection.get()?.resumed_jid;
 }
 
 /**

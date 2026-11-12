@@ -190,7 +190,7 @@ export function onPresencesInitialized(reconnecting) {
         api.trigger('rosterReadyAfterReconnection');
     }
     // A resumed session loaded its roster before connecting.
-    const loaded = !reconnecting && isResumed(_converse) && !!_converse.state.roster;
+    const loaded = isResumed(_converse) && !!_converse.state.roster;
     if (!reconnecting && !loaded) initRoster();
 
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);

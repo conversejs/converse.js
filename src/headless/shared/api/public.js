@@ -142,7 +142,7 @@ const converse = Object.assign(/** @type {any} */ (globalThis).converse || {}, {
 
         const plugins = _converse.pluggable.plugins;
         if (api.settings.get('auto_login') || (api.settings.get('keepalive') && plugins['converse-bosh']?.enabled())) {
-            await api.user.login(null, null, true);
+            await api.user.login(null, null, { automatic: true });
         }
 
         /**

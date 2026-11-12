@@ -9,6 +9,7 @@
 - feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
 - fix: A message sent without a connection was silently lost while looking sent. It now stays in the conversation as a failed message.
 - feat: `api.promises.renew()` makes a new promise unless one is pending.
+- feat: `api.user.login()` takes `{ automatic: true }` instead of a boolean.
 - fix: Reconnecting no longer stops for good when a retry fails before login has finished.
 - Reconnection attempts back off, waiting 3 seconds at first and twice as long each time up to a minute. Sending a message cuts a longer wait short.
 - fix: With both BOSH and websocket configured, a failed connection attempt is now retried with the other transport.

@@ -25,3 +25,7 @@ export type ConverseEnv = {
     sprintf: (...args: any[]) => string;
     u: typeof u;
 };
+
+export type LoginOptions = {
+    automatic?: boolean; // Whether Converse logs in by itself at start-up, rather than the user logging in
+};

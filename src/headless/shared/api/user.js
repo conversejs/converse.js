@@ -41,14 +41,17 @@ const api = {
          * @method _converse.api.user.login
          * @param { string } [jid]
          * @param { string } [password]
-         * @param { boolean } [automatic=false] - An internally used flag that indicates whether
-         *  this method was called automatically once the connection has been
-         *  initialized. It's used together with the `auto_login` configuration flag
-         *  to determine whether Converse should try to log the user in if it
-         *  fails to restore a previous auth'd session.
-         *  @returns  { Promise<void> }
+         * @param { import('./types').LoginOptions|boolean } [options] - With
+         *  `automatic`, Converse logs in by itself once the connection has
+         *  been initialized. It's used together with the `auto_login`
+         *  configuration flag to determine whether Converse should try to log
+         *  the user in if it fails to restore a previous auth'd session.
+         *  Passing `automatic` as a boolean is deprecated.
+         * @returns { Promise<void> }
+         * @example _converse.api.user.login(jid, password, { automatic: true });
          */
-        async login(jid, password, automatic = false) {
+        async login(jid, password, options = {}) {
+            const automatic = typeof options === 'boolean' ? options : !!options?.automatic;
             const { api } = _converse;
             jid = jid || api.settings.get('jid');
 

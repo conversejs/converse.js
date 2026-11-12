@@ -1,4 +1,5 @@
 import _converse from '../_converse.js';
+import log from '@converse/log';
 import { getOpenPromise } from '@converse/openpromise';
 import { waitUntil } from '../../utils/promise.js';
 import { isFunction } from '../../utils/object.js';
@@ -41,6 +42,10 @@ export default {
          * promise, but also emits an event with the same name (which can be listened to
          * via {@link _converse.api.listen}).
          *
+         * Adding a promise again replaces it. Whatever still waits on the old
+         * one is never told, as when the session it waited in has ended. To
+         * keep a pending promise, use {@link _converse.api.promises.renew}.
+         *
          * @method _converse.api.promises.add
          * @param {string|array} [promises] The name or an array of names for the promise(s) to be added
          * @param {boolean} [replace=true] Whether this promise should be replaced with a new one when the user logs out.
@@ -49,11 +54,30 @@ export default {
         add(promises, replace = true) {
             promises = Array.isArray(promises) ? promises : [promises];
             promises.forEach((name) => {
+                if (_converse.promises[name]?.isPending) {
+                    log.debug(`Replacing the "${name}" promise before it was resolved`);
+                }
                 /** @type {import('../types').ReplaceableOpenPromise} */
                 const promise = getOpenPromise();
                 promise.replace = replace;
                 _converse.promises[name] = promise;
             });
+        },
+
+        /**
+         * Makes a new promise once the current one is resolved or rejected,
+         * for a promise that's to be resolved again, for example on every
+         * connection. One that's still pending is kept, so that whatever waits
+         * on it is told once it's resolved. One that doesn't exist yet is added.
+         *
+         * @method _converse.api.promises.renew
+         * @param {string} name - The name of the promise
+         */
+        renew(name) {
+            const existing = _converse.promises[name];
+            if (existing?.isPending) return;
+
+            this.add(name, existing?.replace ?? true);
         },
     },
 

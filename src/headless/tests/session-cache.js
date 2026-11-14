@@ -242,6 +242,28 @@ describe('A remembered session', function () {
     );
 
     it(
+        'shows the vCards it has in the cache, and fetches the others once connected',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+            const { api, state } = _converse;
+            await runFirstSession(_converse);
+            const vcard = await (await api.contacts.get(contact_jid)).getVCard();
+            const fullname = await u.waitUntil(() => vcard.get('fullname'));
+
+            // A page load starts without the earlier session's vCards.
+            api.promises.add('VCardsInitialized');
+            delete state.vcards;
+            const goOnline = await reloadOffline(_converse);
+            const cached = await (await api.contacts.get(contact_jid)).getVCard();
+            expect(cached.get('fullname')).toBe(fullname);
+
+            const uncached = state.vcards.create({ jid: 'nurse@capulet.lit' });
+            await goOnline();
+            await u.waitUntil(() => uncached.get('fullname') === 'Nurse');
+            expect(uncached.get('vcard_error')).toBeUndefined();
+        }),
+    );
+
+    it(
         'is still resumed if a plugin fails to load what it cached',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
             const { api } = _converse;

@@ -22,10 +22,20 @@ class VCard extends Model {
         this.lazy_load = api.settings.get('lazy_load_vcards') && lazy;
 
         if (this.lazy_load) {
-            this.once('visibilityChanged', () => api.vcard.update(this));
+            this.once('visibilityChanged', () => this.refresh());
         } else {
-            api.vcard.update(this);
+            this.refresh();
         }
+    }
+
+    /**
+     * Fetches the vCard from the server. Without a connection, that's left
+     * for when there is one (see `refreshVCards`).
+     */
+    refresh() {
+        // Whether it's to be fetched once there's a connection.
+        this.awaits_connection = !api.connection.connected();
+        if (!this.awaits_connection) return api.vcard.update(this);
     }
 
     get idAttribute() {

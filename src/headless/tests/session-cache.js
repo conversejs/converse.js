@@ -217,6 +217,31 @@ describe('A remembered session', function () {
     );
 
     it(
+        'shows the messages of a chat with someone who is blocked and not a contact',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+            const { api, exports, state } = _converse;
+            await runFirstSession(_converse);
+            const jid = 'nurse@capulet.lit';
+            state.session.set('converse.blocklist-romeo@montague.lit-fetched', true);
+            state.blocklist = new exports.Blocklist();
+            (await api.blocklist.get()).create({ jid });
+            const chat = await api.chats.open(jid);
+            await chat.messages.create({ body: 'He is hid at Laurence cell', type: 'chat', from: jid, msgid: 'msg2' });
+
+            // A page load starts without the earlier session's blocklist.
+            api.promises.add('blocklistInitialized');
+            delete state.blocklist;
+            await reloadOffline(_converse);
+            expect((await api.blocklist.get()).get(jid)).toBeDefined();
+            expect(await api.contacts.get(jid)).toBeUndefined();
+
+            const cached = await api.chats.get(jid);
+            await cached.initialized;
+            expect(cached.messages.findWhere({ msgid: 'msg2' }).get('body')).toBe('He is hid at Laurence cell');
+        }),
+    );
+
+    it(
         'is still resumed if a plugin fails to load what it cached',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
             const { api } = _converse;

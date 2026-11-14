@@ -133,7 +133,7 @@ describe('The rich Social composer', function () {
 
             // Two followed people plus a followed community feed (a non-microblog
             // node), which is not a person and must never be offered as a mention.
-            await converse.env.u.waitUntil(() => _converse.state.following);
+            await _converse.api.waitUntil('pubsubFeedsInitialized');
             _converse.state.following.track({ server: 'bob@example.org', title: 'Bobby' });
             _converse.state.following.track({ server: 'anna@example.org', title: 'Anna' });
             _converse.state.following.track({ server: 'pubsub.example.org', node: 'SomeTopic' });

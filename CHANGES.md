@@ -8,11 +8,18 @@
   Plugins add an entry through the new `getAttachmentMenuItems` hook.
 - feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
 - fix: A message sent without a connection was silently lost while looking sent. It now stays in the conversation as a failed message.
+- feat: `api.promises.renew()` makes a new promise unless one is pending.
+- feat: `api.user.login()` takes `{ automatic: true }` instead of a boolean.
 - fix: Reconnecting no longer stops for good when a retry fails before login has finished.
 - Reconnection attempts back off, waiting 3 seconds at first and twice as long each time up to a minute. Sending a message cuts a longer wait short.
 - fix: With both BOSH and websocket configured, a failed connection attempt is now retried with the other transport.
 - fix: The `connected` event fires when the first connection only succeeds on a retry. It used to be `reconnected`, which left plugins uninitialized.
 - feat: The `retry_initial_connection` setting keeps retrying when the server can't be reached at startup. The daemon uses it, and no longer exits in that case.
+- feat: A remembered session's cached data can be accessed while offline.
+- feat: On trusted devices, a dropped session stays shown and keeps retrying.
+- feat: New API: `api.connection.remembered()` and `api.connection.retry()`.
+- fix: Rooms are no longer joined before logging in.
+- docs: `auto_reconnect` defaults to `true`, not `false`.
 - The unused `errors.UserFacingError` class is removed.
 - `@converse/log` is bumped to 0.1.0, because its API changed to variadic `log(level, ...args)` and `debug(...args)` without a version bump.
 - `strophe.js` is bumped to 6.0.0, whose types resolve under `"moduleResolution": "nodenext"`.
@@ -28,6 +35,8 @@
       exports remain.
     - The utility functions `getAutoCompleteListItem`, `showOccupantModal`,
       `fetchMessagesOnScrollUp`, `resetElementHeight`, `getHeaders` and `getDeviceForContact`.
+- fix(roster): Clearing the cache could empty the roster on the next login.
+- fix(chatboxes): Logging out on a trusted device kept the chats open.
 - Projects can bundle `dist/converse.js` themselves: it no longer pulls all of `dist/` into a
   webpack build. Serve `dist/chunkjs/` and `dist/libomemo.esm.min.js` next to your bundle.
 - The source is exported as `converse.js/src/*`, with its dependencies (including

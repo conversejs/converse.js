@@ -47,6 +47,7 @@ converse.plugins.add('converse-chatboxes', {
         });
 
         api.listen.on('presencesInitialized', (reconnecting) => chatboxes.onConnected(reconnecting));
+        api.listen.on('loadSessionCache', () => chatboxes.fetchCached());
         api.listen.on('reconnected', () => chatboxes.forEach((m) => m.onReconnection()));
         api.listen.on('clearSession', onClearSession);
 

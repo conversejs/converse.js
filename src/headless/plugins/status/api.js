@@ -1,6 +1,7 @@
 import api from '../../shared/api/index.js';
 import _converse from '../../shared/_converse.js';
 import { PRES_SHOW_VALUES, PRES_TYPE_VALUES, STATUS_WEIGHTS } from '../../shared/constants.js';
+import { getProfile } from './utils.js';
 
 let idle_seconds = 0;
 let idle = false;
@@ -18,13 +19,12 @@ export default {
          * @example _converse.api.user.status.get();
          */
         async get() {
-            await api.waitUntil('statusInitialized');
-
-            const show = _converse.state.profile.get('show');
+            const profile = await getProfile();
+            const show = profile.get('show');
             if (show) {
                 return show;
             }
-            const status = _converse.state.profile.get('status');
+            const status = profile.get('status');
             if (!status) {
                 return 'online';
             }
@@ -75,8 +75,7 @@ export default {
              * @example const message = _converse.api.user.status.message.get()
              */
             async get() {
-                await api.waitUntil('statusInitialized');
-                return _converse.state.profile.get('status_message');
+                return (await getProfile()).get('status_message');
             },
             /**
              * @method _converse.api.user.status.message.set

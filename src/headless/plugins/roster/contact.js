@@ -29,7 +29,8 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
     async setup(attrs) {
         this.lazy_load_vcard = true;
 
-        await this.setPresence();
+        // Set before waiting for presences, which may only come once
+        // connected, so that it can't undo what changed in the meantime.
         const { jid } = attrs;
         this.set({
             ...attrs,
@@ -38,6 +39,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
                 user_id: Strophe.getNodeFromJid(jid),
             },
         });
+        await this.setPresence();
         /**
          * When a contact's presence status has changed.
          * The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.

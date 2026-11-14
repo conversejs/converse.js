@@ -96,7 +96,8 @@ export function initStreamFeatures() {
     if (!_converse.state.stream_features) {
         const bare_jid = _converse.session.get('bare_jid');
         const id = `converse.stream-features-${bare_jid}`;
-        api.promises.add('streamFeaturesAdded');
+        // Kept if still pending, for what waited on it during a failed attempt.
+        api.promises.renew('streamFeaturesAdded');
 
         const stream_features = new Collection();
         stream_features.storage = createStore(id, 'session');

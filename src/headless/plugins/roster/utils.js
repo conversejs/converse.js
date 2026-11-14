@@ -8,7 +8,7 @@ import log from '@converse/log';
 import { Model } from '@converse/skeletor';
 import { RosterFilter } from '../../plugins/roster/filter.js';
 import { initStorage } from '../../utils/storage.js';
-import { shouldClearCache } from '../../utils/session.js';
+import { isResumed, shouldClearCache } from '../../utils/session.js';
 import { parsePresence } from './parsers.js';
 
 const { stx } = converse.env;
@@ -32,8 +32,8 @@ function initRoster() {
     roster_filter.fetch();
 
     id = `converse-roster-model-${bare_jid}`;
-    roster.data = new Model();
-    roster.data.id = id;
+    // With the id as an attribute, so that destroying it removes it from storage.
+    roster.data = new Model({ id });
     initStorage(roster.data, id);
     roster.data.fetch();
     /**
@@ -48,21 +48,72 @@ function initRoster() {
 }
 
 /**
+ * Loads the contacts an earlier session left in the cache, before connecting.
+ *
+ * `rosterContactsFetched` only fires if the roster was fetched from the server
+ * before, so that an empty cache is an empty roster. Otherwise it fires once
+ * connected.
+ */
+export async function loadCachedRoster() {
+    initRoster();
+    const roster = /** @type {RosterContacts} */ (_converse.state.roster);
+    try {
+        await roster.fetchCachedContacts();
+    } catch (e) {
+        log.error(e);
+        // Read once connected instead.
+        delete _converse.state.roster;
+        Object.assign(_converse, { roster: undefined }); // XXX DEPRECATED
+        return;
+    }
+    if (await isKnownOffline(roster)) api.trigger('rosterContactsFetched', roster);
+}
+
+/**
+ * Whether the cached roster can be shown offline as it is, which
+ * `loadCachedRoster` announces with `rosterContactsFetched`.
+ * @param {RosterContacts} roster
+ * @returns {Promise<boolean>}
+ */
+async function isKnownOffline(roster) {
+    return roster.length > 0 || (await wasFetchedFromServer(roster));
+}
+
+/**
+ * Whether the roster was fetched from the server before, which stores its
+ * version (if only `null`) every time.
+ * @param {RosterContacts} roster
+ * @returns {Promise<boolean>}
+ */
+function wasFetchedFromServer(roster) {
+    return new Promise((resolve) =>
+        roster.data.fetch({
+            success: (_model, resp) => resolve(resp !== null && resp !== undefined),
+            error: () => resolve(false),
+        }),
+    );
+}
+
+/**
  * Fetch all the roster groups, and then the roster contacts.
  * Emit an event after fetching is done in each case.
  * @param {boolean} ignore_cache - If set to to true, the local cache
  *      will be ignored it's guaranteed that the XMPP server
  *      will be queried for the roster.
+ * @param {boolean} [loaded] - Whether the roster was loaded from the cache
+ *      before connecting, so that it's not read again.
  */
-async function populateRoster(ignore_cache = false) {
+async function populateRoster(ignore_cache = false, loaded = false) {
     const connection = api.connection.get();
     if (ignore_cache) {
         connection.send_initial_presence = true;
     }
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);
     try {
-        await roster.fetchRosterContacts();
-        api.trigger('rosterContactsFetched', roster);
+        // Loading it from the cache before connecting may have announced it already.
+        const announced = loaded && _converse.promises['rosterContactsFetched'].isResolved;
+        await roster.fetchRosterContacts(!loaded);
+        if (!announced) api.trigger('rosterContactsFetched', roster);
     } catch (reason) {
         log.error(reason);
     } finally {
@@ -137,13 +188,15 @@ export function onPresencesInitialized(reconnecting) {
          * @example _converse.api.listen.on('rosterReadyAfterReconnection', () => { ... });
          */
         api.trigger('rosterReadyAfterReconnection');
-    } else {
-        initRoster();
     }
+    // A resumed session loaded its roster before connecting.
+    const loaded = !reconnecting && isResumed(_converse) && !!_converse.state.roster;
+    if (!reconnecting && !loaded) initRoster();
+
     const roster = /** @type {RosterContacts} */ (_converse.state.roster);
     roster.onConnected();
     registerPresenceHandler();
-    populateRoster(!api.connection.get().restored);
+    populateRoster(!api.connection.get().restored, loaded);
 }
 
 /**

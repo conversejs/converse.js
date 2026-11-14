@@ -74,7 +74,6 @@ converse.plugins.add('converse-app-chat', {
 
         api.listen.on('cleanup', () => Object.assign(_converse, { chatboxviews: null })); // DEPRECATED
         api.listen.on('cleanup', () => delete _converse.state.chatboxviews);
-        api.listen.on('clearSession', () => chatboxviews.closeAllChatBoxes());
         api.listen.on('chatBoxViewsInitialized', calculateViewportHeightUnit);
 
         window.addEventListener('resize', calculateViewportHeightUnit);

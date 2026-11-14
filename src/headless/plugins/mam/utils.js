@@ -168,6 +168,8 @@ export async function fetchArchivedMessages(model, options = {}, should_page = f
     const is_muc = model.get('type') === CHATROOMS_TYPE;
     const bare_jid = _converse.session.get('bare_jid');
     const mam_jid = is_muc ? model.get('jid') : bare_jid;
+    // The session ended, for example before a cached session could connect.
+    if (!mam_jid) return;
 
     const supported = await api.disco.supports(NS.MAM, mam_jid);
     if (!supported) return;

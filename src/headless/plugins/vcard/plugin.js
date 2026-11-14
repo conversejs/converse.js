@@ -11,9 +11,12 @@ import vcard_api from './api.js';
 import VCards from './vcards.js';
 import {
     clearVCardsSession,
+    initVCards,
+    onConnected,
     onOccupantAvatarChanged,
     publishOwnNickname,
     registerNickHandler,
+    refreshVCards,
     registerPresenceHandler,
     resetNickState,
     unregisterNickHandler,
@@ -73,11 +76,9 @@ converse.plugins.add('converse-vcard', {
             if (model?.vcard) model.vcard.trigger('visibilityChanged');
         });
 
-        api.listen.on('connected', () => {
-            const vcards = new _converse.exports.VCards();
-            _converse.state.vcards = vcards;
-            Object.assign(_converse, { vcards }); // XXX DEPRECATED
-        });
+        api.listen.on('loadSessionCache', initVCards);
+        api.listen.on('connected', onConnected);
+        api.listen.on('reconnected', refreshVCards);
 
         api.listen.on('presencesInitialized', () => {
             registerPresenceHandler();

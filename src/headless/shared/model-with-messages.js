@@ -147,7 +147,7 @@ export default function ModelWithMessages(BaseModel) {
         fetchMessages() {
             if (this.messages.fetched_flag) {
                 log.info(`Not re-fetching messages for ${this.get('jid')}`);
-                return;
+                return this.messages.fetched;
             }
             this.messages.fetched_flag = true;
             const resolve = this.messages.fetched.resolve;

@@ -34,6 +34,9 @@ export default {
             }
 
             const model = /** @type {Profile} */ (_converse.state.profile);
+            // The session ended while we were waiting.
+            if (!model) return;
+
             const presence = await model.constructPresence(attrs);
             children.map((c) => c?.tree() ?? c).forEach((c) => presence.cnode(c).up());
             send(presence);

@@ -109,10 +109,20 @@ converse.plugins.add('converse-blocklist', {
             }
         });
 
+        // A resumed session has its blocklist from the cache before connecting,
+        // so that nothing which checks it has to wait for the connection.
+        api.listen.on('loadSessionCache', () => {
+            _converse.state.blocklist = new _converse.exports.Blocklist();
+        });
+
         api.listen.on('discoInitialized', async () => {
+            const { state } = _converse;
             const domain = _converse.session.get('domain');
-            if (await api.disco.supports(Strophe.NS.BLOCKING, domain)) {
-                _converse.state.blocklist = new _converse.exports.Blocklist();
+            const supported = await api.disco.supports(Strophe.NS.BLOCKING, domain);
+            if (state.blocklist) {
+                if (supported) await state.blocklist.refresh();
+            } else if (supported) {
+                state.blocklist = new _converse.exports.Blocklist();
             } else {
                 // Nothing can be blocked, but whoever waits to check the
                 // blocklist (e.g. before opening a chat) mustn't wait forever.

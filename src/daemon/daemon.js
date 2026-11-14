@@ -222,7 +222,9 @@ async function serve(config, gid) {
         await listen(paths.restricted_socket, onConnection('restricted'), gid),
     ];
 
-    await api.user.login(`${config.jid}/${config.resource}`, password);
+    // Automatic, so that a session it remembers is resumed from its cache,
+    // for clients to read while the server can't be reached.
+    await api.user.login(`${config.jid}/${config.resource}`, password, { automatic: true });
     // Not awaited: a room that takes a while to confirm mustn't hold up the socket.
     rejoinRooms(rooms, room_passwords, joining);
 
@@ -264,9 +266,12 @@ async function serve(config, gid) {
 
 /**
  * Leaves every joined MUC, then logs out, which sends unavailable presence.
+ * The session is still remembered, so that the next start resumes it from the
+ * cache, also while the server can't be reached: stopping the daemon is
+ * closing the client, not logging out of the account.
  */
 async function leave() {
     const rooms = /** @type {any[]} */ (await api.rooms.get());
     await Promise.all(rooms.filter((room) => room.isEntered()).map((room) => room.leave()));
-    await api.user.logout();
+    await api.user.logout({ remember: true });
 }

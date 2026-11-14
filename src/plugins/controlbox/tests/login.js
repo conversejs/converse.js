@@ -67,6 +67,8 @@ describe('The Login Form', function () {
             ['chatBoxesInitialized'],
             { auto_login: false, allow_user_trust_override: 'off', allow_registration: false },
             async function (_converse) {
+                const connected = vi.fn();
+                _converse.api.listen.on('connected', connected);
                 mock.toggleControlBox(_converse);
                 const cbview = await u.waitUntil(() => _converse.chatboxviews.get('controlbox'));
                 await u.waitUntil(() => cbview.querySelectorAll('input[type="checkbox"]').length);
@@ -90,6 +92,9 @@ describe('The Login Form', function () {
                 cbview.querySelector('button[type="submit"]').click();
                 expect(_converse.config.get('trusted')).toBe(true);
                 expect(u.getDefaultStorageType()).toBe('persistent');
+
+                // Otherwise the logins carry on into the next test.
+                await u.waitUntil(() => connected.mock.calls.length === 2);
             },
         ),
     );

@@ -94,7 +94,7 @@
   },
   "optionalDependencies": {
     "@xmldom/xmldom": "^0.9.0",
-    "ws": "^8.21.1"
+    "ws": "^8.22.2"
   },
   "engines": {
     "node": ">=22.0.0"

@@ -57,7 +57,9 @@ class Blocklist extends Collection {
 
     fetchBlocklist() {
         const deferred = getOpenPromise();
-        if (_converse.state.session.get(this.fetched_flag)) {
+        // Before connecting, there's only the cache to read. It's brought up
+        // to date once connected (see `refresh`).
+        if (_converse.state.session.get(this.fetched_flag) || !api.connection.connected()) {
             this.fetch({
                 success: () => deferred.resolve(),
                 error: () => deferred.resolve(),
@@ -69,7 +71,17 @@ class Blocklist extends Collection {
     }
 
     /**
-     * @param {Object} deferred
+     * Brings a blocklist that was loaded from the cache before connecting up
+     * to date with the server's.
+     */
+    async refresh() {
+        if (_converse.state.session.get(this.fetched_flag)) return;
+
+        await this.fetchBlocklistFromServer();
+    }
+
+    /**
+     * @param {Object} [deferred]
      */
     async fetchBlocklistFromServer(deferred) {
         const stanza = stx`<iq xmlns="jabber:client"
@@ -80,18 +92,20 @@ class Blocklist extends Collection {
             this.onBlocklistReceived(deferred, await api.sendIQ(stanza));
         } catch (e) {
             log.error(e);
-            deferred.resolve();
+            deferred?.resolve();
             return;
         }
     }
 
     /**
-     * @param {Object} deferred
+     * @param {Object|undefined} deferred
      * @param {Element} iq
      */
     async onBlocklistReceived(deferred, iq) {
-        Array.from(iq.querySelectorAll('blocklist item')).forEach((item) => {
-            const jid = item.getAttribute('jid');
+        const jids = Array.from(iq.querySelectorAll('blocklist item')).map((item) => item.getAttribute('jid'));
+        // Those that were unblocked since the list was cached
+        this.filter((blocked) => !jids.includes(blocked.get('jid'))).forEach((blocked) => blocked.destroy());
+        jids.forEach((jid) => {
             const blocked = this.get(jid);
             blocked ? blocked.save({ jid }) : this.create({ jid });
         });

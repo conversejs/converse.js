@@ -12,7 +12,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import converse from '../../shared/api/public.js';
 import log from '@converse/log';
-import { shouldClearCache } from '../../utils/session.js';
+import { isResumed, shouldClearCache } from '../../utils/session.js';
 import { isElement } from '../../utils/html.js';
 import { parseErrorStanza } from '../../shared/parsers.js';
 import { parseVCardResultStanza } from './parsers.js';
@@ -144,6 +144,31 @@ async function getVCardForMUCMessage(message, lazy_load = true) {
             log.warn(`Could not get VCard for message because no JID found! msgid: ${message.get('msgid')}`);
             return null;
         }
+    }
+}
+
+export function initVCards() {
+    const vcards = new _converse.exports.VCards();
+    _converse.state.vcards = vcards;
+    Object.assign(_converse, { vcards }); // XXX DEPRECATED
+}
+
+/**
+ * Fetches the vCards that couldn't be fetched for want of a connection.
+ */
+export function refreshVCards() {
+    _converse.state.vcards?.filter((v) => v.awaits_connection).forEach((v) => v.refresh());
+}
+
+/**
+ * A resumed session loaded its vCards from the cache before connecting, so
+ * they're kept. Otherwise they're loaded now.
+ */
+export function onConnected() {
+    if (isResumed(_converse) && _converse.state.vcards) {
+        refreshVCards();
+    } else {
+        initVCards();
     }
 }
 

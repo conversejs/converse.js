@@ -32,10 +32,8 @@ describe('An incoming chat Message', function () {
             await u.waitUntil(() => view.model.messages.length);
             expect(view.model.messages.models[0].get('is_unstyled')).toBe(true);
 
-            setTimeout(() => {
-                const msg_el = view.querySelector('converse-chat-message-body');
-                expect(msg_el.innerText).toBe(msg_text);
-            }, 500);
+            const msg_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body'));
+            await u.waitUntil(() => msg_el.innerText === msg_text);
         }),
     );
 
@@ -69,10 +67,8 @@ describe('An incoming chat Message', function () {
                 await u.waitUntil(() => view.model.messages.length);
                 expect(view.model.messages.models[0].get('is_unstyled')).toBe(false);
 
-                setTimeout(() => {
-                    const msg_el = view.querySelector('converse-chat-message-body');
-                    expect(msg_el.innerText).toBe(msg_text);
-                }, 500);
+                const msg_el = await u.waitUntil(() => view.querySelector('converse-chat-message-body'));
+                await u.waitUntil(() => msg_el.innerText === msg_text);
             },
         ),
     );

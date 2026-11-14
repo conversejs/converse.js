@@ -166,6 +166,9 @@ export default {
          */
         async update(model, force) {
             api.waitUntil('VCardsInitialized');
+            // Nothing can be fetched, which isn't an error to record on the vCard.
+            if (!api.connection.authenticated()) return;
+
             const data = await this.get(model, force);
             if (data === null) {
                 return;

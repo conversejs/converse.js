@@ -7,23 +7,36 @@ import _converse from '../../shared/_converse.js';
 import { shouldClearCache } from '../../utils/session.js';
 import * as constants from '../../shared/constants.js';
 
-export async function onClearSession() {
+/**
+ * @param {import('../../shared/types').ClearSessionReason} [reason]
+ */
+export async function onClearSession(reason) {
     const { chatboxes } = _converse.state;
+    const isChat = /** @param {ChatBox} c */ (c) => c.get('type') !== constants.CONTROLBOX_TYPE;
+
+    if (chatboxes.keepThrough(reason)) {
+        // The rooms are kept as they are through an anonymous reconnection, to
+        // be rejoined. Their cache is cleared once the session ends. The other
+        // chats were had as the old account, which never comes back, so they
+        // go, with what's stored of them.
+        const dropped = chatboxes.filter((c) => isChat(c) && !c.survivesReset());
+        await Promise.all(dropped.map((c) => c.clearCache()));
+        dropped.forEach((c) => {
+            c.destroy();
+            c.unload();
+        });
+        return;
+    }
+
     let cleared;
     if (shouldClearCache(_converse)) {
         await Promise.all(chatboxes.map(/** @param {ChatBox} c */ (c) => c.clearCache?.()));
-        cleared = chatboxes.clearStore(
-            { silent: true },
-            /** @param {import('../../shared/chatbox').default} o */ (o) => o.get('type') !== constants.CONTROLBOX_TYPE,
-        );
+        cleared = chatboxes.clearStore({ silent: true }, isChat);
     }
-    // An anonymous reconnection also clears the session, but keeps its chats
-    // and rooms, to rejoin them.
-    if (_converse.api.connection.get()?.reconnecting) return;
 
     // Whatever is left is kept in the cache, but not in memory, since the
     // session has ended.
-    const chats = chatboxes.filter((c) => c.get('type') !== constants.CONTROLBOX_TYPE);
+    const chats = chatboxes.filter(isChat);
     chatboxes.remove(chats);
     chats.forEach((c) => c.unload());
 

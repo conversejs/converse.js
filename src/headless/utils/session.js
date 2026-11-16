@@ -1,6 +1,6 @@
 import log from '@converse/log';
 import { getOpenPromise } from '@converse/openpromise';
-import { LOGIN } from '../shared/constants.js';
+import { LOGIN, SESSION_ENDED } from '../shared/constants.js';
 import { settings_api } from '../shared/settings/api.js';
 import { getInitSettings } from '../shared/settings/utils.js';
 import { forgetSession } from './remembered-session.js';
@@ -98,20 +98,32 @@ export async function tearDown(_converse) {
 
 /**
  * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
+ * @param {import('../shared/types').ClearSessionReason} [reason=SESSION_ENDED]
  */
-export function clearSession(_converse) {
+export function clearSession(_converse, reason = SESSION_ENDED) {
     if (shouldClearCache(_converse)) {
         _converse.api.user.settings.clear();
         _converse.state.login_info?.destroy();
     }
     _converse.initSession();
     /**
-     * Synchronouse event triggered once the user session has been cleared,
-     * for example when the user has logged out or when Converse has
-     * disconnected for some other reason.
+     * Synchronous event triggered once the user session has been cleared.
+     * Listeners are passed the reason:
+     *
+     * - `'ended'` (`constants.SESSION_ENDED`): the session is over, since
+     *   the user has logged out or Converse has disconnected for good.
+     * - `'anonymous-reset'` (`constants.ANONYMOUS_RESET`): the connection of
+     *   an anonymous session dropped. The server gives out a new account on
+     *   reconnecting, so what belonged to the old one is cleared, including
+     *   its one-to-one chats. The visitor's session carries on though: its
+     *   rooms are kept, to be rejoined.
+     *
+     * A listener that ignores the reason clears on both.
      * @event _converse#clearSession
+     * @type {import('../shared/types').ClearSessionReason}
+     * @example _converse.api.listen.on('clearSession', (reason) => { ... });
      */
-    return _converse.api.trigger('clearSession', { 'synchronous': true });
+    return _converse.api.trigger('clearSession', reason, { 'synchronous': true });
 }
 
 /**

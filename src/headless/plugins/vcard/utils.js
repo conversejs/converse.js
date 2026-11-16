@@ -172,6 +172,18 @@ export function onConnected() {
     }
 }
 
+/**
+ * The vCards are kept through a dropped connection, unless the session was
+ * reset, as on an anonymous reconnection. Then they're loaded anew.
+ */
+export function onReconnected() {
+    if (_converse.state.vcards) {
+        refreshVCards();
+    } else {
+        initVCards();
+    }
+}
+
 export function clearVCardsSession() {
     if (shouldClearCache(_converse)) {
         api.promises.add('VCardsInitialized');

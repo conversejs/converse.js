@@ -78,6 +78,7 @@ export { api, converse, _converse, i18n, log, u, constants, parsers, errors };
  * @typedef {import('./shared/_converse.js').ConversePrivateGlobal} ConversePrivateGlobal
  * @typedef {import('./shared/chatbox.js').default} ChatBoxBase
  * @typedef {import('./shared/types').ChatBoxOrMUC} ChatBoxOrMUC
+ * @typedef {import('./shared/types').ClearSessionReason} ClearSessionReason
  * @typedef {import('./shared/types').MessageAttributes} MessageAttributes
  * @typedef {import('./shared/types').MessageEventData} MessageEventData
  * @typedef {import('./shared/types').XFormField} XFormField

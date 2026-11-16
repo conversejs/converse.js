@@ -1,7 +1,7 @@
 import log from '@converse/log';
 import sizzle from '#sizzle';
 import _converse from '../_converse.js';
-import { ANONYMOUS, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
+import { ANONYMOUS, ANONYMOUS_RESET, BOSH_WAIT, LOGOUT } from '../../shared/constants.js';
 import { CONNECTION_STATUS } from '../constants.js';
 import { MemoryStorageBackend, Strophe } from 'strophe.js';
 import { clearSession, endSession, isResumable, tearDown } from '../../utils/session.js';
@@ -389,7 +389,8 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         api.trigger('will-reconnect');
 
         if (api.settings.get('authentication') === ANONYMOUS) {
-            await clearSession(_converse);
+            // The server gives out a new account, so the old one's session is reset.
+            await clearSession(_converse, ANONYMOUS_RESET);
             if (this.#finished) return;
         }
         const jid = _converse.session.get('jid');

@@ -45,6 +45,9 @@ export const METADATA_ATTRIBUTES = [
 ];
 
 export const ANONYMOUS = 'anonymous';
+// The reasons for the `clearSession` event
+export const ANONYMOUS_RESET = 'anonymous-reset';
+export const SESSION_ENDED = 'ended';
 export const CLOSED = 'closed';
 export const EXTERNAL = 'external';
 export const LOGIN = 'login';

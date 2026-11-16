@@ -1153,6 +1153,14 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
+     * A room is kept through an anonymous reconnection, since the new account
+     * can rejoin it.
+     */
+    survivesReset() {
+        return true;
+    }
+
+    /**
      * Also removes what's stored of the room's occupants, including the
      * private messages exchanged with them, and of the room itself.
      */

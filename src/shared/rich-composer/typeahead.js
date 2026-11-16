@@ -5,6 +5,7 @@
  * The inline caret typeahead shared by the rich composers.
  * The menu that opens when the caret sits on a trigger token such as `:smi` or `@ali`.
  */
+import { isComposing } from 'utils/keyboard.js';
 
 export const MAX_SUGGESTIONS = 8;
 
@@ -265,6 +266,9 @@ export class TypeaheadController {
      * @returns {boolean} Whether the key was consumed.
      */
     onKeyDown(ev) {
+        // Keys pressed during an IME composition belong to the editor, not the menu.
+        if (isComposing(ev)) return false;
+
         if (!this.items.length) {
             if (ev.key === 'Escape' && this.closed_by_blur) {
                 // This Escape's own blur (an extension blurring the editor before we ran)

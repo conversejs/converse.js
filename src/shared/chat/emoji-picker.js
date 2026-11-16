@@ -8,6 +8,7 @@ import { api, converse, u, constants } from '@converse/headless';
 import { DOMNavigator } from 'shared/dom-navigator/index.js';
 import { CustomElement } from 'shared/components/element.js';
 import { FILTER_CONTAINS } from 'shared/autocomplete/utils.js';
+import { isComposing } from 'utils/keyboard.js';
 import { getTonedEmojis } from './utils.js';
 import { tplEmojiPicker } from './templates/emoji-picker.js';
 import './emoji-picker-content.js';
@@ -159,7 +160,7 @@ export default class EmojiPicker extends CustomElement {
      * @param {KeyboardEvent} ev
      */
     #onKeyDown(ev) {
-        if (!this.navigator || !u.isVisible(this)) return;
+        if (!this.navigator || !u.isVisible(this) || isComposing(ev)) return;
 
         if (ev.key === KEYCODES.ENTER) {
             this.onEnterPressed(ev);
@@ -234,7 +235,9 @@ export default class EmojiPicker extends CustomElement {
      */
     onSearchInputKeyDown(ev) {
         const target = /** @type {HTMLInputElement} */ (ev.target);
-        if (ev.key === KEYCODES.TAB) {
+        // Tab and the arrows belong to the IME during a composition.
+        const composing = isComposing(ev);
+        if (ev.key === KEYCODES.TAB && !composing) {
             if (target.value) {
                 ev.preventDefault();
                 const match = converse.emojis.shortnames.find(
@@ -244,7 +247,7 @@ export default class EmojiPicker extends CustomElement {
             } else if (!this.navigator.enabled) {
                 this.enableArrowNavigation(ev);
             }
-        } else if (ev.key === KEYCODES.DOWN_ARROW && !this.navigator.enabled) {
+        } else if (ev.key === KEYCODES.DOWN_ARROW && !this.navigator.enabled && !composing) {
             this.enableArrowNavigation(ev);
         } else if (ev.key !== KEYCODES.ENTER && ev.key !== KEYCODES.DOWN_ARROW) {
             this.debouncedFilter(target);

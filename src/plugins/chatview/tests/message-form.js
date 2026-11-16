@@ -86,6 +86,12 @@ describe('A message form', function () {
             message.save('correcting', true);
 
             const textarea = view.querySelector('.chat-textarea');
+            // The Escape that cancels an IME conversion leaves the correction alone.
+            textarea.dispatchEvent(
+                new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true, isComposing: true }),
+            );
+            expect(message.get('correcting')).toBe(true);
+
             const escEvent = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
             textarea.dispatchEvent(escEvent);
 
@@ -175,6 +181,44 @@ describe('The rich chat composer', function () {
 
             expect(sendMessage).toHaveBeenCalledTimes(1);
             expect(sendMessage.mock.calls[0][0].body).toBe(typed);
+        }),
+    );
+
+    it(
+        'ignores the Enter that confirms an IME composition',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const view = await openChat(_converse);
+            const editable = await u.waitUntil(() => view.querySelector('.chat-rich__editable'));
+            const form = view.querySelector('converse-message-form');
+            const handle = await form.ensureEditor();
+            handle.insertText('日本語');
+            const sendMessage = vi.spyOn(view.model, 'sendMessage').mockResolvedValue({});
+
+            // With the typeahead open, the Enter must neither pick a suggestion nor send.
+            editable.focus();
+            const getTriggerQuery = handle.getTriggerQuery;
+            handle.getTriggerQuery = (re) => (re.source.includes(':(') ? 'smi' : null);
+            await form.typeahead.update();
+            expect(form.typeahead.items.length).toBeGreaterThan(0);
+            const choose = vi.spyOn(form.typeahead, 'choose');
+
+            // Chrome and Firefox flag the confirming keydown as composing; Safari has
+            // already ended the composition and only reports key code 229.
+            for (const init of [{ isComposing: true }, { keyCode: 229 }]) {
+                editable.dispatchEvent(
+                    new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true, ...init }),
+                );
+            }
+            expect(choose).not.toHaveBeenCalled();
+            expect(form.typeahead.items.length).toBeGreaterThan(0);
+            expect(sendMessage).not.toHaveBeenCalled();
+            expect(form.getInputText()).toBe('日本語');
+
+            handle.getTriggerQuery = getTriggerQuery;
+            await form.typeahead.update();
+            editable.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+            await u.waitUntil(() => sendMessage.mock.calls.length);
+            expect(sendMessage.mock.calls[0][0].body).toBe('日本語');
         }),
     );
 

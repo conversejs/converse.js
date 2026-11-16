@@ -1,5 +1,6 @@
 import { api, constants, u } from '@converse/headless';
 import BaseModal from 'plugins/modal/modal.js';
+import { isComposing } from 'utils/keyboard.js';
 import tplPrompt from './templates/prompt.js';
 
 export default class Confirm extends BaseModal {
@@ -22,7 +23,7 @@ export default class Confirm extends BaseModal {
         );
 
         this.onKeyDown = /** @param {KeyboardEvent} ev */ (ev) => {
-            if (ev.key === constants.KEYCODES.ENTER) {
+            if (ev.key === constants.KEYCODES.ENTER && !isComposing(ev)) {
                 ev.preventDefault();
                 ev.stopPropagation();
                 const button = /** @type {HTMLFormElement} */ (this.querySelector('form.confirm button[type=submit]'));

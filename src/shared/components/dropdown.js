@@ -8,6 +8,7 @@ import { DOMNavigator } from '../dom-navigator/index.js';
 import DropdownBase from 'shared/components/dropdownbase.js';
 import 'shared/components/icons.js';
 import { __ } from 'i18n';
+import { isComposing } from 'utils/keyboard.js';
 
 import './styles/dropdown.scss';
 
@@ -117,7 +118,7 @@ export default class Dropdown extends DropdownBase {
      * @param {KeyboardEvent} ev
      */
     #onKeyDown(ev) {
-        if (!this.navigator || !u.isVisible(this)) return;
+        if (!this.navigator || !u.isVisible(this) || isComposing(ev)) return;
 
         if (ev.key === KEYCODES.ENTER) {
             this.onEnterPressed(ev);

@@ -6,6 +6,7 @@
 
 import { render, html } from 'lit';
 import { converse, u, EventEmitter } from '@converse/headless';
+import { isComposing } from 'utils/keyboard.js';
 import Suggestion from './suggestion.js';
 import { helpers, getAutoCompleteItem, FILTER_CONTAINS, SORT_BY_QUERY_POSITION } from './utils.js';
 
@@ -269,6 +270,8 @@ class AutoComplete extends EventEmitter(Object) {
      * @param {KeyboardEvent} [ev]
      */
     onKeyDown(ev) {
+        if (isComposing(ev)) return;
+
         if (this.opened) {
             if ([converse.keycodes.ENTER, converse.keycodes.TAB].includes(ev.key) && this.selected) {
                 ev.preventDefault();

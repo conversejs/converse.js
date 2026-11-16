@@ -7,6 +7,7 @@ import { SignalWatcher } from '@lit-labs/signals';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import { collectionSignal } from 'shared/signals.js';
+import { isComposing } from 'utils/keyboard.js';
 import tplPost from './templates/post.js';
 
 /**
@@ -170,6 +171,8 @@ export default class SocialPost extends SignalWatcher(CustomElement) {
      * @param {KeyboardEvent} ev
      */
     onKeyDown(ev) {
+        if (isComposing(ev)) return;
+
         if (ev.key === 'Enter' && !ev.shiftKey && !ev.altKey && !ev.metaKey) {
             ev.preventDefault();
             this.onSubmit(ev);

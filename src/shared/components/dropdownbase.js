@@ -1,6 +1,7 @@
 import { createPopper } from '@popperjs/core';
 import { constants, log } from '@converse/headless';
 import { CustomElement } from './element.js';
+import { isComposing } from 'utils/keyboard.js';
 
 const { KEYCODES } = constants;
 
@@ -97,7 +98,7 @@ export default class DropdownBase extends CustomElement {
 
         // Escape must close the dropdown regardless of where focus sits.
         this._onDocumentKeyDown = /** @param {KeyboardEvent} ev */ (ev) => {
-            if (ev.key === KEYCODES.ESCAPE) this.hide();
+            if (ev.key === KEYCODES.ESCAPE && !isComposing(ev)) this.hide();
         };
         document.addEventListener('keydown', this._onDocumentKeyDown);
 

@@ -2,6 +2,7 @@ import { html } from 'lit';
 import Modal from 'bootstrap/js/src/modal.js';
 import { CustomElement } from 'shared/components/element.js';
 import { api, u, Model, log } from '@converse/headless';
+import { isComposing } from 'utils/keyboard.js';
 import { modal_close_button } from './templates/buttons.js';
 import tplModal from './templates/modal.js';
 
@@ -39,6 +40,12 @@ class BaseModal extends CustomElement {
                 this.close();
             }
         };
+
+        // Registered before Bootstrap's own listener, so that the Escape which cancels
+        // an IME conversion doesn't close the modal.
+        this.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Escape' && isComposing(ev)) ev.stopImmediatePropagation();
+        });
 
         this.initialized = u.getOpenPromise();
 

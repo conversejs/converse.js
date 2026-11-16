@@ -70,13 +70,19 @@ converse.plugins.add('converse-emoji', {
         Object.assign(_converse.exports, exports);
         Object.assign(api, emojis);
 
-        api.listen.on('connected', () => {
-            registerPEPPushHandler();
+        const initPopularEmojis = () => {
             if (_converse.state.popular_emojis) return;
 
             const popular_emojis = new PopularEmojis();
             Object.assign(_converse.state, { popular_emojis });
+        };
+
+        api.listen.on('connected', () => {
+            registerPEPPushHandler();
+            initPopularEmojis();
         });
+        // They're gone if the session was reset, as on an anonymous reconnection.
+        api.listen.on('reconnected', initPopularEmojis);
 
         api.listen.on('clearSession', () => {
             _converse.state.popular_emojis?.debouncedPublish.flush();

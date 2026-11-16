@@ -144,7 +144,7 @@ converse.plugins.add('converse-bookmarks', {
             }
         });
 
-        api.listen.on('connected', async () => {
+        const initBookmarks = async () => {
             if (!api.settings.get('allow_bookmarks')) return;
 
             // Add a handler for bookmarks pushed from other connected clients
@@ -158,6 +158,12 @@ converse.plugins.add('converse-bookmarks', {
                 _converse.state.bookmarks = new _converse.exports.Bookmarks();
                 Object.assign(_converse, { bookmarks: _converse.state.bookmarks }); // TODO: DEPRECATED
             }
+        };
+
+        api.listen.on('connected', initBookmarks);
+        // They're gone if the session was reset, as on an anonymous reconnection.
+        api.listen.on('reconnected', () => {
+            if (!_converse.state.bookmarks) initBookmarks();
         });
     },
 });

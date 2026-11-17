@@ -39,6 +39,16 @@ export async function sendMessage(jid, body, targets = {}, attributes = {}) {
 }
 
 /**
+ * What became of a send that headless accepted. A message is pending when the
+ * session dropped before it went out: headless sends it once it's connected again.
+ * @param {import('./types').MessageDTO} message
+ * @returns {'sent'|'pending'}
+ */
+export function outcomeOf(message) {
+    return message.status === 'pending' ? 'pending' : 'sent';
+}
+
+/**
  * Sends through headless, which rejects with a coded error when a send fails,
  * such as an OMEMO send that couldn't be encrypted. The code is kept for
  * clients to act on. The words are the daemon's own, never headless's.

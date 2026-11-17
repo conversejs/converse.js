@@ -22,7 +22,8 @@ export default {
          * `code` that `api.omemo.send` gave it. Nothing tells the user, so the
          * caller should report the rejection. Otherwise the
          * stanza is sent as is, and one that bounces is rolled back by the
-         * `getErrorAttributesForMessage` hook.
+         * `getErrorAttributesForMessage` hook. Without an authenticated
+         * session nothing is sent, and the update is rolled back as well.
          *
          * @method _converse.api.reactions.send
          * @param {import('../../shared/message').default} message - The message reacted to
@@ -51,7 +52,7 @@ export default {
                     throw e;
                 }
             } else {
-                api.send(stx`
+                const sent = api.send(stx`
                     <message to="${to_jid}" type="${type}" id="${u.getUniqueId('reaction')}" xmlns="jabber:client">
                         <reactions xmlns="${Strophe.NS.REACTIONS}" id="${msg_id}">
                             ${emojis.map((reaction) => stx`<reaction>${reaction}</reaction>`)}
@@ -59,6 +60,8 @@ export default {
                         <store xmlns="${Strophe.NS.HINTS}"/>
                     </message>
                 `);
+                // Nobody will see it, so we don't show it either.
+                if (!sent) setOwnReactions(message, my_jid, previous);
             }
         },
     },

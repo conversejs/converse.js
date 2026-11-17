@@ -49,6 +49,8 @@ converse.plugins.add('converse-chatboxes', {
         api.listen.on('presencesInitialized', (reconnecting) => chatboxes.onConnected(reconnecting));
         api.listen.on('loadSessionCache', () => chatboxes.fetchCached());
         api.listen.on('reconnected', () => chatboxes.forEach((m) => m.onReconnection()));
+        // Chats loaded from the cache before a session that's now connected.
+        api.listen.on('connected', () => chatboxes.forEach((m) => m.sendPendingMessages?.()));
         api.listen.on('clearSession', onClearSession);
 
         // XXX: Would be nice to keep track of the last open chat and to show that again.

@@ -24,6 +24,7 @@ const EXIT_MEANINGS = {
     [EXIT.REFUSED]: 'refused by send policy; nothing was sent',
     [EXIT.DRAFT]: 'drafted: nothing was sent. The text went to the owner, or in as_user waits for approval',
     [EXIT.DAEMON_UNAVAILABLE]: "daemon not running, or it couldn't be started, or it went away",
+    [EXIT.PENDING]: 'not sent yet: the connection dropped, and it goes out once the daemon is connected again',
 };
 
 /** The exit codes any command can end with. */

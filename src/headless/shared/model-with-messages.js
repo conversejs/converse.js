@@ -40,6 +40,37 @@ function isFromSameSender(message, attrs) {
 }
 
 /**
+ * Whether a message, or its retraction, waits for a session to be sent.
+ * @param {Record<string, any>} attrs - The attributes of a message
+ * @returns {boolean}
+ */
+function isPending({ send_status, retraction_pending }) {
+    return send_status === 'pending' || !!retraction_pending;
+}
+
+/**
+ * Runs `callback` while holding a lock that all tabs of the browser share, so
+ * that only one of them does what it guards. Without the Web Locks API, as
+ * under Node, there's one process per account and the callback just runs.
+ * @param {string} name
+ * @param {() => Promise<void>} callback
+ * @returns {Promise<void>}
+ */
+function withLock(name, callback) {
+    const locks = globalThis.navigator?.locks;
+    return locks ? locks.request(name, callback) : callback();
+}
+
+/**
+ * Reads what's stored of a message, which another tab may have changed.
+ * @param {import('./message').default} message
+ * @returns {Promise<Record<string, any>|null>}
+ */
+function readStored(message) {
+    return new Promise((resolve) => message.sync('read', message, { success: resolve, error: () => resolve(null) }));
+}
+
+/**
  * Adds a messages collection to a model and various methods related to sending
  * and receiving chat messages.
  *
@@ -184,6 +215,8 @@ export default function ModelWithMessages(BaseModel) {
              * @example _converse.api.listen.on('afterMessagesFetched', (model) => { ... });
              */
             api.trigger('afterMessagesFetched', this);
+            // Those of a chat that's opened or loaded once the session is already there.
+            this.sendPendingMessages();
         }
 
         /**
@@ -451,17 +484,24 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Responsible for sending off a text message inside an ongoing chat conversation.
          *
-         * If the send fails, the promise rejects with the error, which has a `code` that
-         * identifies the reason. The message is kept in the conversation with `send_status`
-         * set to `failed` and `send_error_code` set to that code. Nothing resends it on its
-         * own. Call {@link resendFailedMessage} or {@link discardFailedMessage} to act on it.
+         * Without an authenticated session the message isn't sent, and the promise still
+         * resolves: the message is kept in the conversation with `send_status` set to
+         * `pending`, and is sent once the session is connected again (for a groupchat, once
+         * it's entered again). Call {@link discardFailedMessage} to take it back before then.
+         *
+         * If the send fails for another reason, the promise rejects with the error, which has
+         * a `code` that identifies the reason. The message is kept in the conversation with
+         * `send_status` set to `failed` and `send_error_code` set to that code. Nothing
+         * resends it on its own. Call {@link resendFailedMessage} or
+         * {@link discardFailedMessage} to act on it.
          * @param {Object} [attrs] - A map of attributes to be saved on the message
          * @param {Object} [options]
          * @param {BaseMessage} [options.replying_to] - A message of this conversation that this
          *  one replies to (XEP-0461). Defaults to the one chosen with the chat's `reply_to_id`.
          * @param {BaseMessage} [options.correcting] - One of our messages in this conversation
          *  that this one corrects (XEP-0308). Defaults to the one marked `correcting`.
-         * @returns {Promise<BaseMessage>}
+         * @returns {Promise<BaseMessage>} The message, which was sent unless its
+         *  `send_status` is `pending`.
          * @throws {Error} When the message could not be sent. Its `code` gives the reason.
          * @example
          *  const chat = api.chats.get('buddy1@example.org');
@@ -474,7 +514,7 @@ export default function ModelWithMessages(BaseModel) {
         async sendMessage(attrs, { replying_to, correcting } = {}) {
             await api.emojis.initialize();
 
-            // A room we lost with the connection can't post either, but its message is kept as a failed one.
+            // A room we lost with the connection can't post either, but its message is kept as a pending one.
             if (api.connection.authenticated() && !this.canPostMessages()) {
                 log.warn('sendMessage was called but canPostMessages is false');
                 return;
@@ -497,11 +537,10 @@ export default function ModelWithMessages(BaseModel) {
                 const older_versions = { ...message.get('older_versions') };
                 const edited_time = message.get('edited') || message.get('time');
                 older_versions[edited_time] = message.getMessageText();
-                // A message that's already failed was never delivered, so there's nothing new to go back to.
-                const before_correction =
-                    message.get('send_status') === 'failed'
-                        ? message.get('before_correction')
-                        : pick(message.attributes, CORRECTED_ATTRS);
+                // A message that's failed or pending was never delivered, so there's nothing new to go back to.
+                const before_correction = message.get('send_status')
+                    ? message.get('before_correction')
+                    : pick(message.attributes, CORRECTED_ATTRS);
 
                 message.save({
                     ...['body', 'is_only_emojis', 'media_urls', 'references', 'is_encrypted'].reduce((obj, k) => {
@@ -525,46 +564,36 @@ export default function ModelWithMessages(BaseModel) {
                 message = await this.createMessage(attrs);
             }
 
+            // Not ahead of the pending messages that are on their way out.
+            await this.#flush;
             await this.#sendStoredMessage(message);
-
-            /**
-             * Triggered when a message is being sent out
-             * @event _converse#sendMessage
-             * @type {Object}
-             * @param {Object} data
-             * @property {(ChatBox|MUC)} data.chatbox
-             * @property {(BaseMessage)} data.message
-             */
-            api.trigger('sendMessage', { chatbox: this, message });
             return message;
         }
 
         /**
-         * Tests `authenticated` because `connected` is already true before SASL and
-         * resource binding, when the server won't accept a message.
-         */
-        #throwIfNotConnected() {
-            if (!api.connection.authenticated()) {
-                throw new errors.CodedError('not-connected', 'Message not sent, there is no connection');
-            }
-        }
-
-        /**
-         * Builds and sends the stanza for a stored message. On failure the message
-         * is kept, marked as failed with the error's code, and the error is re-thrown.
+         * Builds and sends the stanza for a stored message. Without a session the
+         * message is kept as pending, to be sent by {@link sendPendingMessages}.
+         * On another failure it's kept, marked as failed with the error's code,
+         * and the error is re-thrown.
          * @param {BaseMessage} message
          */
         async #sendStoredMessage(message) {
+            const was_pending = message.get('send_status') === 'pending';
             try {
-                this.#throwIfNotConnected();
-                const stanza = await this.createMessageStanza(message);
-                // The connection can drop during the build, and api.send drops the stanza silently.
-                this.#throwIfNotConnected();
-                api.send(stanza);
-                if (message.get('before_correction')) message.save({ before_correction: undefined });
+                // Tests `authenticated` because `connected` is already true before SASL and
+                // resource binding, when the server won't accept a message. The session can
+                // also be lost during the build, and api.send then refuses the stanza.
+                if (!api.connection.authenticated() || !api.send(await this.createMessageStanza(message))) {
+                    throw new errors.CodedError('not-connected', 'Message not sent, there is no connection');
+                }
             } catch (e) {
                 const { code, iq, can_send_unencrypted } =
                     /** @type {{code?: string, iq?: Element, can_send_unencrypted?: boolean}} */ (e);
+                // Whatever the build failed with, without a session it's sent later.
+                if (code === 'not-connected' || !api.connection.authenticated()) {
+                    if (!was_pending) message.save({ send_status: 'pending' });
+                    return;
+                }
                 // The sender of a failed IQ is the JID that the reason names.
                 message.save({
                     send_status: 'failed',
@@ -575,11 +604,87 @@ export default function ModelWithMessages(BaseModel) {
                 log.error(e);
                 throw e;
             }
+
+            if (was_pending) {
+                // The time of a pending message is the time it was sent, as others see it.
+                const sent = { [message.get('before_correction') ? 'edited' : 'time']: new Date().toISOString() };
+                // Stored before the next one is sent, for another tab to see that this one is.
+                await message.save(
+                    { ...sent, send_status: undefined, before_correction: undefined },
+                    { promise: true },
+                );
+                this.messages.sort();
+            } else if (message.get('before_correction')) {
+                message.save({ before_correction: undefined });
+            }
+            /**
+             * Triggered when a message has been sent out. For a message that was
+             * pending, that's when it was actually sent.
+             * @event _converse#sendMessage
+             * @type {Object}
+             * @param {Object} data
+             * @property {(ChatBox|MUC)} data.chatbox
+             * @property {(BaseMessage)} data.message
+             */
+            api.trigger('sendMessage', { chatbox: this, message });
         }
 
         /**
-         * Sends a failed message again. Only a call from the client resends a message,
-         * nothing resends on its own. The `attrs` apply to this attempt only: they are
+         * Whether the messages that wait for a session can be sent.
+         * @returns {boolean}
+         */
+        canSendPendingMessages() {
+            return api.connection.authenticated();
+        }
+
+        /** @type {Promise<void>|undefined} */
+        #flush;
+
+        /**
+         * Sends the pending messages and retractions of this conversation, one at
+         * a time and in the order of the history. Called when the session is
+         * connected again. What can't be sent yet stays pending.
+         * @returns {Promise<void>}
+         */
+        sendPendingMessages() {
+            this.#flush = (this.#flush ?? Promise.resolve())
+                .then(() => this.#sendPendingMessages())
+                .catch((e) => log.error(e));
+            return this.#flush;
+        }
+
+        async #sendPendingMessages() {
+            await this.messages.fetched;
+            if (!this.canSendPendingMessages() || !this.messages.models.some((m) => isPending(m.attributes))) return;
+
+            // Tabs of one account share the stored messages, and see the session come up together.
+            await withLock(`${this.getMessagesCacheKey()}-pending`, async () => {
+                for (const message of this.messages.models.filter((m) => isPending(m.attributes))) {
+                    if (!this.canSendPendingMessages()) return;
+
+                    const stored = await readStored(message);
+                    if (!message.collection) {
+                        // Discarded while we waited.
+                    } else if (!stored) {
+                        // Another tab discarded it. Only this tab's copy is left to let go of.
+                        this.messages.remove(message);
+                    } else if (!isPending(stored)) {
+                        // Another tab sent it.
+                        message.set({ ...stored, send_status: undefined, retraction_pending: undefined });
+                    } else if (message.get('retraction_pending')) {
+                        await this.sendPendingRetraction(message);
+                    } else {
+                        // A failure is kept with the message, and doesn't hold up the others.
+                        await this.#sendStoredMessage(message).catch(() => {});
+                    }
+                }
+            });
+        }
+
+        /**
+         * Sends a failed message again. Only a call from the client resends a failed
+         * message, nothing resends it on its own. Without a session it becomes
+         * pending instead. The `attrs` apply to this attempt only: they are
          * saved before the send and restored if it fails again. A failed attempt keeps
          * its own failure, not the earlier one, since that's the one the user hasn't seen.
          * @param {BaseMessage} message - A message whose `send_status` is `failed`.
@@ -587,6 +692,9 @@ export default function ModelWithMessages(BaseModel) {
          * @returns {Promise<BaseMessage>}
          */
         async resendFailedMessage(message, attrs = {}) {
+            if (message.get('send_status') !== 'failed') {
+                throw new Error('Only a failed message can be sent again');
+            }
             this.#clearSendFailure(message);
             const previous = Object.fromEntries(Object.keys(attrs).map((key) => [key, message.get(key)]));
             message.save(attrs);
@@ -600,12 +708,12 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * Removes a failed message from the history. A failed correction goes back
+         * Removes a failed or pending message from the history. A correction goes back
          * to the version that was delivered instead, since that one still exists for others.
          * @param {BaseMessage} message
          */
         discardFailedMessage(message) {
-            if (message.get('send_status') !== 'failed') return;
+            if (!message.get('send_status')) return;
 
             const before_correction = message.get('before_correction');
             if (before_correction) {
@@ -619,13 +727,10 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * Clears the failure from a message, so that a new attempt can record its own.
+         * Clears the send status from a message, so that a new attempt can record its own.
          * @param {BaseMessage} message
          */
         #clearSendFailure(message) {
-            if (message.get('send_status') !== 'failed') {
-                throw new Error('Only a failed message can be sent again');
-            }
             message.save({
                 send_status: undefined,
                 send_error_code: undefined,
@@ -635,19 +740,50 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * Retract one of your messages in this chat
+         * Takes back a message that nobody has received, because it failed or is
+         * still pending, in place of retracting it.
+         * @param {BaseMessage} message
+         * @returns {boolean} Whether that's all there was to retract. A correction
+         *  only goes back to the version that was delivered, which is still to be retracted.
+         */
+        discardIfUnsent(message) {
+            if (!message.get('send_status')) return false;
+
+            this.discardFailedMessage(message);
+            return !message.collection;
+        }
+
+        /**
+         * Retract one of your messages in this chat. Without a session the message
+         * is shown as retracted, with `retraction_pending` set, and the retraction is
+         * sent once the session is connected again. A message that's itself still
+         * pending is removed instead.
          * @param {BaseMessage} message - The message which we're retracting.
          */
         retractOwnMessage(message) {
+            if (this.discardIfUnsent(message)) return;
+
             const retraction_id = u.getUniqueId();
-            sendRetractionMessage(this.get('jid'), message, retraction_id);
+            const sent = sendRetractionMessage(this.get('jid'), message, retraction_id);
             message.save({
                 'retracted': new Date().toISOString(),
                 'retracted_id': message.get('origin_id'),
                 'retraction_id': retraction_id,
-                'is_ephemeral': true,
+                // A pending retraction has to outlive the timer, to be sent.
+                'is_ephemeral': sent,
+                'retraction_pending': sent ? undefined : true,
                 'editable': false,
             });
+        }
+
+        /**
+         * Sends the retraction of a message that was retracted without a session.
+         * @param {BaseMessage} message
+         */
+        async sendPendingRetraction(message) {
+            if (sendRetractionMessage(this.get('jid'), message, message.get('retraction_id'))) {
+                await message.save({ retraction_pending: undefined, is_ephemeral: true }, { promise: true });
+            }
         }
 
         /**
@@ -872,7 +1008,15 @@ export default function ModelWithMessages(BaseModel) {
             return Promise.resolve(true);
         }
 
-        async clearMessages() {
+        /**
+         * @param {Object} [options]
+         * @param {boolean} [options.keep_pending] - Whether to keep the messages and
+         *  retractions that are still to be sent.
+         */
+        async clearMessages({ keep_pending = false } = {}) {
+            const pending = keep_pending
+                ? this.messages.models.map((m) => ({ ...m.attributes })).filter(isPending)
+                : [];
             try {
                 await this.messages.clearStore();
             } catch (e) {
@@ -883,6 +1027,7 @@ export default function ModelWithMessages(BaseModel) {
                 // Make sure to resolve the fetched promise to avoid freezes.
                 this.messages.fetched.resolve();
             }
+            pending.forEach((attrs) => this.messages.create(attrs));
         }
 
         editEarlierMessage() {

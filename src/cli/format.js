@@ -80,6 +80,7 @@ export function formatMessage(message, { full = false, now = new Date(), convers
         message.encryption?.status === 'undecryptable' &&
             `could not be decrypted: ${message.encryption.error ?? 'no reason given'}`,
         message.status === 'failed' && `send failed: ${message.error_code ?? 'no reason given'}`,
+        message.status === 'pending' && 'not sent yet',
         message.reply_to && `reply to ${token(message.reply_to)}`,
         message.edited && 'edited',
         message.retracted && 'retracted',

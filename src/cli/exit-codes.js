@@ -11,4 +11,5 @@ export const EXIT = {
     REFUSED: 5, // Refused by send policy
     DRAFT: 6, // Queued as a draft for approval rather than sent
     DAEMON_UNAVAILABLE: 7, // No daemon running, and none could be started, or it went away
+    PENDING: 8, // Accepted, but not sent yet: it goes out once the daemon is connected again
 };

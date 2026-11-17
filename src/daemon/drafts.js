@@ -13,7 +13,7 @@ import { withdrawalNotice, draftNotice } from './notices.js';
 import { toMessageDTO } from './dto.js';
 import { findOwn, findTarget } from './find.js';
 import { ERRORS, RPCError } from './protocol.js';
-import { retractMessage, sendMessage, sendReaction } from './send.js';
+import { outcomeOf, retractMessage, sendMessage, sendReaction } from './send.js';
 import { readStateFile, writeStateFile } from './state-file.js';
 
 /**
@@ -173,10 +173,11 @@ export function draftMethods({ drafts, audit, events, owner, mode }) {
                 sending.delete(id);
             }
             drafts.remove(id);
+            const outcome = outcomeOf(message);
             audit.record({
                 consumer: client.consumer,
                 to: draft.to,
-                outcome: 'sent',
+                outcome,
                 id: message.id,
                 draft: id,
                 approved_by: client.access,
@@ -185,7 +186,7 @@ export function draftMethods({ drafts, audit, events, owner, mode }) {
                 mode,
             });
             events.publishDraft('sent', draft);
-            return { outcome: 'sent', message };
+            return { outcome, message };
         },
 
         /**

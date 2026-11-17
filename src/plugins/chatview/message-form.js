@@ -343,7 +343,7 @@ export default class MessageForm extends CustomElement {
 
         if (!api.connection.authenticated()) {
             api.connection.reconnect();
-            // A message goes on to be kept as a failed one, which a command can't be.
+            // A message goes on to be kept as a pending one, which a command can't be.
             if (message_text.trimStart().startsWith('/')) {
                 const err_msg = __('Sorry, the connection has been lost, and your message could not be sent');
                 api.alert('error', __('Error'), err_msg);

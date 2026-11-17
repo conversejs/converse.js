@@ -176,9 +176,11 @@ export type MessageDTO = {
     // in a room, or the room's opaque occupant id if the occupant isn't known.
     reactions: Record<string, string[]>;
     // "received" for a message from someone else, "sent" for one of ours that
-    // went out, and "failed" for one of ours that didn't. A failed send stays in
-    // the history, but it isn't counted in the inbox, unread counts or activity.
-    status: 'received' | 'sent' | 'failed';
+    // went out, "failed" for one of ours that didn't, and "pending" for one of
+    // ours that was written without a connection and is sent once there is one.
+    // A failed or pending send stays in the history, but it isn't counted in
+    // the inbox, unread counts or activity.
+    status: 'received' | 'sent' | 'failed' | 'pending';
     // Why a failed send failed, as headless names it, such as "no-omemo-devices".
     // Null for any other message.
     error_code: string | null;
@@ -260,9 +262,12 @@ export type SendRoute = (routing?: Routing) => Promise<SendResult>;
  * What a send came to. A refused send says which rule refused it, and what to
  * do about it. A draft was not sent: in "owner_only" and "bot" modes its text
  * went to the owner, and in "as_user" mode it waits for the user's approval.
+ * A pending send was accepted, but the connection dropped before it went out:
+ * it's sent once the daemon is connected again.
  */
 export type SendResult =
     | { outcome: 'sent'; message: MessageDTO }
+    | { outcome: 'pending'; message: MessageDTO }
     | { outcome: 'scheduled'; schedule: ScheduleDTO }
     | { outcome: 'refused'; rule: PolicyRule; message: string; transient: boolean }
     | { outcome: 'draft'; draft_id: string };
@@ -288,7 +293,7 @@ export type ScheduleDTO = {
 export type AuditEntry = {
     consumer: string | null;
     to: string; // Bare JID
-    outcome: 'sent' | 'refused' | 'draft' | 'rejected';
+    outcome: 'sent' | 'pending' | 'refused' | 'draft' | 'rejected';
     id?: string; // The DTO id, for a send
     draft?: string; // The draft's id, for a draft, a rejection, or a draft sent on approval
     approved_by?: Access; // For a draft sent on approval ("as_user" mode): the access level that approved it

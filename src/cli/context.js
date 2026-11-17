@@ -17,6 +17,7 @@ export class UsageError extends Error {}
 /** How the outcome of a send maps onto exit codes. */
 const EXIT_FOR_OUTCOME = {
     sent: EXIT.OK,
+    pending: EXIT.PENDING,
     refused: EXIT.REFUSED,
     draft: EXIT.DRAFT,
     scheduled: EXIT.OK,
@@ -84,6 +85,11 @@ export function reportSend(result, { options, out, err, hello }) {
         out(formatJSON(result));
     } else if (result.outcome === 'sent') {
         out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
+    } else if (result.outcome === 'pending') {
+        out(
+            `Not sent yet to ${result.message.conversation}: the connection dropped. ${result.message.id} ` +
+                'goes out once the daemon is connected again.\n',
+        );
     } else if (result.outcome === 'draft') {
         out(
             hello.mode === 'as_user'

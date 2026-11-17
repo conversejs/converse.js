@@ -28,23 +28,13 @@ export function navigateToControlBox(jid) {
     u.safeSave(model, { 'hidden': true });
 }
 
-export function disconnect() {
-    // A remembered session stays on screen through the retries, rather than
-    // being swapped for a spinner or the login form on each.
-    if (api.connection.remembered()) return;
-
-    // Upon disconnection, set connected to `false`, so that if
-    // we reconnect, "onConnected" will be called,
-    // to fetch the roster again and to send out a presence stanza.
-    const model = _converse.state.chatboxes?.get('controlbox');
-    if (model) u.safeSave(model, { 'connected': false });
-}
-
 export function clearSession() {
-    const { chatboxviews } = _converse.state;
+    const { chatboxes, chatboxviews } = _converse.state;
+    const model = chatboxes?.get('controlbox');
+    if (model) u.safeSave(model, { connected: false });
+
     const view = chatboxviews?.get('controlbox');
     if (view) {
-        u.safeSave(view.model, { connected: false });
         if (view?.controlbox_pane) {
             view.controlbox_pane.remove();
             delete view.controlbox_pane;
@@ -55,9 +45,19 @@ export function clearSession() {
     }
 }
 
+/**
+ * The login form says why the session ended, when the user didn't end it,
+ * until the next login, and is brought up to do so.
+ * @param {{ reason?: string }} [data]
+ */
+export function onLogout({ reason } = {}) {
+    const model = _converse.state.chatboxes?.get('controlbox');
+    if (reason && model) u.safeSave(model, { session_end_reason: reason, closed: false });
+}
+
 export function onChatBoxesFetched() {
     const controlbox = _converse.state.chatboxes.get('controlbox') || addControlBox();
-    controlbox.save({ 'connected': true });
+    controlbox.save({ connected: true, session_end_reason: null });
 }
 
 /**

@@ -19,6 +19,7 @@
 - feat: The `retry_initial_connection` setting keeps retrying when the server can't be reached at startup. The daemon uses it, and no longer exits in that case.
 - feat: A remembered session's cached data can be accessed while offline.
 - feat: On trusted devices, a dropped session stays shown and keeps retrying.
+- feat: While offline, the UI shows it and keeps drafts until reconnected.
 - feat: New API: `api.connection.remembered()` and `api.connection.retry()`.
 - fix: Rooms are no longer joined before logging in.
 - docs: `auto_reconnect` defaults to `true`, not `false`.

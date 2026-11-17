@@ -8,6 +8,7 @@ import '../modal/index.js';
 import './modals/profile.js';
 import './modals/user-settings.js';
 import './statusview.js';
+import { resetAnnounced } from './connection-indicator.js';
 
 const { Strophe } = converse.env;
 
@@ -43,5 +44,6 @@ converse.plugins.add('converse-profile', {
             /** @param {boolean} reconnecting */ (reconnecting) => !reconnecting && registerIntervalHandler(),
         );
         api.listen.on('beforeTearDown', tearDown);
+        api.listen.on('clearSession', resetAnnounced);
     },
 });

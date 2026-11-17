@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { __ } from 'i18n';
 import { modal_header_close_button } from './buttons.js';
 
 /**
@@ -15,6 +16,9 @@ function tplAlert(type, message) {
 export default (el) => {
     const alert = el.state?.get('alert');
     const level = el.state?.get('level') ?? '';
+    const i18n_offline = __(
+        'You are offline. This needs a connection, so it has to wait until you are connected again.',
+    );
     return html`
         <div class="modal-dialog" role="document" role="dialog">
             <div class="modal-content">
@@ -22,7 +26,10 @@ export default (el) => {
                     <h5 class="modal-title">${el.getModalTitle()}</h5>
                     ${modal_header_close_button}
                 </div>
-                <div class="modal-body">${alert ? tplAlert(alert.type, alert.message) : ''} ${el.renderModal()}</div>
+                <div class="modal-body">
+                    ${el.needsConnection() ? tplAlert('warning', i18n_offline) : ''}
+                    ${alert ? tplAlert(alert.type, alert.message) : ''} ${el.renderModal()}
+                </div>
                 ${el.renderModalFooter()}
             </div>
         </div>

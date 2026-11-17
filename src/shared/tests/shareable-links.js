@@ -63,7 +63,7 @@ describe('Shareable invitation links', function () {
         'can be handed to the OS share sheet where the browser supports it',
         mock.initConverse(converse, [], {}, async function (_converse) {
             const share = vi.fn().mockResolvedValue(undefined);
-            vi.stubGlobal('navigator', Object.assign(Object.create(navigator), { share }));
+            vi.stubGlobal('navigator', Object.create(navigator, { share: { value: share }, onLine: { value: true } }));
 
             const modal = await openProfileModal(_converse);
             const button = await u.waitUntil(() => modal.querySelector('.shareable-link .share-button'));
@@ -76,7 +76,10 @@ describe('Shareable invitation links', function () {
     it(
         'offer no share button where the browser has no Web Share API',
         mock.initConverse(converse, [], {}, async function (_converse) {
-            vi.stubGlobal('navigator', Object.assign(Object.create(navigator), { share: undefined }));
+            vi.stubGlobal(
+                'navigator',
+                Object.create(navigator, { share: { value: undefined }, onLine: { value: true } }),
+            );
             const modal = await openProfileModal(_converse);
             await u.waitUntil(() => modal.querySelector('.shareable-link'));
             expect(modal.querySelector('.shareable-link .share-button')).toBeNull();

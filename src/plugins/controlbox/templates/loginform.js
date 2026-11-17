@@ -8,7 +8,6 @@ import 'shared/components/brand-heading.js';
 import 'shared/components/footer.js';
 
 const { ANONYMOUS, EXTERNAL, LOGIN, PREBIND } = constants;
-
 /**
  * @param {boolean} checked
  */
@@ -137,8 +136,10 @@ function tplFormFields() {
 export default (el) => {
     const { connfeedback } = _converse.state;
     const connection_status = connfeedback.get('connection_status');
-    const feedback_class = CONNECTION_STATUS_CSS_CLASS?.[connection_status] ?? 'none';
-    const conn_feedback_message = connfeedback.get('message');
+    const logging_in = isLoggingIn();
+    const reason = logging_in ? '' : el.reason;
+    const feedback_class = reason ? 'warning' : (CONNECTION_STATUS_CSS_CLASS?.[connection_status] ?? 'none');
+    const conn_feedback_message = reason || connfeedback.get('message');
     return html`<form id="converse-login" method="post" @submit=${el.onLoginFormSubmitted}>
         <div
             class="alert ${`alert-${feedback_class}`} conn-feedback mb-3 ${!conn_feedback_message ? 'd-none' : ''}"
@@ -146,6 +147,6 @@ export default (el) => {
         >
             <span class="feedback-message">${conn_feedback_message}</span>
         </div>
-        ${isLoggingIn() ? html`<div class="text-center my-3">${tplSpinner()}</div>` : tplFormFields()}
+        ${logging_in ? html`<div class="text-center my-3">${tplSpinner()}</div>` : tplFormFields()}
     </form>`;
 };

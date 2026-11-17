@@ -13,6 +13,10 @@ export default class AddContactModal extends BaseModal {
         this.contact = null;
     }
 
+    get requires_connection() {
+        return true;
+    }
+
     initialize() {
         super.initialize();
         this.listenTo(this.contact, 'change', () => this.requestUpdate());

@@ -9,6 +9,18 @@ const { Strophe } = converse.env;
 const { ANONYMOUS } = constants;
 
 class LoginForm extends CustomElement {
+    static get properties() {
+        return {
+            // Why the form is shown, when it's for something other than a failed login.
+            reason: { type: String },
+        };
+    }
+
+    constructor() {
+        super();
+        this.reason = '';
+    }
+
     initialize() {
         const settings = api.settings.get();
         this.listenTo(settings, 'change:show_connection_url_input', () => this.requestUpdate());

@@ -23,6 +23,18 @@
                 }
             }
 
+            // The participants of when we were last in the MUC
+            &.occupants--stale .occupant-list {
+                opacity: 0.5;
+            }
+
+            .occupants-stale-note {
+                margin: 0;
+                padding: 0 0.5em 0.5em;
+                color: var(--subdued-color);
+                font-size: var(--font-size-small);
+            }
+
             .suggestion-box {
                 ul {
                     padding: 0;

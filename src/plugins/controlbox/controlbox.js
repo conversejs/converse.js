@@ -47,6 +47,7 @@ class ControlBoxView extends DragResizable(CustomElement) {
     setModel() {
         this.model = _converse.state.chatboxes.get('controlbox');
         this.listenTo(_converse.state.connfeedback, 'change:connection_status', () => this.requestUpdate());
+        this.listenTo(this.model, 'change:session_end_reason', () => this.requestUpdate());
         this.listenTo(this.model, 'change:active-form', () => this.requestUpdate());
         this.listenTo(this.model, 'change:connected', () => this.requestUpdate());
         this.requestUpdate();

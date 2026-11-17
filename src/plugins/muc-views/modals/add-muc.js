@@ -9,6 +9,10 @@ const u = converse.env.utils;
 const { Strophe } = converse.env;
 
 export default class AddMUCModal extends BaseModal {
+    get requires_connection() {
+        return true;
+    }
+
     initialize() {
         super.initialize();
         this.requestUpdate();

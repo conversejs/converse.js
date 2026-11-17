@@ -8,7 +8,7 @@ import ControlBox from './model.js';
 import ControlBoxToggle from './toggle.js';
 import ControlBoxView from './controlbox.js';
 import controlbox_api from './api.js';
-import { addControlBox, clearSession, disconnect, onChatBoxesFetched } from './utils.js';
+import { addControlBox, clearSession, onChatBoxesFetched, onLogout } from './utils.js';
 import 'shared/components/brand-heading.js';
 import '../chatview/index.js';
 import './navback.js';
@@ -55,7 +55,7 @@ converse.plugins.add('converse-controlbox', {
 
         api.listen.on('chatBoxesFetched', onChatBoxesFetched);
         api.listen.on('clearSession', clearSession);
-        api.listen.on('will-reconnect', disconnect);
+        api.listen.on('logout', onLogout);
 
         api.waitUntil('chatBoxViewsInitialized')
             .then(addControlBox)

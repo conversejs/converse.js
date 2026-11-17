@@ -18,7 +18,7 @@ function tplBackground() {
  * @param {import('../view.js').default} el
  */
 export default (el) => {
-    if (!api.connection.get()?.connected) {
+    if (!api.connection.hasSession()) {
         return html`<div class="social-feed__empty"></div>`;
     }
     // Resolving a deep-linked post from the URL: show a spinner until it lands.

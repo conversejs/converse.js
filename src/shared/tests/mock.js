@@ -89,6 +89,21 @@ function toggleControlBox(_converse) {
     }
 }
 
+/**
+ * Drops the connection, as the network going away does, and keeps Converse
+ * from reconnecting until the returned function is called.
+ * @returns {() => Promise<void>} Reconnects.
+ */
+function dropConnection(_converse) {
+    const connection = _converse.api.connection.get();
+    const reconnect = vi.spyOn(connection, 'reconnect').mockResolvedValue(undefined);
+    connection._doDisconnect();
+    return async () => {
+        reconnect.mockRestore();
+        await connection.reconnect();
+    };
+}
+
 async function openControlBox(_converse) {
     const { u } = _converse.env;
     const model = await _converse.api.controlbox.open();
@@ -775,6 +790,7 @@ export default {
     default_muc_features,
     deferV2DeviceList,
     deviceListFetched,
+    dropConnection,
     event,
     getContactJID,
     groups,

@@ -36,6 +36,18 @@ export function isDarkTheme(el) {
     return dark;
 }
 
+/**
+ * Retries the connection now, rather than at the next backoff step. Event
+ * listeners call this rather than `retry`, so that the event isn't passed to it.
+ */
+export function retryConnection() {
+    api.connection.retry();
+}
+
+export function retryConnectionOnceVisible() {
+    if (document.visibilityState === 'visible') retryConnection();
+}
+
 export function ensureElement() {
     if (!api.settings.get('auto_insert')) {
         return;

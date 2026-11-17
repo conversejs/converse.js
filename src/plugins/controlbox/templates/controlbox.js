@@ -28,7 +28,10 @@ function whenNotConnected(el) {
                       : html`${is_fullscreen ? html`<converse-controlbox-navbar></converse-controlbox-navbar>` : ''}
                             <converse-brand-logo></converse-brand-logo>
                             <converse-pending-invitation></converse-pending-invitation>
-                            <converse-login-form class="fade-in rounded"></converse-login-form>
+                            <converse-login-form
+                                class="fade-in rounded"
+                                reason="${el.model.get('session_end_reason') || nothing}"
+                            ></converse-login-form>
                             ${is_fullscreen ? html`<converse-footer></converse-footer>` : ''} `
             }
         </div>

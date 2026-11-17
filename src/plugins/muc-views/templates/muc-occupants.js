@@ -97,8 +97,10 @@ export default (el) => {
         );
     }
 
+    const is_stale = el.isStale();
+    const i18n_stale = __('As last seen. You are not in this groupchat while offline.');
     return html`
-        <div class="occupants">
+        <div class="occupants ${is_stale ? 'occupants--stale' : ''}">
             <div class="occupants-header">
                 <div class="occupants-header--title">
                     <span class="occupants-heading sidebar-heading"
@@ -113,6 +115,7 @@ export default (el) => {
                               ></converse-dropdown>`
                     }
                 </div>
+                ${is_stale ? html`<p class="occupants-stale-note" role="note">${i18n_stale}</p>` : ''}
             </div>
             <ul class="items-list occupant-list">
                 ${

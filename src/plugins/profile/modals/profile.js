@@ -42,6 +42,11 @@ export default class ProfileModal extends BaseModal {
         this._server_version = null;
     }
 
+    get requires_connection() {
+        // A status set offline is sent with the presence once connected.
+        return this.tab !== 'status';
+    }
+
     initialize() {
         super.initialize();
         this.requestServerVersion();

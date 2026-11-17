@@ -190,6 +190,7 @@ describe('The daemon', () => {
         client.close();
         expect(status).toEqual({
             connected: true,
+            authenticated: true,
             jid: JID,
             resumed: false,
             pid: process.pid,

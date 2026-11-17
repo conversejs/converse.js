@@ -100,7 +100,7 @@ export function disconnectChatRooms() {
 }
 
 export async function onWindowStateChanged() {
-    if (!isAppHidden() && api.connection.connected()) {
+    if (!isAppHidden() && api.connection.authenticated()) {
         const rooms = await api.rooms.get();
         rooms.forEach((room) => room.rejoinIfNecessary());
     }

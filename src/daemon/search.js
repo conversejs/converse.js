@@ -33,7 +33,7 @@ export async function searchMessages(text, jid, limit) {
  * @returns {Promise<import('@converse/headless').BaseMessage[]|null>}
  */
 async function searchServer(text, jid, limit) {
-    if (!api.connection.connected()) return null;
+    if (!api.connection.authenticated()) return null;
     try {
         // Created, so that each match is held, and its id works with the other commands.
         const result = await api.archive.search(text, { with: jid, max: limit, create: true });

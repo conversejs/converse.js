@@ -76,7 +76,7 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
             if (!chat) {
                 // Opening a conversation just to look would leave it behind,
                 // so for a stranger check the archive has something first.
-                if (!contact && !api.connection.connected()) {
+                if (!contact && !api.connection.authenticated()) {
                     // Without the server there's no archive to look in, so "no messages" would be false.
                     throw new RPCError(
                         ERRORS.NOT_CONNECTED,

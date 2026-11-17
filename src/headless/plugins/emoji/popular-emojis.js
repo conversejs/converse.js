@@ -193,7 +193,7 @@ class PopularEmojis extends Model {
         // `publish` is debounced and fire-and-forget; the session may have been
         // torn down before it fires. There's nothing to publish to without a
         // connection (and the hooks/api it relies on would be gone).
-        if (!api.connection.connected()) return;
+        if (!api.connection.authenticated()) return;
 
         await api.emojis.initialize();
 

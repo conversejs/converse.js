@@ -111,6 +111,44 @@ describe('Converse', function () {
         );
     });
 
+    describe('The "send" API', function () {
+        it(
+            'only sends a stanza once the session is authenticated',
+            mock.initConverse(converse, [], {}, ({ api }) => {
+                const { stx } = converse.env;
+                const connection = api.connection.get();
+                const wasSent = (id) => connection.sent_stanzas.some((s) => s.getAttribute('id') === id);
+
+                // The stream is open, but the login hasn't completed.
+                connection.authenticated = false;
+                api.send(stx`<message id="early" to="juliet@capulet.lit" type="chat" xmlns="jabber:client"/>`);
+                expect(wasSent('early')).toBe(false);
+
+                connection.authenticated = true;
+                api.send(stx`<message id="on-time" to="juliet@capulet.lit" type="chat" xmlns="jabber:client"/>`);
+                expect(wasSent('on-time')).toBe(true);
+            }),
+        );
+
+        it(
+            'only sends an IQ once the session is authenticated',
+            mock.initConverse(converse, [], {}, ({ api }) => {
+                const { stx } = converse.env;
+                const connection = api.connection.get();
+                const wasSent = (id) => connection.IQ_stanzas.some((s) => s.getAttribute('id') === id);
+                const iq = (id) => stx`<iq id="${id}" type="result" xmlns="jabber:client"/>`;
+
+                connection.authenticated = false;
+                expect(() => api.sendIQ(iq('early'))).toThrow(/not authenticated/);
+                expect(wasSent('early')).toBe(false);
+
+                connection.authenticated = true;
+                api.sendIQ(iq('on-time'));
+                expect(wasSent('on-time')).toBe(true);
+            }),
+        );
+    });
+
     describe('The "contacts" API', function () {
         it(
             "has a method 'get' which returns wrapped contacts",

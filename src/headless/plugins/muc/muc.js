@@ -2233,7 +2233,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             log.info(`isJoined: not pinging MUC ${this.get('jid')} since we're not entered`);
             return false;
         }
-        if (!api.connection.connected()) {
+        if (!api.connection.authenticated()) {
             await new Promise((resolve) => api.listen.once('reconnected', resolve));
         }
         return api.ping(`${this.get('jid')}/${this.get('nick')}`);

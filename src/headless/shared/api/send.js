@@ -6,6 +6,10 @@ export default {
      * @typedef {import('strophe.js').Builder} Builder
      *
      * Allows you to send XML stanzas.
+     *
+     * Nothing is sent before the session is authenticated (see
+     * {@link api.connection.authenticated}). To defer work until sending is
+     * possible, wait for the `connected` or `reconnected` event.
      * @method _converse.api.send
      * @param {Element|Builder} stanza
      * @returns {void}
@@ -16,13 +20,13 @@ export default {
      */
     send(stanza) {
         const { api } = _converse;
-        if (!api.connection.connected()) {
+        const el = stanza instanceof Element ? stanza : stanza.tree();
+        if (!api.connection.authenticated()) {
             // TODO: queue unsent messages and send once we're connected again
-            log.warn("Not sending stanza because we're not connected!");
-            log.warn(stanza);
+            log.warn("Not sending stanza because we're not authenticated!");
+            log.warn(el);
             return;
         }
-        const el = stanza instanceof Element ? stanza : stanza.tree();
         if (el.tagName === 'iq') {
             return api.sendIQ(el);
         } else {
@@ -43,17 +47,24 @@ export default {
      *  receive a `result` or `error` stanza or once a timeout is reached.
      *  If the IQ stanza being sent is of type `result` or `error`, there's
      *  nothing to wait for, so an already resolved promise is returned.
+     * @throws {Error} If the session isn't authenticated yet, since the
+     *  server would reject the stanza and close the stream.
      */
     sendIQ(stanza, timeout, reject = true) {
         const { api } = _converse;
-        if (!api.connection.connected()) {
-            throw new Error("Not sending IQ stanza because we're not connected!");
+        const el = stanza instanceof Element ? stanza : stanza.tree();
+        if (!api.connection.authenticated()) {
+            // The stanza may hold a password, so it stays out of the message, which callers log and relay.
+            log.debug(el);
+            throw new Error(
+                `Not sending IQ stanza because we're not authenticated (id "${el.getAttribute('id')}", ` +
+                    `to "${el.getAttribute('to')}", ${el.firstElementChild?.namespaceURI})`,
+            );
         }
 
         const connection = api.connection.get();
 
         let promise;
-        const el = stanza instanceof Element ? stanza : stanza.tree();
         if (['get', 'set'].includes(el.getAttribute('type'))) {
             timeout = timeout || api.settings.get('stanza_timeout');
             if (reject) {

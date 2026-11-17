@@ -294,7 +294,7 @@ describe('Drafts', () => {
 
     it('drops a draft whose text cannot reach the owner, so that none is kept unseen', async () => {
         await begin({ allow: [JULIET] });
-        vi.spyOn(daemon.api.connection, 'connected').mockReturnValue(false);
+        vi.spyOn(daemon.api.connection, 'authenticated').mockReturnValue(false);
 
         await expect(restrictedSend(JULIET, 'Shall we meet at noon?')).rejects.toMatchObject({
             code: ERRORS.NOT_CONNECTED,

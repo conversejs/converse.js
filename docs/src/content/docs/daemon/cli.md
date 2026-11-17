@@ -407,8 +407,8 @@ Starts the daemon if it isn't running, and shows its status.
 
 ### `daemon status`
 
-Shows whether the daemon is connected, which JID it uses, for how long it has
-been running, and the socket it was reached on. The socket tells a daemon on
+Shows whether the daemon is connected or still logging in, which JID it uses,
+for how long it has been running, and the socket it was reached on. The socket tells a daemon on
 another machine, reached through a tunnel, from a local one.
 
 With `--all`, lists every running daemon instead, one line per account: its

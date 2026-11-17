@@ -340,7 +340,7 @@ When [authentication](#authentication) is set to <span class="title-ref">login</
 
 With this setting on, a session is also resumed when Converse starts without a connection, for example when a laptop is opened on a train or a mobile app is restarted in a tunnel. Its contacts, chats, rooms and profile are loaded from the cache straight away, so that they can be read, and Converse connects in the background, retrying for as long as it takes. Presences aren't cached, so contacts show as offline until the connection is up. Rooms are joined once connected.
 
-While there's no connection, the web UI stays as it is and shows next to the user's status that it's offline or reconnecting. Messages can still be written, and are sent by the user once connected again. Converse retries at once when the browser reports that the network is back, or when the page is brought to the foreground.
+While there's no connection, the web UI stays as it is and shows next to the user's status that it's offline or reconnecting. Messages can still be sent: they are shown as not sent yet, and go out once connected again. Converse retries at once when the browser reports that the network is back, or when the page is brought to the foreground.
 
 Converse remembers a session on this device once it has logged in, until the user logs out, so the next start after a logout shows the login form instead. A session is only resumed when all of these hold:
 

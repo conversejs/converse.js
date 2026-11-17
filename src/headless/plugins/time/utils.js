@@ -68,7 +68,7 @@ async function respondToTimeRequest(iq) {
     const may_share = await mayShareTimeWith(from);
     // Deciding can mean waiting for the roster, by which time the session may
     // be gone.
-    if (!api.connection.connected()) return;
+    if (!api.connection.authenticated()) return;
 
     if (!may_share) {
         api.sendIQ(stx`

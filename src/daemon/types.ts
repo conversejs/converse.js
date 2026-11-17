@@ -103,6 +103,7 @@ export type Sockets = {
 
 export type Status = {
     connected: boolean;
+    authenticated: boolean; // Whether login has finished. Until then, nothing can be sent
     jid: string | null; // The full JID once bound
     resumed: boolean; // Whether the current session was resumed (XEP-0198) after a dropped connection
     pid: number;

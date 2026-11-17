@@ -210,7 +210,7 @@ export function draftMethods({ drafts, audit, events, owner, mode }) {
                 mode,
             });
             events.publishDraft('rejected', draft);
-            if (mode !== 'as_user' && api.connection.connected()) {
+            if (mode !== 'as_user' && api.connection.authenticated()) {
                 await sendMessage(owner, withdrawalNotice(id));
             }
             return { draft };

@@ -208,7 +208,7 @@ describe('Reading history', () => {
 
     it("says the daemon is offline, not that there's no history, for a stranger while disconnected", async () => {
         await start({ archive: archiveOf(TYBALT, 't', 2) });
-        const connected = vi.spyOn(daemon.api.connection, 'connected').mockReturnValue(false);
+        const connected = vi.spyOn(daemon.api.connection, 'authenticated').mockReturnValue(false);
         try {
             await expect(client.request('messages.list', { conversation: TYBALT })).rejects.toMatchObject({
                 code: ERRORS.NOT_CONNECTED,

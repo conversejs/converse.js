@@ -196,7 +196,7 @@ export default {
          *
          */
         async query(options = {}) {
-            if (!api.connection.connected()) {
+            if (!api.connection.authenticated()) {
                 throw new Error("Can't call `api.archive.query` before having established an XMPP session");
             }
 

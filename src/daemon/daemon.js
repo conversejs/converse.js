@@ -182,8 +182,9 @@ async function serve(config, gid) {
         /** @returns {import('./types').Status} */
         'daemon.status': () => ({
             connected: api.connection.connected(),
+            authenticated: !!api.connection.authenticated(),
             jid: getJID(),
-            resumed: !!(api.connection.connected() && api.connection.get().hasResumed()),
+            resumed: !!(api.connection.authenticated() && api.connection.get().hasResumed()),
             pid: process.pid,
             started: started.toISOString(),
             uptime: Math.floor((Date.now() - started.getTime()) / 1000),

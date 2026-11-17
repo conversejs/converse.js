@@ -176,7 +176,7 @@ export async function fetchArchivedMessages(model, options = {}, should_page = f
 
     // The session may have been torn down while we were awaiting above. If so,
     // there's no point querying the archive (and `api.archive.query` would throw).
-    if (!api.connection.connected()) return;
+    if (!api.connection.authenticated()) return;
 
     const max = api.settings.get('archived_messages_page_size');
     const query = /** @type {import('./types').ArchiveQueryOptions} */ {
@@ -412,7 +412,7 @@ export async function searchArchive(
     text,
     { with: jid, max = api.settings.get('archived_messages_page_size'), create = false } = {},
 ) {
-    if (!api.connection.connected()) return null;
+    if (!api.connection.authenticated()) return null;
 
     const bare_jid = _converse.session.get('bare_jid');
     const room = jid ? await api.rooms.get(jid) : undefined;

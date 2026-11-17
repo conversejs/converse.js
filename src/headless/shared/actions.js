@@ -147,5 +147,5 @@ export function sendRetractionMessage(jid, message, retraction_id) {
             <store xmlns="${Strophe.NS.HINTS}"/>
             <fallback xmlns="${Strophe.NS.FALLBACK}" for="${Strophe.NS.RETRACT}" />
         </message>`;
-    return api.connection.get().send(stanza);
+    return api.send(stanza);
 }

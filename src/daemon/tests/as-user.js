@@ -382,7 +382,7 @@ describe('Acting as the user (as_user mode)', () => {
         it('keeps a draft that could not be sent, so that it can be sent later', async () => {
             await begin();
             await restricted('messages.send', { to: JULIET, body: 'Noon?' });
-            vi.spyOn(daemon.api.connection, 'connected').mockReturnValue(false);
+            vi.spyOn(daemon.api.connection, 'authenticated').mockReturnValue(false);
 
             await expect(full('drafts.send', { id: 'd1' })).rejects.toMatchObject({ code: ERRORS.NOT_CONNECTED });
             vi.restoreAllMocks();

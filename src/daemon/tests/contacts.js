@@ -180,6 +180,7 @@ describe('Before the roster is loaded', () => {
             condition === 'rosterContactsFetched' ? never : waitUntil(condition),
         );
         vi.spyOn(daemon.api.connection, 'connected').mockReturnValue(false);
+        vi.spyOn(daemon.api.connection, 'authenticated').mockReturnValue(false);
     });
 
     afterAll(async () => {

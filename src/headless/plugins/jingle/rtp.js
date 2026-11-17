@@ -41,7 +41,7 @@ const HANDLED_ACTIONS = [
  * @param {string} reason - one of {@link ENDED_REASONS}
  */
 export function sendSessionTerminate(to, sid, reason) {
-    if (!api.connection.connected()) return; // nothing to send to (e.g. terminating on disconnect)
+    if (!api.connection.authenticated()) return; // nothing to send to (e.g. terminating on disconnect)
     const iq = stx`
         <iq xmlns="jabber:client" type="set" to="${to}">
             <jingle xmlns="${Strophe.NS.JINGLE}" action="session-terminate" sid="${sid}">
@@ -503,7 +503,7 @@ class RTPSession {
      * @param {boolean} [required=false] - the session can't continue if the peer refuses it
      */
     sendJingle(jingle, required = false) {
-        if (!api.connection.connected()) return; // nothing to send to (e.g. terminating on disconnect)
+        if (!api.connection.authenticated()) return; // nothing to send to (e.g. terminating on disconnect)
         const iq = stx`<iq xmlns="jabber:client" type="set" to="${this.peer_jid}">${jingle}</iq>`;
         api.sendIQ(iq).catch((e) => {
             log.error(e);

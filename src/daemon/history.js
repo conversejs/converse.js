@@ -18,7 +18,7 @@ const { Strophe } = converse.env;
  */
 export async function hasArchivedMessages(jid) {
     const own_jid = ownJID();
-    if (!api.connection.connected() || !(await api.disco.supports(Strophe.NS.MAM, own_jid))) {
+    if (!api.connection.authenticated() || !(await api.disco.supports(Strophe.NS.MAM, own_jid))) {
         return false;
     }
     try {

@@ -18,7 +18,7 @@ export function ownJID() {
  * @param {string} consequence - What didn't happen because of it, such as "nothing was sent"
  */
 export function requireConnected(consequence) {
-    if (!api.connection.connected()) {
+    if (!api.connection.authenticated()) {
         throw new RPCError(
             ERRORS.NOT_CONNECTED,
             `The daemon isn't connected to the server, so ${consequence}. Check "daemon.status", then try again.`,

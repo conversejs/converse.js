@@ -89,9 +89,9 @@ export async function startDaemon(
     const connectAndWait = async () => {
         const client = await connect({ env });
         try {
-            await eventually(async () => (await client.request('daemon.status')).connected, {
+            await eventually(async () => (await client.request('daemon.status')).authenticated, {
                 timeout: 15000,
-                what: `${account.jid} to connect`,
+                what: `${account.jid} to log in`,
             });
         } catch (e) {
             const output = await fs.readFile(log, 'utf8').catch(() => '');

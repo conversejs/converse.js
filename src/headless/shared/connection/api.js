@@ -74,18 +74,27 @@ export default {
     },
 
     /**
+     * Whether the login has completed (SASL and resource binding, stream
+     * resumption, or attaching to an existing session), which is when
+     * stanzas may be sent. Code that decides whether it can send checks this,
+     * not {@link api.connection.connected}.
+     *
      * @method api.connection.authenticated
      * @memberOf api.connection
-     * @returns {boolean} Whether we're authenticated to the XMPP server or not
+     * @returns {boolean}
      */
     authenticated() {
         return connection?.authenticated && true;
     },
 
     /**
+     * Whether the stream to the XMPP server is open. That's already the case
+     * while still logging in, when nothing may be sent yet, see
+     * {@link api.connection.authenticated}.
+     *
      * @method api.connection.connected
      * @memberOf api.connection
-     * @returns {boolean} Whether there is an established connection or not.
+     * @returns {boolean}
      */
     connected() {
         return connection?.connected && true;

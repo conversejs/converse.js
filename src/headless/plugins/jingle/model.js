@@ -274,7 +274,7 @@ class Call extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
         const answered = this.isAnswered();
         this.set({ state, ended_reason: reason, ended_at: Date.now(), missed });
 
-        if (answered && api.connection.connected()) {
+        if (answered && api.connection.authenticated()) {
             api.send(createFinishStanza(this.peer_full_jid, this.sid, reason));
         }
 

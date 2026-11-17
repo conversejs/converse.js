@@ -26,18 +26,25 @@ async function openChatWhileDisconnected(_converse) {
     return { view, reconnect, alert, restore };
 }
 
+/** Waits for the message with the given text to be kept as pending. */
+function waitForPending(view, body) {
+    return u.waitUntil(() => view.model.messages.findWhere({ body })?.get('send_status') === 'pending');
+}
+
 describe('A message sent without a connection', function () {
     it(
-        'stays in the conversation as a failed message that says why, and reconnects',
+        'stays in the conversation as a pending message, without an error, and reconnects',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { view, reconnect, restore } = await openChatWhileDisconnected(_converse);
             await mock.setComposerText(view, 'Into the void');
             await mock.pressComposerKey(view, 'Enter');
 
-            const reason = await u.waitUntil(() => view.querySelector('.chat-msg__send-failed-reason'));
+            await waitForPending(view, 'Into the void');
             restore();
-            expect(reason.textContent).toBe('Your message could not be sent because you are not connected.');
-            expect(view.querySelector('.chat-msg__text').textContent).toBe('Into the void');
+            const text = await u.waitUntil(() => view.querySelector('.chat-msg__text'));
+            expect(text.textContent).toBe('Into the void');
+            expect(view.querySelector('.chat-msg__send-failed-reason')).toBeNull();
+            expect(view.querySelector('converse-message-form').getInputText()).toBe('');
             expect(reconnect).toHaveBeenCalledOnce();
         }),
     );
@@ -62,16 +69,15 @@ describe('A message sent without a connection', function () {
     );
 
     it(
-        'is kept as a failed message too when the conversation lost the ability to post with the connection',
+        'is kept as a pending message too when the conversation lost the ability to post with the connection',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const { view, restore } = await openChatWhileDisconnected(_converse);
             vi.spyOn(view.model, 'canPostMessages').mockReturnValue(false);
             await mock.setComposerText(view, 'Into the void');
             await mock.pressComposerKey(view, 'Enter');
 
-            const reason = await u.waitUntil(() => view.querySelector('.chat-msg__send-failed-reason'));
+            await waitForPending(view, 'Into the void');
             restore();
-            expect(reason.textContent).toBe('Your message could not be sent because you are not connected.');
         }),
     );
 });

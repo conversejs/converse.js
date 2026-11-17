@@ -154,6 +154,13 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
+     * A MUC only takes messages from its occupants, so it has to be entered again first.
+     */
+    canSendPendingMessages() {
+        return super.canSendPendingMessages() && this.isEntered();
+    }
+
+    /**
      * Checks whether this MUC qualifies for subscribing to XEP-0437 Room Activity Indicators (RAI)
      * @returns {Boolean}
      */
@@ -460,10 +467,11 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     async onRoomEntered() {
         await this.occupants.fetchMembers();
         if (api.settings.get('clear_messages_on_reconnection')) {
-            await this.clearMessages();
+            await this.clearMessages({ keep_pending: true });
         } else {
             await this.fetchMessages();
         }
+        this.sendPendingMessages();
         /**
          * Triggered when the user has entered a new MUC
          * @event _converse#enteredNewRoom
@@ -483,7 +491,10 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         if (this.isEntered()) {
             // A MUC loaded while offline, which was restored from the cache,
             // fetching what entering it would.
-            if (this.session.previous('connection_status') === ROOMSTATUS.OFFLINE) return;
+            if (this.session.previous('connection_status') === ROOMSTATUS.OFFLINE) {
+                this.sendPendingMessages();
+                return;
+            }
 
             if (this.isRAICandidate()) {
                 try {
@@ -930,33 +941,60 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
-     * Retract one of your messages in this groupchat
+     * Retract one of your messages in this groupchat. Without a session the
+     * message is shown as retracted, with `retraction_pending` set, and the
+     * retraction is sent once the groupchat is entered again. A message that's
+     * itself still pending is removed instead.
      * @param {BaseMessage} message - The message which we're retracting.
      */
     async retractOwnMessage(message) {
+        if (this.discardIfUnsent(message)) return;
+
+        const retracted = {
+            retracted: new Date().toISOString(),
+            retracted_id: message.get('id'),
+            retraction_id: getUniqueId(),
+        };
+        if (!api.connection.authenticated()) {
+            message.save({ ...retracted, retraction_pending: true });
+            return;
+        }
+        // Optimistic, and not saved: the groupchat reflects the retraction.
+        message.set(retracted);
+        await this.#sendRetraction(message);
+    }
+
+    /**
+     * Sends the retraction of a message that was retracted without a session.
+     * @param {BaseMessage} message
+     */
+    async sendPendingRetraction(message) {
+        await message.save({ retraction_pending: undefined }, { promise: true });
+        // Not awaited: the groupchat's confirmation mustn't hold up the pending messages.
+        this.#sendRetraction(message).catch((e) => log.error(e));
+    }
+
+    /**
+     * Sends the retraction that a message is marked with, and undoes the mark
+     * if the groupchat doesn't confirm it in time.
+     * @param {BaseMessage} message
+     */
+    async #sendRetraction(message) {
         const __ = _converse.__;
         const editable = message.get('editable');
-        const retraction_id = getUniqueId();
-        const id = message.get('id');
 
         const stanza = stx`
-            <message id="${retraction_id}"
+            <message id="${message.get('retraction_id')}"
                      to="${this.get('jid')}"
                      type="groupchat"
                      xmlns="jabber:client">
-                <retract id="${id}" xmlns="${Strophe.NS.RETRACT}"/>
+                <retract id="${message.get('retracted_id')}" xmlns="${Strophe.NS.RETRACT}"/>
                 <body>/me retracted a message</body>
                 <store xmlns="${Strophe.NS.HINTS}"/>
                 <fallback xmlns="${Strophe.NS.FALLBACK}" for="${Strophe.NS.RETRACT}" />
             </message>`;
 
-        // Optimistic save
-        message.set({
-            retracted: new Date().toISOString(),
-            retracted_id: id,
-            retraction_id: retraction_id,
-            editable: false,
-        });
+        message.set({ editable: false });
         const result = await this.sendTimedMessage(stanza);
 
         if (u.isErrorStanza(result)) {

@@ -80,6 +80,26 @@ describe('A failed send', () => {
         });
     });
 
+    it('is pending, not sent, when the connection drops during the send', async () => {
+        const chat = await daemon.api.chats.get(JULIET, {}, true);
+        const build = chat.createMessageStanza.bind(chat);
+        const stanza = vi.spyOn(chat, 'createMessageStanza').mockImplementation(async (message) => {
+            const built = await build(message);
+            vi.spyOn(daemon.api.connection, 'authenticated').mockReturnValue(false);
+            return built;
+        });
+        try {
+            const result = await client.request('messages.send', { to: JULIET, body: 'For later' });
+            expect(result).toMatchObject({ outcome: 'pending', message: { body: 'For later', status: 'pending' } });
+            const { messages } = await client.request('messages.list', { conversation: JULIET, limit: 50 });
+            expect(messages.at(-1)).toMatchObject({ body: 'For later', status: 'pending', error_code: null });
+        } finally {
+            stanza.mockRestore();
+            vi.mocked(daemon.api.connection.authenticated).mockRestore();
+            chat.messages.findWhere({ body: 'For later' })?.destroy();
+        }
+    });
+
     it('is marked as sent when it went out, and as received when it came in', async () => {
         await receive(BENVOLIO, 'Shall we walk?', '2020-10-28T09:00:00Z');
         await client.request('messages.send', { to: BENVOLIO, body: 'Yes, let us.' });

@@ -94,7 +94,16 @@ export function toMessageDTO(message) {
  */
 function getStatus(message) {
     if (message.get('sender') !== 'me') return 'received';
-    return isFailedSend(message) ? 'failed' : 'sent';
+    return message.get('send_status') ?? 'sent';
+}
+
+/**
+ * A send that hasn't gone out: it failed, or it's pending, which is one that
+ * headless sends by itself once it's connected again.
+ * @param {import('@converse/headless').BaseMessage} message
+ */
+export function isUnsent(message) {
+    return !!message.get('send_status');
 }
 
 /**

@@ -116,7 +116,11 @@ export interface MessagesAware {
     takeReplyAttributes(attrs?: MessageAttributes): Pick<MessageAttributes, 'reply_to_id' | 'reply_to'>;
     addReplyFallback(attrs: MessageAttributes): MessageAttributes;
     sendMessage(attrs?: any, options?: { replying_to?: BaseMessage; correcting?: BaseMessage }): Promise<BaseMessage>;
+    canSendPendingMessages(): boolean;
+    sendPendingMessages(): Promise<void>;
+    discardIfUnsent(message: BaseMessage): boolean;
     retractOwnMessage(message: BaseMessage): void;
+    sendPendingRetraction(message: BaseMessage): Promise<void>;
     sendFiles(files: File[] | FileList): Promise<BaseMessage[]>;
     setEditable(attrs: any, send_time: string): void;
     setChatState(state: string, options?: object): any;
@@ -126,7 +130,7 @@ export interface MessagesAware {
     onScrolledChanged(): void;
     pruneHistoryWhenScrolledDown(): void;
     shouldShowErrorMessage(attrs: MessageAttributes): Promise<boolean>;
-    clearMessages(): Promise<void>;
+    clearMessages(options?: { keep_pending?: boolean }): Promise<void>;
     editEarlierMessage(): void;
     editLaterMessage(): any;
     isChatMessage(message: BaseMessage): boolean;
@@ -362,6 +366,9 @@ export type MessageAttributes = EncryptionAttrs &
         fallback: Record<string, { start: number; end: number } | null>; // XEP-0428 fallback map keyed by feature namespace; ranged ({start,end}) for XEP-0461 replies, null for whole-body fallbacks (e.g. XEP-0444 reactions)
         retracted: string; // An ISO8601 string recording the time that the message was retracted
         retracted_id: string; // The `id` attribute of a XEP-424 <retracted> element
+        retraction_pending?: boolean; // Our retraction was made without a session, and is sent once there is one
+        send_status?: 'failed' | 'pending'; // Unset once sent. `failed` waits for the user to resend or discard it, `pending` was written without a session and is sent once there is one
+        send_error_code?: string; // Why a `failed` message couldn't be sent
         sender: 'me' | 'them'; // Whether the message was sent by the current user or someone else
         spoiler_hint: string; //  The XEP-0382 spoiler hint
         stanza_id: string; // The XEP-0359 Stanza ID. Note: the key is actually `stanza_id ${by_jid}` and there can be multiple.

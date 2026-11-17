@@ -11,7 +11,7 @@ import { flag, option } from '../options.js';
 export const LOOKUP_EXITS = [EXIT.NOT_FOUND, EXIT.AMBIGUOUS];
 
 /** The exit codes of a command whose send policy decides. */
-export const SEND_EXITS = [...LOOKUP_EXITS, EXIT.REFUSED, EXIT.DRAFT];
+export const SEND_EXITS = [...LOOKUP_EXITS, EXIT.REFUSED, EXIT.DRAFT, EXIT.PENDING];
 
 /** @type {[string, string]} */
 export const CONTACT = ['<contact>', 'A JID, or the name of a contact on your roster'];

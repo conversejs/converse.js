@@ -7,10 +7,10 @@
   attachment button, which opens an attachment menu listing what can be attached in that chat.
   Plugins add an entry through the new `getAttachmentMenuItems` hook.
 - feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
-- fix: A message sent without a connection was silently lost while looking sent. It now stays in the conversation as a failed message.
 - feat: `api.promises.renew()` makes a new promise unless one is pending.
 - feat: `api.user.login()` takes `{ automatic: true }` instead of a boolean.
 - fix: `api.send` and `api.sendIQ` refuse to send before login has finished.
+- feat: Messages, edits and retractions made while offline are sent once online.
 - feat: `api.send` returns whether a message or presence was sent.
 - fix: Reconnecting no longer stops for good when a retry fails before login has finished.
 - Reconnection attempts back off, waiting 3 seconds at first and twice as long each time up to a minute. Sending a message cuts a longer wait short.

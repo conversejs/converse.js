@@ -136,7 +136,7 @@ export const SENDING_COMMANDS = {
                 'Send it in the clear, if it failed because it could not be encrypted. The daemon refuses this unless the config\'s "allow_unencrypted_resend" is true',
             ),
         ],
-        exits: LOOKUP_EXITS,
+        exits: [...LOOKUP_EXITS, EXIT.PENDING],
         examples: [
             'converse-cli resend 01a183d1-2cc2-74f2-8de3-fd8a38834143',
             'converse-cli resend 01a183d1-2cc2-74f2-8de3-fd8a38834143 --unencrypted',

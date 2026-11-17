@@ -8,7 +8,7 @@
  * @module @converse/daemon/files
  */
 import { getUploadService, uploadFile } from '@converse/headless';
-import { sendMessage } from './send.js';
+import { outcomeOf, sendMessage } from './send.js';
 import { ERRORS, MAX_UPLOAD_SIZE, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 
@@ -36,15 +36,16 @@ export function fileMethods({ routeSend, audit, queueDraft }) {
                 direct: async (routing) => {
                     const uploaded = await uploadContents(upload);
                     const message = await sendMessage(jid, uploaded.url, {}, { oob_url: uploaded.url });
+                    const outcome = outcomeOf(message);
                     audit.record({
                         consumer: client.consumer,
                         to: jid,
-                        outcome: 'sent',
+                        outcome,
                         id: message.id,
                         action: 'upload',
                         ...routing,
                     });
-                    return { outcome: 'sent', message };
+                    return { outcome, message };
                 },
                 draft: async (routing) => {
                     const uploaded = await uploadContents(upload);

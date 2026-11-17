@@ -136,7 +136,7 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
         }
 
         if (api.settings.get('clear_messages_on_reconnection')) {
-            await this.clearMessages();
+            await this.clearMessages({ keep_pending: true });
         }
         /**
          * Triggered once a chatbox has been closed.
@@ -159,8 +159,9 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
 
     async onReconnection() {
         if (api.settings.get('clear_messages_on_reconnection')) {
-            await this.clearMessages();
+            await this.clearMessages({ keep_pending: true });
         }
+        this.sendPendingMessages();
         this.announceReconnection();
     }
 }

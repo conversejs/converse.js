@@ -164,6 +164,7 @@ policy, and the exit code says what happened:
 | 0 | Sent. It reached the recipient. | Carry on, perhaps `wait` for the answer. |
 | 6 | Drafted: the text went to the user (the owner), or in `as_user` mode waits in the daemon, and the user decides whether to send it. Nothing reached the recipient. | Tell the user it's waiting for them, with its draft id. Don't send it again, or another way. |
 | 5 | Refused by policy. Nothing was sent. stderr names the rule. | For a rate limit, wait and try later. Otherwise the target isn't allowed: tell the user, and don't look for a way around it. |
+| 8 | Not sent yet: the connection dropped during the send. The daemon keeps it and sends it once it's connected again. | Don't send it again. If it matters that it arrived, check `read` later: it shows `not sent yet` until it goes out. |
 
 Except in `as_user` mode (below), a send to the owner always goes out directly,
 and corrections and retractions are never drafted, so where a send would be
@@ -202,6 +203,7 @@ refused (exit 5). The output of a drafted send says it waits for approval.
 | 5 | refused by send policy |
 | 6 | drafted for the owner to send; nothing was sent |
 | 7 | the daemon isn't running and couldn't be started, or it went away while `watch` ran |
+| 8 | not sent yet: the connection dropped; it goes out once the daemon is connected again |
 
 Error messages say what to do next. Read stderr before retrying.
 

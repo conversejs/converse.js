@@ -7,7 +7,7 @@
  */
 import { isMessage } from './history.js';
 import { _converse, api, constants } from '@converse/headless';
-import { isFailedSend, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.js';
+import { isUnsent, toConversationDTO, toMessageDTO, toRoomDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 import { rosterLoaded } from './session.js';
@@ -260,11 +260,11 @@ function unseenAmong(chatbox, message, cursor, since) {
 }
 
 /**
- * Whether a message is what the inbox shows. A failed send never went out,
- * so it isn't news, and it isn't the conversation's activity.
+ * Whether a message is what the inbox shows. A failed or pending send hasn't
+ * gone out, so it isn't news, and it isn't the conversation's activity.
  * @param {import('@converse/headless').BaseMessage} message
  */
-const isNews = (message) => isMessage(message) && !isFailedSend(message);
+const isNews = (message) => isMessage(message) && !isUnsent(message);
 
 /**
  * Marks each message with when the daemon got it, as it's added to its

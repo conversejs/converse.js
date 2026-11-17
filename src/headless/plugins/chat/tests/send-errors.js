@@ -5,93 +5,6 @@ const { stx } = converse.env;
 
 describe('A failed chat send', function () {
     it(
-        'is marked as failed when there is no connection, and can be retried once there is',
-        mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
-            const { api } = _converse;
-            await mock.waitForRoster(_converse, 'current', 1);
-            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            await mock.openChatBoxFor(_converse, contact_jid);
-            const chat = _converse.chatboxes.get(contact_jid);
-
-            const send = vi.spyOn(api, 'send');
-            const connection = api.connection.get();
-            connection.authenticated = false;
-            connection.connected = false;
-            const createStanza = vi.spyOn(chat, 'createMessageStanza');
-
-            await expect(chat.sendMessage({ body: 'Into the void' })).rejects.toMatchObject({
-                code: 'not-connected',
-            });
-
-            const failed = chat.messages.findWhere({ body: 'Into the void' });
-            expect(failed.get('send_status')).toBe('failed');
-            expect(failed.get('send_error_code')).toBe('not-connected');
-            // Nothing to gain from building it: encrypting would need the server too.
-            expect(createStanza).not.toHaveBeenCalled();
-            expect(send).not.toHaveBeenCalled();
-
-            connection.authenticated = true;
-            connection.connected = true;
-            await chat.resendFailedMessage(failed);
-            expect(send).toHaveBeenCalledTimes(1);
-            expect(failed.get('send_status')).toBeUndefined();
-        }),
-    );
-
-    it(
-        'is marked as failed when the connection drops while the stanza is built',
-        mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
-            const { api } = _converse;
-            await mock.waitForRoster(_converse, 'current', 1);
-            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            await mock.openChatBoxFor(_converse, contact_jid);
-            const chat = _converse.chatboxes.get(contact_jid);
-
-            const send = vi.spyOn(api, 'send');
-            const connection = api.connection.get();
-            const build = chat.createMessageStanza.bind(chat);
-            vi.spyOn(chat, 'createMessageStanza').mockImplementation(async (message) => {
-                const stanza = await build(message);
-                connection.authenticated = false;
-                connection.connected = false;
-                return stanza;
-            });
-
-            await expect(chat.sendMessage({ body: 'Into the void' })).rejects.toMatchObject({
-                code: 'not-connected',
-            });
-            connection.authenticated = true;
-            connection.connected = true;
-
-            expect(chat.messages.findWhere({ body: 'Into the void' }).get('send_status')).toBe('failed');
-            expect(send).not.toHaveBeenCalled();
-        }),
-    );
-
-    it(
-        'is marked as failed while the stream is connected but not yet authenticated',
-        mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
-            const { api } = _converse;
-            await mock.waitForRoster(_converse, 'current', 1);
-            const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
-            await mock.openChatBoxFor(_converse, contact_jid);
-            const chat = _converse.chatboxes.get(contact_jid);
-
-            const send = vi.spyOn(api, 'send');
-            const connection = api.connection.get();
-            connection.authenticated = false;
-
-            await expect(chat.sendMessage({ body: 'Into the void' })).rejects.toMatchObject({
-                code: 'not-connected',
-            });
-            connection.authenticated = true;
-
-            expect(chat.messages.findWhere({ body: 'Into the void' }).get('send_status')).toBe('failed');
-            expect(send).not.toHaveBeenCalled();
-        }),
-    );
-
-    it(
         'rejects with its code and is kept as a failed message, without an alert or a resend',
         mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
             const { api } = _converse;
@@ -105,7 +18,7 @@ describe('A failed chat send', function () {
                 throw new Error('Headless code must not alert');
             };
             try {
-                spyOn(api, 'send');
+                spyOn(api, 'send').and.returnValue(true);
                 spyOn(chat, 'createMessageStanza').and.callFake(() => {
                     throw Object.assign(new Error('No OMEMO devices'), { code: 'no-omemo-devices' });
                 });
@@ -221,7 +134,7 @@ describe('A failed chat send', function () {
             expect(failed.get('send_error_from')).toBe('capulet.lit');
 
             chat.createMessageStanza.and.resolveTo(stx`<message xmlns="jabber:client"/>`);
-            spyOn(_converse.api, 'send');
+            spyOn(_converse.api, 'send').and.returnValue(true);
             await chat.resendFailedMessage(failed);
             expect(failed.get('send_error_from')).toBeUndefined();
         }),
@@ -245,7 +158,7 @@ describe('A failed chat send', function () {
     );
 
     it(
-        'goes back to the delivered version when it was a correction and is discarded',
+        'goes back to the delivered version when it was a pending correction and is discarded',
         mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
@@ -258,12 +171,10 @@ describe('A failed chat send', function () {
 
             const connection = api.connection.get();
             connection.authenticated = false;
-            await expect(chat.sendMessage({ body: 'Never delivered' }, { correcting: message })).rejects.toMatchObject({
-                code: 'not-connected',
-            });
+            await chat.sendMessage({ body: 'Never delivered' }, { correcting: message });
             connection.authenticated = true;
             expect(message.get('body')).toBe('Never delivered');
-            expect(message.get('send_status')).toBe('failed');
+            expect(message.get('send_status')).toBe('pending');
 
             chat.discardFailedMessage(message);
             expect(chat.messages.get(message.get('id'))).toBe(message);
@@ -277,7 +188,7 @@ describe('A failed chat send', function () {
     );
 
     it(
-        'keeps the delivered version to go back to across a second failed correction, and forgets it once sent',
+        'keeps the delivered version to go back to across a second pending correction, and forgets it once sent',
         mock.initConverse(converse, ['rosterInitialized', 'chatBoxesInitialized'], {}, async (_converse) => {
             const { api } = _converse;
             await mock.waitForRoster(_converse, 'current', 1);
@@ -288,19 +199,19 @@ describe('A failed chat send', function () {
             const message = await chat.sendMessage({ body: 'As delivered' });
             const connection = api.connection.get();
             connection.authenticated = false;
-            await expect(chat.sendMessage({ body: 'First try' }, { correcting: message })).rejects.toBeDefined();
-            await expect(chat.sendMessage({ body: 'Second try' }, { correcting: message })).rejects.toBeDefined();
+            await chat.sendMessage({ body: 'First try' }, { correcting: message });
+            await chat.sendMessage({ body: 'Second try' }, { correcting: message });
             connection.authenticated = true;
             expect(message.get('before_correction').body).toBe('As delivered');
 
-            await chat.resendFailedMessage(message);
+            await chat.sendPendingMessages();
             expect(message.get('body')).toBe('Second try');
             expect(message.get('before_correction')).toBeUndefined();
         }),
     );
 
     it(
-        'is kept as failed in a groupchat that was marked disconnected, including a finished upload',
+        'is kept as pending in a groupchat that was marked disconnected, including a finished upload',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
             const { api } = _converse;
             const muc = await mock.openAndEnterMUC(_converse, 'lounge@montague.lit', 'romeo');
@@ -310,8 +221,8 @@ describe('A failed chat send', function () {
             muc.session.save({ connection_status: converse.ROOMSTATUS.DISCONNECTED });
             expect(muc.canPostMessages()).toBe(false);
 
-            await expect(muc.sendMessage({ body: 'Into the void' })).rejects.toMatchObject({ code: 'not-connected' });
-            expect(muc.messages.findWhere({ body: 'Into the void' }).get('send_error_code')).toBe('not-connected');
+            await muc.sendMessage({ body: 'Into the void' });
+            expect(muc.messages.findWhere({ body: 'Into the void' }).get('send_status')).toBe('pending');
 
             const url = 'https://upload.montague.lit/file.png';
             const placeholder = await muc.createMessage({
@@ -325,9 +236,7 @@ describe('A failed chat send', function () {
             connection.connected = true;
 
             expect(muc.messages.get(placeholder.get('id'))).toBeUndefined();
-            const failed = muc.messages.findWhere({ oob_url: url });
-            expect(failed.get('send_status')).toBe('failed');
-            expect(failed.get('send_error_code')).toBe('not-connected');
+            expect(muc.messages.findWhere({ oob_url: url }).get('send_status')).toBe('pending');
         }),
     );
 

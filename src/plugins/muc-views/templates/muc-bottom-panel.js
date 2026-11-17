@@ -13,7 +13,8 @@ export default (el) => {
     const unread_msgs = __('You have unread messages');
     const conn_status = el.model.session.get('connection_status');
     const i18n_not_allowed = __("You're not allowed to send messages in this room");
-    if (conn_status === converse.ROOMSTATUS.ENTERED) {
+    // A MUC we were in, loaded from the cache, has a composer too.
+    if (el.model.isEntered() || el.model.isEnteredOffline()) {
         return html`
             ${
                 el.model.ui.get('scrolled') && el.model.get('num_unread_general')

@@ -1,6 +1,7 @@
 import debounce from 'lodash-es/debounce.js';
-import { _converse, api, u, RosterFilter } from '@converse/headless';
+import { _converse, api, converse, u, RosterFilter } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
+import { ConnectionStateController } from 'shared/connection-state.js';
 import tplMUCOccupants from './templates/muc-occupants.js';
 import 'shared/autocomplete/index.js';
 import './modals/muc-invite.js';
@@ -15,6 +16,7 @@ export default class MUCOccupants extends CustomElement {
     constructor() {
         super();
         this.jid = null;
+        this.connection_state = new ConnectionStateController(this);
     }
 
     static get properties() {
@@ -44,12 +46,23 @@ export default class MUCOccupants extends CustomElement {
         this.listenTo(this.model.occupants, 'remove', debouncedRequestUpdate);
         this.listenTo(this.model.occupants, 'sort', debouncedRequestUpdate);
         this.listenTo(this.model.features, 'change:open', () => this.requestUpdate());
+        this.listenTo(this.model.session, 'change:connection_status', () => this.requestUpdate());
 
         this.model.initialized.then(() => this.requestUpdate());
     }
 
     render() {
         return tplMUCOccupants(this);
+    }
+
+    /**
+     * Whether the participants are those of when we were last in the MUC,
+     * because there's no connection to be in it with.
+     * @returns {boolean}
+     */
+    isStale() {
+        const { ROOMSTATUS } = converse;
+        return !this.connection_state.is_online || this.model.session.get('connection_status') === ROOMSTATUS.OFFLINE;
     }
 
     /**

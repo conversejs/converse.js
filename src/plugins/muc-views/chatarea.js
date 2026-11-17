@@ -1,4 +1,4 @@
-import { api, converse } from '@converse/headless';
+import { api } from '@converse/headless';
 import { __ } from 'i18n';
 import { CustomElement } from 'shared/components/element.js';
 import { MOBILE_CUTOFF } from 'shared/constants.js';
@@ -67,10 +67,8 @@ export default class MUCChatArea extends CustomElement {
     }
 
     shouldShowSidebar() {
-        return (
-            !this.model.get('hidden_occupants') &&
-            this.model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED
-        );
+        // A MUC we were in, loaded from the cache, shows its participants as last seen.
+        return !this.model.get('hidden_occupants') && (this.model.isEntered() || this.model.isEnteredOffline());
     }
 
     getHelpMessages() {

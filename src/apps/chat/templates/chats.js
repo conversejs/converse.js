@@ -19,8 +19,8 @@ export default () => {
     const view_mode = api.settings.get('view_mode');
     const is_overlayed = view_mode === 'overlayed';
     const is_mobile = isMobileViewport();
-    const connection = api.connection.get();
-    const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;
+    // An open session stays on screen while its connection is down.
+    const logged_out = !api.connection.hasSession();
     const connecting = isLoggingIn();
     return html`
         ${

@@ -1,5 +1,6 @@
 import { html } from 'lit';
 import 'shared/avatar/avatar.js';
+import '../connection-indicator.js';
 import { __ } from 'i18n';
 import { getPrettyStatus } from '../utils.js';
 
@@ -65,6 +66,7 @@ export default (el) => {
                     <span class="xmpp-status__msg">${status_message}</span>
                 </span>
             </a>
+            <converse-connection-indicator></converse-connection-indicator>
         </div>
     </div>`;
 };

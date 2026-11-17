@@ -1,7 +1,7 @@
 import { _converse, api, converse } from '@converse/headless';
 import app_api from './api.js';
 import ConverseRoot from './root.js';
-import { ensureElement } from './utils.js';
+import { ensureElement, retryConnection, retryConnectionOnceVisible } from './utils.js';
 import { routeApp, syncAppToHash, clearAppRoutes } from './routing.js';
 import { initPendingXMPPURI, routeXMPPURI, registerProtocolHandlerIfEnabled } from './protocol-handler.js';
 import { addHelpShortcut, onKeyDown, shortcuts } from './shortcuts.js';
@@ -72,9 +72,16 @@ converse.plugins.add('converse-rootview', {
         api.listen.on('reconnected', routeXMPPURI);
         api.listen.on('connected', registerProtocolHandlerIfEnabled);
 
+        // The network coming back, or the page being brought to the foreground
+        // again, are hints that a connection can be made now.
+        addEventListener('online', retryConnection);
+        document.addEventListener('visibilitychange', retryConnectionOnceVisible);
+
         addHelpShortcut();
         document.addEventListener('keydown', onKeyDown);
         api.listen.on('cleanup', () => {
+            removeEventListener('online', retryConnection);
+            document.removeEventListener('visibilitychange', retryConnectionOnceVisible);
             document.removeEventListener('keydown', onKeyDown);
             shortcuts.clear();
             removeLiveRegion();

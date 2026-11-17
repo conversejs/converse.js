@@ -121,11 +121,13 @@ describe('Converse', function () {
 
                 // The stream is open, but the login hasn't completed.
                 connection.authenticated = false;
-                api.send(stx`<message id="early" to="juliet@capulet.lit" type="chat" xmlns="jabber:client"/>`);
+                const early = stx`<message id="early" to="juliet@capulet.lit" type="chat" xmlns="jabber:client"/>`;
+                expect(api.send(early)).toBe(false);
                 expect(wasSent('early')).toBe(false);
 
                 connection.authenticated = true;
-                api.send(stx`<message id="on-time" to="juliet@capulet.lit" type="chat" xmlns="jabber:client"/>`);
+                const on_time = stx`<message id="on-time" to="juliet@capulet.lit" type="chat" xmlns="jabber:client"/>`;
+                expect(api.send(on_time)).toBe(true);
                 expect(wasSent('on-time')).toBe(true);
             }),
         );
@@ -139,7 +141,7 @@ describe('Converse', function () {
                 const iq = (id) => stx`<iq id="${id}" type="result" xmlns="jabber:client"/>`;
 
                 connection.authenticated = false;
-                expect(() => api.sendIQ(iq('early'))).toThrow(/not authenticated/);
+                expect(() => api.sendIQ(iq('early'))).toThrow(expect.objectContaining({ code: 'not-connected' }));
                 expect(wasSent('early')).toBe(false);
 
                 connection.authenticated = true;

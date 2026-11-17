@@ -11,6 +11,7 @@
 - feat: `api.promises.renew()` makes a new promise unless one is pending.
 - feat: `api.user.login()` takes `{ automatic: true }` instead of a boolean.
 - fix: `api.send` and `api.sendIQ` refuse to send before login has finished.
+- feat: `api.send` returns whether a message or presence was sent.
 - fix: Reconnecting no longer stops for good when a retry fails before login has finished.
 - Reconnection attempts back off, waiting 3 seconds at first and twice as long each time up to a minute. Sending a message cuts a longer wait short.
 - fix: With both BOSH and websocket configured, a failed connection attempt is now retried with the other transport.

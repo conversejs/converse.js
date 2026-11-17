@@ -49,7 +49,7 @@ describe('A MUC loaded from the cache while there is no connection', function ()
 
 describe('A MUC whose connection drops', function () {
     it(
-        'keeps its composer, without sending, and shows its participants as last seen',
+        'shows its participants as last seen, and what is sent as not sent yet',
         mock.initConverse(converse, ['chatBoxesFetched'], { view_mode: 'fullscreen' }, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';
             const muc = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
@@ -59,14 +59,12 @@ describe('A MUC whose connection drops', function () {
             muc.save({ hidden_occupants: false });
 
             mock.dropConnection(_converse);
-            vi.spyOn(_converse.api.connection, 'retry').mockImplementation(() => {});
-            await u.waitUntil(() => view.querySelector('converse-muc-message-form .chat-message-form__offline'));
             await u.waitUntil(() => view.querySelector('.occupants--stale'));
 
             await mock.setComposerText(view, 'Anyone there?');
             await mock.pressComposerKey(view, 'Enter');
-            expect(view.querySelector('converse-muc-message-form').getInputText()).toBe('Anyone there?');
-            expect(view.model.messages.length).toBe(0);
+            const pending = await u.waitUntil(() => view.querySelector('.chat-msg__send-pending-text'));
+            expect(pending.textContent).toBe('Not sent yet');
         }),
     );
 });

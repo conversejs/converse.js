@@ -9,6 +9,7 @@ import 'shared/chat/unfurl.js';
 import 'shared/chat/reply-context.js';
 import 'shared/components/time.js';
 import tplSendFailed from './send-failed.js';
+import tplSendPending from './send-pending.js';
 
 const { dayjs } = converse.env;
 
@@ -150,6 +151,7 @@ export default (el) => {
                         ${is_retracted ? el.renderRetraction(tpl_action_time) : el.renderMessageText(tpl_action_time)}
                     </div>
                     ${el.model.get('send_status') === 'failed' ? tplSendFailed(el) : ''}
+                    ${el.model.get('send_status') === 'pending' ? tplSendPending(el) : ''}
                     <converse-message-actions
                         .model=${el.model}
                         ?is_retracted=${is_retracted}

@@ -171,5 +171,10 @@
   },
   "resolutions": {
     "autoprefixer": "10.4.5"
+  },
+  "overrides": {
+    "vite-plus": {
+      "@vitest/browser-playwright": "5.1.1"
+    }
   }
 }

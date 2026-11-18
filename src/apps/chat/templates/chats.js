@@ -2,8 +2,9 @@ import { html, nothing } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { _converse, api, constants } from '@converse/headless';
 import { isMobileViewport } from 'shared/chat/utils.js';
+import { isLoggingIn } from 'shared/connection-state.js';
 
-const { CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE, CONNECTION_STATUS } = constants;
+const { CONTROLBOX_TYPE, CHATROOMS_TYPE, HEADLINES_TYPE } = constants;
 
 /**
  * @param {import('@converse/headless').ChatBoxBase} c
@@ -14,16 +15,13 @@ function shouldShowChat(c) {
 }
 
 export default () => {
-    const { chatboxes, connfeedback } = _converse.state;
+    const { chatboxes } = _converse.state;
     const view_mode = api.settings.get('view_mode');
     const is_overlayed = view_mode === 'overlayed';
     const is_mobile = isMobileViewport();
     const connection = api.connection.get();
     const logged_out = !connection?.connected || !connection?.authenticated || connection?.disconnecting;
-    const connection_status = connfeedback.get('connection_status');
-    const connecting = ['CONNECTED', 'CONNECTING', 'AUTHENTICATING', 'RECONNECTING'].includes(
-        CONNECTION_STATUS[connection_status],
-    );
+    const connecting = isLoggingIn();
     return html`
         ${
             !logged_out && is_overlayed

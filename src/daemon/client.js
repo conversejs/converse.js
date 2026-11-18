@@ -392,17 +392,21 @@ async function spawnDaemon(config, socket_path, env) {
 
     const deadline = Date.now() + SPAWN_TIMEOUT;
     while (Date.now() < deadline) {
-        try {
-            return await openSocket(socket_path);
-        } catch {
-            // Ours exits if another client's daemon took the pidfile first. That one serves us too.
-            if (exit_code !== null && (await pidfileHolder(paths.pidfile)) === null) {
-                throw new DaemonUnavailableError(
-                    `The daemon exited with code ${exit_code} while starting. See ${paths.log} for why.`,
-                );
+        const holder = await pidfileHolder(paths.pidfile);
+        // Ours exits if another client's daemon took the pidfile first. That one serves us too,
+        // but not before ours is gone: left starting, it would take the pidfile once the other stops.
+        if (exit_code !== null || holder === child.pid) {
+            try {
+                return await openSocket(socket_path);
+            } catch {
+                if (exit_code !== null && holder === null) {
+                    throw new DaemonUnavailableError(
+                        `The daemon exited with code ${exit_code} while starting. See ${paths.log} for why.`,
+                    );
+                }
             }
-            await new Promise((resolve) => setTimeout(resolve, 50));
         }
+        await new Promise((resolve) => setTimeout(resolve, 50));
     }
     throw new DaemonUnavailableError(
         `The daemon didn't open ${socket_path} within ${SPAWN_TIMEOUT / 1000}s. See ${paths.log}.`,

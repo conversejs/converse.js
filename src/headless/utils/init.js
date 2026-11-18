@@ -293,7 +293,8 @@ export async function cleanup(_converse) {
     _converse.stopListening();
     _converse.off();
     if (_converse.promises['initialized'].isResolved) {
-        api.promises.add('initialized');
+        // Not replaced on logout, since Converse isn't initialized again then.
+        api.promises.add('initialized', false);
     }
 }
 

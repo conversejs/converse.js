@@ -28,9 +28,13 @@ export function getConnectionState() {
 
 /**
  * Whether logging in is underway, so that a spinner is shown rather than the login form.
+ * That includes start-up, while Converse resumes a session or looks for
+ * credentials, before it starts to connect.
  * @returns {boolean}
  */
 export function isLoggingIn() {
+    if (!_converse.promises.initialized?.isResolved) return true;
+
     const { CONNECTED, CONNECTING, AUTHENTICATING, RECONNECTING } = Strophe.Status;
     const status = _converse.state.connfeedback?.get('connection_status');
     return [CONNECTED, CONNECTING, AUTHENTICATING, RECONNECTING].includes(status);

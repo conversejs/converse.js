@@ -156,3 +156,39 @@ describe('The Login Form', function () {
         ),
     );
 });
+
+describe('The Controlbox, while Converse starts up', function () {
+    let shown_while_starting;
+
+    beforeEach(() => {
+        shown_while_starting = null;
+        // The start-up login waits for the credentials, so that the
+        // controlbox can be checked before it starts to connect.
+        vi.spyOn(XMLHttpRequest.prototype, 'send').mockImplementation(async function () {
+            const pane = await u.waitUntil(() => document.querySelector('converse-controlbox .controlbox-pane'));
+            shown_while_starting = {
+                spinner: !!pane.querySelector('converse-spinner'),
+                login_form: !!pane.querySelector('converse-login-form'),
+            };
+            Object.defineProperty(this, 'status', { value: 200 });
+            Object.defineProperty(this, 'responseText', {
+                value: JSON.stringify({ jid: 'romeo@montague.lit/orchard', password: 'secret' }),
+            });
+            this.onload();
+        });
+    });
+
+    afterEach(() => vi.restoreAllMocks());
+
+    it(
+        'shows a spinner rather than the login form',
+        mock.initConverse(
+            converse,
+            [],
+            { auto_login: false, view_mode: 'fullscreen', credentials_url: 'https://montague.lit/credentials' },
+            async function () {
+                expect(shown_while_starting).toEqual({ spinner: true, login_form: false });
+            },
+        ),
+    );
+});

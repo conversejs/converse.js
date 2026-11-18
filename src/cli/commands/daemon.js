@@ -88,7 +88,7 @@ async function printStatus(ctx, spawn) {
         ctx.out(formatJSON({ ...status, socket: ctx.socket_path }));
     } else {
         let state = 'disconnected';
-        if (status.connected) state = status.authenticated ? `connected as ${status.jid}` : 'logging in';
+        if (status.connected) state = status.authenticated === false ? 'logging in' : `connected as ${status.jid}`;
         ctx.out(`${state}, pid ${status.pid}, up ${formatDuration(status.uptime)}, on ${ctx.socket_path}\n`);
     }
     return EXIT.OK;

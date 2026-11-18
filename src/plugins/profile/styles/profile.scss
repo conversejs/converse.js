@@ -19,16 +19,24 @@ converse-user-profile {
     }
 
     .change-status {
-        min-width: 25px;
-        text-align: center;
+        display: flex;
+        min-width: 0;
+        white-space: nowrap;
+        > span {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
         converse-icon {
+            flex-shrink: 0;
             padding-inline-end: 0.5em;
         }
     }
 
     .userinfo {
         .xmpp-status__msg {
-            margin-inline-end: 0.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .username {

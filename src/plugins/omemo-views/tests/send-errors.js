@@ -69,14 +69,14 @@ describe('A failed encrypted send', function () {
             // Declining the confirmation sends nothing.
             spyOn(api, 'confirm').and.resolveTo(false);
             fail = false;
-            findButton(row, 'Send without encryption').click();
+            findButton(row, 'Send unencrypted').click();
             await u.waitUntil(() => api.confirm.calls.count() === 1);
             expect(sentBodies(_converse)).not.toContain('Keep this text');
             expect(failed.get('send_status')).toBe('failed');
 
             // Confirming sends the message in the clear, and it's no longer marked as failed.
             api.confirm.and.resolveTo(true);
-            findButton(row, 'Send without encryption').click();
+            findButton(row, 'Send unencrypted').click();
             await u.waitUntil(() => sentBodies(_converse).includes('Keep this text'));
             expect(failed.get('send_status')).toBeUndefined();
             expect(failed.get('is_encrypted')).toBe(false);

@@ -70,6 +70,7 @@ class ConnectionIndicator extends CustomElement {
             <converse-icon
                 class="fa ${state === 'offline' ? 'fa-times-circle' : 'fa-sync'}"
                 color="var(--subdued-color)"
+                css="margin-top: -0.1em"
                 size="0.82em"
             ></converse-icon>
             <span class="connection-indicator__label">${this.getLabel(state)}</span>

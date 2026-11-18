@@ -387,7 +387,67 @@
             }
 
             .chat-msg__send-pending {
+                display: flex;
+                flex-shrink: 0;
+                align-items: baseline;
+                gap: 0.75em;
+                margin-inline-start: 0.5em;
                 color: var(--subdued-color);
+                white-space: nowrap;
+
+                .chat-msg__send-pending-status {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.35em;
+
+                    // Centred on the line box, the icon sits below the middle of the capitals.
+                    converse-icon {
+                        position: relative;
+                        top: -0.1em;
+                    }
+                }
+            }
+
+            .chat-msg__send-failed {
+                display: flex;
+                flex-wrap: wrap;
+                flex-shrink: 0;
+                align-items: baseline;
+                gap: 0.25em 0.75em;
+                max-width: 60%;
+                margin-inline-start: 0.5em;
+
+                // The actions wrap together, rather than one by one.
+                .chat-msg__send-actions {
+                    display: flex;
+                    gap: 0.25em;
+                    white-space: nowrap;
+                    // Undoes the first action's padding, so that its text lines
+                    // up with the reason when the actions wrap below it.
+                    margin-inline-start: -0.45em;
+                }
+            }
+
+            // Retry, discard and the like, for a message that wasn't sent.
+            .chat-msg__send-action {
+                padding: 0.05em 0.45em;
+                border: 0;
+                border-radius: 0.3em;
+                background: none;
+                color: var(--link-color);
+                font: inherit;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background-color 0.15s ease-out;
+
+                &:hover {
+                    background-color: color-mix(in srgb, var(--link-color) 12%, transparent);
+                }
+
+                &:focus-visible {
+                    outline: 2px solid var(--link-color);
+                    outline-offset: 1px;
+                }
             }
 
             .chat-msg__receipt {

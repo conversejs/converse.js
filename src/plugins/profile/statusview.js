@@ -1,10 +1,16 @@
 import { _converse, api } from '@converse/headless';
 import { CustomElement } from 'shared/components/element.js';
+import { ConnectionStateController } from 'shared/connection-state.js';
 import tplProfile from './templates/profile.js';
 
 import './styles/profile.scss';
 
 class Profile extends CustomElement {
+    constructor() {
+        super();
+        this.connection_state = new ConnectionStateController(this);
+    }
+
     initialize() {
         this.model = _converse.state.profile;
         this.listenTo(this.model, 'change', () => this.requestUpdate());

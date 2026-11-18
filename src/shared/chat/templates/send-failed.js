@@ -10,24 +10,24 @@ import { getSendErrorMessages } from 'shared/chat/send-errors.js';
  */
 export default (el) => {
     const i18n_retry = __('Retry');
-    const i18n_send_unencrypted = __('Send without encryption');
+    const i18n_send_unencrypted = __('Send unencrypted');
     const i18n_discard = __('Discard');
     const [reason] = getSendErrorMessages(el.model.get('send_error_code'), { from: el.model.get('send_error_from') });
 
     return html`<div class="chat-msg__send-failed text-danger small">
         <span class="chat-msg__send-failed-reason">${reason}</span>
-        <button type="button" class="btn btn-sm btn-link p-0 ms-2" @click=${el.onRetrySendClicked}>
-            ${i18n_retry}
-        </button>
-        ${
-            el.model.get('send_can_send_unencrypted')
-                ? html`<button type="button" class="btn btn-sm btn-link p-0 ms-2" @click=${el.onSendUnencryptedClicked}>
-                      ${i18n_send_unencrypted}
-                  </button>`
-                : ''
-        }
-        <button type="button" class="btn btn-sm btn-link p-0 ms-2" @click=${el.onDiscardSendClicked}>
-            ${i18n_discard}
-        </button>
+        <span class="chat-msg__send-actions">
+            <button type="button" class="chat-msg__send-action" @click=${el.onRetrySendClicked}>${i18n_retry}</button>
+            ${
+                el.model.get('send_can_send_unencrypted')
+                    ? html`<button type="button" class="chat-msg__send-action" @click=${el.onSendUnencryptedClicked}>
+                          ${i18n_send_unencrypted}
+                      </button>`
+                    : ''
+            }
+            <button type="button" class="chat-msg__send-action" @click=${el.onDiscardSendClicked}>
+                ${i18n_discard}
+            </button>
+        </span>
     </div>`;
 };

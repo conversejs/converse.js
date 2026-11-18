@@ -15,8 +15,9 @@ describe('The connection indicator', function () {
             const reconnect = mock.dropConnection(_converse);
             await u.waitUntil(() => el.textContent.trim() === 'Offline');
             await u.waitUntil(() => live_region()?.textContent === 'Offline');
-            // The profile and its status stay where they are.
-            expect(document.querySelector('converse-user-profile .xmpp-status__msg')).not.toBeNull();
+            // It takes the place of our status, which nobody sees while we're offline.
+            expect(document.querySelector('converse-user-profile .xmpp-status__msg')).toBeNull();
+            expect(el.closest('converse-user-profile .change-status')).not.toBeNull();
 
             const connection = _converse.api.connection.get();
             connection.onConnectStatusChanged(Strophe.Status.CONNECTING);
@@ -26,6 +27,8 @@ describe('The connection indicator', function () {
             await reconnect();
             await u.waitUntil(() => el.textContent.trim() === '');
             await u.waitUntil(() => live_region().textContent === 'Connected');
+            const msg = document.querySelector('converse-user-profile .xmpp-status__msg');
+            expect(msg.textContent).toBe('I am online');
         }),
     );
 

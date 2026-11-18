@@ -154,6 +154,15 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
+     * Whether the MUC was loaded from the cache while offline, after we had
+     * been in it. It can then be used as it was, until it's entered again.
+     * @returns {boolean}
+     */
+    isEnteredOffline() {
+        return this.session?.get('connection_status') === ROOMSTATUS.OFFLINE && !!this.session.get('was_entered');
+    }
+
+    /**
      * A MUC only takes messages from its occupants, so it has to be entered again first.
      */
     canSendPendingMessages() {
@@ -1220,7 +1229,9 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     canPostMessages() {
-        return this.isEntered() && !(this.features.get('moderated') && this.getOwnRole() === 'visitor');
+        // What's written offline is sent once the MUC is entered again.
+        const entered = this.isEntered() || this.isEnteredOffline();
+        return entered && !(this.features.get('moderated') && this.getOwnRole() === 'visitor');
     }
 
     /**

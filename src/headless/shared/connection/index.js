@@ -494,6 +494,11 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         // there are none left to log in with, so it ends as if the user had
         // logged out, and isn't resumed on the next start-up.
         const ends = this.remembered && this.disconnection_cause === Strophe.Status.AUTHFAIL;
+        const reason = this.#credentials_rejected
+            ? _converse.__(
+                  'Your session has ended, because your saved login is no longer accepted. Please log in again.',
+              )
+            : this.disconnection_reason;
         api.connection.destroy();
 
         /**
@@ -503,7 +508,7 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
          * @example _converse.api.listen.on('disconnected', () => { ... });
          */
         api.trigger('disconnected');
-        if (ends) await endSession(_converse);
+        if (ends) await endSession(_converse, { reason });
     }
 
     /**

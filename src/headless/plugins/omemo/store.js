@@ -409,6 +409,8 @@ class OMEMOStore extends Model {
         // The IdentityKey is a Curve25519 public/private Key pair.
         const identity_keypair = await KeyHelper.generateIdentityKeyPair();
         const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey);
+        // Key generation is slow; the session may have ended meanwhile.
+        if (this.#isDiscarded()) return;
 
         // The Device ID is a randomly generated integer between 1 and 2^31 - 1.
         const device_id = await generateDeviceID();
@@ -441,10 +443,19 @@ class OMEMOStore extends Model {
             signature: u.arrayBufferToBase64(signed_prekey.signature),
         };
 
+        if (this.#isDiscarded()) return;
+
         const bare_jid = _converse.session.get('bare_jid');
         const devicelist = await api.omemo.devicelists.get(bare_jid);
         const device = await devicelist.devices.create({ id: bundle.device_id, 'jid': bare_jid }, { promise: true });
         device.save('bundle', bundle);
+    }
+
+    /**
+     * @returns {boolean} Whether `clearSession` has dropped this store.
+     */
+    #isDiscarded() {
+        return _converse.state.omemo_store !== this;
     }
 
     /**

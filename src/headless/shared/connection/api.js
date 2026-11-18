@@ -112,6 +112,19 @@ export default {
     },
 
     /**
+     * Whether a session is open: one that has logged in, or that was resumed
+     * from the cache, and that hasn't ended. It stays open through dropped
+     * connections, so a front end keeps showing it while offline.
+     *
+     * @method api.connection.hasSession
+     * @memberOf api.connection
+     * @returns {boolean}
+     */
+    hasSession() {
+        return !!(connection?.authenticated || connection?.has_connected || connection?.resumed_jid);
+    },
+
+    /**
      * Terminates the connection.
      *
      * @method api.connection.disconnect

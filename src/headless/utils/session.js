@@ -121,14 +121,19 @@ export function clearSession(_converse) {
  * @param {import('../shared/_converse.js').ConversePrivateGlobal} _converse
  * @param {object} [options]
  * @param {boolean} [options.remember=false] - Whether to keep remembering the session.
+ * @param {string} [options.reason] - Why the session ended, when the user didn't end it.
  */
-export async function endSession(_converse, { remember = false } = {}) {
+export async function endSession(_converse, { remember = false, reason } = {}) {
     Object.keys(_converse.promises).forEach((p) => replacePromise(_converse, p));
     // Otherwise the next start would resume it. See #2759
     if (!remember) await forgetSession();
     /**
-     * Triggered once the user has logged out.
+     * Triggered once the session has ended, because the user logged out or
+     * because it can't log in any more.
      * @event _converse#logout
+     * @param {object} data
+     * @param {string} [data.reason] - Why the session ended, for the user to
+     *  read, when the user didn't end it.
      */
-    _converse.api.trigger('logout');
+    _converse.api.trigger('logout', { reason });
 }

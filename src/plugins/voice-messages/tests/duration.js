@@ -31,6 +31,17 @@ async function advance(ms) {
     await vi.advanceTimersByTimeAsync(ms);
 }
 
+/**
+ * Sees the upload of a stopped recording through. Left to itself it carries on
+ * after the test, and its slot request then lands in the next one.
+ */
+async function finishUpload(_converse, view) {
+    vi.useRealTimers();
+    fakeUploads(201);
+    await answerSlotRequest(_converse);
+    await u.waitUntil(() => view.querySelector('.chat-content converse-audio-player'));
+}
+
 function shown(view, selector) {
     return view.querySelector(`converse-audio-recorder ${selector}`)?.textContent.trim();
 }
@@ -65,6 +76,7 @@ describe('The voice message recorder', function () {
             view.querySelector('converse-audio-recorder .btn-stop').click();
             await advance(0);
             expect(view.querySelector('converse-audio-recorder .audio-recorder--uploading')).not.toBe(null);
+            await finishUpload(_converse, view);
         }),
     );
 
@@ -91,11 +103,7 @@ describe('The voice message recorder', function () {
 
                 await advance(29000);
                 expect(media.recorder.state).toBe('inactive');
-                vi.useRealTimers();
-
-                fakeUploads(201);
-                await answerSlotRequest(_converse);
-                await u.waitUntil(() => view.querySelector('.chat-content converse-audio-player'));
+                await finishUpload(_converse, view);
                 await u.waitUntil(() => !view.querySelector('converse-audio-recorder .audio-recorder'));
                 expect(media.tracks.every((t) => t.stopped)).toBe(true);
             },
@@ -134,6 +142,7 @@ describe('The voice message recorder', function () {
                 expect(shown(view, '.recording-remaining')).toBe('0:30 left');
                 await advance(30000);
                 expect(media.recorder.state).toBe('inactive');
+                await finishUpload(_converse, view);
             },
         ),
     );
@@ -154,6 +163,7 @@ describe('The voice message recorder', function () {
                 expect(media.recorder.state).toBe('recording');
                 await advance(1000);
                 expect(media.recorder.state).toBe('inactive');
+                await finishUpload(_converse, view);
             },
         ),
     );
@@ -173,6 +183,7 @@ describe('The voice message recorder', function () {
             expect(shown(view, '.recording-remaining')).toBe('0:01 left');
             await advance(1000);
             expect(media.recorder.state).toBe('inactive');
+            await finishUpload(_converse, view);
         }),
     );
 

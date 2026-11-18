@@ -64,7 +64,7 @@ describe('The Registration Form', function () {
                 const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
                 await u.waitUntil(() => u.isVisible(cbview));
 
-                cbview.querySelector('.toggle-register-login').click();
+                (await u.waitUntil(() => cbview.querySelector('.toggle-register-login'))).click();
 
                 const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
                 spyOn(registerview, 'onProviderChosen').and.callThrough();
@@ -106,7 +106,7 @@ describe('The Registration Form', function () {
                 const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
                 await u.waitUntil(() => u.isVisible(cbview));
 
-                cbview.querySelector('.toggle-register-login').click();
+                (await u.waitUntil(() => cbview.querySelector('.toggle-register-login'))).click();
 
                 const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
                 spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
@@ -140,7 +140,7 @@ describe('The Registration Form', function () {
                 const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
                 await u.waitUntil(() => u.isVisible(cbview));
 
-                cbview.querySelector('.toggle-register-login').click();
+                (await u.waitUntil(() => cbview.querySelector('.toggle-register-login'))).click();
 
                 const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
                 spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
@@ -183,7 +183,7 @@ describe('The Registration Form', function () {
             },
             async function (_converse) {
                 const cbview = await u.waitUntil(() => _converse.api.controlbox.get());
-                cbview.querySelector('.toggle-register-login').click();
+                (await u.waitUntil(() => cbview.querySelector('.toggle-register-login'))).click();
 
                 const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
                 spyOn(registerview, 'fetchRegistrationForm').and.callThrough();
@@ -520,7 +520,7 @@ describe('The Registration Form', function () {
                     toggle.click();
                 }
                 const cbview = _converse.chatboxviews.get('controlbox');
-                cbview.querySelector('.toggle-register-login').click();
+                (await u.waitUntil(() => cbview.querySelector('.toggle-register-login'))).click();
                 const registerview = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
 
                 registerview.querySelector('input[name=domain]').value = 'conversejs.org';
@@ -591,7 +591,7 @@ describe('The Registration Form', function () {
                     toggle.click();
                 }
                 const cbview = _converse.chatboxviews.get('controlbox');
-                cbview.querySelector('.toggle-register-login').click();
+                (await u.waitUntil(() => cbview.querySelector('.toggle-register-login'))).click();
                 const view = await u.waitUntil(() => cbview.querySelector('converse-registration-form'));
 
                 view.querySelector('input[name=domain]').value = 'conversejs.org';

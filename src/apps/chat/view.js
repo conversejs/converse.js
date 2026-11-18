@@ -36,6 +36,10 @@ class ChatApp extends CustomElement {
     initialize() {
         this.model = _converse.state.chatboxes;
 
+        // The template sets the controlbox's `logged-out` class, which is
+        // only known once start-up is done.
+        api.waitUntil('initialized').then(() => this.requestUpdate());
+
         const onBoxesChanged = () => {
             this.requestUpdate();
             this.scheduleForegroundReflect();

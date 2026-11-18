@@ -3,10 +3,11 @@ import { _converse, api, constants, u } from '@converse/headless';
 import tplSpinner from 'templates/spinner.js';
 import { CONNECTION_STATUS_CSS_CLASS } from '../constants.js';
 import { __ } from 'i18n';
+import { isLoggingIn } from 'shared/connection-state.js';
 import 'shared/components/brand-heading.js';
 import 'shared/components/footer.js';
 
-const { ANONYMOUS, EXTERNAL, LOGIN, PREBIND, CONNECTION_STATUS } = constants;
+const { ANONYMOUS, EXTERNAL, LOGIN, PREBIND } = constants;
 
 /**
  * @param {boolean} checked
@@ -145,10 +146,6 @@ export default (el) => {
         >
             <span class="feedback-message">${conn_feedback_message}</span>
         </div>
-        ${
-            ['CONNECTED', 'CONNECTING', 'AUTHENTICATING', 'RECONNECTING'].includes(CONNECTION_STATUS[connection_status])
-                ? html`<div class="text-center my-3">${tplSpinner()}</div>`
-                : tplFormFields()
-        }
+        ${isLoggingIn() ? html`<div class="text-center my-3">${tplSpinner()}</div>` : tplFormFields()}
     </form>`;
 };

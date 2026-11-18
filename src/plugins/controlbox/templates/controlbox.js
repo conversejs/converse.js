@@ -1,18 +1,14 @@
 import { html, nothing } from 'lit';
-import { _converse, api, converse } from '@converse/headless';
+import { api } from '@converse/headless';
 import { getChatStyle } from 'shared/chat/utils.js';
-
-const { Strophe } = converse.env;
+import { isLoggingIn } from 'shared/connection-state.js';
 
 /**
  * @param {import('../controlbox').default} el
  */
 function whenNotConnected(el) {
     const is_fullscreen = api.settings.get('view_mode') === 'fullscreen';
-    const connection_status = _converse.state.connfeedback.get('connection_status');
-    const connecting = [Strophe.Status.RECONNECTING, Strophe.Status.CONNECTING, Strophe.Status.CONNECTED].includes(
-        connection_status,
-    );
+    const connecting = isLoggingIn();
     const view_mode = api.settings.get('view_mode');
     const show_bg = api.settings.get('show_background');
 

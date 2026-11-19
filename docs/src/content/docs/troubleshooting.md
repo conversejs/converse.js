@@ -28,7 +28,7 @@ XMPP doesn't use HTTP cookies, so browsers can't automatically maintain sessions
 - Consider using [Converse Desktop](https://github.com/conversejs/converse-desktop) which securely stores credentials.
 
 **For integrators:**
-- Use the [`credentials_url`](/docs/configuration/#credentials_url) setting to fetch credentials from your backend automatically
+- Supply credentials from your backend with a plugin (see [credential sources](/docs/development/plugin-development/#credential-sources))
 - Implement [Session Management](/docs/session/) to auto-login users already authenticated on your site
 
 ## File upload not working

@@ -9,6 +9,24 @@ export type PluginUtils = Record<PluginUtilsKeys, CommonUtils>;
 export type Credentials = {
     jid: string;
     password: string;
+    renewable?: boolean; // Set by a source whose credentials can be replaced if the server rejects them
+};
+
+// The payload of the `beforeAttemptNonPreboundSession` hook, through which
+// credential sources supply the credentials to log in with.
+export type CredentialsHookPayload = {
+    credentials?: Credentials | null; // Passed in, or supplied by an earlier listener
+    automatic?: boolean; // Whether Converse logs in by itself, for example at start-up
+};
+
+// The payload of the `unattendedLogin` hook, which asks whether the
+// remembered account can log in again without the user.
+export type UnattendedLoginPayload = {
+    jid: string; // The remembered account's bare JID
+    named: boolean; // Whether the start-up named that account, through the `jid` setting or the login API
+    can_log_in: boolean; // Set if Converse or a credential source can log the account in
+    veto: boolean; // Set if the session must not be resumed, whoever can log it in
+    credentials?: Credentials | null; // Credentials a listener obtained while answering, to log in with
 };
 
 export type ProcessStringOptions = {

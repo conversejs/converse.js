@@ -82,7 +82,9 @@ export { api, converse, _converse, i18n, log, u, constants, parsers, errors };
  * @typedef {import('./shared/types').MessageAttributes} MessageAttributes
  * @typedef {import('./shared/types').MessageEventData} MessageEventData
  * @typedef {import('./shared/types').XFormField} XFormField
+ * @typedef {import('./utils/types').CredentialsHookPayload} CredentialsHookPayload
  * @typedef {import('./utils/types').MediaURLMetadata} MediaURLMetadata
+ * @typedef {import('./utils/types').UnattendedLoginPayload} UnattendedLoginPayload
  * @typedef {import('./plugins/adhoc/types').AdHocCommand} AdHocCommand
  * @typedef {import('./plugins/adhoc/types').AdHocCommandAction} AdHocCommandAction
  * @typedef {import('./plugins/adhoc/types').AdHocCommandNoteType} AdHocCommandNoteType

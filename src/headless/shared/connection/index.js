@@ -77,6 +77,10 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         // on a trusted device. It's kept through dropped connections,
         // retrying for as long as it's remembered.
         this.remembered = false;
+        // Whether the source of the credentials can renew them if the server
+        // rejects them, so that logging in is tried again. Set on each attempt
+        // to connect (see the `beforeAttemptNonPreboundSession` hook).
+        this.renewable_credentials = false;
     }
 
     /**
@@ -365,6 +369,8 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
 
         log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
         this.reconnecting = true;
+        // A rejection is about the attempt that failed, not this one.
+        this.#credentials_rejected = false;
         if (this.has_connected) this.resumed_jid = null;
         await tearDown(_converse);
         if (this.#finished) return;
@@ -561,9 +567,9 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         const { api } = _converse;
         if (api.settings.get('auto_reconnect')) {
             if (this.disconnection_cause === Strophe.Status.AUTHFAIL) {
-                if (api.settings.get('credentials_url') || api.settings.get('authentication') === ANONYMOUS) {
-                    // If `credentials_url` is set, we reconnect, because we might
-                    // be receiving expirable tokens from the credentials_url.
+                if (this.renewable_credentials || api.settings.get('authentication') === ANONYMOUS) {
+                    // If the credentials can be renewed, for example expirable
+                    // tokens from a plugin, we reconnect with new ones.
                     //
                     // If `authentication` is anonymous, we reconnect because we
                     // might have tried to attach with stale BOSH session tokens

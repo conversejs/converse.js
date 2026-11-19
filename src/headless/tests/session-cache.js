@@ -95,6 +95,30 @@ function countEvents(spy, name) {
     return spy.mock.calls.filter(([n]) => n === name).length;
 }
 
+// Credential sources of an integrator's own, only used where whitelisted, so
+// that they survive initializing again.
+
+// A source whose website decides the account, which is only known to be the
+// remembered one if the start-up named it.
+converse.plugins.add('test-website-decides-account', {
+    initialize() {
+        this._converse.api.listen.on('unattendedLogin', (_context, payload) =>
+            payload.named ? payload : { ...payload, veto: true },
+        );
+    },
+});
+
+// A source that vouches for the account with a token it can renew.
+converse.plugins.add('test-renewable-token', {
+    initialize() {
+        this._converse.api.listen.on('unattendedLogin', (_context, payload) => ({
+            ...payload,
+            can_log_in: true,
+            credentials: { jid: payload.jid, password: 'token', renewable: true },
+        }));
+    },
+});
+
 describe('A remembered session', function () {
     it(
         'is loaded from the cache on a page load without a network, and connects in the background',
@@ -331,31 +355,37 @@ describe('A remembered session', function () {
     );
 
     it(
-        'is only loaded with a `credentials_url` if it is started for its account',
+        'is only loaded if no credential source vetoes it',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
             const { api } = _converse;
             await runFirstSession(_converse);
 
-            // A listener would be removed by initializing again.
-            const hook = api.hook;
-            vi.spyOn(api, 'hook').mockImplementation(async (name, context, xhr) => {
-                if (name !== 'beforeFetchLoginCredentials') return hook(name, context, xhr);
-
-                return {
-                    status: 200,
-                    responseText: JSON.stringify({ jid: 'romeo@montague.lit', password: 'secret' }),
-                    send: () => xhr.onload(),
-                };
-            });
             const trigger = vi.spyOn(api, 'trigger');
-            const settings = { credentials_url: 'https://montague.lit/credentials', password: undefined };
+            const whitelisted_plugins = ['test-website-decides-account'];
 
-            // The URL could return another account than the remembered one.
-            await reloadOffline(_converse, settings);
+            // Even though Converse holds a password for the account.
+            await reloadOffline(_converse, { whitelisted_plugins });
             expect(countEvents(trigger, 'loadSessionCache')).toBe(0);
 
-            await reloadOffline(_converse, { ...settings, jid: 'romeo@montague.lit' });
+            await reloadOffline(_converse, { whitelisted_plugins, jid: 'romeo@montague.lit' });
             expect(countEvents(trigger, 'loadSessionCache')).toBe(1);
+        }),
+    );
+
+    it(
+        'logs in again with renewable credentials that a source vouched with, once they are rejected',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+            const { api } = _converse;
+            await runFirstSession(_converse);
+
+            await reloadOffline(_converse, { password: undefined, whitelisted_plugins: ['test-renewable-token'] });
+
+            const connection = api.connection.get();
+            const reconnect = vi.spyOn(connection, 'requestReconnect').mockImplementation(() => {});
+            // Rejected by the server, so a remembered session would otherwise end.
+            connection.onConnectStatusChanged(Strophe.Status.AUTHFAIL, undefined, saslFailure('not-authorized'));
+
+            expect(reconnect).toHaveBeenCalledOnce();
         }),
     );
 
@@ -559,7 +589,7 @@ describe('A resumed session', function () {
             await runFirstSession(_converse);
             const roster = state.roster;
 
-            // For example, `credentials_url` returns another account after
+            // For example, a plugin's token is for another account after
             // another user logged into the hosting site.
             const juliet = 'juliet@montague.lit';
             // A listener would be removed by initializing again.
@@ -874,7 +904,7 @@ describe('Retrying the connection now (api.connection.retry)', function () {
             // As before the first attempt
             connection.status = undefined;
 
-            // For example, it waits for credentials from the `credentials_url`.
+            // For example, it waits for credentials from the hosting website.
             let proceed;
             const waiting = new Promise((resolve) => (proceed = resolve));
             api.listen.on('login', async (_context, payload) => {

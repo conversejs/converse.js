@@ -34,9 +34,10 @@ const api = {
         /**
          * Logs the user in.
          *
-         * If called without any parameters, Converse will try
-         * to log the user in by calling the `prebind_url` or `credentials_url` depending
-         * on whether prebinding is used or not.
+         * If called without any parameters, Converse will try to log the
+         * user in with credentials from a plugin (see the
+         * `beforeAttemptNonPreboundSession` hook), or by calling the
+         * `prebind_url` if prebinding is used.
          *
          * @method _converse.api.user.login
          * @param { string } [jid]
@@ -67,9 +68,14 @@ const api = {
                 }
                 // Only a start-up resumes a session. A login from the form is
                 // checked by the server before anything is loaded.
+                let credentials = null;
                 if (automatic) {
                     const resumed = await resumeSession(jid, password);
-                    if (resumed?.credentials) ({ jid, password } = resumed.credentials);
+                    if (resumed?.credentials) {
+                        // Kept whole, so that they stay renewable if their source said so.
+                        credentials = resumed.credentials;
+                        ({ jid, password } = credentials);
+                    }
                 }
 
                 /**
@@ -98,7 +104,7 @@ const api = {
                 if (success) return;
 
                 password = password || api.settings.get('password');
-                const credentials = jid && password ? { jid, password } : null;
+                if (!credentials && jid && password) credentials = { jid, password };
                 await attemptNonPreboundSession(credentials, automatic);
             });
         },

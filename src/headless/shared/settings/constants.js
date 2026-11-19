@@ -12,7 +12,6 @@
  * @property {Array<String>} [blacklisted_plugins]
  * @property {Boolean} [clear_cache_on_logout=false]
  * @property {Object} [connection_options]
- * @property {String} [credentials_url] - URL from where login credentials can be fetched
  * @property {Boolean} [discover_connection_methods=true]
  * @property {RegExp} [geouri_regex]
  * @property {RegExp} [geouri_replacement='https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2']
@@ -47,7 +46,6 @@ export const DEFAULT_SETTINGS = {
     blacklisted_plugins: [],
     clear_cache_on_logout: false,
     connection_options: {},
-    credentials_url: null, // URL from where login credentials can be fetched
     disable_effects: false, // Disabled UI transition effects. Mainly used for tests.
     discover_connection_methods: true,
     embed_3rd_party_media_players: true,
@@ -116,4 +114,14 @@ export const DEFAULT_SETTINGS = {
     view_mode: 'fullscreen',
     websocket_url: undefined,
     whitelisted_plugins: [],
+};
+
+/**
+ * Settings that have been removed, with what to use instead, so that Converse
+ * can say so rather than silently ignore them.
+ * @type {Record<string, string>}
+ */
+export const REMOVED_SETTINGS = {
+    credentials_url:
+        'Supply the credentials from a plugin instead, see https://conversejs.org/docs/development/plugin-development/#credential-sources',
 };

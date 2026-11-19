@@ -5,7 +5,7 @@ import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { api, converse, log, u } from '@converse/headless';
 
-const { Strophe, stx, sizzle } = converse.env;
+const { sizzle } = converse.env;
 const { getAttributes } = u;
 
 /**
@@ -149,14 +149,8 @@ class MUCListModal extends BaseModal {
      * @method _converse.ChatRoomView#updateRoomsList
      */
     updateRoomsList() {
-        const iq = stx`
-            <iq to="${this.model.get('muc_domain')}"
-                from="${api.connection.get().jid}"
-                type="get"
-                xmlns="jabber:client">
-                <query xmlns="${Strophe.NS.DISCO_ITEMS}"></query>
-            </iq>`;
-        api.sendIQ(iq)
+        api.disco
+            .items(this.model.get('muc_domain'))
             .then(/** @param {Element} iq */ (iq) => this.onRoomsFound(iq))
             .catch(() => this.onRoomsFound());
     }

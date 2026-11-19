@@ -9,6 +9,7 @@
 - feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
 - feat: `api.promises.renew()` makes a new promise unless one is pending.
 - feat: `api.user.login()` takes `{ automatic: true }` instead of a boolean.
+- fix: Credentials that a plugin supplies log in to the account they name.
 - fix: `api.send` and `api.sendIQ` refuse to send before login has finished.
 - feat: Messages, edits and retractions made while offline are sent once online.
 - feat: `api.send` returns whether a message or presence was sent.

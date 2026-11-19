@@ -2,6 +2,7 @@
 
 ## 15.0.0 (Unreleased)
 
+- fix: No password reset tab for logins without a password (e.g. anonymous).
 - feat(chatview): The panels above the message form are consolidated into one component. Plugins can add a panel through the new `getComposerPanels` hook.
 - feat(chatview): The toolbar's file upload and location buttons are replaced by one paperclip, the
   attachment button, which opens an attachment menu listing what can be attached in that chat.

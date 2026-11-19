@@ -1,6 +1,5 @@
 import { BrowserStorage, Model } from '@converse/skeletor';
 import _converse from '../shared/_converse.js';
-import debounce from 'lodash-es/debounce.js';
 import log from '@converse/log';
 import { ANONYMOUS, CORE_PLUGINS, EXTERNAL, LOGIN } from '../shared/constants.js';
 import { Strophe } from 'strophe.js';
@@ -8,7 +7,7 @@ import { createStore, initStorage } from './storage.js';
 import { local_driver, sync_driver } from './extension-storage.js';
 import { getNodeStore } from './node-store.js';
 import { generateResource, getConnectionServiceURL } from '../shared/connection/utils.js';
-import { isValidJID } from './jid.js';
+import { isSameBareJID, isValidJID } from './jid.js';
 import { addUnloadListener, hasCredentialsAPI, IS_BROWSER } from './environment.js';
 import { getRememberedSession } from './remembered-session.js';
 import { isResumable, isTestEnv } from './session.js';
@@ -298,64 +297,6 @@ export async function cleanup(_converse) {
     }
 }
 
-/**
- * Fetches login credentials from the server.
- * @param {number} [wait=0]
- *  The time to wait and debounce subsequent calls to this function before making the request.
- * @returns {Promise<import('./types').Credentials>}
- *  A promise that resolves with the provided login credentials (JID and password).
- * @throws {Error} If the request fails or returns an error status.
- */
-function fetchLoginCredentials(wait = 0) {
-    return new Promise(
-        debounce(async (resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            xhr.open('GET', _converse.api.settings.get('credentials_url'), true);
-            xhr.setRequestHeader('Accept', 'application/json, text/javascript');
-            xhr.onload = () => {
-                if (xhr.status >= 200 && xhr.status < 400) {
-                    const data = JSON.parse(xhr.responseText);
-                    setUserJID(data.jid).then(() => {
-                        resolve({
-                            jid: data.jid,
-                            password: data.password,
-                        });
-                    });
-                } else {
-                    reject(new Error(`${xhr.status}: ${xhr.responseText}`));
-                }
-            };
-            xhr.onerror = reject;
-            /**
-             * *Hook* which allows modifying the server request
-             * @event _converse#beforeFetchLoginCredentials
-             */
-            xhr = await _converse.api.hook('beforeFetchLoginCredentials', this, xhr);
-            xhr.send();
-        }, wait),
-    );
-}
-
-/**
- * @returns {Promise<import('./types').Credentials>}
- */
-async function getLoginCredentialsFromURL() {
-    let credentials;
-    let wait = 0;
-    while (!credentials) {
-        try {
-            credentials = await fetchLoginCredentials(wait); // eslint-disable-line no-await-in-loop
-        } catch (e) {
-            log.error('Could not fetch login credentials');
-            log.error(e);
-        }
-        // If unsuccessful, we wait 2 seconds between subsequent attempts to
-        // fetch the credentials.
-        wait = 2000;
-    }
-    return credentials;
-}
-
 async function getLoginCredentialsFromBrowser() {
     const jid = await getRememberedSession();
     if (!jid) return null;
@@ -387,15 +328,15 @@ async function getLoginCredentialsFromSCRAMKeys() {
 }
 
 /**
- * Whether the session can connect again without asking the user anything,
- * other than with a password from the browser's credential store.
+ * Whether the account can log in again with credentials that Converse holds
+ * itself: a password passed in or set, or stored SCRAM keys.
  * @param {string} jid
  * @param {string} [password]
  * @returns {Promise<boolean>}
  */
-async function canLogInUnattended(jid, password) {
+async function canLogInWithOwnCredentials(jid, password) {
     const { api } = _converse;
-    if (password || api.settings.get('password') || api.settings.get('credentials_url')) return true;
+    if (password || api.settings.get('password')) return true;
     return !!(api.settings.get('reuse_scram_keys') && (await savedLoginInfo(jid)).get('scram_keys'));
 }
 
@@ -443,14 +384,30 @@ export async function resumeSession(jid, password) {
     if (jid && Strophe.getBareJidFromJid(jid).toLowerCase() !== remembered) return null;
     if (!isResumable(_converse)) return null;
 
-    // The URL decides which account logs in, which is only known to be the
-    // remembered one if the session is started for that account.
-    if (api.settings.get('credentials_url') && !jid) return null;
-
-    let credentials = null;
-    if (!(await canLogInUnattended(remembered, password))) {
-        // Asked now, rather than when connecting, so that a session is only
-        // resumed if it can log in again.
+    // Asked now, rather than when connecting, so that a session is only
+    // resumed if it can log in again.
+    /**
+     * *Hook* which asks whether the remembered account can log in again
+     * without the user, so that its session can be resumed from the cache.
+     *
+     * Core sets `can_log_in` beforehand if it holds credentials itself. A
+     * credential source sets `can_log_in` if it can supply credentials for
+     * the account without the user, optionally with those credentials, and
+     * sets `veto` if the session must not be resumed. Listeners only ever
+     * set these flags, never clear them.
+     * @event _converse#unattendedLogin
+     * @param {null} context
+     * @param {import('./types').UnattendedLoginPayload} payload
+     */
+    let { can_log_in, veto, credentials } = await api.hook('unattendedLogin', null, {
+        jid: remembered,
+        named: !!jid,
+        can_log_in: await canLogInWithOwnCredentials(remembered, password),
+        veto: false,
+        credentials: null,
+    });
+    if (veto) return null;
+    if (!can_log_in) {
         credentials = await getUnattendedBrowserCredentials(remembered);
         if (!credentials) return null;
     }
@@ -482,14 +439,24 @@ export async function resumeSession(jid, password) {
 export async function attemptNonPreboundSession(credentials, automatic) {
     const { api } = _converse;
     /**
-     * *Hook* to allow 3rd party plugins to provide their own login credentials.
+     * *Hook* through which credential sources supply the credentials to log
+     * in with. The payload's `credentials` are those passed in, if any. A
+     * source that supplies credentials returns them in `credentials`, and
+     * sets `renewable` if they can be replaced when the server rejects them,
+     * so that Converse then tries again.
+     *
+     * Plugins are asked in the order they registered their listeners. If no
+     * listener supplies credentials, Converse uses the password of an earlier
+     * attempt, then stored SCRAM keys, then the browser's credential store.
      * @event _converse#beforeAttemptNonPreboundSession
+     * @param {unknown} context
+     * @param {import('./types').CredentialsHookPayload} payload
      */
-    const { credentials: new_creds } = await api.hook('beforeAttemptNonPreboundSession', this, {
+    const { credentials: new_creds, renewable } = await api.hook('beforeAttemptNonPreboundSession', this, {
         credentials,
         automatic,
     });
-    if (new_creds) return connect(new_creds);
+    if (new_creds) return connect(new_creds, renewable);
 
     if (api.settings.get('authentication') === LOGIN) {
         const jid = _converse.session.get('jid');
@@ -499,13 +466,7 @@ export async function attemptNonPreboundSession(credentials, automatic) {
         // restoring a previous session (``keepalive``) or whether we're
         // automatically setting up a new session (``auto_login``).
         // So we can't do the check (!automatic || _converse.api.settings.get("auto_login")) here.
-        if (credentials) {
-            return connect(credentials);
-        } else if (api.settings.get('credentials_url')) {
-            // We give credentials_url preference, because
-            // connection.pass might be an expired token.
-            return connect(await getLoginCredentialsFromURL());
-        } else if (jid && (api.settings.get('password') || api.connection.get().pass)) {
+        if (jid && (api.settings.get('password') || api.connection.get()?.pass)) {
             return connect();
         }
 
@@ -577,14 +538,18 @@ export async function savedLoginInfo(jid) {
  * @param {string} credentials.password
  * @param {Object} credentials.password
  * @param {string} credentials.password.ck
+ * @param {boolean} [renewable=false] - Whether the source of the credentials
+ *  can renew them if the server rejects them.
  * @returns {Promise<void>}
  */
-async function connect(credentials) {
+async function connect(credentials, renewable = false) {
     const { api } = _converse;
-    const jid = _converse.session.get('jid');
+    let jid = _converse.session.get('jid');
     const connection = api.connection.get();
     // Fetching the credentials can outlast the connection, for example if the user logs out.
     if (!connection) return;
+
+    connection.renewable_credentials = renewable;
 
     const login_jid = credentials?.jid ?? jid;
     if (
@@ -593,12 +558,26 @@ async function connect(credentials) {
         Strophe.getBareJidFromJid(login_jid).toLowerCase() !== connection.resumed_jid
     ) {
         // The credentials are for another account than the session resumed
-        // from the cache, for example from `credentials_url` after another
-        // user logged into the hosting site. That session ends first, as if
+        // from the cache, for example a plugin's token after another user
+        // logged into the hosting site. That session ends first, as if
         // logged out, and the other account logs in afresh.
         const password = credentials?.password ?? (connection.pass || api.settings.get('password'));
         await api.user.logout();
         return api.user.login(login_jid, password);
+    }
+
+    if (connection.has_connected && jid && login_jid && !isSameBareJID(login_jid, jid)) {
+        // A session that has logged in stays with its account. Switching it
+        // would keep the other account's state, so it ends instead.
+        log.warn(`connect: the credentials are for ${login_jid}, not ${jid}, so the session ends`);
+        connection.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
+        return connection.finishDisconnection();
+    }
+
+    if (login_jid && !(jid && isSameBareJID(login_jid, jid))) {
+        // Credentials supplied by a plugin, for an account that the session isn't for yet.
+        await setUserJID(login_jid);
+        jid = _converse.session.get('jid');
     }
 
     if ([ANONYMOUS, EXTERNAL].includes(api.settings.get('authentication'))) {

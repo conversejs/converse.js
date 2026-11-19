@@ -34,9 +34,10 @@ const api = {
         /**
          * Logs the user in.
          *
-         * If called without any parameters, Converse will try
-         * to log the user in by calling the `prebind_url` or `credentials_url` depending
-         * on whether prebinding is used or not.
+         * If called without any parameters, Converse will try to log the
+         * user in with credentials from a plugin (see the
+         * `beforeAttemptNonPreboundSession` hook), or by calling the
+         * `prebind_url` if prebinding is used.
          *
          * @method _converse.api.user.login
          * @param { string } [jid]

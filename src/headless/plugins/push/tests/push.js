@@ -1,5 +1,5 @@
-import mock from '../../../shared/tests/mock.js';
-import converse from '../../../../dist/converse.js';
+import mock from '../../../tests/mock.js';
+import converse from '../../../dist/converse-headless.js';
 
 const { stx, sizzle, u, Strophe } = converse.env;
 const original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;

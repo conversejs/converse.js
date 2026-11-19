@@ -329,6 +329,9 @@ function roomAttrs(passwords, jid, nick) {
  * @param {ReturnType<typeof createJoins>} joining
  */
 export async function rejoinRooms(store, passwords, joining) {
+    // On a first start, the login hasn't connected yet, and looking a room up
+    // before the conversations are loaded is refused rather than waited for.
+    await api.waitUntil('chatBoxesFetched');
     await Promise.all(
         store.list().map(async ({ jid, nick }) => {
             try {

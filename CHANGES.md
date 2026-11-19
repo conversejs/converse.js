@@ -2,6 +2,7 @@
 
 ## 15.0.0 (Unreleased)
 
+- The `converse-push` plugin (XEP-0357) is now part of `@converse/headless`.
 - fix: No password reset tab for logins without a password (e.g. anonymous).
 - feat(chatview): The panels above the message form are consolidated into one component. Plugins can add a panel through the new `getComposerPanels` hook.
 - feat(chatview): The toolbar's file upload and location buttons are replaced by one paperclip, the

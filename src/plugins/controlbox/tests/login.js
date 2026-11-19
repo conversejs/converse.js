@@ -4,6 +4,24 @@ import converse from '../../../../dist/converse.js';
 
 const u = converse.env.utils;
 
+/** What the controlbox shows while the start-up login waits for credentials. */
+let shown_while_starting;
+
+// A credential source of the integrator's own, only used where whitelisted.
+// It checks the controlbox before handing over the credentials.
+converse.plugins.add('test-waiting-credentials', {
+    initialize() {
+        this._converse.api.listen.on('beforeAttemptNonPreboundSession', async (_context, payload) => {
+            const pane = await u.waitUntil(() => document.querySelector('converse-controlbox .controlbox-pane'));
+            shown_while_starting = {
+                spinner: !!pane.querySelector('converse-spinner'),
+                login_form: !!pane.querySelector('converse-login-form'),
+            };
+            return { ...payload, credentials: { jid: 'romeo@montague.lit/orchard', password: 'secret' } };
+        });
+    },
+});
+
 describe('The Login Form', function () {
     it(
         'shows the domain name when locked_domain is set',
@@ -158,34 +176,14 @@ describe('The Login Form', function () {
 });
 
 describe('The Controlbox, while Converse starts up', function () {
-    let shown_while_starting;
-
-    beforeEach(() => {
-        shown_while_starting = null;
-        // The start-up login waits for the credentials, so that the
-        // controlbox can be checked before it starts to connect.
-        vi.spyOn(XMLHttpRequest.prototype, 'send').mockImplementation(async function () {
-            const pane = await u.waitUntil(() => document.querySelector('converse-controlbox .controlbox-pane'));
-            shown_while_starting = {
-                spinner: !!pane.querySelector('converse-spinner'),
-                login_form: !!pane.querySelector('converse-login-form'),
-            };
-            Object.defineProperty(this, 'status', { value: 200 });
-            Object.defineProperty(this, 'responseText', {
-                value: JSON.stringify({ jid: 'romeo@montague.lit/orchard', password: 'secret' }),
-            });
-            this.onload();
-        });
-    });
-
-    afterEach(() => vi.restoreAllMocks());
+    beforeEach(() => (shown_while_starting = null));
 
     it(
         'shows a spinner rather than the login form',
         mock.initConverse(
             converse,
             [],
-            { auto_login: false, view_mode: 'fullscreen', credentials_url: 'https://montague.lit/credentials' },
+            { auto_login: false, view_mode: 'fullscreen', whitelisted_plugins: ['test-waiting-credentials'] },
             async function () {
                 expect(shown_while_starting).toEqual({ spinner: true, login_form: false });
             },

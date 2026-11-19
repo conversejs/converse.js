@@ -1,7 +1,8 @@
 import isEqual from 'lodash-es/isEqual.js';
 import pick from 'lodash-es/pick.js';
 import { EventEmitter } from '@converse/skeletor';
-import { DEFAULT_SETTINGS } from './constants.js';
+import log from '@converse/log';
+import { DEFAULT_SETTINGS, REMOVED_SETTINGS } from './constants.js';
 import { normalizeSettings } from './schema.js';
 import { merge } from '../../utils/object.js';
 
@@ -47,6 +48,10 @@ export function getAppSettings() {
 
 export function initAppSettings(settings) {
     init_settings = settings;
+
+    for (const [name, replacement] of Object.entries(REMOVED_SETTINGS)) {
+        if (settings?.[name] !== undefined) log.warn(`The ${name} setting has been removed. ${replacement}`);
+    }
 
     app_settings = new AppSettings();
 

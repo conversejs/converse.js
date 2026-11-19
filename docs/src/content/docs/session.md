@@ -94,8 +94,8 @@ If your web-application has access to the same credentials, it can send those
 credentials to Converse so that users are automatically logged in when the
 page loads.
 
-This can be done by setting [`auto_login`](/docs/configuration/#auto_login) to `true` and configuring the
-[`credentials_url`](/docs/configuration/#credentials_url) setting.
+This can be done by setting [`auto_login`](/docs/configuration/#auto_login) to `true` and supplying the
+credentials from a plugin (see [credential sources](/docs/development/plugin-development/#credential-sources)).
 
 ### Option 3: Temporary authentication tokens
 
@@ -110,7 +110,7 @@ generate temporary authentication tokens which are then sent to the XMPP server
 which in turn delegates authentication to an external authentication provider
 (generally the same web-app that generated the tokens).
 
-This can be combined with prebind or with the [`credentials_url`](/docs/configuration/#credentials_url) setting.
+This can be combined with prebind or with a plugin that supplies the tokens (see [credential sources](/docs/development/plugin-development/#credential-sources)).
 
 ### Option 4: Cryptographically signed tokens
 
@@ -119,8 +119,8 @@ HMAC tokens) which the XMPP server could authenticate by checking that they're
 signed with the right key and that they conform to some kind of pre-arranged
 format.
 
-In this case, you would also use the [`credentials_url`](/docs/configuration/#credentials_url) setting, to specify a
-URL from which Converse should fetch the username and token.
+In this case, you would also use a plugin that fetches the username and token from your
+website (see [credential sources](/docs/development/plugin-development/#credential-sources)).
 
 ## Keeping users logged-in across page reloads
 

@@ -291,7 +291,7 @@ If the [muc_domain](#muc_domain) is locked with the [locked_muc_domain](#locked_
 
 This option can be used to let Converse automatically log the user in as soon as the page loads.
 
-If [authentication](#authentication) is set to `login`, then you will also need to provide a valid `jid` and `password` values, either manually by passing them in, or by the [credentials_url](#credentials_url) setting. Setting a `credentials_url` is preferable to manually passing in `jid` and `password` values, because it allows better reconnection with [auto_reconnect](#auto_reconnect). When the connection drops, Converse will automatically fetch new login credentials from the `credentials_url` and reconnect.
+If [authentication](#authentication) is set to `login`, then you will also need to provide valid `jid` and `password` values, either by passing them in, or from a plugin (see [credential sources](/docs/development/plugin-development/#credential-sources)). A plugin can fetch new credentials, such as a fresh token, each time Converse reconnects with [auto_reconnect](#auto_reconnect).
 
 If [authentication](#authentication) is set to `anonymous`, then you will also need to provide the server's domain via the [jid](#jid) setting.
 
@@ -346,7 +346,7 @@ Converse remembers a session on this device once it has logged in, until the use
 
 - [authentication](#authentication) is set to `login`,
 - the device is trusted and [clear_cache_on_logout](#clear_cache_on_logout) is off,
-- Converse can log in again without asking the user: with stored SCRAM keys (see [reuse_scram_keys](#reuse_scram_keys)), with [credentials_url](#credentials_url) together with the account's [jid](#jid), with a password passed in, or with a password for the account that the browser's credential store hands over without asking the user (only browsers that store passwords for sites, through `PasswordCredential`, do).
+- Converse can log in again without asking the user: with stored SCRAM keys (see [reuse_scram_keys](#reuse_scram_keys)), with credentials from a plugin, with a password passed in, or with a password for the account that the browser's credential store hands over without asking the user (only browsers that store passwords for sites, through `PasswordCredential`, do).
 
 If the server rejects the stored credentials once the connection is up, for example because the password was changed elsewhere, or if no credentials are left to log in with, the session ends as if the user had logged out, and the login form shows why. A network failure, a timeout or an unavailable server never ends it. If the credentials log in to another account than the one that was resumed, what was loaded is dropped and that account's session starts afresh.
 
@@ -598,28 +598,6 @@ converse.initialize({
     connection_options: { worker: '/dist/shared-connection-worker.js' },
 });
 ```
-
-### credentials_url
-
-- Default: `null`
-- Type: URL
-
-This setting should be used in conjunction with [authentication](#authentication) set to `login`.
-
-It allows you to specify a URL which Converse will call when it needs to get the username and password (or authentication token) which Converse will use to automatically log the user in.
-
-If [auto_reconnect](#auto_reconnect) is also set to `true`, then Converse will automatically fetch new credentials from the `credentials_url` whenever the connection or session drops, and then attempt to reconnect and establish a new session.
-
-If the request to the `credentials_url` URL fails for whatever reason, Converse will continuously retry to fetch the credentials every 2 seconds.
-
-The URL decides which account logs in, so a session that Converse remembers on the device (see [auto_reconnect](#auto_reconnect)) is only loaded from the cache before connecting if the [jid](#jid) setting names its account as well. Without it, nothing is shown until the credentials have been fetched and the session has connected.
-
-The server behind `credentials_url` should return a JSON encoded object:
-
-    {
-        "jid": "me@example.com/resource",
-        "password": "Ilikecats!"
-    }
 
 ### csi_waiting_time
 
@@ -884,7 +862,7 @@ For example, to render Imgur images inline, you can use the following regex: `/^
 
 The Jabber ID or "JID" of the current user. The JID uniquely identifies a user on the XMPP network. It looks like an email address, but it's used for instant messaging instead.
 
-This value may be provided together with a `password` instead of supplying a [credentials_url](#credentials_url) when setting `auto_login` to `true`.
+This value may be provided together with a `password` when setting `auto_login` to `true`.
 
 ### keepalive
 

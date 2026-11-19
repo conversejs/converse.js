@@ -93,6 +93,48 @@ describe('Converse', function () {
                 expect(connects).toEqual([{ jid: _converse.session.get('jid'), password: 'sso' }]);
             }),
         );
+
+        it(
+            'logs in again if the server rejects credentials that a plugin can renew',
+            mock.initConverse(converse, [], { auto_login: false, keepalive: false }, async (_converse) => {
+                const { api } = _converse;
+                const { Strophe, stx } = converse.env;
+                api.listen.on('beforeAttemptNonPreboundSession', (_context, payload) => ({
+                    ...payload,
+                    credentials: { jid: 'romeo@montague.lit', password: 'expired-token' },
+                    renewable: true,
+                }));
+
+                await api.user.login();
+                const connection = api.connection.get();
+                const reconnect = vi.spyOn(connection, 'requestReconnect').mockImplementation(() => {});
+                const failure = stx`<failure xmlns="${Strophe.NS.SASL}"><not-authorized/></failure>`;
+                connection.onConnectStatusChanged(Strophe.Status.AUTHFAIL, undefined, failure);
+
+                expect(reconnect).toHaveBeenCalledOnce();
+            }),
+        );
+
+        it(
+            'ends a session rather than switch it to the account of other credentials',
+            mock.initConverse(converse, [], {}, async (_converse) => {
+                const { api } = _converse;
+                const connection = api.connection.get();
+                const finish = vi.spyOn(connection, 'finishDisconnection').mockResolvedValue(undefined);
+                const connect = vi.spyOn(connection, 'connect');
+                // For example, another user logged into the hosting site while it was offline.
+                api.listen.on('beforeAttemptNonPreboundSession', (_context, payload) => ({
+                    ...payload,
+                    credentials: { jid: 'juliet@montague.lit', password: 'token' },
+                }));
+
+                await connection.reconnect();
+
+                expect(_converse.session.get('bare_jid')).toBe('romeo@montague.lit');
+                expect(connect).not.toHaveBeenCalled();
+                expect(finish).toHaveBeenCalledOnce();
+            }),
+        );
     });
 
     describe('The "user.logout" method', function () {

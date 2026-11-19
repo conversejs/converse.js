@@ -339,6 +339,68 @@ hook, which lets you add, modify, or remove the action buttons on chat messages.
 The [Actions](https://github.com/conversejs/community-plugins/tree/master/packages/actions)
 community plugin uses this hook to add extra actions like `like` or `dislike` to messages.
 
+## Credential sources
+
+A plugin can log the user in without the login form, for example with a token that your
+website issues to a user who is logged into it. Converse asks for credentials through the
+`beforeAttemptNonPreboundSession` hook. Its payload holds the `credentials` passed to
+`api.user.login()`, if any. Supply yours if there are none yet:
+
+```javascript
+api.listen.on('beforeAttemptNonPreboundSession', async (context, payload) => {
+    if (payload.credentials) return payload;
+
+    try {
+        // Your endpoint, returning for example {"jid": "me@example.com", "password": "token"}
+        const response = await fetch('/xmpp-credentials');
+        if (!response.ok) return payload;
+
+        const { jid, password } = await response.json();
+        return { ...payload, credentials: { jid, password, renewable: true } };
+    } catch (e) {
+        return payload;
+    }
+});
+```
+
+This replaces the `credentials_url` setting, which was removed in Converse 15.
+
+If your source can't supply credentials, return the payload unchanged, and Converse
+carries on with its other sources. Retrying a request that failed is up to your
+plugin.
+
+Set `renewable` on the credentials if they can be replaced when the server rejects them, for
+example an expired token. Converse then logs in again, which asks your listener anew,
+rather than ending the session.
+
+Sources are asked in this order: credentials passed to `api.user.login()` (which include
+the `password` setting), then listeners registered by plugins, in the order the plugins
+were initialized. If none supplies credentials,
+Converse uses a password from an earlier attempt, then stored SCRAM keys, then the
+browser's credential store.
+
+When Converse starts on a device that remembers the session, it loads the session from
+the cache before connecting, but only if the account can log in again without the user
+(see [auto_reconnect](/docs/configuration/#auto_reconnect)). It asks through the
+`unattendedLogin` hook. The payload holds the remembered account's bare `jid`, whether
+the start-up `named` that account, and `can_log_in`, which is `true` if Converse already
+holds credentials for it. Set `can_log_in` if your source can log the account in without
+the user, optionally with the `credentials` to use. Set `veto` if the session must not be
+resumed, whoever else can log it in. Only ever set these flags, never clear them:
+
+```javascript
+api.listen.on('unattendedLogin', (context, payload) => {
+    return canLogInWithoutUser(payload.jid) ? { ...payload, can_log_in: true } : payload;
+});
+```
+
+If your website decides which account logs in, as in the example above, it may hand over
+another account than the remembered one. Unless the start-up `named` the account, set
+`veto` so that the other account's cache isn't shown in the meantime.
+
+Once a session has logged in, it stays with its account: credentials for another account
+end the session rather than switch it.
+
 ## Composer panels
 
 A composer panel is anything shown directly above the message form of a one-to-one chat or

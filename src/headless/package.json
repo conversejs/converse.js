@@ -74,7 +74,7 @@
   "dependencies": {
     "@converse/log": "^0.1.0",
     "@converse/openpromise": "^0.0.5",
-    "@converse/skeletor": "^4.0.2",
+    "@converse/skeletor": "^4.0.3",
     "@types/lodash": "^4.17.27",
     "@types/lodash-es": "^4.17.12",
     "@types/sdp-transform": "^3.0.0",

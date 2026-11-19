@@ -8,7 +8,7 @@ import { createStore, initStorage } from './storage.js';
 import { local_driver, sync_driver } from './extension-storage.js';
 import { getNodeStore } from './node-store.js';
 import { generateResource, getConnectionServiceURL } from '../shared/connection/utils.js';
-import { isValidJID } from './jid.js';
+import { isSameBareJID, isValidJID } from './jid.js';
 import { addUnloadListener, hasCredentialsAPI, IS_BROWSER } from './environment.js';
 import { getRememberedSession } from './remembered-session.js';
 import { isResumable, isTestEnv } from './session.js';
@@ -581,7 +581,7 @@ export async function savedLoginInfo(jid) {
  */
 async function connect(credentials) {
     const { api } = _converse;
-    const jid = _converse.session.get('jid');
+    let jid = _converse.session.get('jid');
     const connection = api.connection.get();
     // Fetching the credentials can outlast the connection, for example if the user logs out.
     if (!connection) return;
@@ -599,6 +599,12 @@ async function connect(credentials) {
         const password = credentials?.password ?? (connection.pass || api.settings.get('password'));
         await api.user.logout();
         return api.user.login(login_jid, password);
+    }
+
+    if (login_jid && !(jid && isSameBareJID(login_jid, jid))) {
+        // Credentials supplied by a plugin, for an account that the session isn't for yet.
+        await setUserJID(login_jid);
+        jid = _converse.session.get('jid');
     }
 
     if ([ANONYMOUS, EXTERNAL].includes(api.settings.get('authentication'))) {

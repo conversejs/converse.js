@@ -69,6 +69,32 @@ describe('Converse', function () {
         });
     });
 
+    describe('The "user.login" method', function () {
+        it(
+            'logs in to the account that credentials supplied by a plugin name',
+            mock.initConverse(converse, [], { auto_login: false, keepalive: false }, async (_converse) => {
+                const { api } = _converse;
+                api.listen.on('beforeAttemptNonPreboundSession', (_context, payload) => ({
+                    ...payload,
+                    credentials: { jid: 'juliet@montague.lit', password: 'sso' },
+                }));
+                const connects = [];
+                const init = api.connection.init;
+                vi.spyOn(api.connection, 'init').mockImplementation(function (...args) {
+                    const connection = init.apply(this, args);
+                    vi.spyOn(connection, 'connect').mockImplementation((jid, password) =>
+                        connects.push({ jid, password }),
+                    );
+                    return connection;
+                });
+
+                await api.user.login();
+                expect(_converse.session.get('bare_jid')).toBe('juliet@montague.lit');
+                expect(connects).toEqual([{ jid: _converse.session.get('jid'), password: 'sso' }]);
+            }),
+        );
+    });
+
     describe('The "user.logout" method', function () {
         it(
             'sends unavailable presence before closing the stream',

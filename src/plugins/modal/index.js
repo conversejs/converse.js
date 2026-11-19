@@ -12,6 +12,8 @@ import './toasts.js';
 
 converse.plugins.add('converse-modal', {
     initialize() {
+        // Also on an anonymous reset: a modal is bound to what gets cleared,
+        // such as the profile, and would be shown again with that.
         api.listen.on('clearSession', () => api.modal.removeAll());
         Object.assign(_converse.exports, { BaseModal, Popover, Toast });
         Object.assign(_converse.api, modal_api);

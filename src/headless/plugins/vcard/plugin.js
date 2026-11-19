@@ -14,9 +14,9 @@ import {
     initVCards,
     onConnected,
     onOccupantAvatarChanged,
+    onReconnected,
     publishOwnNickname,
     registerNickHandler,
-    refreshVCards,
     registerPresenceHandler,
     resetNickState,
     unregisterNickHandler,
@@ -60,6 +60,8 @@ converse.plugins.add('converse-vcard', {
             // Ask XEP-0163 PEP services to push XEP-0172 nickname changes to us.
             api.disco.own.features.add(Strophe.NS.NICK + '+notify');
         });
+        // Also on an anonymous reset: the new account publishes its own nickname,
+        // and the vCards are loaded anew once it has reconnected.
         api.listen.on('clearSession', () => {
             clearVCardsSession();
             resetNickState();
@@ -78,7 +80,7 @@ converse.plugins.add('converse-vcard', {
 
         api.listen.on('loadSessionCache', initVCards);
         api.listen.on('connected', onConnected);
-        api.listen.on('reconnected', refreshVCards);
+        api.listen.on('reconnected', onReconnected);
 
         api.listen.on('presencesInitialized', () => {
             registerPresenceHandler();

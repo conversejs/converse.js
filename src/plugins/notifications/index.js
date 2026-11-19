@@ -3,7 +3,7 @@
  * @copyright 2022, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import { _converse, api, converse } from '@converse/headless';
+import { _converse, api, constants, converse } from '@converse/headless';
 import {
     clearFavicon,
     handleChatStateNotification,
@@ -37,7 +37,10 @@ converse.plugins.add('converse-notification', {
         Object.assign(api, notifications_api);
 
         /************************ Event Handlers ************************/
-        api.listen.on('clearSession', clearFavicon); // Needed for tests
+        api.listen.on('clearSession', (/** @type {import('@converse/headless').ClearSessionReason} */ reason) => {
+            // The rooms kept through an anonymous reconnection keep their unread counts.
+            if (reason !== constants.ANONYMOUS_RESET) clearFavicon(); // Needed for tests
+        });
 
         api.waitUntil('chatBoxesInitialized').then(() => {
             const { chatboxes } = _converse.state;

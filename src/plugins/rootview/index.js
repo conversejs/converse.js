@@ -1,4 +1,4 @@
-import { _converse, api, converse } from '@converse/headless';
+import { _converse, api, constants, converse } from '@converse/headless';
 import app_api from './api.js';
 import ConverseRoot from './root.js';
 import { ensureElement, retryConnection, retryConnectionOnceVisible } from './utils.js';
@@ -62,7 +62,10 @@ converse.plugins.add('converse-rootview', {
         api.listen.on('connected', routeApp);
         api.listen.on('reconnected', routeApp);
         api.listen.on('appSwitch', syncAppToHash);
-        api.listen.on('clearSession', clearAppRoutes);
+        api.listen.on('clearSession', (/** @type {import('@converse/headless').ClearSessionReason} */ reason) => {
+            // The apps keep their routes while an anonymous session reconnects.
+            if (reason !== constants.ANONYMOUS_RESET) clearAppRoutes();
+        });
 
         // XEP-0147 `xmpp:` links handed over by the browser's protocol handler,
         // and shareable links to this page.

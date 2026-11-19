@@ -64,6 +64,7 @@ converse.plugins.add('converse-jingle', {
         api.listen.on('connected', discoverIceServers);
         api.listen.on('reconnected', discoverIceServers);
 
+        // Also on an anonymous reset: a call can't carry over to the new account.
         api.listen.on('clearSession', () => {
             // Ending a call removes it from the collection, so iterate over a copy.
             [...(_converse.state.calls?.models ?? [])].forEach((c) => c.hangup());

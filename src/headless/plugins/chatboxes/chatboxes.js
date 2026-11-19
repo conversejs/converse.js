@@ -5,6 +5,7 @@ import _converse from '../../shared/_converse.js';
 import api from '../../shared/api/index.js';
 import log from '@converse/log';
 import { Collection } from '@converse/skeletor';
+import { ANONYMOUS_RESET } from '../../shared/constants.js';
 import { initStorage } from '../../utils/storage.js';
 import { isResumed } from '../../utils/session.js';
 
@@ -34,6 +35,26 @@ class ChatBoxes extends Collection {
         });
     }
 
+    // Whether the chats in memory were kept through an anonymous reconnection
+    // that's underway. They aren't read from the cache again then, since that
+    // would replace them with what's stored for the new account: nothing.
+    #kept = false;
+
+    /**
+     * Called when the session is cleared. The chats that survive it (see
+     * `survivesReset` on {@link ChatBoxBase}) are kept in memory through an
+     * anonymous reconnection, provided that the chats were read to begin
+     * with: a first connection that's retried has none yet.
+     * @param {import('../../shared/types').ClearSessionReason} [reason]
+     * @returns {boolean} Whether those chats are kept.
+     */
+    keepThrough(reason) {
+        this.#kept = reason === ANONYMOUS_RESET && this.#read;
+        if (!this.#kept) this.#read = false;
+
+        return this.#kept;
+    }
+
     /**
      * @param {Collection} collection
      */
@@ -51,8 +72,10 @@ class ChatBoxes extends Collection {
      * @param {boolean} reconnecting
      */
     onConnected(reconnecting) {
+        const kept = this.#kept;
+        this.#kept = false;
         // A resumed session read its chats before connecting, unless that failed.
-        if (reconnecting || (isResumed(_converse) && this.#read)) return;
+        if (reconnecting || kept || (isResumed(_converse) && this.#read)) return;
 
         this.fetchCached();
     }

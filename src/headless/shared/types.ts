@@ -7,6 +7,10 @@ import VCard from '../plugins/vcard/vcard';
 import RosterContact from '../plugins/roster/contact';
 import Profile from '../plugins/status/profile';
 import { MUCMessageAttributes } from '../plugins/muc/types';
+import { ANONYMOUS_RESET, SESSION_ENDED } from './constants.js';
+
+// Why the session was cleared, as passed to listeners of the `clearSession` event.
+export type ClearSessionReason = typeof SESSION_ENDED | typeof ANONYMOUS_RESET;
 
 export type MessageAndStanza = {
     message: BaseMessage; // The message object from which the stanza is created and which gets persisted to storage.

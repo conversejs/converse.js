@@ -46,7 +46,6 @@
                     overflow-y: auto;
                     width: 100%;
                     .emoji-category__heading {
-                        clear: both;
                         color: var(--secondary-color);
                         cursor: auto;
                         display: block;
@@ -63,12 +62,6 @@
                     .emoji-lists__container {
                         background-color: var(--background-color);
                         overflow-x: hidden;
-                    }
-
-                    .emoji-picker {
-                        li {
-                            float: left;
-                        }
                     }
                 }
             }
@@ -93,6 +86,8 @@
             }
             .emoji-picker {
                 background-color: var(--background-color);
+                display: flex;
+                flex-wrap: wrap;
                 padding: 0.5em 0 0 0.5em;
                 &:last-child {
                     padding-bottom: 0.5em;

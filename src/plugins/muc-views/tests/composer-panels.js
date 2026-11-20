@@ -51,7 +51,7 @@ describe('Composer panels in a groupchat', function () {
             const panel = await u.waitUntil(() => view.querySelector('converse-muc-bottom-panel .composer-panel'));
             const style = getComputedStyle(panel);
             expect(style.textAlign).toBe('start');
-            expect(style.fontSize).toBe(getComputedStyle(panel).getPropertyValue('--font-size').trim());
+            expect(style.fontSize).toBe('14px');
         }),
     );
 

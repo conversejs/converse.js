@@ -63,17 +63,19 @@ export default (model) => {
     const i18n_temporary_help = __('This groupchat will disappear once the last person leaves');
     return html`
         <div class="room-info">
-            <converse-avatar
-                .model=${model}
-                class="avatar align-self-center"
-                name="${model.getDisplayName()}"
-                nonce=${model.vcard?.get('vcard_updated')}
-                height="72" width="72"></converse-avatar>
-
-            <p class="room-info"><strong>${i18n_name}:</strong> ${model.get('name')}</p>
-            <p class="room-info"><strong>${i18n_address}:</strong> ${tplCopyableAddress(model.get('jid'))}</p>
-            ${share_link ? html`<p class="room-info"><strong>${i18n_share_link}:</strong> ${tplShareableLink(share_link)}</p>` : ''}
-            <br/>
+            <div class="room-info__summary">
+                <converse-avatar
+                    .model=${model}
+                    class="avatar"
+                    name="${model.getDisplayName()}"
+                    nonce=${model.vcard?.get('vcard_updated')}
+                    height="72" width="72"></converse-avatar>
+                <div>
+                    <p class="room-info"><strong>${i18n_name}:</strong> ${model.get('name')}</p>
+                    <p class="room-info"><strong>${i18n_address}:</strong> ${tplCopyableAddress(model.get('jid'))}</p>
+                    ${share_link ? html`<p class="room-info"><strong>${i18n_share_link}:</strong> ${tplShareableLink(share_link)}</p>` : ''}
+                </div>
+            </div>
             <p class="room-info"><strong>${i18n_desc}:</strong> <converse-texture text="${config.description}" render_styling></converse-texture></p>
             ${model.get('subject') ? subject(model) : ''}
             <p class="room-info"><strong>${i18n_online_users}:</strong> ${num_occupants}</p>

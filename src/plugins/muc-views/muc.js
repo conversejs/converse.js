@@ -16,8 +16,6 @@ export default class MUCView extends DragResizable(BaseChatView) {
         this.listenTo(this.model.session, 'change:connection_status', this.onConnectionStatusChanged);
         this.listenTo(this.model.session, 'change:view', () => this.requestUpdate());
 
-        document.addEventListener('visibilitychange', () => this.onWindowStateChanged());
-
         this.onConnectionStatusChanged();
         this.model.maybeShow();
         /**

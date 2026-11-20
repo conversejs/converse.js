@@ -403,14 +403,6 @@
         }
     }
 
-    .left {
-        float: left;
-    }
-
-    .right {
-        float: right;
-    }
-
     .centered {
         text-align: center;
         display: block;
@@ -421,7 +413,6 @@
         text-align: center;
         display: block !important;
         margin: 0 auto;
-        clear: both;
     }
 
     .avatar-autocomplete {

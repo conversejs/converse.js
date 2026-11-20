@@ -42,7 +42,7 @@ const tplItem = (o, item) => {
                     >${item.name || item.jid}</a
                 >
                 <a
-                    class="right room-info icon-room-info"
+                    class="room-info icon-room-info"
                     @click=${o.toggleRoomInfo}
                     data-room-jid="${item.jid}"
                     title="${i18n_info_title}"

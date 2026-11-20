@@ -2,4 +2,11 @@ converse-modtools {
     converse-icon svg {
         fill: var(--link-color);
     }
+
+    // A role or affiliation, with the toggle of its form at the end of the row.
+    .modtools-item__value {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5em;
+    }
 }

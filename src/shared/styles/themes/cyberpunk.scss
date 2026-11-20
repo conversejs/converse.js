@@ -183,6 +183,7 @@
             box-shadow:
                 0 0 0.5rem 0 rgba(var(--pink-rgb), 0.8),
                 0 0 1.5rem 0 rgba(var(--pink-rgb), 0.4) !important;
+            // Focus is shown by the brighter glow and border above.
             outline: none;
         }
 

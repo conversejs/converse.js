@@ -85,7 +85,6 @@
                 font-style: italic;
             }
             &.chat-event {
-                clear: left;
                 font-style: italic;
             }
             &.chat-error {
@@ -243,7 +242,6 @@
 
             .chat-msg__subject {
                 font-weight: bold;
-                clear: right;
             }
 
             .chat-msg__text--larger {

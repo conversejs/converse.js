@@ -47,9 +47,9 @@
                 .chat-textarea,
                 input {
                     outline: 1px solid var(--background-color) !important;
-                    &:active,
-                    &:focus {
-                        outline-width: 2px !important;
+                    &:focus-visible {
+                        outline: 2px solid var(--muc-color) !important;
+                        outline-offset: -2px;
                     }
                     // As in the 1:1 composer, but answering in the MUC's
                     // colour. `--chatroom-correcting-color` was declared by no

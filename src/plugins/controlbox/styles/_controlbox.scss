@@ -23,7 +23,6 @@
     }
     div.room-info {
         padding: 0.3em 0;
-        clear: left;
         width: 100%;
     }
 
@@ -176,7 +175,7 @@
             .toggle-controlbox {
                 background-color: var(--controlbox-color);
                 color: var(--button-text-color);
-                float: right;
+                display: block;
                 margin: 0 var(--overlayed-chat-gutter);
                 order: -2;
                 text-align: center;

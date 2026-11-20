@@ -63,10 +63,6 @@
                 color: var(--chat-color);
             }
 
-            &:focus {
-                outline: none;
-            }
-
             &:focus-visible {
                 outline: 2px solid var(--chat-color);
                 outline-offset: 2px;
@@ -176,13 +172,8 @@
             border-radius: 2px;
             cursor: pointer;
             border: none;
-            outline: none;
             // Base track color
             background: var(--subdued-color);
-
-            &:focus {
-                outline: none;
-            }
 
             &:focus-visible {
                 outline: 2px solid var(--chat-color);

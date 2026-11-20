@@ -94,6 +94,21 @@ describe('Emojis', function () {
                 const toolbar = await u.waitUntil(() => view.querySelector('converse-chat-toolbar'));
                 toolbar.querySelector('.toggle-emojis').click();
                 await u.waitUntil(() => u.isVisible(view.querySelector('.emoji-picker__lists')), 1000);
+
+                // Emojis run along a row in the direction of the text, and
+                // wrap inside their list.
+                const list = await u.waitUntil(() => view.querySelector('.emoji-picker[data-category="smileys"]'));
+                await u.waitUntil(() => list.querySelectorAll('li.insert-emoji').length > 20);
+                const [first, second] = list.querySelectorAll('li.insert-emoji');
+                const last = list.lastElementChild;
+                expect(first.getBoundingClientRect().top).toBe(second.getBoundingClientRect().top);
+                expect(first.getBoundingClientRect().right).toBeLessThanOrEqual(second.getBoundingClientRect().left);
+                expect(last.getBoundingClientRect().top).toBeGreaterThan(first.getBoundingClientRect().top);
+                expect(list.getBoundingClientRect().bottom).toBeGreaterThanOrEqual(last.getBoundingClientRect().bottom);
+                list.dir = 'rtl';
+                expect(first.getBoundingClientRect().left).toBeGreaterThanOrEqual(second.getBoundingClientRect().right);
+                list.removeAttribute('dir');
+
                 const item = view.querySelector('.emoji-picker li.insert-emoji a');
                 item.click();
                 // Insertion goes through the editor, which may still be loading.

@@ -153,9 +153,6 @@ a {
     display: none;
     transition: opacity 0.3s ease-in-out;
     padding-left: 1em;
-    &:focus {
-        outline: none;
-    }
 }
 
 .navbar-custom {
@@ -172,17 +169,19 @@ a {
 .navbar-custom .nav li a:hover,
 .navbar-custom .nav li a:focus,
 .navbar-custom .nav li.active {
-    outline: none;
     background-color: rgba(255, 255, 255, 0.2);
 }
 .navbar-toggle {
     padding: 4px 6px;
-    font-size: 16px;
+    font-size: 1rem;
     color: #ffffff;
 }
-.navbar-toggle:focus,
-.navbar-toggle:active {
-    outline: none;
+a,
+button {
+    &:focus-visible {
+        outline: 2px solid #bad9e8;
+        outline-offset: 2px;
+    }
 }
 @media (min-width: 767px) {
     .navbar {
@@ -265,7 +264,7 @@ section {
 
     .byline {
         font-family: 'Muli', sans-serif;
-        font-size: 20px;
+        font-size: 1.25rem;
         opacity: 0.5;
         margin-bottom: 2em;
         margin-inline-start: -75px;
@@ -299,7 +298,7 @@ section {
 
 @include media-breakpoint-down(sm) {
     .chatroom-name {
-        font-size: 16px;
+        font-size: 1rem;
     }
 
     .brand-heading {
@@ -414,7 +413,6 @@ section {
 }
 
 .sponsors {
-    clear: both;
     font-size: 1.4em;
     padding: 0 0 2em 0;
     ul {

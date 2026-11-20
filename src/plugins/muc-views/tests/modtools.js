@@ -80,6 +80,19 @@ describe('The groupchat moderator tool', function () {
             );
 
             const toggle = user_els[1].querySelector('.list-group-item:nth-child(3n) .toggle-form');
+
+            // The toggle is at the end of its row, whichever way the text runs.
+            const row = toggle.parentElement;
+            const label = row.firstElementChild;
+            expect(Math.round(toggle.getBoundingClientRect().right)).toBe(
+                Math.round(row.getBoundingClientRect().right),
+            );
+            expect(toggle.getBoundingClientRect().left).toBeGreaterThan(label.getBoundingClientRect().right);
+            row.dir = 'rtl';
+            expect(Math.round(toggle.getBoundingClientRect().left)).toBe(Math.round(row.getBoundingClientRect().left));
+            expect(toggle.getBoundingClientRect().right).toBeLessThan(label.getBoundingClientRect().left);
+            row.removeAttribute('dir');
+
             const component = user_els[1].querySelector('.list-group-item:nth-child(3n) converse-muc-affiliation-form');
             expect(u.hasClass('hidden', component)).toBeTruthy();
             toggle.click();

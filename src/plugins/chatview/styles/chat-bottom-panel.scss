@@ -45,9 +45,11 @@
                 .chat-textarea,
                 input {
                     outline: 1px solid var(--background-color);
-                    &:active,
-                    &:focus {
-                        outline-width: 2px;
+                    // Drawn inside the field, because the panel clips what is
+                    // outside of it.
+                    &:focus-visible {
+                        outline: 2px solid var(--chat-color);
+                        outline-offset: -2px;
                     }
                     &.correcting {
                         background-color: rgba(var(--chat-rgb), 0.1);

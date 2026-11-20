@@ -3,13 +3,23 @@ converse-muc-details-modal {
         margin-inline-start: 1em;
     }
 
-    .room-info {
+    .room-info__summary {
+        display: flex;
+        align-items: flex-start;
+        gap: 1em;
+        margin-bottom: 0.5em;
+
         converse-avatar {
             display: block;
-            margin-bottom: 0.5em;
-            margin-inline-end: 1em;
-            float: left;
+            flex-shrink: 0;
         }
+
+        > div {
+            min-width: 0;
+        }
+    }
+
+    .room-info {
         strong {
             color: var(--muc-color);
             margin-right: 0.5em;

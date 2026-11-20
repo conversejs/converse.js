@@ -483,7 +483,11 @@
             &:hover,
             &:focus {
                 background-color: var(--highlight-color-hover);
-                outline: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--chat-color);
+                outline-offset: -2px;
             }
         }
 

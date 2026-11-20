@@ -53,7 +53,8 @@ body.converse-fullscreen {
     --converse-border-color: color-mix(in srgb, var(--background-color) 80%, var(--foreground-color));
     --converse-border-color-translucent: color-mix(in srgb, var(--foreground-color) 18%, transparent);
 
-    --fullpage-chat-height: calc(var(--vh, 1vh) * 100);
+    // The fallback for browsers without `dvh`, see the end of this block.
+    --fullpage-chat-height: 100vh;
     --fullpage-chat-width: 100%;
     --fullpage-chatbox-button-size: 16px;
     --fullpage-emoji-picker-height: 300px;
@@ -71,17 +72,20 @@ body.converse-fullscreen {
     --heading-font: 'Muli', normal;
     --branding-font: 'Baumans', cursive;
 
-    --font-size-tiny: 10px;
-    --font-size-small: 12px;
-    --font-size: 14px;
-    --font-size-large: 16px;
-    --font-size-huge: 20px;
+    // In rem, so that text follows the text size the user set in their browser
+    // or OS. At the usual 16px root these are 10, 12, 14, 16 and 20px. The line
+    // heights have to scale along, or larger text would overlap.
+    --font-size-tiny: 0.625rem;
+    --font-size-small: 0.75rem;
+    --font-size: 0.875rem;
+    --font-size-large: 1rem;
+    --font-size-huge: 1.25rem;
     --message-font-size: var(--font-size);
 
-    --line-height-small: 14px;
-    --line-height: 16px;
-    --line-height-large: 20px;
-    --line-height-huge: 27px;
+    --line-height-small: 0.875rem;
+    --line-height: 1rem;
+    --line-height-large: 1.25rem;
+    --line-height-huge: 1.6875rem;
 
     --embedded-emoji-picker-height: 300px;
 
@@ -100,6 +104,16 @@ body.converse-fullscreen {
     --list-toggle-font-weight: normal;
 
     --text-color: var(--foreground-color);
+
+    // The dynamic viewport height is what is visible on mobile, where a browser
+    // toolbar that slides in and out makes `100vh` taller than the screen.
+    //
+    // Behind `@supports`, because a custom property accepts any value: with two
+    // plain declarations a browser without `dvh` would keep the second one too,
+    // and every `height` that uses it would be invalid.
+    @supports (height: 100dvh) {
+        --fullpage-chat-height: 100dvh;
+    }
 }
 
 .conversejs {

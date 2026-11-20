@@ -46,7 +46,7 @@ const tplRoleFormToggle = (o) =>
     html` <a
         href="#"
         data-form="converse-muc-role-form"
-        class="toggle-form right"
+        class="toggle-form"
         color="var(--secondary-color)"
         @click=${o.toggleForm}
     >
@@ -66,8 +66,9 @@ function tplRoleListItem(el, o) {
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div>
-                    <strong>Role:</strong> ${o.item.role} ${o.assignable_roles.length ? tplRoleFormToggle(o) : ''}
+                <div class="modtools-item__value">
+                    <span><strong>Role:</strong> ${o.item.role}</span>
+                    ${o.assignable_roles.length ? tplRoleFormToggle(o) : ''}
                 </div>
                 ${
                     o.assignable_roles.length
@@ -88,7 +89,7 @@ const affiliation_form_toggle = (o) =>
     html` <a
         href="#"
         data-form="converse-muc-affiliation-form"
-        class="toggle-form right"
+        class="toggle-form"
         color="var(--secondary-color)"
         @click=${o.toggleForm}
     >
@@ -105,8 +106,8 @@ const affiliation_list_item = (el, o) => html`
                 <div><strong>Nickname:</strong> ${o.item.nick}</div>
             </li>
             <li class="list-group-item">
-                <div>
-                    <strong>Affiliation:</strong> ${o.item.affiliation}
+                <div class="modtools-item__value">
+                    <span><strong>Affiliation:</strong> ${o.item.affiliation}</span>
                     ${o.assignable_affiliations.length ? affiliation_form_toggle(o) : ''}
                 </div>
                 ${

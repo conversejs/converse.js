@@ -6,7 +6,6 @@ import { html } from 'lit';
 import { _converse, api, constants, converse } from '@converse/headless';
 import './view.js';
 import ChatBoxViews from './container.js';
-import { calculateViewportHeightUnit } from './utils.js';
 import { openConversationRouted } from './navigation.js';
 import { addShortcuts } from './shortcuts.js';
 import 'plugins/rootview/index.js';
@@ -74,9 +73,6 @@ converse.plugins.add('converse-app-chat', {
 
         api.listen.on('cleanup', () => Object.assign(_converse, { chatboxviews: null })); // DEPRECATED
         api.listen.on('cleanup', () => delete _converse.state.chatboxviews);
-        api.listen.on('chatBoxViewsInitialized', calculateViewportHeightUnit);
-
-        window.addEventListener('resize', calculateViewportHeightUnit);
         /************************ END Event Handlers ************************/
 
         Object.assign(converse, {

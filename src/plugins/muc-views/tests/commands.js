@@ -18,6 +18,17 @@ describe('Groupchats', function () {
                 let chat_help_el = view.querySelector('converse-chat-help');
                 let info_messages = sizzle('.chat-info', chat_help_el);
                 expect(info_messages.length).toBe(19);
+
+                // The close button is at the end of the first row, beside the
+                // first message, whichever way the text runs.
+                const close = chat_help_el.querySelector('.close-chat-help');
+                const first = info_messages[0];
+                expect(close.getBoundingClientRect().top).toBeLessThan(first.getBoundingClientRect().bottom);
+                expect(close.getBoundingClientRect().left).toBeGreaterThanOrEqual(first.getBoundingClientRect().right);
+                chat_help_el.dir = 'rtl';
+                expect(close.getBoundingClientRect().top).toBeLessThan(first.getBoundingClientRect().bottom);
+                expect(close.getBoundingClientRect().right).toBeLessThanOrEqual(first.getBoundingClientRect().left);
+                chat_help_el.removeAttribute('dir');
                 expect(info_messages.pop().textContent.trim()).toBe('/voice: Allow muted user to post messages');
                 expect(info_messages.pop().textContent.trim()).toBe(
                     '/topic: Set groupchat subject (alias for /subject)',

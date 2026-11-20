@@ -2013,6 +2013,15 @@ describe('Groupchats', function () {
                 let modal = _converse.api.modal.get('converse-muc-details-modal');
                 await u.waitUntil(() => u.isVisible(modal), 1000);
 
+                // The avatar is beside the name, on the side the text starts.
+                const summary = modal.querySelector('.room-info__summary');
+                const avatar = summary.querySelector('converse-avatar');
+                const name = summary.querySelector('p.room-info');
+                expect(avatar.getBoundingClientRect().right).toBeLessThanOrEqual(name.getBoundingClientRect().left);
+                summary.dir = 'rtl';
+                expect(avatar.getBoundingClientRect().left).toBeGreaterThanOrEqual(name.getBoundingClientRect().right);
+                summary.removeAttribute('dir');
+
                 let features_list = modal.querySelector('.features-list');
                 let features_shown = Array.from(features_list.children).map((e) => e.textContent);
                 expect(features_shown.length).toBe(5);

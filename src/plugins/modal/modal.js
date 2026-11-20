@@ -71,7 +71,7 @@ class BaseModal extends CustomElement {
     }
 
     disconnectedCallback() {
-        window.removeEventListener('resize', this.onKeyDown);
+        window.removeEventListener('keydown', this.onKeyDown);
         super.disconnectedCallback();
     }
 

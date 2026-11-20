@@ -15,8 +15,6 @@ class HeadlinesFeedView extends DragResizable(BaseChatView) {
         this.listenTo(this.model.messages, 'remove', () => this.requestUpdate());
         this.listenTo(this.model.messages, 'reset', () => this.requestUpdate());
 
-        document.addEventListener('visibilitychange', () => this.onWindowStateChanged());
-
         await this.model.messages.fetched;
         this.model.maybeShow();
         /**

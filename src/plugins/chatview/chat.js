@@ -25,8 +25,6 @@ export default class ChatView extends DragResizable(BaseChatView) {
         this.listenTo(this.model, 'contact:change', () => this.requestUpdate());
         this.listenTo(this.model, 'contact:destroy', () => this.requestUpdate());
 
-        document.addEventListener('visibilitychange', () => this.onWindowStateChanged());
-
         await this.model.messages.fetched;
         !this.model.get('hidden') && this.afterShown();
         /**

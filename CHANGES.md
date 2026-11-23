@@ -26,6 +26,7 @@
 - feat: On trusted devices, a dropped session stays shown and keeps retrying.
 - feat: While offline, the UI shows it and marks messages as not sent yet.
 - feat: New API: `api.connection.remembered()` and `api.connection.retry()`.
+- fix: An open dialog no longer stays on screen after logging out.
 - fix: With IndexedDB, leaving the page or logging out writes every pending change, not only the latest ones.
 - fix(daemon): A daemon that lost a simultaneous start no longer takes over when the other one stops.
 - docs: `auto_reconnect` defaults to `true`, not `false`.

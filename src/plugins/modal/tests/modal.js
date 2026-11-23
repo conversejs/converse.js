@@ -1,6 +1,8 @@
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';
 
+const { u } = converse.env;
+
 describe('A modal', function () {
     it(
         'no longer reacts to the Escape key once it has been removed',
@@ -11,11 +13,22 @@ describe('A modal', function () {
             window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
             expect(close).toHaveBeenCalledOnce();
 
-            // Removed while still open, so it never got to mark itself as hidden.
+            // Closing it removed it. Mark it as shown again, so that a listener
+            // left behind would call close() a second time.
+            expect(modal.isConnected).toBe(false);
             modal.ariaHidden = 'false';
-            _converse.api.modal.remove('converse-add-muc-modal');
             window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
             expect(close).toHaveBeenCalledOnce();
+        }),
+    );
+
+    it(
+        'is closed and removed when the user logs out',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const modal = await mock.openAddMUCModal(_converse);
+            await _converse.api.user.logout();
+            await u.waitUntil(() => !modal.isConnected);
+            expect(document.body.classList.contains('modal-open')).toBe(false);
         }),
     );
 });

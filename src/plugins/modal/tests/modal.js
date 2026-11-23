@@ -32,3 +32,18 @@ describe('A modal', function () {
         }),
     );
 });
+
+describe('A confirm modal', function () {
+    it(
+        'is not confirmed by an Enter key outside of it',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            const result = _converse.api.confirm('Are you sure?');
+            const modal = await u.waitUntil(() => document.querySelector('converse-confirm-modal'));
+            await u.waitUntil(() => modal.ariaHidden === 'false');
+
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+            expect(await result).toBe(false);
+        }),
+    );
+});

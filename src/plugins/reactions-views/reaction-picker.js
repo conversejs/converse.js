@@ -66,6 +66,9 @@ export default class ReactionPicker extends CustomElement {
         if (changed.has('opened')) {
             if (this.opened) {
                 requestAnimationFrame(() => {
+                    // Closed or removed before the frame came round.
+                    if (!this.opened || !this.isConnected) return;
+
                     this.positionPicker();
                     document.addEventListener('click', this.onClickOutside);
                 });
@@ -73,6 +76,12 @@ export default class ReactionPicker extends CustomElement {
                 document.removeEventListener('click', this.onClickOutside);
             }
         }
+    }
+
+    disconnectedCallback() {
+        document.removeEventListener('click', this.onClickOutside);
+        this.close();
+        super.disconnectedCallback();
     }
 
     /**

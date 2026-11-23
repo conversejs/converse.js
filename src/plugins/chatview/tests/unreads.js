@@ -163,4 +163,20 @@ describe("A ChatBox's Unread Message Count", function () {
             expect(sent_stanzas[0].querySelector('received')).toBeDefined();
         }),
     );
+
+    it(
+        'is left alone when the chat has been closed and the window becomes focused',
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+            await mock.waitForRoster(_converse, 'current', 1);
+            const sender_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+            const view = await mock.openChatBoxFor(_converse, sender_jid);
+            const chatbox = view.model;
+            await chatbox.close();
+            await u.waitUntil(() => !view.isConnected);
+
+            chatbox.set('num_unread', 1);
+            document.dispatchEvent(new Event('visibilitychange'));
+            expect(chatbox.get('num_unread')).toBe(1);
+        }),
+    );
 });

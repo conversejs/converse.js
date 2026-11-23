@@ -338,6 +338,44 @@ describe('Message Reactions (XEP-0444)', function () {
                 expect(picker_el.opened).toBeFalse();
             }),
         );
+
+        it(
+            'stops listening for clicks once it has been removed',
+            mock.initConverse(converse, ['chatBoxesFetched'], { popular_emojis }, async function (_converse) {
+                await mock.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
+                await mock.openChatBoxFor(_converse, contact_jid);
+                const view = _converse.chatboxviews.get(contact_jid);
+
+                await _converse.handleMessageStanza(
+                    stx`<message xmlns="jabber:client"
+                                from="${contact_jid}"
+                                to="${_converse.jid}"
+                                type="chat"
+                                id="picker-removed-msg">
+                        <body>Removed picker test</body>
+                    </message>`,
+                );
+                const msg_el = await u.waitUntil(() =>
+                    view.querySelector('.chat-msg[data-msgid="picker-removed-msg"]'),
+                );
+                const toggle_el = await u.waitUntil(() =>
+                    msg_el.querySelector('converse-message-actions converse-dropdown .dropdown-toggle'),
+                );
+                toggle_el.click();
+                const action_el = await u.waitUntil(() => msg_el.querySelector('.chat-msg__action-reaction'));
+                action_el.click();
+                const picker_el = await u.waitUntil(() => msg_el.querySelector('converse-reaction-picker'));
+                await u.waitUntil(() => picker_el.opened);
+                await new Promise((resolve) => requestAnimationFrame(resolve));
+
+                picker_el.remove();
+                // The click handler starts by checking whether the click was inside.
+                const contains = vi.spyOn(picker_el, 'contains');
+                document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                expect(contains).not.toHaveBeenCalled();
+            }),
+        );
     });
 
     describe('receiving reactions in a 1:1 chat', function () {

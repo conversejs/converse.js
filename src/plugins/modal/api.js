@@ -6,7 +6,7 @@ import { api, Model } from '@converse/headless';
 let modals = [];
 
 /** @type {Record<string, import('./modal').default>} */
-let modals_map = {};
+const modals_map = {};
 
 /** @type {Record<string, import('./types').ToastProperties>} */
 const toasts_map = {};
@@ -77,7 +77,15 @@ const modal_api = {
         removeAll() {
             modals.forEach((m) => m.remove());
             modals = [];
-            modals_map = {};
+            Object.entries(modals_map).forEach(([name, modal]) => {
+                if (modal.classList.contains('show')) {
+                    // Once hidden, it removes itself. Removing it now would
+                    // leave Bootstrap's backdrop and scroll lock behind.
+                    modal.close();
+                } else {
+                    this.remove(name);
+                }
+            });
         },
     },
 

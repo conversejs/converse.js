@@ -7,6 +7,15 @@ export default class Confirm extends BaseModal {
     constructor(options) {
         super(options);
         this.confirmation = u.getOpenPromise();
+
+        this.onEnterKey = /** @param {KeyboardEvent} ev */ (ev) => {
+            if (ev.key === constants.KEYCODES.ENTER && !isComposing(ev)) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                const button = /** @type {HTMLFormElement} */ (this.querySelector('form.confirm button[type=submit]'));
+                button.click();
+            }
+        };
     }
 
     initialize() {
@@ -21,24 +30,15 @@ export default class Confirm extends BaseModal {
             },
             false,
         );
-
-        this.onKeyDown = /** @param {KeyboardEvent} ev */ (ev) => {
-            if (ev.key === constants.KEYCODES.ENTER && !isComposing(ev)) {
-                ev.preventDefault();
-                ev.stopPropagation();
-                const button = /** @type {HTMLFormElement} */ (this.querySelector('form.confirm button[type=submit]'));
-                button.click();
-            }
-        };
     }
 
     connectedCallback() {
         super.connectedCallback();
-        this.addEventListener('keydown', this.onKeyDown);
+        this.addEventListener('keydown', this.onEnterKey);
     }
 
     disconnectedCallback() {
-        this.removeEventListener('keydown', this.onKeyDown);
+        this.removeEventListener('keydown', this.onEnterKey);
         super.disconnectedCallback();
     }
 

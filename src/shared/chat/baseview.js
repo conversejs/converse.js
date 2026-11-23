@@ -19,17 +19,21 @@ export default class BaseChatView extends CustomElement {
         this.model = /** @type {import('@converse/headless').Model} */ null;
         this.viewportMediaQuery = window.matchMedia(`(max-width: ${MOBILE_CUTOFF}px)`);
         this.renderOnViewportChange = () => this.requestUpdate();
+        // The model is only set once the view has been initialized.
+        this.onVisibilityChange = () => this.model && this.onWindowStateChanged();
     }
 
     connectedCallback() {
         super.connectedCallback();
         this.viewportMediaQuery.addEventListener('change', this.renderOnViewportChange);
+        document.addEventListener('visibilitychange', this.onVisibilityChange);
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
         _converse.state.chatboxviews.remove(this.jid, this);
         this.viewportMediaQuery.removeEventListener('change', this.renderOnViewportChange);
+        document.removeEventListener('visibilitychange', this.onVisibilityChange);
     }
 
     /**

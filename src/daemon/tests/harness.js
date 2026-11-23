@@ -107,7 +107,7 @@ export async function startDaemon({
                 </query>
             </iq>`);
         await api.waitUntil('rosterContactsFetched');
-        return serve({
+        const server = serve({
             connection,
             receive,
             jid: JID,
@@ -118,6 +118,14 @@ export async function startDaemon({
             fulltext,
             upload_service,
         });
+        // The initial presence goes out after the roster, and a spec counting
+        // the stanzas the daemon sends must not see it arrive midway.
+        await u.waitUntil(() =>
+            connection.sent_stanzas.some(
+                (s) => s.nodeName === 'presence' && !s.getAttribute('type') && !s.getAttribute('to'),
+            ),
+        );
+        return server;
     }
     const server = await answerServer();
 

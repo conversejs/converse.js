@@ -160,4 +160,111 @@ describe('The "Groupchats" List modal', function () {
             },
         ),
     );
+
+    it(
+        'can show and hide more information on a groupchat',
+        mock.initConverse(
+            converse,
+            ['chatBoxesFetched'],
+            { 'muc_domain': 'chat.shakespeare.lit', 'locked_muc_domain': true },
+            async function (_converse) {
+                await mock.openControlBox(_converse);
+                const cbview = _converse.chatboxviews.get('controlbox');
+                const button = await u.waitUntil(() =>
+                    cbview.querySelector('converse-rooms-list .show-list-muc-modal'),
+                );
+                button.click();
+                mock.closeControlBox(_converse);
+                const modal = _converse.api.modal.get('converse-muc-list-modal');
+                await u.waitUntil(() => u.isVisible(modal), 1000);
+
+                const conn = _converse.api.connection.get();
+                const items_iq = await u.waitUntil(() =>
+                    conn.sent_stanzas.filter((s) => sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`, s).length).pop(),
+                );
+                conn._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<iq from="chat.shakespeare.lit"
+                                to="romeo@montague.lit/orchard"
+                                id="${items_iq.getAttribute('id')}"
+                                type="result"
+                                xmlns="jabber:client">
+                            <query xmlns="${Strophe.NS.DISCO_ITEMS}">
+                                <item jid="heath@chat.shakespeare.lit" name="A Lonely Heath"/>
+                                <item jid="coven@chat.shakespeare.lit" name="A Dark Cave"/>
+                            </query>
+                        </iq>`,
+                    ),
+                );
+
+                const rooms = await u.waitUntil(() => {
+                    const els = modal.querySelectorAll('.available-chatrooms .room-item');
+                    return els.length === 2 ? els : null;
+                });
+                const info_link = rooms[0].querySelector('a.room-info');
+                expect(info_link.querySelector('converse-icon.fa-info-circle')).not.toBe(null);
+                expect(info_link.getAttribute('aria-expanded')).toBe('false');
+
+                // Click the icon inside the link, as a user would
+                info_link.querySelector('converse-icon').click();
+                await u.waitUntil(() => rooms[0].querySelector('.spinner-grow'));
+                expect(info_link.getAttribute('aria-expanded')).toBe('true');
+
+                const info_iq = await u.waitUntil(() =>
+                    conn.sent_stanzas
+                        .filter(
+                            (s) =>
+                                s.getAttribute('to') === 'heath@chat.shakespeare.lit' &&
+                                sizzle(`query[xmlns="${Strophe.NS.DISCO_INFO}"]`, s).length,
+                        )
+                        .pop(),
+                );
+                conn._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<iq from="heath@chat.shakespeare.lit"
+                                to="romeo@montague.lit/orchard"
+                                id="${info_iq.getAttribute('id')}"
+                                type="result"
+                                xmlns="jabber:client">
+                            <query xmlns="${Strophe.NS.DISCO_INFO}">
+                                <identity category="conference" name="A Lonely Heath" type="text"/>
+                                <feature var="http://jabber.org/protocol/muc"/>
+                                <feature var="muc_passwordprotected"/>
+                                <feature var="muc_persistent"/>
+                                <x xmlns="jabber:x:data" type="result">
+                                    <field var="FORM_TYPE" type="hidden">
+                                        <value>http://jabber.org/protocol/muc#roominfo</value>
+                                    </field>
+                                    <field var="muc#roominfo_description" label="Description">
+                                        <value>Where the witches meet</value>
+                                    </field>
+                                    <field var="muc#roominfo_occupants" label="Number of occupants">
+                                        <value>3</value>
+                                    </field>
+                                </x>
+                            </query>
+                        </iq>`,
+                    ),
+                );
+
+                const info_el = await u.waitUntil(() => rooms[0].querySelector('div.room-info'));
+                expect(rooms[0].querySelector('.spinner-grow')).toBe(null);
+                expect(info_link.classList.contains('selected')).toBe(true);
+                const text = info_el.textContent;
+                expect(text).toContain('heath@chat.shakespeare.lit');
+                expect(text).toContain('Where the witches meet');
+                expect(text).toContain('3');
+                expect(text).toContain('Requires authentication');
+                expect(text).toContain('Permanent');
+                expect(rooms[1].querySelector('div.room-info')).toBe(null);
+
+                info_link.click();
+                await u.waitUntil(() => rooms[0].querySelector('div.room-info') === null);
+                expect(info_link.classList.contains('selected')).toBe(false);
+                expect(info_link.getAttribute('aria-expanded')).toBe('false');
+            },
+        ),
+    );
 });

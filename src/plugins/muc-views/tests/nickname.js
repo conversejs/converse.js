@@ -207,6 +207,15 @@ describe('A MUC', function () {
             expect(occupants.querySelectorAll('.occupant-nick').length).toBe(1);
             expect(occupants.querySelector('.occupant-nick').textContent.trim()).toBe('oldnick');
 
+            // A nickname that doesn't fit is cut off, and stays on one line.
+            const nick_el = occupants.querySelector('.occupant-nick');
+            const row = /** @type {HTMLElement} */ (nick_el.closest('.occupant-nick-badge'));
+            const height = nick_el.getBoundingClientRect().height;
+            row.style.maxWidth = '2em';
+            expect(nick_el.scrollWidth).toBeGreaterThan(nick_el.clientWidth);
+            expect(nick_el.getBoundingClientRect().height).toBe(height);
+            row.style.removeProperty('max-width');
+
             const csntext = await u.waitUntil(() => view.querySelector('.chat-content__notifications').textContent);
             expect(csntext.trim()).toEqual('oldnick has entered the groupchat');
 

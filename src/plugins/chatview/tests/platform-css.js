@@ -45,6 +45,10 @@ describe('A fullscreen chat', function () {
     );
 });
 
+// Not the theme the mocks pick at random: cyberpunk shows a focused input with a
+// glow, not an outline
+const OUTLINED_THEME = { theme: 'classic', dark_theme: 'classic' };
+
 describe('Keyboard focus', function () {
     it(
         'is visible on the message composer',
@@ -65,7 +69,9 @@ describe('Keyboard focus', function () {
 
     it(
         'is visible on the audio player controls, but a click does not show it',
-        mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
+        mock.initConverse(converse, ['chatBoxesFetched'], OUTLINED_THEME, async function (_converse) {
+            // A failed load would disable the controls, so load nothing
+            vi.spyOn(HTMLMediaElement.prototype, 'src', 'set').mockImplementation(() => {});
             const view = await openChat(_converse);
             await mock.sendMessage(_converse, view, 'https://conversejs.org/logo/audio.mp3');
             const mute = await u.waitUntil(() => view.querySelector('.audio-player__mute-btn'));

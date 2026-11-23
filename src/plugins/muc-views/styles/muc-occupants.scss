@@ -92,8 +92,12 @@
 
                             .occupant-nick {
                                 flex-grow: 2;
+                                // A nickname that doesn't fit is cut off with
+                                // an ellipsis, not wrapped in the middle.
+                                min-width: 0;
                                 overflow-x: hidden;
                                 text-overflow: ellipsis;
+                                white-space: nowrap;
                             }
 
                             .occupant-badges {

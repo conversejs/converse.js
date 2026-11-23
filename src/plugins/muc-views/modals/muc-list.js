@@ -1,7 +1,5 @@
 import BaseModal from 'plugins/modal/modal.js';
-import tplMUCDescription from '../templates/muc-description.js';
 import tplMUCList from '../templates/muc-list.js';
-import tplSpinner from 'templates/spinner.js';
 import { __ } from 'i18n';
 import { api, converse, log, u } from '@converse/headless';
 
@@ -9,54 +7,28 @@ const { sizzle } = converse.env;
 const { getAttributes } = u;
 
 /**
- * Insert groupchat info (based on returned #disco IQ stanza)
- * @param {HTMLElement} el - The HTML DOM element that contains the info.
+ * Parse the groupchat info returned in a disco#info IQ result.
+ * All MUC features are listed at https://xmpp.org/registrar/disco-features.html
  * @param {Element} stanza - The IQ stanza containing the groupchat info.
  */
-function insertRoomInfo(el, stanza) {
-    // All MUC features found here: https://xmpp.org/registrar/disco-features.html
-    el.querySelector('span.spinner').remove();
-    el.querySelector('a.room-info').classList.add('selected');
-    el.insertAdjacentHTML(
-        'beforeend',
-        u.getElementFromTemplateResult(
-            tplMUCDescription({
-                'jid': stanza.getAttribute('from'),
-                'desc': sizzle('field[var="muc#roominfo_description"] value', stanza).shift()?.textContent,
-                'occ': sizzle('field[var="muc#roominfo_occupants"] value', stanza).shift()?.textContent,
-                'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
-                'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
-                'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
-                'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
-                'open': sizzle('feature[var="muc_open"]', stanza).length,
-                'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
-                'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
-                'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
-                'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
-                'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
-                'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
-            }),
-        ),
-    );
-}
-
-/**
- * Show/hide extra information about a groupchat in a listing.
- * @param {Event} ev
- */
-function toggleRoomInfo(ev) {
-    const parent_el = u.ancestor(ev.target, '.room-item');
-    const div_el = parent_el.querySelector('div.room-info');
-    if (div_el) {
-        u.slideIn(div_el).then(u.removeElement);
-        parent_el.querySelector('a.room-info').classList.remove('selected');
-    } else {
-        parent_el.insertAdjacentElement('beforeend', u.getElementFromTemplateResult(tplSpinner()));
-        api.disco
-            .info(/** @type HTMLElement */ (ev.target).getAttribute('data-room-jid'), null)
-            .then(/** @param {Element} stanza */ (stanza) => insertRoomInfo(parent_el, stanza))
-            .catch(/** @param {Error} e */ (e) => log.error(e));
-    }
+function parseRoomInfo(stanza) {
+    const hasFeature = (/** @type {string} */ v) => sizzle(`feature[var="${v}"]`, stanza).length > 0;
+    return {
+        jid: stanza.getAttribute('from'),
+        desc: sizzle('field[var="muc#roominfo_description"] value', stanza).shift()?.textContent,
+        occ: sizzle('field[var="muc#roominfo_occupants"] value', stanza).shift()?.textContent,
+        hidden: hasFeature('muc_hidden'),
+        membersonly: hasFeature('muc_membersonly'),
+        moderated: hasFeature('muc_moderated'),
+        nonanonymous: hasFeature('muc_nonanonymous'),
+        open: hasFeature('muc_open'),
+        passwordprotected: hasFeature('muc_passwordprotected'),
+        persistent: hasFeature('muc_persistent'),
+        publicroom: hasFeature('muc_publicroom'),
+        semianonymous: hasFeature('muc_semianonymous'),
+        temporary: hasFeature('muc_temporary'),
+        unmoderated: hasFeature('muc_unmoderated'),
+    };
 }
 
 class MUCListModal extends BaseModal {
@@ -68,6 +40,12 @@ class MUCListModal extends BaseModal {
         super(options);
         this.items = [];
         this.loading_items = false;
+        /**
+         * Expanded groupchat info, keyed by groupchat JID.
+         * `null` means the info is still being fetched.
+         * @type {Map<string, ReturnType<typeof parseRoomInfo>|null>}
+         */
+        this.room_info = new Map();
     }
 
     initialize() {
@@ -87,6 +65,7 @@ class MUCListModal extends BaseModal {
                 'server_placeholder': this.model.get('muc_domain') || __('conference.example.org'),
                 'items': this.items,
                 'loading_items': this.loading_items,
+                'room_info': this.room_info,
                 'openRoom': (/** @type {MouseEvent} */ ev) => this.openRoom(ev),
                 'setDomainFromEvent': (/** @type {EventWithInputTarget} */ ev) => this.setDomainFromEvent(ev),
                 'submitForm': (/** @type {Event} */ ev) => this.showRooms(ev),
@@ -112,11 +91,27 @@ class MUCListModal extends BaseModal {
     }
 
     /**
+     * Show or hide extra information about a groupchat in the listing.
      * @param {MouseEvent} ev
      */
-    toggleRoomInfo(ev) {
+    async toggleRoomInfo(ev) {
         ev.preventDefault();
-        toggleRoomInfo(ev);
+        const jid = /** @type {Element} */ (ev.currentTarget).getAttribute('data-room-jid');
+        if (this.room_info.has(jid)) {
+            this.room_info.delete(jid);
+            this.requestUpdate();
+            return;
+        }
+        this.room_info.set(jid, null);
+        this.requestUpdate();
+        try {
+            const stanza = await api.disco.info(jid, null);
+            if (this.room_info.has(jid)) this.room_info.set(jid, parseRoomInfo(stanza));
+        } catch (e) {
+            log.error(e);
+            this.room_info.delete(jid);
+        }
+        this.requestUpdate();
     }
 
     onDomainChange() {
@@ -131,6 +126,7 @@ class MUCListModal extends BaseModal {
      */
     onRoomsFound(iq) {
         this.loading_items = false;
+        this.room_info.clear();
         const rooms = iq ? sizzle('query item', iq) : [];
         if (rooms.length) {
             this.model.set({ 'feedback_text': __('Groupchats found') }, { 'silent': true });

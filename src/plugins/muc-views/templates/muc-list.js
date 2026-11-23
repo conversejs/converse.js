@@ -2,6 +2,7 @@ import { __ } from 'i18n';
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import spinner from 'templates/spinner.js';
+import tplMUCDescription from './muc-description.js';
 
 const form = (o) => {
     const i18n_query = __('Show groupchats');
@@ -26,12 +27,18 @@ const form = (o) => {
     `;
 };
 
+/**
+ * @param {object} o
+ * @param {Record<string, string>} item
+ */
 const tplItem = (o, item) => {
     const i18n_info_title = __('Show more information on this groupchat');
     const i18n_open_title = __('Click to open this groupchat');
+    const expanded = o.room_info.has(item.jid);
+    const info = o.room_info.get(item.jid);
     return html`
         <li class="room-item list-group-item">
-            <div class="available-chatroom d-flex flex-row">
+            <div class="available-chatroom d-flex flex-row align-items-center">
                 <a
                     class="open-room available-room w-100"
                     @click=${o.openRoom}
@@ -42,13 +49,18 @@ const tplItem = (o, item) => {
                     >${item.name || item.jid}</a
                 >
                 <a
-                    class="room-info icon-room-info"
+                    class="room-info ${expanded ? 'selected' : ''}"
                     @click=${o.toggleRoomInfo}
                     data-room-jid="${item.jid}"
                     title="${i18n_info_title}"
+                    aria-label="${i18n_info_title}"
+                    aria-expanded="${expanded}"
+                    role="button"
                     href="#"
+                    ><converse-icon class="fa fa-info-circle" size="1em"></converse-icon
                 ></a>
             </div>
+            ${expanded ? (info ? tplMUCDescription(info) : spinner()) : ''}
         </li>
     `;
 };

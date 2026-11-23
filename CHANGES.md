@@ -158,6 +158,8 @@
 
 `chat.sendMessage()` now rejects with an error whose `code` gives the failure reason.
 
+`api.modal.remove()` no longer takes a modal instance, only the modal's name.
+
 The `converse-location-button` element and the toolbar's `show_fileupload_button` and `show_location_button` properties are removed. See the `getAttachmentMenuItems` hook.
  
 The `time_format` setting has been removed. Message times are now shown relative to the present

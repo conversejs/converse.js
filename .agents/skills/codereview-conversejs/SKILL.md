@@ -1,6 +1,6 @@
 ---
 name: codereview-conversejs
-description: Code review for Converse, the XMPP client (headless core, plugins, web UI, CLI, upstream dependencies). Use when reviewing Converse code, or a pull or merge request against the Converse repo (conversejs/converse.js). Checks plugin boundaries, OMEMO metadata leaks, API placement and headless portability, plus data structures, simplicity, breakage and tests.
+description: Code review for Converse, the XMPP client (headless core, plugins, web UI, CLI, upstream dependencies). Use when reviewing Converse code, or a pull or merge request against the Converse repo (conversejs/converse.js). Checks plugin boundaries, OMEMO metadata leaks, API placement, headless portability and the UI and headless boundary, plus data structures, simplicity, breakage and tests.
 triggers:
   - /codereview-conversejs
 ---
@@ -133,7 +133,49 @@ it must run in both the browser and Node.js. These block the merge:
 
 Front-end behaviour belongs in that front end. If a change puts it in
 headless so another front end can reuse it, check it is truly front-end
-neutral.
+neutral. The reverse also holds: protocol behaviour placed in a front end is
+a finding under 1.5.
+
+#### 1.5 The UI doesn't speak XMPP
+
+"If the UI builds the stanza, every other front end has to build it again."
+
+UI code (`src/plugins`, `src/apps`, `src/shared`, `src/templates`, `src/utils`)
+reads state from models and changes it through `api` methods. Protocol work
+belongs in `@converse/headless`. See "UI and headless boundary" in `AGENTS.md`.
+
+`npm run lint` already rejects UI code that builds or sends a stanza or
+registers a stanza handler, so don't repeat that check. Look for what it
+can't see:
+
+- A file added to the `no-restricted-properties` exemption list in
+  `.oxlintrc.json`, or an inline lint suppression for that rule. The list is
+  there to shrink.
+- UI code that reads a stanza it was handed: `sizzle` or `querySelector`
+  with an `xmlns` selector, a parameter typed `Element` that is a stanza,
+  an error inspected as `e.iq` or for a condition such as `not-allowed`.
+  Headless should return plain data and reject with an error that names the
+  condition.
+- UI code that hands XML to headless, such as form inputs converted with
+  `u.webForm2xForm`. It should pass `{ name, value }` pairs.
+- `api.connection.get()` in UI code, or anything read off or called on the
+  connection object. State belongs on a model the component can listen to,
+  and actions on an `api` method.
+- A new `api` method meant for a front end that takes a callback, an
+  `Element` or a model instance where an id would do, or returns something
+  that isn't plain data or a model.
+- A call site that uses the synchronous return value of a command.
+- A UI plugin with protocol logic and no templates or components. It
+  belongs in headless.
+
+Reading from a model (`model.get()`, methods that compute from attributes)
+is fine. These rules bind this repository, not third-party plugins.
+
+When a change moves logic into headless, check that its tests moved to the
+headless suite, and that a plugin which changed package was moved between
+the plugin lists in `src/shared/constants.js`,
+`src/headless/shared/constants.js` and
+`docs/src/content/docs/configuration.md`.
 
 ### 2. Data structures
 
@@ -205,11 +247,14 @@ Map each finding to one of:
 - **high**: core importing from a plugin, a metadata leak under legacy OMEMO,
   breaking headless in the browser or Node.js, a breaking API change, a real
   security or correctness bug, a wrong data structure, or changed behaviour
-  with no test.
+  with no test, a new entry in the `no-restricted-properties` lint exemption
+  list, or a suppression of that rule.
 - **medium**: a function on the wrong API surface, an API method that breaks
   the namespace convention, an avoidable cross-plugin
   dependency, an avoidable special case, a needless layer, an existing
-  mechanism ignored.
+  mechanism ignored, stanza parsing in UI code, connection object access
+  from the UI, a front-end `api` method with non-serialisable arguments, or
+  reliance on a command's synchronous result.
 - **low**: genuinely hurts maintainability but is minor. Omit pure style.
 
 If the change is sound, say so and stop. Do not manufacture findings.
@@ -225,9 +270,9 @@ Otherwise:
   could be cleaner), or needs improvement (violates fundamentals or a
   Converse constraint).
 - **Findings**, grouped by severity, each as `path:line`, a category
-  (leaky abstraction, OMEMO metadata, API surface, headless portability, data
-  structure, complexity, pragmatism, breaking change, security, testing), the
-  claim, the evidence in the code, and a concrete fix.
+  (leaky abstraction, OMEMO metadata, API surface, headless portability, UI
+  boundary, data structure, complexity, pragmatism, breaking change,
+  security, testing), the claim, the evidence in the code, and a concrete fix.
 - **Verdict**: worth merging, or needs rework.
 - **Key insight**: one sentence on the most important architectural
   observation.

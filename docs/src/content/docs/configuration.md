@@ -427,6 +427,7 @@ Headless core plugins:
     converse-omemo
     converse-ping
     converse-pubsub
+    converse-push
     converse-reactions
     converse-roster
     converse-smacks
@@ -453,7 +454,6 @@ View plugins (standard browser build):
     converse-notification
     converse-omemo-views
     converse-profile
-    converse-push
     converse-reaction-views
     converse-register
     converse-roomslist

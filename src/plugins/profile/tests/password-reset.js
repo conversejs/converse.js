@@ -159,4 +159,21 @@ describe('The profile modal', function () {
             expect(alert.textContent).toBe('You are not allowed to change your password');
         }),
     );
+
+    it(
+        'has no password reset tab when logged in with a mechanism that has no password',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            vi.spyOn(_converse.api.connection.get(), '_sasl_mechanism', 'get').mockReturnValue({
+                mechname: 'ANONYMOUS',
+            });
+            await mock.openControlBox(_converse);
+            const cbview = _converse.chatboxviews.get('controlbox');
+            cbview.querySelector('a.show-profile')?.click();
+            const modal = _converse.api.modal.get('converse-profile-modal');
+            await u.waitUntil(() => u.isVisible(modal));
+
+            expect(modal.querySelector('#profile-tab')).not.toBeNull();
+            expect(modal.querySelector('#passwordreset-tab')).toBeNull();
+        }),
+    );
 });

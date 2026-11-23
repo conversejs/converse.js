@@ -255,6 +255,28 @@ api.listen.on('openConversation', ({ view, jid, attrs }) => openConversationRout
 The Social app follows the same convention (`openSocialFeed`, `openMicroblogPost`). Use
 a hook instead of an event only when the call site genuinely needs a return value.
 
+### UI and headless boundary
+
+UI code (`src/plugins`, `src/apps`, `src/shared`, `src/templates`, `src/utils`) reads
+state from models and changes it through `api` methods. Protocol work belongs in
+`@converse/headless`, where the daemon, the CLI and other front ends can use it too.
+
+- **No stanzas in UI code.** Don't build, send or parse stanzas, and don't register
+  stanza handlers. Add an `api` method to the headless plugin that owns the feature
+  and call that. `npm run lint` catches the common ways of building and sending
+  stanzas and registering handlers (`no-restricted-properties` in
+  `.oxlintrc.json`), but not parsing, so don't take a lint pass as proof. The few
+  files still exempted there are to be migrated, not added to.
+- **Commands take and return plain data.** A new `api` method that the UI calls
+  takes serialisable arguments (no callbacks, no `Element`) and returns plain data
+  or a model.
+- **Don't depend on a command's synchronous return value.** Await it, or react to
+  the resulting model change.
+- **Reading from models is fine**: `model.get()` and methods that compute from
+  attributes.
+
+These rules bind the code in this repository, not third-party plugins.
+
 ### Import Patterns
 
 ```javascript

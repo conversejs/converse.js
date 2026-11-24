@@ -136,6 +136,9 @@ Users with modern browsers which properly support the
 should be automatically logged-in across page reloads and therefore maintain
 their sessions.
 
+This is done by the `converse-browser-credentials` plugin. To leave it out, add it to
+[blacklisted_plugins](/docs/configuration/#blacklisted_plugins).
+
 ### Using a cookie
 
 The main reason why users can get logged-out between page reloads is because we

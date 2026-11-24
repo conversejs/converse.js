@@ -119,6 +119,18 @@ converse.plugins.add('test-renewable-token', {
     },
 });
 
+// A source that vouches for the account, and only supplies its token when
+// logging in.
+converse.plugins.add('test-vouching', {
+    initialize() {
+        const { api } = this._converse;
+        api.listen.on('unattendedLogin', (_context, payload) => ({ ...payload, can_log_in: true }));
+        api.listen.on('beforeAttemptNonPreboundSession', (_context, payload) =>
+            payload.credentials ? payload : { ...payload, credentials: { password: 'token' } },
+        );
+    },
+});
+
 describe('A remembered session', function () {
     it(
         'is loaded from the cache on a page load without a network, and connects in the background',
@@ -426,6 +438,22 @@ describe('A remembered session', function () {
             const [jid, password] = vi.mocked(connection_proto.connect).mock.calls.at(-1);
             expect(Strophe.getBareJidFromJid(jid)).toBe('romeo@montague.lit');
             expect(password).toBe('stored');
+        }),
+    );
+
+    it(
+        "is loaded without asking the browser's credential store, if a plugin vouches for it",
+        mock.initConverse(converse, ['chatBoxesFetched'], {}, async (_converse) => {
+            const { api } = _converse;
+            await runFirstSession(_converse);
+
+            const get = vi.spyOn(navigator.credentials, 'get');
+            const trigger = vi.spyOn(api, 'trigger');
+            await reloadOffline(_converse, { password: undefined, whitelisted_plugins: ['test-vouching'] });
+
+            expect(countEvents(trigger, 'loadSessionCache')).toBe(1);
+            expect(get).not.toHaveBeenCalled();
+            expect(vi.mocked(connection_proto.connect).mock.calls.at(-1)[1]).toBe('token');
         }),
     );
 

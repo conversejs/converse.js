@@ -19,6 +19,13 @@ export type CredentialsHookPayload = {
     automatic?: boolean; // Whether Converse logs in by itself, for example at start-up
 };
 
+// The payload of the `fallbackLoginCredentials` hook, through which credential
+// sources of last resort supply the credentials to log in with.
+export type FallbackCredentialsHookPayload = CredentialsHookPayload & {
+    unattended?: boolean; // Whether the user must not be asked, since a remembered session is being resumed
+    jid?: string; // The remembered account's bare JID, if `unattended`
+};
+
 // The payload of the `unattendedLogin` hook, which asks whether the
 // remembered account can log in again without the user.
 export type UnattendedLoginPayload = {

@@ -376,8 +376,10 @@ rather than ending the session.
 Sources are asked in this order: credentials passed to `api.user.login()` (which include
 the `password` setting), then listeners registered by plugins, in the order the plugins
 were initialized. If none supplies credentials,
-Converse uses a password from an earlier attempt, then stored SCRAM keys, then the
-browser's credential store.
+Converse uses a password from an earlier attempt, then stored SCRAM keys. If it still has
+none, it asks the `fallbackLoginCredentials` hook, which has the same payload. That hook
+is for sources of last resort, such as the browser's credential store
+(the `converse-browser-credentials` plugin).
 
 When Converse starts on a device that remembers the session, it loads the session from
 the cache before connecting, but only if the account can log in again without the user
@@ -393,6 +395,10 @@ api.listen.on('unattendedLogin', (context, payload) => {
     return canLogInWithoutUser(payload.jid) ? { ...payload, can_log_in: true } : payload;
 });
 ```
+
+If no source vouches for the account, Converse asks the `fallbackLoginCredentials` hook
+here too, with `unattended` set and the remembered account's bare `jid` in the payload. A
+listener may then only supply credentials for that account, and must not ask the user.
 
 If your website decides which account logs in, as in the example above, it may hand over
 another account than the remembered one. Unless the start-up `named` the account, set

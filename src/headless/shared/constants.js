@@ -136,6 +136,7 @@ export const CORE_PLUGINS = [
     'converse-bookmarks',
     'converse-blocklist',
     'converse-bosh',
+    'converse-browser-credentials',
     'converse-caps',
     'converse-chat',
     'converse-chatboxes',

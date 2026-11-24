@@ -108,6 +108,7 @@ describe('converse-cli wait', () => {
             reactions: {},
             status: 'received',
             error_code: null,
+            delivered: null,
         });
     });
 });

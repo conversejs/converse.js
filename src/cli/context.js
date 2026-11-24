@@ -85,6 +85,7 @@ export function reportSend(result, { options, out, err, hello }) {
         out(formatJSON(result));
     } else if (result.outcome === 'sent') {
         out(`Sent to ${result.message.conversation} as ${result.message.id}\n`);
+        warnIfUnconfirmed(result.message, { err });
     } else if (result.outcome === 'pending') {
         out(
             `Not sent yet to ${result.message.conversation}: the connection dropped. ${result.message.id} ` +
@@ -103,6 +104,24 @@ export function reportSend(result, { options, out, err, hello }) {
         err(`converse-cli: ${result.message}\n`);
     }
     return EXIT_FOR_OUTCOME[result.outcome];
+}
+
+/**
+ * Says on stderr that a room didn't echo a message we just sent it, so that
+ * "sent" isn't read as "the room has it". A chat's message is confirmed only
+ * by a receipt, which many clients never send, so it isn't warned about.
+ * @param {import('@converse/daemon/types').MessageDTO} message
+ * @param {Pick<import('./types').Context, 'err'>} ctx
+ */
+export function warnIfUnconfirmed(message, { err }) {
+    // Only a room's messages have a nickname. A reaction returns the message it
+    // was sent to, which can be someone else's.
+    if (message.status !== 'sent' || message.nick === null || message.delivered) return;
+
+    err(
+        `converse-cli: warning: ${message.conversation} hasn't confirmed ${message.id} yet, so it may not ` +
+            'have reached the room. Check with read before sending it again.\n',
+    );
 }
 
 /**

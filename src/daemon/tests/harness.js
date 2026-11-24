@@ -129,6 +129,33 @@ export async function startDaemon({
     }
     const server = await answerServer();
 
+    // A room echoes each message it passes on back to its sender, with the
+    // stanza-id it gave it, which is how the daemon knows the room has it.
+    let room_echo = true;
+    const send = connection.send.bind(connection);
+    connection.send = (stanza) => {
+        const result = send(stanza);
+        const el = stanza.tree?.() ?? stanza;
+        if (room_echo && el.nodeName === 'message' && el.getAttribute('type') === 'groupchat') {
+            setTimeout(() => echo(el));
+        }
+        return result;
+    };
+    /** @param {Element} sent */
+    async function echo(sent) {
+        const room = sent.getAttribute('to');
+        const model = await api.rooms.get(room);
+        if (!model?.isEntered()) return;
+
+        const reflection = /** @type {Element} */ (sent.cloneNode(true));
+        reflection.setAttribute('from', `${room}/${model.get('nick')}`);
+        reflection.setAttribute('to', JID);
+        reflection.appendChild(
+            Strophe.xmlElement('stanza-id', { xmlns: Strophe.NS.SID, id: u.getUniqueId(), by: room }),
+        );
+        receive(reflection);
+    }
+
     /**
      * Waits for the presence that joins a room as `nick`. The room's disco#info
      * is the fake server's to answer.
@@ -195,6 +222,14 @@ export async function startDaemon({
                     <x xmlns="${Strophe.NS.MUC}"/>
                     <error type="auth"><${condition} xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
                 </presence>`);
+        },
+        /**
+         * Whether the rooms the daemon is in echo its messages back, as they
+         * do unless a spec says otherwise.
+         * @param {boolean} on
+         */
+        setRoomEcho(on) {
+            room_echo = on;
         },
         /** The running daemon. A spec that restarts it puts the new one here. */
         daemon,

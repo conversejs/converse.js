@@ -165,7 +165,11 @@ describe('Rooms on a real Prosody', () => {
         expect(refused).toMatchObject({ outcome: 'refused', rule: 'room_allowlist' });
 
         const sent = await romeo.requestFull('messages.send', { to: room, body: 'Is this the room?' });
-        expect(sent).toMatchObject({ outcome: 'sent', message: { conversation: room, from: `${room}/agent` } });
+        // The send waits for the room's echo, which confirms the room passed it on.
+        expect(sent).toMatchObject({
+            outcome: 'sent',
+            message: { conversation: room, from: `${room}/agent`, delivered: expect.any(String) },
+        });
 
         const received = await eventually(
             async () =>

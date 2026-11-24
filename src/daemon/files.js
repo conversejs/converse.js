@@ -8,7 +8,7 @@
  * @module @converse/daemon/files
  */
 import { getUploadService, uploadFile } from '@converse/headless';
-import { outcomeOf, sendMessage } from './send.js';
+import { checkSendType, confirmAndRecord, outcomeOf, refuseOccupant, sendMessage } from './send.js';
 import { ERRORS, MAX_UPLOAD_SIZE, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
 import { requireConnected } from './session.js';
@@ -25,32 +25,34 @@ const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
 export function fileMethods({ routeSend, audit, queueDraft }) {
     return {
         /**
-         * @param {{ to: string, name: string, content: string }} params - `content` is base64
+         * @param {{ to: string, name: string, content: string, type?: import('./types').SendType }} params
+         *  `content` is base64. `type` says whether it's for a MUC, as in "messages.send"
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>}
          */
         async 'files.upload'(params, client) {
             const upload = checkUpload(params);
+            const { type } = params;
+            await refuseOccupant(params.to, type);
             const jid = await resolveJID(params.to, 'to');
+            // Before anything is uploaded: the file would be shared nowhere.
+            await checkSendType(jid, type);
             return routeSend(client, jid, {
                 action: 'upload',
                 direct: async (routing) => {
                     const uploaded = await uploadContents(upload);
-                    const message = await sendMessage(jid, uploaded.url, {}, { oob_url: uploaded.url });
-                    const outcome = outcomeOf(message);
-                    audit.record({
-                        consumer: client.consumer,
-                        to: jid,
-                        outcome,
-                        id: message.id,
-                        action: 'upload',
-                        ...routing,
-                    });
-                    return { outcome, message };
+                    const message = await sendMessage(jid, uploaded.url, {}, { oob_url: uploaded.url }, type);
+                    /** @type {Omit<import('./types').AuditEntry, 'outcome'|'id'>} */
+                    const entry = { consumer: client.consumer, to: jid, action: 'upload', ...routing };
+                    return { outcome: outcomeOf(message), message: await confirmAndRecord(message, audit, entry) };
                 },
                 draft: async (routing) => {
                     const uploaded = await uploadContents(upload);
-                    return queueDraft(client, { to: jid, action: 'upload', body: uploaded.url }, routing);
+                    return queueDraft(
+                        client,
+                        { to: jid, ...(type ? { type } : {}), action: 'upload', body: uploaded.url },
+                        routing,
+                    );
                 },
             });
         },

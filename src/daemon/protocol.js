@@ -13,7 +13,7 @@
  * shape of the DTOs in `types.ts`: a field may be added within a version, but
  * never renamed, removed or given a new meaning.
  */
-export const PROTOCOL_VERSION = 2;
+export const PROTOCOL_VERSION = 3;
 
 /**
  * The largest file `files.upload` takes, before any server's own limit. It's
@@ -49,6 +49,8 @@ export const ERRORS = {
     CONFLICT: -32006, // The request clashes with what's happening now, such as approving a draft already being sent
     JOIN_REFUSED: -32007, // The room turned the join down: banned, nickname taken, or a password is needed
     BUSY: -32008, // The daemon is reading too many large requests already; sent with a null id
+    NOT_JOINED: -32009, // A send to a room we aren't in, or that turned out, from the room's answer, not to have us
+    UNDELIVERED: -32010, // The room turned a message down with an error; `data.condition` names it
 };
 
 /**

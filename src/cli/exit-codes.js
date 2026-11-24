@@ -12,4 +12,5 @@ export const EXIT = {
     DRAFT: 6, // Queued as a draft for approval rather than sent
     DAEMON_UNAVAILABLE: 7, // No daemon running, and none could be started, or it went away
     PENDING: 8, // Accepted, but not sent yet: it goes out once the daemon is connected again
+    NOT_JOINED: 9, // A send to a room the daemon isn't in
 };

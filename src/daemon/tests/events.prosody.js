@@ -53,6 +53,7 @@ describe('Event subscriptions on a real Prosody', () => {
                 reactions: {},
                 status: 'received',
                 error_code: null,
+                delivered: null,
             },
         });
     });

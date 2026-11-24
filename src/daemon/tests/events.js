@@ -97,6 +97,7 @@ describe('Event subscriptions', () => {
                     reactions: {},
                     status: 'received',
                     error_code: null,
+                    delivered: null,
                 },
             },
         ]);

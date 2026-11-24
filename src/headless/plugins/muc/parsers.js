@@ -407,6 +407,32 @@ export function parseMemberListIQ(iq) {
 }
 
 /**
+ * Parse the groupchat info returned in a disco#info IQ result.
+ * All MUC features are listed at https://xmpp.org/registrar/disco-features.html
+ * @param {Element} stanza - The IQ stanza containing the groupchat info.
+ * @returns {import('./types').MUCRoomInfo}
+ */
+export function parseRoomInfo(stanza) {
+    const hasFeature = (/** @type {string} */ v) => sizzle(`feature[var="${v}"]`, stanza).length > 0;
+    return {
+        jid: stanza.getAttribute('from'),
+        desc: sizzle('field[var="muc#roominfo_description"] value', stanza).shift()?.textContent,
+        occ: sizzle('field[var="muc#roominfo_occupants"] value', stanza).shift()?.textContent,
+        hidden: hasFeature('muc_hidden'),
+        membersonly: hasFeature('muc_membersonly'),
+        moderated: hasFeature('muc_moderated'),
+        nonanonymous: hasFeature('muc_nonanonymous'),
+        open: hasFeature('muc_open'),
+        passwordprotected: hasFeature('muc_passwordprotected'),
+        persistent: hasFeature('muc_persistent'),
+        publicroom: hasFeature('muc_publicroom'),
+        semianonymous: hasFeature('muc_semianonymous'),
+        temporary: hasFeature('muc_temporary'),
+        unmoderated: hasFeature('muc_unmoderated'),
+    };
+}
+
+/**
  * @param {Element} stanza - The presence stanza
  * @param {string} nick
  * @returns {import('./types').MUCPresenceItemAttributes}

@@ -181,3 +181,21 @@ export type ChannelSearchResult = {
     items: ChannelSearchItem[];
     last?: string; // Pass as `after` to fetch the next page. An empty page means there are no more.
 };
+
+// A groupchat's details, as given in its disco#info result (XEP-0045 §6.4)
+export type MUCRoomInfo = {
+    jid: string;
+    desc?: string; // muc#roominfo_description
+    occ?: string; // muc#roominfo_occupants
+    hidden: boolean;
+    membersonly: boolean;
+    moderated: boolean;
+    nonanonymous: boolean;
+    open: boolean;
+    passwordprotected: boolean;
+    persistent: boolean;
+    publicroom: boolean;
+    semianonymous: boolean;
+    temporary: boolean;
+    unmoderated: boolean;
+};

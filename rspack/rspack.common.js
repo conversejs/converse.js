@@ -69,7 +69,7 @@ export default {
                                 silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
                                 includePaths: [
                                     path.resolve(__dirname, '../node_modules/'),
-                                    path.resolve(__dirname, '../src/'),
+                                    path.resolve(__dirname, '../src/web/'),
                                 ],
                             },
                             sourceMap: true,
@@ -81,7 +81,7 @@ export default {
     },
     resolve: {
         extensions: ['.js'],
-        modules: ['node_modules', path.resolve(__dirname, '../src')],
+        modules: ['node_modules', path.resolve(__dirname, '../src/web')],
         alias: {
             'IPv6': path.resolve(__dirname, '../node_modules/urijs/src/IPv6'),
             'SecondLevelDomains': path.resolve(__dirname, '../node_modules/urijs/src/SecondLevelDomains'),

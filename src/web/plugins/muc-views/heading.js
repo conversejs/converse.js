@@ -211,7 +211,7 @@ export default class MUCHeading extends CustomElement {
         const { chatboxviews } = _converse.state;
         const el = chatboxviews.get(this.getAttribute('jid'));
         if (el) {
-            // This hook is described in src/plugins/chatview/heading.js
+            // This hook is described in src/web/plugins/chatview/heading.js
             return _converse.api.hook('getHeadingButtons', el, buttons);
         } else {
             return Promise.resolve(buttons); // Happens during tests

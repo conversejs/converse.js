@@ -7,7 +7,7 @@
     "src/log/",
     "src/daemon/",
     "src/cli/",
-    "src/types/**/*",
+    "src/web/types/**/*",
     "src/website.js"
   ],
   "compilerOptions": {
@@ -27,7 +27,7 @@
     "declarationMap": true,
 
     "rootDir": "./src",
-    "outDir": "./src/types/",
+    "outDir": "./src/web/types/",
     // Bare imports such as `shared/components/element.js` resolve through the
     // catch-all entry, which replaces the `baseUrl` that TypeScript 6 deprecates.
     "paths": {
@@ -37,7 +37,7 @@
       // bundle, as consumers see it.
       "@converse/headless": ["./src/headless/index.js"],
       "@converse/skeletor": ["./node_modules/@converse/skeletor/dist/skeletor.d.ts"],
-      "*": ["./src/*"]
+      "*": ["./src/web/*"]
     },
 
     "esModuleInterop": true,

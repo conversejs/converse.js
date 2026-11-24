@@ -9,7 +9,7 @@ UIs could be implemented. The UI implemented in this monorepo being only one of 
 
 The `@converse/headless` package resolves to the built bundle (`dist/converse-headless.js`),
 **not** to individual source files. Importing from relative paths pointing to `src/headless/`
-back into the main package like `src/plugins` is forbidden since they cross the package boundary.
+back into the main package like `src/web/plugins` is forbidden since they cross the package boundary.
 
 The `package.json` exports map does not expose subpaths beyond `"."` and `"./dist/*"`, so deep
 imports like `@converse/headless/plugins/reactions/utils.js` would also fail at runtime.

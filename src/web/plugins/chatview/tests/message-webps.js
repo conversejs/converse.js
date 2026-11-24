@@ -4,7 +4,7 @@ import converse from '../../../../dist/converse.js';
 
 const { u } = converse.env;
 
-const fixtures = `${location.origin}/base/src/shared/webp/tests/fixtures`;
+const fixtures = `${location.origin}/base/src/web/shared/webp/tests/fixtures`;
 const animated_url = `${fixtures}/animated.webp`;
 const static_url = `${fixtures}/static.webp`;
 const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';

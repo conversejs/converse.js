@@ -19,7 +19,7 @@ import {
     waitForRoster,
     waitUntilBookmarksReturned,
     waitUntilDiscoConfirmed,
-} from '../../headless/tests/mock.js';
+} from '../../../headless/tests/mock.js';
 
 const blobSlice = Blob.prototype.slice;
 const unreadable_file_names = new Set();

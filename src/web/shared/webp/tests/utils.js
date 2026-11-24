@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { decodeWebP, fetchAnimatedWebP, isAnimatedWebPHeader } from 'shared/webp/utils.js';
 
-const fixtures = `${location.origin}/base/src/shared/webp/tests/fixtures`;
+const fixtures = `${location.origin}/base/src/web/shared/webp/tests/fixtures`;
 
 /**
  * @param {string} name

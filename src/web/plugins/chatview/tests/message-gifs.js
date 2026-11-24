@@ -29,7 +29,7 @@ describe('A Chat Message', function () {
         'plays an animated GIF frame by frame, and pauses and resumes it when clicked',
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             await mock.waitForRoster(_converse, 'current');
-            const gif_url = `${location.origin}/base/src/shared/gif/tests/fixtures/animated.gif`;
+            const gif_url = `${location.origin}/base/src/web/shared/gif/tests/fixtures/animated.gif`;
             const contact_jid = mock.cur_names[0].replace(/ /g, '.').toLowerCase() + '@montague.lit';
             await mock.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);

@@ -13,7 +13,7 @@
   "globals": {
     "sinon": "readonly"
   },
-  "ignorePatterns": ["**/dist/**", "src/types/**", "src/headless/types/**"],
+  "ignorePatterns": ["**/dist/**", "src/web/types/**", "src/headless/types/**"],
   "rules": {
     "constructor-super": "error",
     "for-direction": "error",
@@ -226,18 +226,18 @@
       }
     },
     {
-      "files": ["src/shared/qrcode/**"],
+      "files": ["src/web/shared/qrcode/**"],
       "rules": {
         "max-depth": "off"
       }
     },
     {
       "files": [
-        "src/plugins/**/*.js",
-        "src/apps/**/*.js",
-        "src/shared/**/*.js",
-        "src/templates/**/*.js",
-        "src/utils/**/*.js"
+        "src/web/plugins/**/*.js",
+        "src/web/apps/**/*.js",
+        "src/web/shared/**/*.js",
+        "src/web/templates/**/*.js",
+        "src/web/utils/**/*.js"
       ],
       "rules": {
         "no-restricted-properties": [
@@ -289,12 +289,12 @@
     {
       "files": [
         "src/**/tests/**",
-        "src/plugins/muc-views/modals/templates/muc-config.js",
-        "src/plugins/profile/password-reset.js",
-        "src/plugins/profile/utils.js",
-        "src/plugins/reactions-views/utils.js",
-        "src/plugins/register/form.js",
-        "src/utils/form.js"
+        "src/web/plugins/muc-views/modals/templates/muc-config.js",
+        "src/web/plugins/profile/password-reset.js",
+        "src/web/plugins/profile/utils.js",
+        "src/web/plugins/reactions-views/utils.js",
+        "src/web/plugins/register/form.js",
+        "src/web/utils/form.js"
       ],
       "rules": {
         "no-restricted-properties": "off"

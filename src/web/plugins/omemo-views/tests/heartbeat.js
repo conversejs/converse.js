@@ -4,7 +4,7 @@
  * payload-less) OMEMO message to forward the ratchet.
  *
  * The ratchet counter/key reported on decryption are driven by
- * `window.libomemo.mock_ratchet` (see src/shared/tests/mock.js).
+ * `window.libomemo.mock_ratchet` (see src/web/shared/tests/mock.js).
  */
 import mock from '../../../shared/tests/mock.js';
 import converse from '../../../../dist/converse.js';

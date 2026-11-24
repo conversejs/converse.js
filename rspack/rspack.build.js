@@ -10,8 +10,8 @@ const buildConfig = (_env, argv) => {
     return merge(common, {
         mode: isDev ? 'development' : 'production',
         entry: {
-            'converse': path.resolve(__dirname, '../src/index.js'),
-            'converse.min': path.resolve(__dirname, '../src/index.js'),
+            'converse': path.resolve(__dirname, '../src/web/index.js'),
+            'converse.min': path.resolve(__dirname, '../src/web/index.js'),
         },
         devtool: isDev ? 'cheap-module-source-map' : 'source-map',
         output: {
@@ -92,7 +92,7 @@ const buildConfig = (_env, argv) => {
                                     silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
                                     includePaths: [
                                         path.resolve(__dirname, '../node_modules/'),
-                                        path.resolve(__dirname, '../src/'),
+                                        path.resolve(__dirname, '../src/web/'),
                                     ],
                                 },
                                 sourceMap: true,
@@ -108,7 +108,7 @@ const buildConfig = (_env, argv) => {
                 path: false,
                 crypto: false,
             },
-            modules: [path.resolve(__dirname, '../node_modules/'), path.resolve(__dirname, '../src/')],
+            modules: [path.resolve(__dirname, '../node_modules/'), path.resolve(__dirname, '../src/web/')],
         },
         plugins: [
             new IgnoreChunkImportsPlugin(),
@@ -137,7 +137,7 @@ const buildConfig = (_env, argv) => {
                     { from: 'logo/conversejs-filled-512.svg', to: 'images/logo' },
                     { from: 'logo/conversejs-filled.svg', to: 'images/logo' },
                     { from: 'logo/conversejs-gold-gradient.svg', to: 'images/logo' },
-                    { from: 'src/shared/styles/webfonts', to: 'webfonts' },
+                    { from: 'src/web/shared/styles/webfonts', to: 'webfonts' },
                     { from: 'manifest.json', to: 'manifest.json' },
                     { from: 'src/headless/plugins/emoji/emoji.json', to: 'emoji.json' },
                 ],

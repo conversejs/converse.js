@@ -17,6 +17,6 @@ function addStylesheet(href) {
 }
 
 addStylesheet('/dist/converse.css');
-addStylesheet('/base/src/shared/tests/tests.css');
+addStylesheet('/base/src/web/shared/tests/tests.css');
 
 document.title = 'Converse Tests';

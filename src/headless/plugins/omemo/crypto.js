@@ -42,7 +42,7 @@ export function getCrypto() {
         return _promise;
     }
 
-    // In tests, window.libomemo is set by the mock (src/shared/tests/mock.js)
+    // In tests, window.libomemo is set by the mock (src/web/shared/tests/mock.js)
     if (typeof window !== 'undefined' && window.libomemo) {
         _promise = Promise.resolve(/** @type {typeof import('libomemo.js')} */ (window.libomemo));
         return _promise;

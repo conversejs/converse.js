@@ -77,7 +77,7 @@ async function fetchTranslations() {
         return;
     }
     const { default: data } = await import(
-        /*webpackChunkName: "locales/[request]" */ `../i18n/locales/${locale}/LC_MESSAGES/converse.po`
+        /*webpackChunkName: "locales/[request]" */ `../../i18n/locales/${locale}/LC_MESSAGES/converse.po`
     );
 
     const dayjs_locale = getDayJSLocale(locale);

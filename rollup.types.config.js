@@ -35,7 +35,7 @@ const packages = {
         // so both export conditions share this bundle.
         bundle('src/headless/types/index.d.ts', 'src/headless/dist/converse-headless.d.ts'),
     ],
-    ui: [bundle('src/types/index.d.ts', 'dist/converse.d.ts')],
+    ui: [bundle('src/web/types/web/index.d.ts', 'dist/converse.d.ts')],
 };
 
 /** @param {{ configPackage?: string }} args */

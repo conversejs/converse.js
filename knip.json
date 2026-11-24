@@ -10,12 +10,12 @@
     ".": {
       "entry": [
         "src/website.js!",
-        "src/shared/styles/website.scss!",
+        "src/web/shared/styles/website.scss!",
         "src/**/tests/**/*.js",
         "vitest/*.js",
         "scripts/*.{js,mjs}"
       ],
-      "project": ["src/**/*.{js,ts,scss,sass}!", "!src/types/**"],
+      "project": ["src/**/*.{js,ts,scss,sass}!", "!src/web/types/**"],
       "includeSubpathExports": true,
       "ignoreUnresolved": ["../../../../dist/converse.js"],
       "ignoreDependencies": ["@converse/skeletor", "strophe.js", "lit-html", "@vitest/browser", "clean-css-cli"],

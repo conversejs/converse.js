@@ -140,7 +140,7 @@ a finding under 1.5.
 
 "If the UI builds the stanza, every other front end has to build it again."
 
-UI code (`src/plugins`, `src/apps`, `src/shared`, `src/templates`, `src/utils`)
+UI code (everything under `src/web/`)
 reads state from models and changes it through `api` methods. Protocol work
 belongs in `@converse/headless`. See "UI and headless boundary" in `AGENTS.md`.
 
@@ -173,7 +173,7 @@ is fine. These rules bind this repository, not third-party plugins.
 
 When a change moves logic into headless, check that its tests moved to the
 headless suite, and that a plugin which changed package was moved between
-the plugin lists in `src/shared/constants.js`,
+the plugin lists in `src/web/shared/constants.js`,
 `src/headless/shared/constants.js` and
 `docs/src/content/docs/configuration.md`.
 

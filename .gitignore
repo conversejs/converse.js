@@ -2,7 +2,7 @@
 dist
 
 # Per-file declarations that `npm run types` emits and bundles into dist/
-/src/types/
+/src/web/types/
 /src/headless/types/
 
 # SQLite databases written by @converse/skeletor when headless runs under Node

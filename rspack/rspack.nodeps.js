@@ -9,7 +9,7 @@ export default merge(common, {
         minimize: false,
     },
     entry: {
-        'converse-no-dependencies': path.resolve(__dirname, '../src/index.js'),
+        'converse-no-dependencies': path.resolve(__dirname, '../src/web/index.js'),
     },
     plugins: [
         new rspack.CssExtractRspackPlugin({ filename: 'tmp.css' }),

@@ -186,8 +186,8 @@ dist/converse.js:: src rspack/rspack.build.js rspack/rspack.common.js node_modul
 dist/converse.css:: src rspack/rspack.build.js rspack/rspack.common.js node_modules @converse/headless
 	npm run build
 
-dist/website.css:: node_modules src/shared/styles/website.scss
-	$(SASS) --load-path=$(BOOTSTRAP) src/shared/styles/website.scss $@
+dist/website.css:: node_modules src/web/shared/styles/website.scss
+	$(SASS) --load-path=$(BOOTSTRAP) src/web/shared/styles/website.scss $@
 
 dist/website.min.css:: node_modules dist/website.css
 	$(CLEANCSS) dist/website.css > $@

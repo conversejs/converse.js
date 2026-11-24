@@ -15,7 +15,7 @@ const i18nStub = {
      * with the passed in arguments.
      *
      * If you install the full version of Converse, then this method gets
-     * overwritten in src/i18n/index.js to return a translated string.
+     * overwritten in src/web/i18n/index.js to return a translated string.
      * @method __
      * @private
      * @memberOf i18n

@@ -60,9 +60,18 @@ const api = {
 
             // `api.connection.retry()` leaves a login alone that's still getting ready.
             return connection.whilePreparing(async () => {
-                if (api.settings.get('connection_options')?.worker && (await connection.restoreWorkerSession())) {
-                    return;
-                }
+                /**
+                 * *Hook* through which a plugin attaches to a session that
+                 * already exists elsewhere, such as one held by a shared
+                 * worker, before anything else is done to log in. A plugin
+                 * that attached sets `attached` on the payload.
+                 * @event _converse#attachSession
+                 * @param {null} context
+                 * @param {import('./types').AttachSessionPayload} payload
+                 */
+                const { attached } = await api.hook('attachSession', null, { attached: false });
+                if (attached) return;
+
                 if (jid) {
                     jid = await setUserJID(jid);
                 }

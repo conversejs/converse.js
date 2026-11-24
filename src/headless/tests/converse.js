@@ -134,6 +134,22 @@ describe('Converse', function () {
                 expect(finish).toHaveBeenCalledOnce();
             }),
         );
+
+        it(
+            'is called at start-up with keepalive, whichever transport is used',
+            mock.initConverse(converse, [], { auto_login: false }, async (_converse) => {
+                const { api } = _converse;
+                const login = vi.spyOn(api.user, 'login').mockResolvedValue(undefined);
+
+                await converse.initialize({
+                    bosh_service_url: 'montague.lit/http-bind',
+                    auto_login: false,
+                    keepalive: true,
+                    blacklisted_plugins: ['converse-bosh'],
+                });
+                expect(login).toHaveBeenCalledWith(null, null, { automatic: true });
+            }),
+        );
     });
 
     describe('The "user.logout" method', function () {

@@ -152,6 +152,7 @@ export const CORE_PLUGINS = [
     'converse-push',
     'converse-reactions',
     'converse-roster',
+    'converse-shared-worker',
     'converse-smacks',
     'converse-status',
     'converse-time',

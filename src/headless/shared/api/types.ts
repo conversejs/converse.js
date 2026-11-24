@@ -29,3 +29,9 @@ export type ConverseEnv = {
 export type LoginOptions = {
     automatic?: boolean; // Whether Converse logs in by itself at start-up, rather than the user logging in
 };
+
+// The payload of the `attachSession` hook, through which a plugin attaches to
+// a session that already exists elsewhere, such as in a shared worker.
+export type AttachSessionPayload = {
+    attached: boolean; // Set by the plugin that attached
+};

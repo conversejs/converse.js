@@ -109,6 +109,7 @@ When a BOSH session is initially created, you'll receive three tokens. A JID (ja
 Converse needs these tokens in order to attach to that same session.
 
 In addition to setting [authentication](#authentication) to `prebind`, you'll also need to set the [prebind_url](#prebind_url) and [bosh_service_url](#bosh_service_url).
+Prebind is done by the `converse-bosh` plugin, so it only works in a browser, with that plugin enabled.
 
 Here's an example of Converse being initialized with these options:
 
@@ -431,6 +432,7 @@ Headless core plugins:
     converse-push
     converse-reactions
     converse-roster
+    converse-shared-worker
     converse-smacks
     converse-status
     converse-vcard
@@ -599,6 +601,9 @@ converse.initialize({
     connection_options: { worker: '/dist/shared-connection-worker.js' },
 });
 ```
+
+Logging in attaches to the worker's connection if it has one. This is done by the
+`converse-shared-worker` plugin, so logging in fails if that plugin isn't loaded.
 
 ### csi_waiting_time
 
@@ -870,6 +875,9 @@ This value may be provided together with a `password` when setting `auto_login` 
 - Default: `true`
 
 Determines whether Converse will attempt to keep you logged in across page loads.
+
+In a browser, Converse then restores that session at start-up, even without
+[auto_login](#auto_login). Starting a new session at start-up still needs `auto_login`.
 
 ### locales
 

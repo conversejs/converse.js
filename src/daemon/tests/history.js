@@ -76,6 +76,7 @@ describe('Reading history', () => {
                 reactions: {},
                 status: 'received',
                 error_code: null,
+                delivered: null,
             })),
         );
     });

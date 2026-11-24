@@ -26,6 +26,8 @@ export type Options = {
     'reply-to'?: string; // The id of the message a send replies to
     correct?: string; // The id of our message a send corrects
     at?: string; // When a send is scheduled for
+    muc?: boolean; // Send to a MUC
+    chat?: boolean; // Send to one person, never to a MUC
     unencrypted?: boolean; // Resend without encryption
     remove?: boolean; // Withdraw a reaction
     nick?: string; // The nickname to join a room with

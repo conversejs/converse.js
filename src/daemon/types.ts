@@ -176,14 +176,20 @@ export type MessageDTO = {
     // in a room, or the room's opaque occupant id if the occupant isn't known.
     reactions: Record<string, string[]>;
     // "received" for a message from someone else, "sent" for one of ours that
-    // went out, "failed" for one of ours that didn't, and "pending" for one of
-    // ours that was written without a connection and is sent once there is one.
-    // A failed or pending send stays in the history, but it isn't counted in
-    // the inbox, unread counts or activity.
+    // went out, "failed" for one of ours that didn't, or that a room turned
+    // down, and "pending" for one of ours that was written without a connection
+    // and is sent once there is one. A failed or pending send stays in the
+    // history, but it isn't counted in the inbox, unread counts or activity.
     status: 'received' | 'sent' | 'failed' | 'pending';
     // Why a failed send failed, as headless names it, such as "no-omemo-devices".
-    // Null for any other message.
+    // For a send a room didn't take, "not-in-room", or the room's error
+    // condition, such as "forbidden". Null for any other message.
     error_code: string | null;
+    // When one of our messages was confirmed, ISO 8601: in a room, when the
+    // room echoed it back to us; in a chat, when the recipient's client sent a
+    // receipt (XEP-0184), which not every client does. A correction is
+    // confirmed afresh. Null until then, and for a message from someone else.
+    delivered: string | null;
 };
 
 /**
@@ -219,6 +225,9 @@ export type SearchResult = {
     messages: MessageDTO[]; // Oldest first, each naming its conversation
 };
 
+// What a send says it's for: a MUC ("groupchat"), or one person ("chat").
+export type SendType = 'chat' | 'groupchat';
+
 /**
  * A send the agent asked for that didn't go to its recipient. In "owner_only"
  * and "bot" modes it went to the owner as text, and the owner sends it
@@ -229,6 +238,7 @@ export type SearchResult = {
 export type Draft = {
     id: string; // Short, and unique for the account, e.g. "d17"
     to: string; // Bare JID
+    type?: SendType; // As the send that queued it said, if it did
     consumer: string | null; // Who queued it
     created: string; // ISO 8601
 } & DraftAction;
@@ -293,7 +303,8 @@ export type ScheduleDTO = {
 export type AuditEntry = {
     consumer: string | null;
     to: string; // Bare JID
-    outcome: 'sent' | 'pending' | 'refused' | 'draft' | 'rejected';
+    // "failed" for a send the room didn't take: it's kept as a failed send
+    outcome: 'sent' | 'pending' | 'refused' | 'draft' | 'rejected' | 'failed';
     id?: string; // The DTO id, for a send
     draft?: string; // The draft's id, for a draft, a rejection, or a draft sent on approval
     approved_by?: Access; // For a draft sent on approval ("as_user" mode): the access level that approved it
@@ -303,6 +314,7 @@ export type AuditEntry = {
     mode?: Mode; // For a restricted send, a refusal of one, or a draft's rejection or approval
     route?: Route; // For a restricted send that was sent or drafted, and a draft's rejection or approval
     unencrypted?: boolean; // For a resend of a failed send in the clear
+    error_code?: string; // For a failed send, as in MessageDTO's error_code
 };
 
 export type Hello = {

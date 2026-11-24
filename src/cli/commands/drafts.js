@@ -65,7 +65,7 @@ export const DRAFTS_COMMANDS = {
             'In the other modes the text of a draft went to the owner, who sends it from their ' +
             'own client, so this fails.',
         args: [DRAFT_ID],
-        exits: [EXIT.NOT_FOUND],
+        exits: [EXIT.NOT_FOUND, EXIT.NOT_JOINED],
         examples: ['converse-cli drafts send d17'],
         async run(ctx) {
             const id = takeOne(ctx, 'draft id');

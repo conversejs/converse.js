@@ -8,13 +8,18 @@ import { findMessage, findOwn, findTarget, notRetracted, ownedBy } from './find.
 import { hasArchivedMessages, isMessage } from './history.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { resolveJID } from './resolve.js';
+import { notJoined } from './routing.js';
 import { searchMessages } from './search.js';
 import { getChats, getRooms, requireConnected, rosterLoaded } from './session.js';
 import {
     attempt,
     checkMessage,
+    checkSendType,
+    confirmAndRecord,
     ownMessagesOnly,
     outcomeOf,
+    refuseOccupant,
+    rememberDeliveredVersion,
     resendUnencrypted,
     retractMessage,
     sendMessage,
@@ -140,18 +145,23 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
          * @param {string} [params.correct] - The id of one of our messages in the conversation, which
          *  this replaces. Only "as_user" mode drafts a correction. Elsewhere it's only sent directly.
          * @param {unknown} [params.at] - Refused: a later send is for "schedules.create"
+         * @param {import('./types').SendType} [params.type] - "groupchat" for a MUC, "chat" for one
+         *  person. Without it, a MUC the daemon knows gets a MUC message, and any other JID a chat.
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').SendResult>}
          */
-        async 'messages.send'({ to, body, reply_to, correct, at }, client) {
+        async 'messages.send'({ to, body, reply_to, correct, at, type }, client) {
             // Refused, rather than ignored, which would send now what was meant for later.
             if (at !== undefined) {
                 throw new RPCError(ERRORS.INVALID_PARAMS, '"at" is for "schedules.create", which sends it later.', {
                     see: ['schedules.create'],
                 });
             }
+            await refuseOccupant(to, type);
             const jid = await resolveJID(to, 'to');
             checkMessage(body, reply_to, correct, 'send');
+            // Before it's drafted too: a draft that can't go where it's meant to is no use.
+            await checkSendType(jid, type);
             const replying_to = reply_to === undefined ? undefined : await findTarget(reply_to, jid);
             /** @type {import('./types').SendRoute} */
             const send = async (routing) => {
@@ -160,17 +170,9 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
                 const target = replying_to ?? correcting;
                 /** @type {{ action?: 'reply'|'correct', target?: string }} */
                 const action = target ? { action: replying_to ? 'reply' : 'correct', target: getID(target) } : {};
-                const dto = await sendMessage(jid, body, { replying_to, correcting });
-                const outcome = outcomeOf(dto);
-                audit.record({
-                    consumer: client.consumer,
-                    to: jid,
-                    outcome,
-                    id: dto.id,
-                    ...action,
-                    ...routing,
-                });
-                return { outcome, message: dto };
+                const dto = await sendMessage(jid, body, { replying_to, correcting }, {}, type);
+                const entry = { consumer: client.consumer, to: jid, ...action, ...routing };
+                return { outcome: outcomeOf(dto), message: await confirmAndRecord(dto, audit, entry) };
             };
             const draft = async (routing) => {
                 const correcting = correct === undefined ? undefined : await findOwn(correct, jid, 'correct');
@@ -180,7 +182,7 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
                 const action = target
                     ? { action: replying_to ? 'reply' : 'correct', body, target: target.id }
                     : { action: 'send', body };
-                return queueDraft(client, { to: jid, ...action }, routing, target);
+                return queueDraft(client, { to: jid, ...(type ? { type } : {}), ...action }, routing, target);
             };
             return routeSend(client, jid, {
                 direct: send,
@@ -303,20 +305,21 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
 
             const chatbox = message.collection.chatbox;
             const to = chatbox.get('jid');
+            const room = await api.rooms.get(to);
+            if (room && !room.isEntered()) throw notJoined(to);
+            rememberDeliveredVersion(message);
             await attempt(() =>
                 unencrypted ? resendUnencrypted(chatbox, message) : chatbox.resendFailedMessage(message),
             );
             const dto = toMessageDTO(message);
-            const outcome = outcomeOf(dto);
-            audit.record({
+            /** @type {Omit<import('./types').AuditEntry, 'outcome'|'id'>} */
+            const entry = {
                 consumer: client.consumer,
                 to,
-                outcome,
-                id: dto.id,
                 action: 'resend',
                 ...(unencrypted ? { unencrypted: true } : {}),
-            });
-            return { outcome, message: dto };
+            };
+            return { outcome: outcomeOf(dto), message: await confirmAndRecord(dto, audit, entry) };
         },
 
         /**

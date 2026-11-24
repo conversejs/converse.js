@@ -87,6 +87,7 @@ describe('converse-cli read and send', () => {
                 reactions: {},
                 status: 'received',
                 error_code: null,
+                delivered: null,
             },
         ]);
     });

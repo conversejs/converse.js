@@ -2262,19 +2262,33 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             from_muc: attrs.from_muc,
         };
 
+        /**
+         * Only the reflection of the version we sent last confirms it, not a late one
+         * of an earlier version. Each correction gets a new origin-id.
+         * @param {boolean} is_correction - Whether the reflection is of a correction
+         */
+        const confirms = (is_correction) =>
+            !message.get('received') &&
+            (attrs.origin_id ? attrs.origin_id === message.get('origin_id') : is_correction || !message.get('edited'));
+
         if (this.isMUCReflectedMessage(message, attrs)) {
             const stanza_id_keys = Object.keys(getStanzaIDsByJID(attrs)).map((by_jid) => `stanza_id ${by_jid}`);
             return {
                 ...new_attrs,
                 ...pick(attrs, [...stanza_id_keys, 'occupant_id']),
-                ...(message.get('received') ? {} : { received: new Date().toISOString() }),
+                ...(confirms(false) ? { received: new Date().toISOString() } : {}),
                 // Once corrected, the message's original body is out of date
                 ...(attrs.body !== undefined && !message.get('edited') ? { body: attrs.body } : {}),
             };
         } else if (this.isOwnMessage(attrs) && attrs.replace_id === message.get('msgid')) {
             // The room reflected our correction of this message. The message keeps
-            // its original stanza-id and gains that of the correction.
-            return { ...new_attrs, correction_stanza_ids: message.getCorrectionStanzaIDs(attrs) };
+            // its original stanza-id and gains that of the correction. Sending the
+            // correction cleared `received`, which its reflection sets again.
+            return {
+                ...new_attrs,
+                correction_stanza_ids: message.getCorrectionStanzaIDs(attrs),
+                ...(confirms(true) ? { received: new Date().toISOString() } : {}),
+            };
         }
         return new_attrs;
     }

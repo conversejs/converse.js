@@ -100,6 +100,42 @@ describe('A MUC message', function () {
     );
 
     it(
+        'is marked received again when the MUC reflects a correction of it',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            const muc_jid = 'room@muc.example.com';
+            const model = await mock.openAndEnterMUC(_converse, muc_jid, 'romeo');
+            const connection = _converse.api.connection.get();
+            /** Reflects what we sent, as the MUC does: with its origin-id, and a stanza-id of its own. */
+            const reflectLastSent = () => {
+                const sent = connection.sent_stanzas.filter((s) => s.nodeName === 'message' && s.querySelector('body'));
+                const reflection = sent.at(-1).cloneNode(true);
+                reflection.setAttribute('from', `${muc_jid}/romeo`);
+                reflection.setAttribute('to', connection.jid);
+                reflection.appendChild(
+                    stx`<stanza-id xmlns="urn:xmpp:sid:0" id="${u.getUniqueId()}" by="${muc_jid}"/>`.tree(),
+                );
+                connection._dataRecv(mock.createRequest(_converse, reflection));
+                return reflection;
+            };
+
+            const message = await model.sendMessage({ body: 'hello world' });
+            const original = reflectLastSent();
+            await u.waitUntil(() => message.get('received'));
+
+            await model.sendMessage({ body: 'hello there' }, { correcting: message });
+            expect(message.get('received')).toBeUndefined();
+            // A repeat of the original's reflection doesn't confirm the correction.
+            connection._dataRecv(mock.createRequest(_converse, original));
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            expect(message.get('received')).toBeUndefined();
+            reflectLastSent();
+            await u.waitUntil(() => message.get('received'));
+            expect(model.messages.length).toBe(1);
+            expect(message.get('body')).toBe('hello there');
+        }),
+    );
+
+    it(
         "is rejected if it's an unencapsulated forwarded message",
         mock.initConverse(converse, ['chatBoxesFetched'], {}, async function (_converse) {
             const muc_jid = 'lounge@montague.lit';

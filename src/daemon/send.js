@@ -3,14 +3,41 @@
  * errors that a send which didn't go out is reported with.
  * @module @converse/daemon/send
  */
-import { api, converse } from '@converse/headless';
-import { toMessageDTO } from './dto.js';
+import { api, constants, converse } from '@converse/headless';
+import { getIDs, toMessageDTO } from './dto.js';
 import { notRetracted } from './find.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { notJoined } from './routing.js';
-import { requireConnected } from './session.js';
+import { getRooms, requireConnected } from './session.js';
 
-const { u } = converse.env;
+const { Strophe, u } = converse.env;
+
+/**
+ * The version of each message being corrected that its recipients have. Headless
+ * forgets it once a correction goes out, but a room can still turn the
+ * correction down, and discarding it must then bring that version back.
+ * @type {WeakMap<import('@converse/headless').BaseMessage, Object>}
+ */
+const delivered_versions = new WeakMap();
+
+/**
+ * Notes the delivered version of a message that is about to be corrected, or
+ * resent as a correction. A failed or pending message has none of its own: only
+ * the one headless kept from before its correction, if any.
+ * @param {import('@converse/headless').BaseMessage} message
+ */
+export function rememberDeliveredVersion(message) {
+    const version = message.get('send_status')
+        ? message.get('before_correction')
+        : Object.fromEntries(constants.CORRECTED_ATTRS.map((k) => [k, message.get(k)]));
+    if (version) delivered_versions.set(message, version);
+}
+
+/**
+ * How long, in milliseconds, {@link confirmDelivery} waits for a room to echo
+ * a message back. An object, so that specs can shorten it.
+ */
+export const ROOM_ECHO = { timeout: 5000 };
 
 /**
  * Sends a message from the account. Restricted connections only reach this
@@ -21,21 +48,73 @@ const { u } = converse.env;
  * @param {import('@converse/headless').BaseMessage} [targets.replying_to]
  * @param {import('@converse/headless').BaseMessage} [targets.correcting] - One of ours
  * @param {Object} [attributes] - More outgoing message attributes, such as an XEP-0066 URL
+ * @param {import('./types').SendType} [type] - Whether it's meant for a MUC, or as a chat
  * @returns {Promise<import('./types').MessageDTO>}
  */
-export async function sendMessage(jid, body, targets = {}, attributes = {}) {
+export async function sendMessage(jid, body, targets = {}, attributes = {}, type) {
     requireConnected('nothing was sent');
 
-    const room = await api.rooms.get(jid);
-    if (room) {
-        if (!room.isEntered()) throw notJoined(jid);
-        const message = await send(room, { body, ...attributes }, targets);
-        return toMessageDTO(message);
-    }
-    const chat = await api.chats.get(jid, {}, true);
-    await chat.initialized;
-    const message = await send(chat, { body, ...attributes }, targets);
+    const muc = await checkSendType(jid, type);
+    const chatbox = muc ?? (await api.chats.get(jid, {}, true));
+    await chatbox.initialized;
+    const message = await send(chatbox, { body, ...attributes }, targets);
     return toMessageDTO(message);
+}
+
+/**
+ * Refuses a send to one occupant of a MUC, such as "lobby@conference.example.org/juliet".
+ * The daemon doesn't send MUC private messages yet, and taken as the MUC's JID,
+ * what was meant for one occupant would reach all of them.
+ * @param {unknown} to - The recipient as the client gave it, before it's resolved
+ * @param {import('./types').SendType} [type]
+ * @throws {RPCError} INVALID_PARAMS for an occupant's JID
+ */
+export async function refuseOccupant(to, type) {
+    if (typeof to !== 'string' || !u.isValidJID(to.trim())) return;
+
+    const nick = Strophe.getResourceFromJid(to.trim());
+    if (!nick) return;
+
+    const muc = Strophe.getBareJidFromJid(to.trim()).toLowerCase();
+    if (type === 'groupchat' || (await getRooms(muc))) {
+        throw new RPCError(
+            ERRORS.INVALID_PARAMS,
+            `"${to.trim()}" is an occupant of ${muc}. Private messages to MUC occupants aren't supported ` +
+                'yet, so nothing was sent.',
+        );
+    }
+}
+
+/**
+ * Checks that a message of the given type can go to a JID, and returns the MUC
+ * it goes to, if any. Without a type, a MUC the daemon knows gets a MUC message
+ * and any other JID a chat: the daemon doesn't guess whether an unknown JID is
+ * a MUC, so a send to one it isn't in should say "groupchat", to be refused
+ * rather than sent as a chat that reaches nobody.
+ * @param {string} jid - Bare JID
+ * @param {import('./types').SendType} [type]
+ * @returns {Promise<import('@converse/headless').MUC|null>}
+ * @throws {RPCError} NOT_JOINED for a MUC we aren't in, INVALID_PARAMS for a chat to a MUC
+ */
+export async function checkSendType(jid, type) {
+    if (type !== undefined && type !== 'chat' && type !== 'groupchat') {
+        throw new RPCError(ERRORS.INVALID_PARAMS, '"type" must be "chat" or "groupchat".');
+    }
+    const muc = /** @type {import('@converse/headless').MUC|undefined} */ (await getRooms(jid));
+    if (type === 'chat') {
+        if (muc) {
+            throw new RPCError(
+                ERRORS.INVALID_PARAMS,
+                `${jid} is a MUC, so a chat to it would reach nobody. Send it as "groupchat".`,
+            );
+        }
+        return null;
+    }
+    if (type === 'groupchat' || muc) {
+        if (!muc?.isEntered()) throw notJoined(jid);
+        return muc;
+    }
+    return null;
 }
 
 /**
@@ -58,9 +137,134 @@ export function outcomeOf(message) {
  * @returns {Promise<import('@converse/headless').BaseMessage>}
  */
 async function send(chatbox, attrs, targets) {
+    if (targets.correcting) rememberDeliveredVersion(targets.correcting);
+
     const message = await attempt(() => chatbox.sendMessage(attrs, targets));
     if (!message) throw new RPCError(ERRORS.INTERNAL_ERROR, UNSENT.unexpected, { code: null });
     return message;
+}
+
+/**
+ * Waits for a room to echo back a message we sent it, which is how a room
+ * shows that it passed the message on to its occupants (XEP-0045 § 7.4). A
+ * message in a chat is returned as it is: its recipient confirms it with a
+ * receipt, if at all, which can come much later. So is a pending message,
+ * which hasn't gone out yet.
+ *
+ * A room that turns the message down, or turns out not to have us, leaves it
+ * a failed send, which can be sent again once we're back in the room. A room
+ * that doesn't answer within {@link ROOM_ECHO} leaves it as it is, sent but
+ * not delivered, since the echo may still come.
+ * @param {import('./types').MessageDTO} dto - A message we just sent
+ * @returns {Promise<import('./types').MessageDTO>} The message as it is now
+ * @throws {RPCError} NOT_JOINED or UNDELIVERED, when the room didn't take it
+ */
+export async function confirmDelivery(dto) {
+    if (dto.status !== 'sent') return dto;
+
+    const room = await api.rooms.get(dto.conversation);
+    const message = room?.messages.models.find((m) => getIDs(m).includes(dto.id));
+    if (!message) return dto;
+
+    const outcome = await awaitEcho(room, message);
+    const delivered = delivered_versions.get(message);
+    delivered_versions.delete(message);
+    if (outcome === 'not_joined') {
+        markFailed(message, 'not-in-room', delivered);
+        throw new RPCError(
+            ERRORS.NOT_JOINED,
+            `${dto.conversation} says we aren't in it, so the message didn't reach it. It's kept as a ` +
+                'failed send: join the room again with "rooms.join", then send it with "messages.resend".',
+            { id: dto.id, see: ['rooms.join', 'messages.resend'] },
+        );
+    }
+    if (outcome === 'bounced') {
+        const condition = message.get('error_condition') ?? 'undefined-condition';
+        markFailed(message, condition, delivered);
+        throw new RPCError(
+            ERRORS.UNDELIVERED,
+            `${dto.conversation} turned the message down (${condition}), so it didn't reach anyone. ` +
+                'It\'s kept as a failed send, which "messages.resend" sends again.',
+            { id: dto.id, condition, see: ['messages.resend'] },
+        );
+    }
+    return toMessageDTO(message);
+}
+
+/**
+ * Waits, as {@link confirmDelivery} does, for the room to take a message we
+ * just sent, then records the send in the audit log: as failed, with the
+ * reason, if the room didn't take it.
+ * @param {import('./types').MessageDTO} dto - A message we just sent
+ * @param {ReturnType<typeof import('./audit.js').createAudit>} audit
+ * @param {Omit<import('./types').AuditEntry, 'outcome'|'id'>} entry
+ * @returns {Promise<import('./types').MessageDTO>} The message as it is now
+ * @throws {RPCError} NOT_JOINED or UNDELIVERED, when the room didn't take it
+ */
+export async function confirmAndRecord(dto, audit, entry) {
+    try {
+        const message = await confirmDelivery(dto);
+        audit.record({ ...entry, outcome: outcomeOf(message), id: dto.id });
+        return message;
+    } catch (e) {
+        const error_code = e.code === ERRORS.NOT_JOINED ? 'not-in-room' : e.data?.condition;
+        audit.record({ ...entry, outcome: 'failed', id: dto.id, error_code });
+        throw e;
+    }
+}
+
+/**
+ * @param {import('@converse/headless').MUC} room
+ * @param {import('@converse/headless').BaseMessage} message
+ * @returns {Promise<'echoed'|'bounced'|'not_joined'|'unconfirmed'>}
+ */
+function awaitEcho(room, message) {
+    return new Promise((resolve) => {
+        const check = () => {
+            if (message.get('received')) settle('echoed');
+            // A room answers a send from someone who isn't in it with <not-acceptable/> (XEP-0045 § 7.4).
+            else if (message.get('error_condition') === 'not-acceptable') settle('not_joined');
+            // Headless records a room's error on the message it answers.
+            else if (message.get('error_condition') || message.get('error')) settle('bounced');
+            // Losing the connection takes us out of every room, which says nothing about the message.
+            else if (!api.connection.connected()) settle('unconfirmed');
+            // A room that says we aren't in it is rejoined, or left, by headless.
+            else if (!room.isEntered()) settle('not_joined');
+        };
+        const settle = (outcome) => {
+            clearTimeout(timer);
+            message.off('change', check);
+            room.session.off('change:connection_status', check);
+            resolve(outcome);
+        };
+        const timer = setTimeout(() => settle('unconfirmed'), ROOM_ECHO.timeout);
+        message.on('change', check);
+        room.session.on('change:connection_status', check);
+        check();
+    });
+}
+
+/**
+ * Makes a message the room didn't take a failed send, the way headless makes
+ * one it couldn't send, so that it can be sent again or discarded. The room's
+ * error is moved into the failure, so that a resend starts afresh. A turned
+ * down correction gets back the version that was delivered before it, which
+ * discarding it restores.
+ * @param {import('@converse/headless').BaseMessage} message
+ * @param {string} code
+ * @param {Object} [before_correction] - What the room's occupants have of it
+ */
+function markFailed(message, code, before_correction) {
+    message.save({
+        ...(before_correction ? { before_correction } : {}),
+        send_status: 'failed',
+        send_error_code: code,
+        error: undefined,
+        error_condition: undefined,
+        error_text: undefined,
+        error_type: undefined,
+        is_error: undefined,
+    });
 }
 
 /**

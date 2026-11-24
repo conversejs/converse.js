@@ -65,8 +65,8 @@ export function serve({
         if (disco_info && (to === domain || to === bare_jid)) {
             const [identity, advertised_features] =
                 to === domain ? [['server', 'im'], server_features] : [['account', 'registered'], account_features];
-            let features = advertised_features;
-            if (to === domain && upload_service) features = [...features, Strophe.NS.DISCO_ITEMS];
+            // The server lists its services: the MUC service, and the upload service if there is one.
+            const features = to === domain ? [...advertised_features, Strophe.NS.DISCO_ITEMS] : advertised_features;
             return stx`
                 <iq xmlns="jabber:client" type="result" from="${to}" to="${jid}" id="${id}">
                     <query xmlns="${Strophe.NS.DISCO_INFO}">
@@ -85,6 +85,15 @@ export function serve({
                             <field var="FORM_TYPE" type="hidden"><value>${Strophe.NS.HTTPUPLOAD}</value></field>
                             <field var="max-file-size"><value>${upload_service.max_file_size}</value></field>
                         </x>
+                    </query>
+                </iq>`;
+        }
+        if (disco_info && to === muc_domain) {
+            return stx`
+                <iq xmlns="jabber:client" type="result" from="${to}" to="${jid}" id="${id}">
+                    <query xmlns="${Strophe.NS.DISCO_INFO}">
+                        <identity category="conference" type="text" name="Chatrooms"/>
+                        <feature var="${Strophe.NS.MUC}"/>
                     </query>
                 </iq>`;
         }
@@ -111,6 +120,7 @@ export function serve({
             return stx`
                 <iq xmlns="jabber:client" type="result" from="${to}" to="${jid}" id="${id}">
                     <query xmlns="${Strophe.NS.DISCO_ITEMS}">
+                        <item jid="${muc_domain}" name="Chatrooms"/>
                         ${upload_service ? stx`<item jid="${upload_service.jid}" name="HTTP File Upload"/>` : ''}
                     </query>
                 </iq>`;

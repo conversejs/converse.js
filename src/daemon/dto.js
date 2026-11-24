@@ -77,6 +77,7 @@ export function toMessageDTO(message) {
         retracted: retracted ? (message.get('retracted') ?? message.get('time')) : null,
         reactions: getReactions(message),
         status: getStatus(message),
+        delivered: outgoing ? getDelivered(message) : null,
         error_code: isFailedSend(message) ? (message.get('send_error_code') ?? null) : null,
     };
     if (isRoomMessage(message)) {
@@ -104,6 +105,17 @@ function getStatus(message) {
  */
 export function isUnsent(message) {
     return !!message.get('send_status');
+}
+
+/**
+ * When one of our messages was confirmed: by the room's echo of it, or in a
+ * chat by the recipient's receipt. One the room sent us, live or from its
+ * archive, has the time we got it.
+ * @param {import('@converse/headless').BaseMessage} message - One of ours
+ * @returns {string|null}
+ */
+function getDelivered(message) {
+    return message.get('received') ?? null;
 }
 
 /**

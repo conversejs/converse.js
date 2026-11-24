@@ -96,6 +96,7 @@ describe('Messages in a 1:1 chat', () => {
                     reactions: {},
                     status: 'sent',
                     error_code: null,
+                    delivered: null,
                 },
             });
         });
@@ -206,6 +207,7 @@ describe('Messages in a 1:1 chat', () => {
                 reactions: {},
                 status: 'received',
                 error_code: null,
+                delivered: null,
             });
         });
 

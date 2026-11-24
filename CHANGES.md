@@ -14,6 +14,7 @@
 - fix: Credentials that a plugin supplies log in to the account they name.
 - **Breaking:** `credentials_url` and `beforeFetchLoginCredentials` are removed.
 - feat: Plugins can vouch for resuming a session through `unattendedLogin`.
+- feat: Logging in with the browser's stored password can be turned off.
 - fix: `api.send` and `api.sendIQ` refuse to send before login has finished.
 - feat: Messages, edits and retractions made while offline are sent once online.
 - feat: `api.send` returns whether a message or presence was sent.

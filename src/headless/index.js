@@ -21,6 +21,7 @@ export { EmojiPicker } from './plugins/emoji/index.js';
 export { Bookmark, Bookmarks } from './plugins/bookmarks/index.js'; // XEP-0199 XMPP Ping
 import './plugins/blocklist/index.js';
 import './plugins/bosh/index.js'; // XEP-0206 BOSH
+import './plugins/browser-credentials/index.js'; // Credential Management API
 import './plugins/caps/index.js'; // XEP-0115 Entity Capabilities
 export { ChatBox, Message, Messages } from './plugins/chat/index.js'; // RFC-6121 Instant messaging
 import './plugins/chatboxes/index.js';

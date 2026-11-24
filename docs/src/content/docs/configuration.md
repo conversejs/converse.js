@@ -415,6 +415,7 @@ Headless core plugins:
     converse-blocklist
     converse-bookmarks
     converse-bosh
+    converse-browser-credentials
     converse-caps
     converse-chat
     converse-chatboxes

@@ -125,12 +125,3 @@ export function setLocalStorageItem(key, value) {
 export function removeLocalStorageItem(key) {
     if (IS_BROWSER) localStorage.removeItem(key);
 }
-
-/**
- * Whether the browser exposes the Credential Management API, which Converse
- * can log in with.
- * @returns {boolean}
- */
-export function hasCredentialsAPI() {
-    return IS_BROWSER && 'credentials' in navigator;
-}

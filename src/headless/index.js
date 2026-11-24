@@ -57,6 +57,7 @@ import './plugins/version/index.js'; // XEP-0092 Software Version
 // RFC-6121 Contacts Roster
 export { RosterContact, RosterContacts, RosterFilter, Presence, Presences } from './plugins/roster/index.js';
 
+import './plugins/shared-worker/index.js'; // Connection shared by tabs
 import './plugins/smacks/index.js'; // XEP-0198 Stream Management
 export { Profile } from './plugins/status/index.js';
 export { VCard, VCards } from './plugins/vcard/index.js'; // XEP-0054 VCard-temp
@@ -78,6 +79,7 @@ export { api, converse, _converse, i18n, log, u, constants, parsers, errors };
 // declaration file, so these have to be reachable from the entry point.
 /**
  * @typedef {import('./shared/_converse.js').ConversePrivateGlobal} ConversePrivateGlobal
+ * @typedef {import('./shared/api/types').AttachSessionPayload} AttachSessionPayload
  * @typedef {import('./shared/chatbox.js').default} ChatBoxBase
  * @typedef {import('./shared/types').ChatBoxOrMUC} ChatBoxOrMUC
  * @typedef {import('./shared/types').ClearSessionReason} ClearSessionReason

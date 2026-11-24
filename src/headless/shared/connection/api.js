@@ -1,3 +1,4 @@
+import _converse from '../_converse.js';
 import events_api from '../api/events.js';
 import { Connection, MockConnection } from './index.js';
 import { PREBIND } from '../constants.js';
@@ -26,8 +27,20 @@ export default {
     init(jid) {
         if (jid && connection?.jid && isSameDomain(connection.jid, jid)) return connection;
 
-        if (!settings_api.get('bosh_service_url') && settings_api.get('authentication') === PREBIND) {
-            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
+        if (settings_api.get('authentication') === PREBIND) {
+            // Checked here, before logging in changes any state.
+            if (!_converse.pluggable.initialized_plugins.includes('converse-bosh')) {
+                throw new Error("authentication is set to 'prebind' but the converse-bosh plugin isn't loaded");
+            }
+            if (!settings_api.get('bosh_service_url')) {
+                throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
+            }
+        }
+        if (
+            settings_api.get('connection_options')?.worker &&
+            !_converse.pluggable.initialized_plugins.includes('converse-shared-worker')
+        ) {
+            throw new Error("connection_options.worker is set but the converse-shared-worker plugin isn't loaded");
         }
 
         const XMPPConnection = isTestEnv() ? MockConnection : Connection;

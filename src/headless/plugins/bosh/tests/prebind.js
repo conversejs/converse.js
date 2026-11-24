@@ -38,4 +38,34 @@ describe('A prebound BOSH session', function () {
             },
         ),
     );
+
+    it(
+        'is reported at login to need a BOSH URL',
+        mock.initConverse(converse, [], { auto_login: false }, async (_converse) => {
+            await converse.initialize({
+                auto_login: false,
+                keepalive: false,
+                authentication: 'prebind',
+                websocket_url: 'wss://montague.lit/ws',
+            });
+            await expect(_converse.api.user.login('romeo@montague.lit')).rejects.toThrow(
+                "authentication is set to 'prebind'",
+            );
+        }),
+    );
+
+    it(
+        'is reported at login to need the converse-bosh plugin',
+        mock.initConverse(converse, [], { auto_login: false }, async (_converse) => {
+            await converse.initialize({
+                auto_login: false,
+                keepalive: false,
+                authentication: 'prebind',
+                blacklisted_plugins: ['converse-bosh'],
+            });
+            await expect(_converse.api.user.login('romeo@montague.lit')).rejects.toThrow(
+                "the converse-bosh plugin isn't loaded",
+            );
+        }),
+    );
 });

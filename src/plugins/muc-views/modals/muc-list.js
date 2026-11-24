@@ -6,31 +6,6 @@ import { api, converse, log, u } from '@converse/headless';
 const { sizzle } = converse.env;
 const { getAttributes } = u;
 
-/**
- * Parse the groupchat info returned in a disco#info IQ result.
- * All MUC features are listed at https://xmpp.org/registrar/disco-features.html
- * @param {Element} stanza - The IQ stanza containing the groupchat info.
- */
-function parseRoomInfo(stanza) {
-    const hasFeature = (/** @type {string} */ v) => sizzle(`feature[var="${v}"]`, stanza).length > 0;
-    return {
-        jid: stanza.getAttribute('from'),
-        desc: sizzle('field[var="muc#roominfo_description"] value', stanza).shift()?.textContent,
-        occ: sizzle('field[var="muc#roominfo_occupants"] value', stanza).shift()?.textContent,
-        hidden: hasFeature('muc_hidden'),
-        membersonly: hasFeature('muc_membersonly'),
-        moderated: hasFeature('muc_moderated'),
-        nonanonymous: hasFeature('muc_nonanonymous'),
-        open: hasFeature('muc_open'),
-        passwordprotected: hasFeature('muc_passwordprotected'),
-        persistent: hasFeature('muc_persistent'),
-        publicroom: hasFeature('muc_publicroom'),
-        semianonymous: hasFeature('muc_semianonymous'),
-        temporary: hasFeature('muc_temporary'),
-        unmoderated: hasFeature('muc_unmoderated'),
-    };
-}
-
 class MUCListModal extends BaseModal {
     /**
      * @typedef {import('shared/types').EventWithInputTarget} EventWithInputTarget
@@ -43,7 +18,7 @@ class MUCListModal extends BaseModal {
         /**
          * Expanded groupchat info, keyed by groupchat JID.
          * `null` means the info is still being fetched.
-         * @type {Map<string, ReturnType<typeof parseRoomInfo>|null>}
+         * @type {Map<string, import('@converse/headless').MUCRoomInfo|null>}
          */
         this.room_info = new Map();
     }
@@ -105,8 +80,8 @@ class MUCListModal extends BaseModal {
         this.room_info.set(jid, null);
         this.requestUpdate();
         try {
-            const stanza = await api.disco.info(jid, null);
-            if (this.room_info.has(jid)) this.room_info.set(jid, parseRoomInfo(stanza));
+            const info = await api.rooms.info(jid);
+            if (this.room_info.has(jid)) this.room_info.set(jid, info);
         } catch (e) {
             log.error(e);
             this.room_info.delete(jid);

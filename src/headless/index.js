@@ -96,6 +96,7 @@ export { api, converse, _converse, i18n, log, u, constants, parsers, errors };
  * @typedef {import('./plugins/muc/types').MEPMessageAttributes} MEPMessageAttributes
  * @typedef {import('./plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
  * @typedef {import('./plugins/muc/types').MUCMessageEventData} MUCMessageEventData
+ * @typedef {import('./plugins/muc/types').MUCRoomInfo} MUCRoomInfo
  * @typedef {import('./plugins/omemo/types').OMEMOVersion} OMEMOVersion
  * @typedef {import('./plugins/time/types').ContactTime} ContactTime
  * @typedef {import('./plugins/vcard/types').VCardData} VCardData

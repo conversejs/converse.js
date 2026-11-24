@@ -9,6 +9,7 @@ import promise_api from '../../shared/api/promise.js';
 import { CHATROOMS_TYPE } from '../../shared/constants.js';
 import { Strophe } from 'strophe.js';
 import { getJIDFromURI } from '../../utils/jid.js';
+import u from '../../utils/index.js';
 import { settings_api as settings } from '../../shared/settings/api.js';
 
 const { waitUntil } = promise_api;
@@ -216,6 +217,25 @@ const rooms = {
         }
         log.warn(`api.rooms.discover: stopped after ${DISCOVER_MAX_PAGES} pages of rooms from ${service}`);
         return rooms;
+    },
+
+    /**
+     * Fetches the details of a groupchat, such as its description, number of
+     * occupants and features, by asking it for its disco#info (XEP-0045 §6.4).
+     * The groupchat doesn't need to be joined or open.
+     *
+     * @method api.rooms.info
+     * @param {string} jid - The JID of the groupchat
+     * @returns {Promise<import('./types').MUCRoomInfo>}
+     *
+     * @example
+     * const info = await api.rooms.info('balcony@conference.example.org');
+     * if (info.membersonly) { ... }
+     */
+    async info(jid) {
+        const stanza = await _converse.api.disco.info(jid, null);
+        // Through `u.muc`, since importing ./parsers.js here would be a circular import
+        return u.muc.parseRoomInfo(stanza);
     },
 };
 

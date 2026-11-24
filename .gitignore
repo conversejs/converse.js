@@ -56,7 +56,6 @@ node_modules
 /vendor/
 
 # LLMs
-.aider*
 .agents/*
 !.agents/skills/
 .agents/skills/*

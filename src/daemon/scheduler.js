@@ -114,12 +114,12 @@ export class ScheduledMessages extends Collection {
         try {
             outcome = await this.on_due(scheduled);
         } catch (e) {
-            log.error(`Could not send scheduled message ${scheduled.id}: ${e.message}`);
+            log.error(`Could not send scheduled message ${scheduled.id}: ${/** @type {Error} */ (e).message}`);
             const failures = (scheduled.get('failures') ?? 0) + 1;
             if (failures >= this.max_failures) {
                 await this.#park(scheduled, {
                     rule: 'failed',
-                    message: `Sending it failed ${failures} times: ${e.message}`,
+                    message: `Sending it failed ${failures} times: ${/** @type {Error} */ (e).message}`,
                 });
             } else {
                 await this.#retry(scheduled, this.retry_delay * 2 ** (failures - 1), { failures });

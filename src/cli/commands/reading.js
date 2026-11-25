@@ -114,7 +114,7 @@ export const READING_COMMANDS = {
             try {
                 since = options.since === undefined ? undefined : parseSince(options.since);
             } catch (e) {
-                throw new UsageError(e.message);
+                throw new UsageError(/** @type {Error} */ (e).message);
             }
             /** @type {import('@converse/daemon/types').MessageList} */
             const { messages } = await request(ctx, 'messages.list', {
@@ -371,10 +371,10 @@ async function subscribeInbox(client, conversation) {
     try {
         return await client.request('inbox.subscribe', { conversation });
     } catch (e) {
-        if (e.code !== ERRORS.METHOD_NOT_FOUND) throw e;
+        if (/** @type {import('@converse/daemon/protocol').RPCError} */ (e).code !== ERRORS.METHOD_NOT_FOUND) throw e;
 
         throw new RPCError(
-            e.code,
+            /** @type {import('@converse/daemon/protocol').RPCError} */ (e).code,
             "The daemon running is older than this converse-cli, and can't mark what watch prints seen, " +
                 'as --inbox needs. Restart it with "daemon.stop", and run watch again.',
             { see: ['daemon.stop'] },

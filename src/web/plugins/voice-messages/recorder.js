@@ -118,7 +118,7 @@ export default class AudioRecorder extends CustomElement {
         try {
             await session.start();
         } catch (e) {
-            if (this.session === session) this.#fail(getPermissionErrorMessage(e));
+            if (this.session === session) this.#fail(getPermissionErrorMessage(/** @type {Error} */ (e)));
             return;
         }
         if (this.session !== session) return; // Closed while waiting for permission
@@ -132,7 +132,8 @@ export default class AudioRecorder extends CustomElement {
         try {
             recording = await session.result;
         } catch (e) {
-            if (this.session === session) this.#fail(__('Error recording audio: %1$s', e.message));
+            if (this.session === session)
+                this.#fail(__('Error recording audio: %1$s', /** @type {Error} */ (e).message));
             return;
         }
         if (recording && this.session === session) {
@@ -182,7 +183,7 @@ export default class AudioRecorder extends CustomElement {
         try {
             await sendVoiceMessage(this.model, recording);
         } catch (e) {
-            if (this.recording === recording) this.#fail(e.message);
+            if (this.recording === recording) this.#fail(/** @type {Error} */ (e).message);
             return;
         }
         if (this.recording === recording) this.close();

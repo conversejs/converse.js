@@ -114,7 +114,7 @@ async function initialize() {
         locale = determineLocale();
         jed_instance = await fetchTranslations();
     } catch (e) {
-        log.fatal(e.message);
+        log.fatal(/** @type {Error} */ (e).message);
         locale = 'en';
     }
 }

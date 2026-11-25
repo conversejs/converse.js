@@ -33,7 +33,7 @@ export function createCursors(file) {
         try {
             writeStateFile(file, state);
         } catch (e) {
-            log.error(`Couldn't save the read cursors to ${file}: ${e.message}`);
+            log.error(`Couldn't save the read cursors to ${file}: ${/** @type {Error} */ (e).message}`);
         }
     };
     const save = () => {

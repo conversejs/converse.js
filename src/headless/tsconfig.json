@@ -33,6 +33,7 @@
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
 
     "skipLibCheck": true,
 

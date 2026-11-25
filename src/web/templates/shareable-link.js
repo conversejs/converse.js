@@ -14,7 +14,7 @@ async function share(ev, link) {
         await navigator.share({ url: link });
     } catch (e) {
         // An AbortError only means the user closed the share sheet.
-        if (e?.name !== 'AbortError') log.warn(`Could not share ${link}: ${e}`);
+        if (/** @type {Error} */ (e)?.name !== 'AbortError') log.warn(`Could not share ${link}: ${e}`);
     }
 }
 

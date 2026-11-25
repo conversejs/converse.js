@@ -41,7 +41,7 @@ async function fetchProviderData(url) {
         }
         return [];
     } catch (err) {
-        log.warn(`Failed to fetch XMPP providers from ${url}: ${err.message}`);
+        log.warn(`Failed to fetch XMPP providers from ${url}: ${/** @type {Error} */ (err).message}`);
         return [];
     }
 }

@@ -299,9 +299,9 @@ async function readUpload(file_path) {
 
         return Buffer.concat(chunks, length).toString('base64');
     } catch (e) {
-        if (!e.code) throw e;
+        if (!(/** @type {NodeJS.ErrnoException} */ (e).code)) throw e;
         throw new Error(
-            `The file at ${quote(file_path)} could not be read (${e.code}). ` +
+            `The file at ${quote(file_path)} could not be read (${/** @type {NodeJS.ErrnoException} */ (e).code}). ` +
                 'Check that the path names a readable file, then try again.',
             { cause: e },
         );

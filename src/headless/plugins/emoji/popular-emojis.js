@@ -62,7 +62,7 @@ class PopularEmojis extends Model {
             this.applyPopularEmojisFromStanza(iq);
         } catch (e) {
             // item-not-found is expected when the user has never saved a custom list
-            if (e?.querySelector?.('item-not-found')) return;
+            if (/** @type {Element} */ (e)?.querySelector?.('item-not-found')) return;
             log.warn('fetchPopularEmojisFromServer: could not fetch popular emojis from PubSub');
             log.error(e);
             return;

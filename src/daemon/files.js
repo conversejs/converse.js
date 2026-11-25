@@ -111,7 +111,8 @@ async function uploadContents({ name, content, size }) {
     try {
         return await uploadFile(file);
     } catch (e) {
-        const detail = String(e.responseText || e.message);
+        const error = /** @type {Error & { responseText?: string }} */ (e);
+        const detail = String(error.responseText || error.message);
         throw new RPCError(
             ERRORS.INTERNAL_ERROR,
             `The file could not be uploaded: ${JSON.stringify(detail)}. Nothing was sent. Try again.`,

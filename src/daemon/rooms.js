@@ -261,7 +261,7 @@ async function forgetAfterJoin(room) {
     try {
         await forget(room);
     } catch (e) {
-        log.error(`Couldn't forget ${room.get('jid')}: ${e.message}`);
+        log.error(`Couldn't forget ${room.get('jid')}: ${/** @type {Error} */ (e).message}`);
     }
 }
 
@@ -346,7 +346,7 @@ export async function rejoinRooms(store, passwords, joining) {
                     if (!store.get(jid)) await forgetAfterJoin(room);
                 }
             } catch (e) {
-                log.warn(`Couldn't rejoin ${jid}: ${e.message}`);
+                log.warn(`Couldn't rejoin ${jid}: ${/** @type {Error} */ (e).message}`);
             }
         }),
     );
@@ -409,7 +409,7 @@ export function roomMethods({ config, policy, store, passwords, joining }) {
                 try {
                     await joining.during(jid, () => enter(model, nickname));
                 } catch (e) {
-                    if (e.code === ERRORS.JOIN_REFUSED) {
+                    if (/** @type {import('./protocol.js').RPCError} */ (e).code === ERRORS.JOIN_REFUSED) {
                         if (before) store.add(before.jid, before.nick);
                         else store.remove(jid);
                     }
@@ -499,7 +499,7 @@ export function roomMethods({ config, policy, store, passwords, joining }) {
                 throw new RPCError(
                     ERRORS.INTERNAL_ERROR,
                     `${service.trim()} didn't list its rooms. Check the service's domain, then try again.`,
-                    { cause: e.message },
+                    { cause: /** @type {Error} */ (e).message },
                 );
             }
         },

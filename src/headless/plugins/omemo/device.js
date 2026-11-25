@@ -60,8 +60,8 @@ class Device extends OMEMOVersionAwareModel {
         } catch (iq) {
             log.error(`Could not fetch bundle for device ${device_id} from ${this.get('jid')}`);
             log.error(iq);
-            if (iq && iq.querySelector('error')) {
-                throw new IQError('Could not fetch bundle', iq);
+            if (iq && /** @type {Element} */ (iq).querySelector('error')) {
+                throw new IQError('Could not fetch bundle', /** @type {Element} */ (iq));
             }
             return null;
         }

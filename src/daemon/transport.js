@@ -110,7 +110,7 @@ export function serveClient(socket, budget, open) {
                 try {
                     fn();
                 } catch (e) {
-                    log.error(`Failed after replying to a request: ${e.message}`);
+                    log.error(`Failed after replying to a request: ${/** @type {Error} */ (e).message}`);
                 }
             }
             if (close) socket.end();

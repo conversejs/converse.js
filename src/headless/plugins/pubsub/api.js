@@ -50,7 +50,7 @@ export default {
                 try {
                     response = await api.sendIQ(stanza);
                 } catch (error) {
-                    throw await parseErrorStanza(error);
+                    throw await parseErrorStanza(/** @type {Element|Error} */ (error));
                 }
                 return parseStanzaForPubSubConfig(response);
             },
@@ -102,7 +102,7 @@ export default {
                 try {
                     await api.sendIQ(stanza);
                 } catch (error) {
-                    throw await parseErrorStanza(error);
+                    throw await parseErrorStanza(/** @type {Element|Error} */ (error));
                 }
                 return new_config;
             },
@@ -186,7 +186,7 @@ export default {
                 await api.sendIQ(stanza);
             } catch (iq) {
                 // `iq` is `null` if the publish timed out
-                const e = await parseErrorStanza(iq);
+                const e = await parseErrorStanza(/** @type {Element|Error} */ (iq));
                 if (
                     e?.name === 'conflict' &&
                     /** @type {import('../../shared/errors.js').StanzaError} */ (e).extra[Strophe.NS.PUBSUB_ERROR] ===
@@ -251,7 +251,7 @@ export default {
             try {
                 await api.sendIQ(stanza);
             } catch (error) {
-                throw await parseErrorStanza(error);
+                throw await parseErrorStanza(/** @type {Element|Error} */ (error));
             }
         },
 
@@ -289,7 +289,7 @@ export default {
             try {
                 await api.sendIQ(iq);
             } catch (error) {
-                throw await parseErrorStanza(error);
+                throw await parseErrorStanza(/** @type {Element|Error} */ (error));
             }
         },
 
@@ -322,7 +322,7 @@ export default {
             try {
                 await api.sendIQ(iq);
             } catch (error) {
-                throw await parseErrorStanza(error);
+                throw await parseErrorStanza(/** @type {Element|Error} */ (error));
             }
         },
 
@@ -349,7 +349,7 @@ export default {
             try {
                 await api.sendIQ(iq);
             } catch (error) {
-                throw await parseErrorStanza(error);
+                throw await parseErrorStanza(/** @type {Element|Error} */ (error));
             }
         },
 
@@ -427,7 +427,7 @@ export default {
                 try {
                     response = await api.sendIQ(stanza, timeout);
                 } catch (error) {
-                    throw await parseErrorStanza(error);
+                    throw await parseErrorStanza(/** @type {Element|Error} */ (error));
                 }
 
                 const items = Array.from(response.querySelectorAll('pubsub > items > item'));

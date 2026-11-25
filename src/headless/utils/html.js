@@ -3,7 +3,7 @@ import { Strophe, Builder, Stanza } from 'strophe.js';
 
 /**
  * @param {unknown} el
- * @returns {boolean}
+ * @returns {el is Element}
  */
 export function isElement(el) {
     // Checked by nodeType rather than `instanceof`, because `HTMLDocument`
@@ -39,7 +39,7 @@ function stripEmptyTextNodes(el) {
 
 /**
  * Given two XML or HTML elements, determine if they're equal
- * @param {Element} actual
+ * @param {Element|import('strophe.js').Builder} actual
  * @param {Element} expected
  * @returns {Boolean}
  */

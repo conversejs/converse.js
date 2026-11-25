@@ -82,7 +82,7 @@ export default class SocialFollowing extends SignalWatcher(CustomElement) {
             this._entries = await api.microblog.following(this.jid);
             this._error = null;
         } catch (e) {
-            this._error = e?.name || 'error';
+            this._error = /** @type {Error} */ (e)?.name || 'error';
             this._entries = [];
         } finally {
             this._loaded = true;

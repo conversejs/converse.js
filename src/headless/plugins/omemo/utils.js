@@ -1098,7 +1098,7 @@ export async function createMessageStanzaHandler(chat, data) {
         stanza.cnode(stx`<encryption xmlns="${Strophe.NS.EME}" namespace="${eme_ns}"/>`).root();
         return { message, stanza };
     } catch (e) {
-        handleMessageSendError(e, chat); // attaches the error code and re-throws
+        handleMessageSendError(/** @type {Error} */ (e), chat); // attaches the error code and re-throws
     }
 }
 

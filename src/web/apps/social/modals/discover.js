@@ -102,9 +102,9 @@ export default class SocialDiscoverModal extends BaseModal {
         } catch (e) {
             log.error(e);
             const msg =
-                e?.name === 'FeedNotFound'
+                /** @type {Error} */ (e)?.name === 'FeedNotFound'
                     ? __('No feed found at that address')
-                    : e?.name === 'InvalidFeedAddress'
+                    : /** @type {Error} */ (e)?.name === 'InvalidFeedAddress'
                       ? __('Please enter a valid feed address')
                       : __('Sorry, following this feed failed');
             this.alert(msg, 'danger', false);

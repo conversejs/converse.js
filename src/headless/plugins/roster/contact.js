@@ -186,7 +186,7 @@ class RosterContact extends ModelWithVCard(ColorAwareModel(Model)) {
         } catch (e) {
             if (u.isElement(e)) {
                 // Return if it's only an error stanza
-                return e;
+                return /** @type {Element} */ (e);
             }
             throw e;
         }

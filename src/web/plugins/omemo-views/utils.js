@@ -64,7 +64,7 @@ async function downloadFile(url) {
     try {
         response = await fetch(url);
     } catch (e) {
-        log.error(`${e.name}: Failed to download encrypted media: ${url}`);
+        log.error(`${/** @type {Error} */ (e).name}: Failed to download encrypted media: ${url}`);
         log.error(e);
         return null;
     }

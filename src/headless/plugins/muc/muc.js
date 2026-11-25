@@ -1980,9 +1980,19 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 </iq>`,
             );
         } catch (e) {
-            if (sizzle(`not-allowed[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
+            if (
+                sizzle(
+                    `not-allowed[xmlns="${Strophe.NS.STANZAS}"]`,
+                    /** @type {Document|DocumentFragment|Element} */ (e),
+                ).length
+            ) {
                 err_msg = __("You're not allowed to register yourself in this groupchat.");
-            } else if (sizzle(`registration-required[xmlns="${Strophe.NS.STANZAS}"]`, e).length) {
+            } else if (
+                sizzle(
+                    `registration-required[xmlns="${Strophe.NS.STANZAS}"]`,
+                    /** @type {Document|DocumentFragment|Element} */ (e),
+                ).length
+            ) {
                 err_msg = __("You're not allowed to register in this groupchat because it's members-only.");
             }
             log.error(e);
@@ -2008,7 +2018,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 </iq>`,
             );
         } catch (e) {
-            const err = await parseErrorStanza(e);
+            const err = await parseErrorStanza(/** @type {Element|Error} */ (e));
             if (err?.name === 'service-unavailable') {
                 log.error("Can't register your nickname in this groupchat, it doesn't support registration.");
             } else if (err?.name === 'bad-request') {

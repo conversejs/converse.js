@@ -57,7 +57,7 @@ export function createEvents({ mode }) {
             try {
                 sub.listener(chatbox, message, dto);
             } catch (e) {
-                log.error(`A message listener failed: ${e.message}`);
+                log.error(`A message listener failed: ${/** @type {Error} */ (e).message}`);
             }
         }
     }

@@ -72,7 +72,10 @@ class DeviceList extends OMEMOVersionAwareModel {
                 if (e === null) {
                     this.#last_fetch_failed = true;
                     log.error(`Timeout error while fetching OMEMO devices for ${this.get('jid')}`);
-                } else if (u.isElement(e) && (await parsers.parseErrorStanza(e)) instanceof errors.ItemNotFoundError) {
+                } else if (
+                    u.isElement(e) &&
+                    (await parsers.parseErrorStanza(/** @type {Element} */ (e))) instanceof errors.ItemNotFoundError
+                ) {
                     // An authoritative "no such node" — the contact simply has
                     // no device list for this OMEMO version. Not a failure, so
                     // we don't keep retrying on every send.

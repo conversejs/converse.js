@@ -114,7 +114,9 @@ export async function restoreBOSHSession() {
             return true;
         } catch (e) {
             if (!isTestEnv()) {
-                log.warn('Could not restore session for jid: ' + jid + ' Error message: ' + e.message);
+                log.warn(
+                    'Could not restore session for jid: ' + jid + ' Error message: ' + /** @type {Error} */ (e).message,
+                );
             }
             return false;
         }

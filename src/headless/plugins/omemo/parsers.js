@@ -229,7 +229,7 @@ async function decryptWhisperMessage(attrs) {
             return Object.assign(attrs, { 'is_only_key': true });
         }
     } catch (e) {
-        return handleDecryptionError(attrs, e);
+        return handleDecryptionError(attrs, /** @type {Error} */ (e));
     }
 }
 
@@ -244,7 +244,7 @@ async function decryptPrekeyWhisperMessage(attrs) {
     try {
         ({ plaintext: key_and_tag, ratchet } = await session_cipher.decryptPreKeyWhisperMessage(key, 'binary'));
     } catch (e) {
-        return handleDecryptionError(attrs, e);
+        return handleDecryptionError(attrs, /** @type {Error} */ (e));
     }
     fireHeartbeat(attrs, from_jid, attrs.encrypted.device_id, ratchet, Strophe.NS.OMEMO);
     try {
@@ -258,8 +258,9 @@ async function decryptPrekeyWhisperMessage(attrs) {
             return Object.assign(attrs, { 'is_only_key': true });
         }
     } catch (e) {
-        log.error(`${e.name} ${e.message}`);
-        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+        const error = /** @type {Error} */ (e);
+        log.error(`${error.name} ${error.message}`);
+        return Object.assign(attrs, getDecryptionErrorAttributes(error));
     }
 }
 
@@ -361,7 +362,7 @@ async function decryptOMEMO2Message(stanza, attrs, chatbox) {
             ({ plaintext: key_and_tag, ratchet } = await session_cipher.decryptWhisperMessage(key_bytes, 'binary'));
         }
     } catch (e) {
-        return handleDecryptionError(attrs, e);
+        return handleDecryptionError(attrs, /** @type {Error} */ (e));
     }
 
     fireHeartbeat(attrs, from_jid, sender_device_id, ratchet, Strophe.NS.OMEMO2);
@@ -457,8 +458,9 @@ async function decryptOMEMO2Message(stanza, attrs, chatbox) {
         }
         return attrs;
     } catch (e) {
-        log.error(`SCE decryption failed: ${e.name} ${e.message}`);
-        return Object.assign(attrs, getDecryptionErrorAttributes(e));
+        const error = /** @type {Error} */ (e);
+        log.error(`SCE decryption failed: ${error.name} ${error.message}`);
+        return Object.assign(attrs, getDecryptionErrorAttributes(error));
     }
 }
 

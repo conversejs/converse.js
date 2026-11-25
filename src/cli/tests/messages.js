@@ -14,7 +14,7 @@ const { Strophe, stx } = converse.env;
 
 const JULIET = 'juliet@capulet.lit';
 
-describe('converse-cli read and send', () => {
+describe('converse read and send', () => {
     let daemon;
 
     /**
@@ -129,7 +129,7 @@ describe('converse-cli read and send', () => {
             code: EXIT.AMBIGUOUS,
             stdout: '',
             stderr:
-                'converse-cli: More than one message has an id starting with "a1b2".\n' +
+                'converse: More than one message has an id starting with "a1b2".\n' +
                 '  a1b2c3d4e5f6\n' +
                 '  a1b2ffff0000\n',
         });
@@ -140,7 +140,7 @@ describe('converse-cli read and send', () => {
         expect(result).toMatchObject({ code: EXIT.ERROR, stderr: expect.stringContaining('Expected exactly one JID') });
         result = await run(daemon.env, 'read', JULIET, '--limit', 'lots');
         expect(result.code).toBe(EXIT.ERROR);
-        expect(result.stderr).toContain('Run "converse-cli --help" for usage.');
+        expect(result.stderr).toContain('Run "converse --help" for usage.');
     });
 
     /** The text of the last message the daemon sent, which is what went to the owner. */
@@ -190,7 +190,7 @@ describe('converse-cli read and send', () => {
 
         const result = await run(daemon.env, 'send', JULIET, 'Here', '--reply-to', 'zzz');
         expect(result.code).toBe(EXIT.NOT_FOUND);
-        expect(result.stderr).toBe('converse-cli: No message with id "zzz" in this conversation.\n');
+        expect(result.stderr).toBe('converse: No message with id "zzz" in this conversation.\n');
     });
 
     it('exits with "refused by policy" and says which rule refused it, for a send off the allowlist', async () => {
@@ -198,7 +198,7 @@ describe('converse-cli read and send', () => {
         expect(result.code).toBe(EXIT.REFUSED);
         expect(result.stdout).toBe('');
         expect(result.stderr).toContain(
-            'converse-cli: Restricted sends are only drafted for the JIDs listed in "policy.allow"',
+            'converse: Restricted sends are only drafted for the JIDs listed in "policy.allow"',
         );
         expect(result.stderr).toMatch(/ and tybalt@capulet\.lit isn't one of them\.\n$/);
     });
@@ -212,11 +212,11 @@ describe('converse-cli read and send', () => {
     it('refuses to send nothing', async () => {
         const result = await run(daemon.env, 'send', JULIET);
         expect(result.code).toBe(EXIT.ERROR);
-        expect(result.stderr).toBe('converse-cli: There is nothing to send: "body" is empty.\n');
+        expect(result.stderr).toBe('converse: There is nothing to send: "body" is empty.\n');
     });
 });
 
-describe('converse-cli message output', () => {
+describe('converse message output', () => {
     it("marks one of our messages that didn't go out, with why", () => {
         const message = {
             id: 'm1',

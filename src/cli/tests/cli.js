@@ -20,7 +20,7 @@ async function capture(env, ...args) {
     return { code, stdout, stderr };
 }
 
-describe('converse-cli', () => {
+describe('converse', () => {
     let account;
 
     beforeAll(async () => {
@@ -41,7 +41,7 @@ describe('converse-cli', () => {
     it('prints usage when given no command', async () => {
         const { code, stdout } = await run(account.env);
         expect(code).toBe(EXIT.OK);
-        expect(stdout).toMatch(/^Usage: converse-cli <command>/);
+        expect(stdout).toMatch(/^Usage: converse <command>/);
         expect(stdout).toContain(`${account.env.XDG_CONFIG_HOME}/converse/accounts/default.json`);
     });
 
@@ -53,17 +53,15 @@ describe('converse-cli', () => {
             expect(await capture(account.env, ...words, '--help'), name).toEqual(asked);
 
             const { stdout } = asked;
-            expect(stdout.startsWith(`Usage: converse-cli ${name}`), name).toBe(true);
+            expect(stdout.startsWith(`Usage: converse ${name}`), name).toBe(true);
             COMMANDS[name].args?.forEach(([arg]) => expect(stdout, name).toContain(`\n  ${arg}`));
             expect(stdout, name).toMatch(/\nOptions:\n {2}(--\w|-h)/);
             expect(stdout, name).toMatch(/\nExit codes:\n {2}0 {3}ok\n/);
-            expect(stdout, name).toMatch(
-                new RegExp(`\\nExamples?:\\n {2}converse-cli ${name}|\\| converse-cli ${name}`),
-            );
+            expect(stdout, name).toMatch(new RegExp(`\\nExamples?:\\n {2}converse ${name}|\\| converse ${name}`));
             // Nothing runs off the edge of a terminal, except an example, which must stay whole.
             stdout
                 .split('\n')
-                .filter((line) => !line.includes('converse-cli '))
+                .filter((line) => !line.includes('converse '))
                 .forEach((line) => expect(line.length, `${name}: ${line}`).toBeLessThanOrEqual(80));
         }
     });
@@ -71,15 +69,15 @@ describe('converse-cli', () => {
     it('shows the help of each subcommand of a group, and says a group needs one', async () => {
         const { code, stdout } = await capture(account.env, 'help', 'drafts');
         expect(code).toBe(EXIT.OK);
-        expect(stdout).toContain('Usage: converse-cli drafts list');
-        expect(stdout).toContain('Usage: converse-cli drafts reject <id>');
+        expect(stdout).toContain('Usage: converse drafts list');
+        expect(stdout).toContain('Usage: converse drafts reject <id>');
 
         expect(await capture(account.env, 'drafts')).toEqual({
             code: EXIT.ERROR,
             stdout: '',
             stderr:
-                'converse-cli: "drafts" needs one of: list, show, send, reject. ' +
-                'Run "converse-cli help drafts" for each one\'s usage.\n',
+                'converse: "drafts" needs one of: list, show, send, reject. ' +
+                'Run "converse help drafts" for each one\'s usage.\n',
         });
     });
 
@@ -87,30 +85,26 @@ describe('converse-cli', () => {
         expect(await capture(account.env, 'send', 'juliet@capulet.lit', '--limit', '3', 'hi')).toEqual({
             code: EXIT.ERROR,
             stdout: '',
-            stderr: 'converse-cli: send doesn\'t take --limit. Run "converse-cli help send" for its options.\n',
+            stderr: 'converse: send doesn\'t take --limit. Run "converse help send" for its options.\n',
         });
     });
 
     it('fails on an unknown command, saying what to do next', async () => {
         const { code, stderr } = await run(account.env, 'frobnicate');
         expect(code).toBe(EXIT.ERROR);
-        expect(stderr).toBe(
-            'converse-cli: unknown command "frobnicate". Run "converse-cli --help" to list commands.\n',
-        );
+        expect(stderr).toBe('converse: unknown command "frobnicate". Run "converse --help" to list commands.\n');
     });
 
     it('treats only its own commands as commands, not names inherited from JavaScript objects', async () => {
         const { code, stderr } = await run(account.env, 'constructor');
         expect(code).toBe(EXIT.ERROR);
-        expect(stderr).toBe(
-            'converse-cli: unknown command "constructor". Run "converse-cli --help" to list commands.\n',
-        );
+        expect(stderr).toBe('converse: unknown command "constructor". Run "converse --help" to list commands.\n');
     });
 
     it('never accepts credentials as arguments', async () => {
         const { code, stderr } = await run(account.env, 'daemon', 'start', '--password', 'secret');
         expect(code).toBe(EXIT.ERROR);
-        expect(stderr).toMatch(/^converse-cli: Unknown option '--password'/);
+        expect(stderr).toMatch(/^converse: Unknown option '--password'/);
     });
 
     it('says how to configure an account when there is none', async () => {
@@ -126,8 +120,7 @@ describe('converse-cli', () => {
         let result = await run(env, 'daemon', 'status');
         expect(result.code).toBe(EXIT.DAEMON_UNAVAILABLE);
         expect(result.stderr).toBe(
-            "converse-cli: The daemon for romeo@montague.lit isn't running. " +
-                'Start it with "converse-cli daemon start".\n',
+            "converse: The daemon for romeo@montague.lit isn't running. " + 'Start it with "converse daemon start".\n',
         );
 
         result = await run(env, 'daemon', 'start');

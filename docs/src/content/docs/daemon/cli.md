@@ -1,9 +1,9 @@
 ---
 title: Command line reference
-description: The converse-cli commands, their options and output, and the exit codes scripts can branch on.
+description: The converse commands, their options and output, and the exit codes scripts can branch on.
 ---
 
-`converse-cli` reads and sends XMPP messages through the daemon, which holds one
+`converse` reads and sends XMPP messages through the daemon, which holds one
 long-lived session for your account. See [Setting up the daemon](/docs/daemon/setup/)
 for the account, the configuration and the send policy.
 
@@ -37,14 +37,14 @@ naming the path.
 
 ## Help
 
-`converse-cli --help` gives an overview of every command, how to name people,
+`converse --help` gives an overview of every command, how to name people,
 rooms and messages, what a send can end in, how to read the output, and the exit
 codes. Each command has its own help, with its arguments, options, exit codes and
 examples:
 
 ```sh
-converse-cli help send
-converse-cli send --help
+converse help send
+converse send --help
 ```
 
 A command refuses an option it doesn't take, rather than ignoring it.
@@ -75,7 +75,7 @@ For example, if your roster has a contact named "Juliet Capulet", this reads her
 messages without needing her JID:
 
 ```sh
-converse-cli read "Juliet Capulet"
+converse read "Juliet Capulet"
 ```
 
 Where a command takes a message id, use an id that `read` or `inbox` printed.
@@ -124,7 +124,7 @@ held locally are searched. The first line of output says which one was used.
   `messages`, oldest first.
 
 ```sh
-converse-cli search "balcony" --conversation "Juliet Capulet"
+converse search "balcony" --conversation "Juliet Capulet"
 ```
 
 Each match is printed as `read` prints a message, with the conversation it's in,
@@ -146,7 +146,7 @@ are considered. Use `read` for earlier ones.
   exits with code 2.
 
 ```sh
-converse-cli wait --from juliet --mention --timeout 300
+converse wait --from juliet --mention --timeout 300
 ```
 
 ### `watch`
@@ -193,13 +193,13 @@ connection drops. It doesn't reconnect: start it again.
 In a terminal:
 
 ```sh
-converse-cli watch --conversation lobby@conference.example.org --mention
+converse watch --conversation lobby@conference.example.org --mention
 ```
 
 In a pipe, here into desktop notifications:
 
 ```sh
-converse-cli watch --json | jq --unbuffered -r '.message.from + ": " + .message.body' |
+converse watch --json | jq --unbuffered -r '.message.from + ": " + .message.body' |
     while read -r line; do notify-send "XMPP" "$line"; done
 ```
 
@@ -211,7 +211,7 @@ the messages it leaves out would be marked seen; without `--inbox`, nothing is
 marked seen, and a restart can miss messages:
 
 ```sh
-converse-cli watch --inbox --conversation lobby@conference.example.org --batch 30
+converse watch --inbox --conversation lobby@conference.example.org --batch 30
 ```
 
 ## Sending
@@ -223,7 +223,7 @@ Sends a message. Without `<text>`, the text is read from standard input.
 If the text starts with a dash, put `--` before it, so it isn't read as an option:
 
 ```sh
-converse-cli send juliet@capulet.lit -- -1
+converse send juliet@capulet.lit -- -1
 ```
 
 What happens to the message depends on the send policy and the operating mode.
@@ -240,7 +240,7 @@ JID a direct message. So a send without `--muc` to a MUC the daemon doesn't
 know reaches nobody.
 
 ```sh
-converse-cli send --muc lobby@conference.example.org "Morning, all"
+converse send --muc lobby@conference.example.org "Morning, all"
 ```
 
 A send to a MUC waits a few seconds for the MUC to echo the message back, which

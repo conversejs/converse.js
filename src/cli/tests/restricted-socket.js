@@ -13,7 +13,7 @@ import { run } from './run.js';
 
 const JULIET = 'juliet@capulet.lit';
 
-describe('converse-cli with CONVERSE_SOCKET', () => {
+describe('converse with CONVERSE_SOCKET', () => {
     let daemon, dir, env;
 
     beforeAll(async () => {
@@ -23,7 +23,7 @@ describe('converse-cli with CONVERSE_SOCKET', () => {
             owner: 'romeo@montague.lit',
             policy: { allow: [JULIET] },
         });
-        dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-cli-socket-test-'));
+        dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-socket-test-'));
         env = {
             ...process.env,
             XDG_CONFIG_HOME: path.join(dir, 'config'),
@@ -54,7 +54,7 @@ describe('converse-cli with CONVERSE_SOCKET', () => {
         const { code, stderr } = await run(env, 'drafts', 'send', 'd1');
         expect(code).toBe(EXIT.ERROR);
         expect(stderr).toBe(
-            'converse-cli: "drafts.send" is only available at full access, and this connection is restricted.\n',
+            'converse: "drafts.send" is only available at full access, and this connection is restricted.\n',
         );
     });
 

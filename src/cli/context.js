@@ -104,7 +104,7 @@ export function reportSend(result, { options, out, err, hello }) {
         const { schedule } = result;
         out(`Scheduled ${schedule.id} to ${schedule.to} for ${schedule.send_at}.\n`);
     } else {
-        err(`converse-cli: ${result.message}\n`);
+        err(`converse: ${result.message}\n`);
     }
     return EXIT_FOR_OUTCOME[result.outcome];
 }
@@ -122,7 +122,7 @@ export function warnIfUnconfirmed(message, { err }) {
     if (message.status !== 'sent' || message.nick === null || message.delivered) return;
 
     err(
-        `converse-cli: warning: ${message.conversation} hasn't confirmed ${message.id} yet, so it may not ` +
+        `converse: warning: ${message.conversation} hasn't confirmed ${message.id} yet, so it may not ` +
             'have reached the room. Check with read before sending it again.\n',
     );
 }

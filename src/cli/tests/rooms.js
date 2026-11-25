@@ -11,7 +11,7 @@ import { run } from './run.js';
 
 const ROOM = 'garden@conference.montague.lit';
 
-describe('converse-cli rooms', () => {
+describe('converse rooms', () => {
     let daemon;
 
     beforeAll(async () => {
@@ -61,13 +61,13 @@ describe('converse-cli rooms', () => {
         const { code, stderr } = await run(daemon.env, 'rooms');
         expect(code).toBe(EXIT.ERROR);
         expect(stderr).toBe(
-            'converse-cli: "rooms" needs one of: join, leave, occupants, discover. ' +
-                'Run "converse-cli help rooms" for each one\'s usage.\n',
+            'converse: "rooms" needs one of: join, leave, occupants, discover. ' +
+                'Run "converse help rooms" for each one\'s usage.\n',
         );
     });
 });
 
-describe('converse-cli sending to a room', () => {
+describe('converse sending to a room', () => {
     let daemon, client;
     const timeout = ROOM_ECHO.timeout;
 
@@ -89,8 +89,8 @@ describe('converse-cli sending to a room', () => {
         const { code, stdout, stderr } = await run(daemon.env, 'send', '--muc', ROOM, 'Hello all');
         expect({ code, stdout }).toEqual({ code: EXIT.NOT_JOINED, stdout: '' });
         expect(stderr).toBe(
-            `converse-cli: We aren't in ${ROOM}, so the message wasn't sent. ` +
-                'Join it first with "converse-cli rooms join".\n',
+            `converse: We aren't in ${ROOM}, so the message wasn't sent. ` +
+                'Join it first with "converse rooms join".\n',
         );
         const sent = daemon.connection.sent_stanzas.filter((s) => s.nodeName === 'message' && s.querySelector('body'));
         expect(sent).toEqual([]);
@@ -112,7 +112,7 @@ describe('converse-cli sending to a room', () => {
         expect(code).toBe(EXIT.OK);
         const id = stdout.match(/ as (\S+)\n$/)[1];
         expect(stderr).toBe(
-            `converse-cli: warning: ${ROOM} hasn't confirmed ${id} yet, so it may not have reached the room. ` +
+            `converse: warning: ${ROOM} hasn't confirmed ${id} yet, so it may not have reached the room. ` +
                 'Check with read before sending it again.\n',
         );
 

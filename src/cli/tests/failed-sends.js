@@ -13,7 +13,7 @@ import { run } from './run.js';
 const JULIET = 'juliet@capulet.lit';
 const BENVOLIO = 'benvolio@montague.lit';
 
-describe('converse-cli resend and discard', () => {
+describe('converse resend and discard', () => {
     let daemon, client;
 
     beforeAll(async () => {
@@ -128,7 +128,7 @@ describe('converse-cli resend and discard', () => {
         expect(stdout).toMatch(/\n {2}discard <id> +Remove a failed send from the history \(full access\)\n/);
 
         const help = (await run(daemon.env, 'help', 'resend')).stdout;
-        expect(help).toContain('Usage: converse-cli resend <id> [options]');
+        expect(help).toContain('Usage: converse resend <id> [options]');
         expect(help).toContain('--unencrypted');
         expect(help).toContain('--conversation <contact|room>');
         expect(help).toMatch(/Exit codes:\n(.*\n)*\s+3\s+no such account, contact, conversation or message\n/);

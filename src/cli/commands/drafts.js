@@ -18,7 +18,7 @@ export const DRAFTS_COMMANDS = {
             'where drafts wait in the daemon, it connects at the configured access, so that an ' +
             'agent can say which of its drafts are still waiting.',
         options: [FULL],
-        examples: ['converse-cli drafts list'],
+        examples: ['converse drafts list'],
         // Drafts are the user's to decide on, so these ask for full access, except
         // that in "as_user" mode an agent may see which drafts are still waiting.
         async run(ctx) {
@@ -45,7 +45,7 @@ export const DRAFTS_COMMANDS = {
             'wherever drafts list is.',
         args: [DRAFT_ID],
         exits: [EXIT.NOT_FOUND],
-        examples: ['converse-cli drafts show d17'],
+        examples: ['converse drafts show d17'],
         async run(ctx) {
             const { options, out } = ctx;
             const id = takeOne(ctx, 'draft id');
@@ -66,7 +66,7 @@ export const DRAFTS_COMMANDS = {
             'own client, so this fails.',
         args: [DRAFT_ID],
         exits: [EXIT.NOT_FOUND, EXIT.NOT_JOINED],
-        examples: ['converse-cli drafts send d17'],
+        examples: ['converse drafts send d17'],
         async run(ctx) {
             const id = takeOne(ctx, 'draft id');
             /** @type {import('@converse/daemon/types').SendResult} */
@@ -81,7 +81,7 @@ export const DRAFTS_COMMANDS = {
             'is told. Full access only.',
         args: [DRAFT_ID],
         exits: [EXIT.NOT_FOUND],
-        examples: ['converse-cli drafts reject d17'],
+        examples: ['converse drafts reject d17'],
         async run(ctx) {
             const { options, out } = ctx;
             const id = takeOne(ctx, 'draft id');

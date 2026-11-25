@@ -16,7 +16,7 @@ export const SCHEDULES_COMMANDS = {
             'recipient and text. One that policy refused when it became due, or that kept failing ' +
             'to send, is marked NOT SENT, with the reason. One a rate limit held back is tried again later.',
         options: [FULL],
-        examples: ['converse-cli schedules list'],
+        examples: ['converse schedules list'],
         async run(ctx) {
             const { options, out, err } = ctx;
             /** @type {{ schedules: import('@converse/daemon/types').ScheduleDTO[] }} */
@@ -36,7 +36,7 @@ export const SCHEDULES_COMMANDS = {
         description: 'Cancel a scheduled message. Nothing is sent.',
         args: [['<id>', 'The scheduled message id, as schedules list printed it']],
         exits: [EXIT.NOT_FOUND],
-        examples: ['converse-cli schedules cancel s3'],
+        examples: ['converse schedules cancel s3'],
         async run(ctx) {
             const { options, out } = ctx;
             const id = takeOne(ctx, 'scheduled message id');

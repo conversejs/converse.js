@@ -1,5 +1,5 @@
 /**
- * `converse-cli search`: argument parsing, the output and the exit codes. What
+ * `converse search`: argument parsing, the output and the exit codes. What
  * is found is covered at the protocol seam, in the daemon's search spec.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -12,7 +12,7 @@ const OWN = 'romeo@montague.lit';
 
 const SERVER = "Searched the server's archive, with its full-text search (XEP-0431).";
 
-describe('converse-cli search', () => {
+describe('converse search', () => {
     let daemon;
 
     beforeAll(async () => {

@@ -8,7 +8,7 @@ const { stx, u } = converse.env;
 
 const JULIET = 'juliet@capulet.lit';
 
-describe('converse-cli conversations and inbox', () => {
+describe('converse conversations and inbox', () => {
     let daemon;
 
     beforeAll(async () => {

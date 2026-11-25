@@ -15,7 +15,7 @@ export const CONTACTS_COMMANDS = {
             "List your roster contacts: JID, presence, and name. A query matches a contact's name or " +
             'JID, ignoring case.',
         args: [['[query]', 'Only contacts whose name or JID contains this']],
-        examples: ['converse-cli contacts juliet'],
+        examples: ['converse contacts juliet'],
         async run(ctx) {
             const { args, options, out, err } = ctx;
             const query = args.length ? args.join(' ') : undefined;
@@ -39,7 +39,7 @@ export const CONTACTS_COMMANDS = {
             'label, not a proof.',
         args: [CONTACT],
         exits: LOOKUP_EXITS,
-        examples: ['converse-cli whois "Juliet Capulet"'],
+        examples: ['converse whois "Juliet Capulet"'],
         async run(ctx) {
             const { options, out } = ctx;
             const jid = takeOne(ctx, 'contact');

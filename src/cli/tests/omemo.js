@@ -11,7 +11,7 @@ import { run } from './run.js';
 
 const JULIET = 'juliet@capulet.lit';
 
-describe('converse-cli omemo output', () => {
+describe('converse omemo output', () => {
     it('shows a device on one line: its id, its trust, then its fingerprint', () => {
         expect(
             formatDevice({ id: '555', this_device: false, active: true, trust: 'undecided', fingerprint: 'ab12' }),
@@ -48,7 +48,7 @@ describe('converse-cli omemo output', () => {
     });
 });
 
-describe('converse-cli omemo commands', () => {
+describe('converse omemo commands', () => {
     let daemon;
 
     beforeAll(async () => {

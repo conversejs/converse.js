@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const BIN = fileURLToPath(new URL('../bin/converse-cli.js', import.meta.url));
+const BIN = fileURLToPath(new URL('../bin/converse.js', import.meta.url));
 
 /**
  * Runs the CLI as its own process, as an agent's shell would, with an empty

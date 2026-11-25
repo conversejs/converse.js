@@ -64,11 +64,11 @@ export const SENDING_COMMANDS = {
         ],
         exits: SEND_EXITS,
         examples: [
-            'converse-cli send juliet@capulet.lit "On my way"',
-            'converse-cli send --muc garden@conference.capulet.lit "Morning, all"',
-            'converse-cli send "Juliet Capulet" --reply-to 01a183d1-2cc2-74f2-8de3-fd8a38834143 "Yes, at nine"',
-            'converse-cli send juliet@capulet.lit -- -1 for yes',
-            "printf 'Line one\\nLine two\\n' | converse-cli send juliet@capulet.lit",
+            'converse send juliet@capulet.lit "On my way"',
+            'converse send --muc garden@conference.capulet.lit "Morning, all"',
+            'converse send "Juliet Capulet" --reply-to 01a183d1-2cc2-74f2-8de3-fd8a38834143 "Yes, at nine"',
+            'converse send juliet@capulet.lit -- -1 for yes',
+            "printf 'Line one\\nLine two\\n' | converse send juliet@capulet.lit",
         ],
         async run(ctx) {
             const { args, options } = ctx;
@@ -96,7 +96,7 @@ export const SENDING_COMMANDS = {
         args: [TARGET, ['<path>', 'The local file']],
         options: SEND_TYPE_OPTIONS,
         exits: SEND_EXITS,
-        examples: ['converse-cli upload juliet@capulet.lit ./report.pdf'],
+        examples: ['converse upload juliet@capulet.lit ./report.pdf'],
         async run(ctx) {
             const { args, options, out } = ctx;
             if (args.length !== 2) throw new UsageError('Expected a recipient and a local file path.');
@@ -125,7 +125,7 @@ export const SENDING_COMMANDS = {
         args: [MESSAGE_ID],
         options: [IN_CONVERSATION],
         exits: SEND_EXITS,
-        examples: ['converse-cli retract 01a183d1-2cc2-74f2-8de3-fd8a38834143'],
+        examples: ['converse retract 01a183d1-2cc2-74f2-8de3-fd8a38834143'],
         async run(ctx) {
             const { options, out } = ctx;
             const id = takeOne(ctx, 'message id');
@@ -159,8 +159,8 @@ export const SENDING_COMMANDS = {
         ],
         exits: [...LOOKUP_EXITS, EXIT.PENDING, EXIT.NOT_JOINED],
         examples: [
-            'converse-cli resend 01a183d1-2cc2-74f2-8de3-fd8a38834143',
-            'converse-cli resend 01a183d1-2cc2-74f2-8de3-fd8a38834143 --unencrypted',
+            'converse resend 01a183d1-2cc2-74f2-8de3-fd8a38834143',
+            'converse resend 01a183d1-2cc2-74f2-8de3-fd8a38834143 --unencrypted',
         ],
         // Failed sends are the user's to deal with, so these always ask for full access.
         async run(ctx) {
@@ -184,7 +184,7 @@ export const SENDING_COMMANDS = {
         args: [['<id>', 'The id of the failed send, as read printed it']],
         options: [IN_CONVERSATION],
         exits: LOOKUP_EXITS,
-        examples: ['converse-cli discard 01a183d1-2cc2-74f2-8de3-fd8a38834143'],
+        examples: ['converse discard 01a183d1-2cc2-74f2-8de3-fd8a38834143'],
         async run(ctx) {
             const { options, out } = ctx;
             const id = takeOne(ctx, 'message id');
@@ -218,7 +218,7 @@ export const SENDING_COMMANDS = {
             ),
         ],
         exits: SEND_EXITS,
-        examples: ['converse-cli react 01a183d1-2cc2-74f2-8de3-fd8a38834143 :thumbsup:'],
+        examples: ['converse react 01a183d1-2cc2-74f2-8de3-fd8a38834143 :thumbsup:'],
         async run(ctx) {
             const { args, options, out } = ctx;
             if (args.length !== 2) throw new UsageError('Expected a message id and an emoji.');

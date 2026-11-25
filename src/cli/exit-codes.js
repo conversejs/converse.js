@@ -1,5 +1,5 @@
 /**
- * converse-cli's exit codes. They're part of its interface: scripts and agents
+ * converse's exit codes. They're part of its interface: scripts and agents
  * branch on them, so a code never changes meaning once released.
  */
 export const EXIT = {

@@ -15,7 +15,7 @@ export const BENVOLIO = 'benvolio@montague.lit';
 // Headless opens its database once per process and keeps it, whatever
 // `storage_path` a later `converse.initialize` names. So the daemons a spec
 // file starts share one storage directory, removed when the file is done.
-const STORAGE_DIR = fsSync.mkdtempSync(path.join(os.tmpdir(), 'converse-daemon-storage-'));
+const STORAGE_DIR = fsSync.mkdtempSync(path.join(os.tmpdir(), 'conversed-storage-'));
 process.once('exit', () => fsSync.rmSync(STORAGE_DIR, { recursive: true, force: true }));
 
 /**
@@ -27,7 +27,7 @@ process.once('exit', () => fsSync.rmSync(STORAGE_DIR, { recursive: true, force: 
  * @returns {Promise<{ env: NodeJS.ProcessEnv, remove: () => Promise<void> }>}
  */
 export async function createAccount(settings = {}, config = {}) {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-daemon-test-'));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'conversed-test-'));
     const env = {
         ...process.env,
         XDG_CONFIG_HOME: path.join(dir, 'config'),

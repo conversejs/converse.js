@@ -10,7 +10,7 @@ import { run } from './run.js';
 
 const JULIET = 'juliet@capulet.lit';
 
-describe('converse-cli drafts', () => {
+describe('converse drafts', () => {
     let daemon;
 
     beforeAll(async () => {
@@ -56,7 +56,7 @@ describe('converse-cli drafts', () => {
     it('exits as not found for a draft that is gone, and says how to see the ones there are', async () => {
         const { code, stderr } = await run(daemon.env, 'drafts', 'reject', 'd2');
         expect(code).toBe(EXIT.NOT_FOUND);
-        expect(stderr).toContain('No draft with id "d2". List the drafts with "converse-cli drafts list"');
+        expect(stderr).toContain('No draft with id "d2". List the drafts with "converse drafts list"');
     });
 
     it('refuses to send a draft, which the owner sends from their own client in this mode', async () => {

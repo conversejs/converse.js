@@ -10,7 +10,7 @@ import { run } from './run.js';
 const JULIET = 'juliet@capulet.lit';
 const MERCUTIO = 'mercutio@montague.lit';
 
-describe('converse-cli contacts', () => {
+describe('converse contacts', () => {
     let daemon;
 
     beforeAll(async () => {
@@ -43,15 +43,15 @@ describe('converse-cli contacts', () => {
     it('exits not found from whois for a name nobody has', async () => {
         const { code, stderr } = await run(daemon.env, 'whois', 'Paris');
         expect(code).toBe(EXIT.NOT_FOUND);
-        expect(stderr).toContain('converse-cli contacts');
+        expect(stderr).toContain('converse contacts');
     });
 
     it("shows the commands an error points at, but not a value of the user's that looks like one", async () => {
         const { code, stderr } = await run(daemon.env, 'whois', 'drafts.list');
         expect(code).toBe(EXIT.NOT_FOUND);
         expect(stderr).toBe(
-            'converse-cli: No contact or room is called "drafts.list". Check the spelling, or list your ' +
-                'contacts with "converse-cli contacts".\n',
+            'converse: No contact or room is called "drafts.list". Check the spelling, or list your ' +
+                'contacts with "converse contacts".\n',
         );
     });
 

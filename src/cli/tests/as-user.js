@@ -18,7 +18,7 @@ const { Strophe, stx } = converse.env;
 const ME = Strophe.getBareJidFromJid(JID);
 const JULIET = 'juliet@capulet.lit';
 
-describe('converse-cli drafts, in as_user mode', () => {
+describe('converse drafts, in as_user mode', () => {
     let daemon;
 
     beforeAll(async () => {
@@ -85,7 +85,7 @@ describe('converse-cli drafts, in as_user mode', () => {
 
     it("lists the drafts at restricted access by the daemon's mode, when this client's config says another", async () => {
         // A client on another host, which reaches the restricted socket alone.
-        const home = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-cli-as-user-test-'));
+        const home = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-as-user-test-'));
         try {
             const env = { ...process.env, XDG_CONFIG_HOME: home, XDG_RUNTIME_DIR: home, XDG_STATE_HOME: home };
             await fs.mkdir(path.join(home, 'converse', 'accounts'), { recursive: true });

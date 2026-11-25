@@ -33,7 +33,7 @@ function relay(listen_path, target_path) {
     return new Promise((resolve) => server.listen(listen_path, () => resolve(server)));
 }
 
-describe('converse-cli through a tunnel to another host', () => {
+describe('converse through a tunnel to another host', () => {
     let daemon, dir, http_server, file;
     /** @type {net.Server[]} */
     const relays = [];
@@ -72,7 +72,7 @@ describe('converse-cli through a tunnel to another host', () => {
     }
 
     beforeAll(async () => {
-        dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-cli-tunnel-test-'));
+        dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-tunnel-test-'));
         await fs.mkdir(path.join(dir, 'tunnel'), { mode: 0o700 });
         // Only in the client host's directory, where the daemon has no reason to look.
         await fs.mkdir(path.join(dir, 'files'));
@@ -141,7 +141,7 @@ describe('converse-cli through a tunnel to another host', () => {
         const { code, stdout, stderr } = await run(env, 'daemon', 'start');
         expect({ code, stdout }).toEqual({ code: EXIT.DAEMON_UNAVAILABLE, stdout: '' });
         expect(stderr).toBe(
-            `converse-cli: No daemon answers on ${socket}, the "socket" that ` +
+            `converse: No daemon answers on ${socket}, the "socket" that ` +
                 `${path.join(env.XDG_CONFIG_HOME, 'converse', 'accounts', 'default.json')} names (ENOENT). Check that the ` +
                 "tunnel to the daemon's host is up, and that the daemon runs on that host. This client doesn't " +
                 'start a daemon when the config names a socket.\n',
@@ -166,7 +166,7 @@ describe('converse-cli through a tunnel to another host', () => {
             code: EXIT.ERROR,
             stdout: '',
             stderr:
-                'converse-cli: This needs full access, and this client can only reach the restricted socket. ' +
+                'converse: This needs full access, and this client can only reach the restricted socket. ' +
                 "It is the owner's to do, from a client with full access.\n",
         };
         // Only the restricted socket is configured.

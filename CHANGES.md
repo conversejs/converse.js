@@ -2,190 +2,111 @@
 
 ## 15.0.0 (Unreleased)
 
-- docs: Correct the documented defaults of `theme`, `show_background`, `emoji_image_path` and `notification_icon`.
-- The `converse-push` plugin (XEP-0357) is now part of `@converse/headless`.
-- fix: No password reset tab for logins without a password (e.g. anonymous).
-- feat(chatview): The panels above the message form are consolidated into one component. Plugins can add a panel through the new `getComposerPanels` hook.
-- feat(chatview): The toolbar's file upload and location buttons are replaced by one paperclip, the
-  attachment button, which opens an attachment menu listing what can be attached in that chat.
-  Plugins add an entry through the new `getAttachmentMenuItems` hook.
-- feat: A failed encrypted send stays in the conversation as a failed message, with the option to retry or discard it, instead of an alert.
-- feat: `api.promises.renew()` makes a new promise unless one is pending.
-- feat: `api.user.login()` takes `{ automatic: true }` instead of a boolean.
-- fix: Credentials that a plugin supplies log in to the account they name.
-- **Breaking:** `credentials_url` and `beforeFetchLoginCredentials` are removed.
-- feat: Plugins can vouch for resuming a session through `unattendedLogin`.
-- feat: Logging in with the browser's stored password can be turned off.
-- fix: `api.send` and `api.sendIQ` refuse to send before login has finished.
-- feat: Messages, edits and retractions made while offline are sent once online.
-- feat: `api.send` returns whether a message or presence was sent.
-- fix: Reconnecting no longer stops for good when a retry fails before login has finished.
-- Reconnection attempts back off, waiting 3 seconds at first and twice as long each time up to a minute. Sending a message cuts a longer wait short.
-- fix: With both BOSH and websocket configured, a failed connection attempt is now retried with the other transport.
-- fix: The `connected` event fires when the first connection only succeeds on a retry. It used to be `reconnected`, which left plugins uninitialized.
-- feat: The `retry_initial_connection` setting keeps retrying when the server can't be reached at startup. The daemon uses it, and no longer exits in that case.
-- feat: A remembered session's cached data can be accessed while offline.
-- feat: On trusted devices, a dropped session stays shown and keeps retrying.
-- feat: While offline, the UI shows it and marks messages as not sent yet.
-- feat: New API: `api.connection.remembered()` and `api.connection.retry()`.
-- fix: An open dialog no longer stays on screen after logging out.
-- fix: The info button in the "Query for Groupchats" modal works again.
-- fix: With IndexedDB, leaving the page or logging out writes every pending change, not only the latest ones.
-- fix(daemon): A daemon that lost a simultaneous start no longer takes over when the other one stops.
-- docs: `auto_reconnect` defaults to `true`, not `false`.
-- The unused `errors.UserFacingError` class is removed.
-- `@converse/log` is bumped to 0.1.0, because its API changed to variadic `log(level, ...args)` and `debug(...args)` without a version bump.
-- `strophe.js` is bumped to 6.0.0, whose types resolve under `"moduleResolution": "nodenext"`.
-- fix(chatview): Replying to a message in a one-to-one chat showed the reply preview twice.
-- fix(profile): The status icons in the profile modal's status form are colored again.
-- Unused exports are removed from the source exported as `converse.js/src/*`:
-    - Many UI components no longer have a default export, among them `Avatar`, `MUCMessageForm`,
-      `MUCChatContent`, `HeadlinesHeading` and the MUC and bookmark modals. They are still
-      registered as custom elements: to subclass one, get its class with
-      `customElements.get('converse-muc-message-form')`.
-    - The `AutoComplete` named export of `shared/autocomplete/autocomplete.js`.
-    - The default exports of `utils/index.js` and `shared/texture/utils.js`. Their named
-      exports remain.
-    - The utility functions `getAutoCompleteListItem`, `showOccupantModal`,
-      `fetchMessagesOnScrollUp`, `resetElementHeight`, `getHeaders` and `getDeviceForContact`.
-- fix(roster): Clearing the cache could empty the roster on the next login.
-- fix(chatboxes): Logging out on a trusted device kept the chats open.
-- Projects can bundle `dist/converse.js` themselves: it no longer pulls all of `dist/` into a
-  webpack build. Serve `dist/chunkjs/` and `dist/libomemo.esm.min.js` next to your bundle.
-- The source is exported as `converse.js/src/*`, with its dependencies (including
-  `@converse/headless`) installed. Bundling it still needs a build setup like Converse's own:
-  `node_modules/converse.js/src` as a module directory (the source imports `shared/...`,
-  `plugins/...` and `i18n` without a path), Sass with `node_modules` and that `src` folder as
-  load paths, and a loader for the `.po` translation files.
-- **Breaking:** the `converse.js` npm package no longer contains the source of
-  `@converse/headless`, `@converse/log`, the daemon or the CLI. Import headless from
-  `@converse/headless` instead of `converse.js/src/headless/...`. On npm-based CDNs, load
-  `https://cdn.jsdelivr.net/npm/@converse/headless@<version>/dist/converse-headless.min.js`
-  instead of `.../npm/converse.js@<version>/src/headless/dist/converse-headless.min.js`.
-  `https://cdn.conversejs.org/<version>/src/headless/dist/converse-headless.min.js` is unchanged.
-- **Breaking:** `@converse/headless` and `converse.js` each publish their type declarations as
-  one bundled file (`dist/converse-headless.d.ts` and `dist/converse.d.ts`) instead of a
-  `types/` folder of per-file declarations. The `@converse/headless/types/*` subpaths are gone:
-  import types from the entry point instead, for example `import('@converse/headless').MUC` or
-  `import type { MUCMessageAttributes } from '@converse/headless'`. The per-file UI declarations
-  under `converse.js/src/types/` are no longer published either: `converse.js` exports the types
-  of the classes plugins get from `_converse.exports` (`CustomElement`, `BaseModal`, `Popover` and
-  `Toast`), for example `import type { BaseModal } from 'converse.js'`. Generated types are no
-  longer committed to git, so an install from a git branch has no types (just as it has no `dist/`).
-- #194: Full support for XEP-0115: Entity capabilities.
-- #1247: Register Converse as the browser's handler for `xmpp:` links.
-- With `enable_url_routing` on, an `xmpp:` link handed over by the browser now opens its chat or
-  groupchat, also when it arrives before login.
-- fix: With `enable_url_routing` on, the open chat is shown in the address bar again after logging in
-  from a `#converse/login` or `#converse/register` page, and that page's fragment no longer stays in
-  the address bar once logged in.
-- Invitation links from other clients (xmpp.link, i.kaidan.im, invite.joinjabber.org and
-  conversations.im) open the chat or groupchat in Converse instead of the invitation page.
-- Opening a groupchat from an `xmpp:` or invitation link asks for confirmation first.
-- Following a link out of a chat message asks for confirmation first. New setting `confirm_external_links`.
-- #4201: Shareable links to contacts and groupchats (`shareable_link_url`)
-- #4201: Logged-out landing page for shareable links
-- The user details, profile and groupchat details modals show a button that copies the XMPP address.
-  In the user details modal the address is no longer a link, and the groupchat details modal shows the
-  room's address instead of an `xmpp:` join URI.
-- #1509: You can now chat with a bare-host JID.
+### Breaking changes
+
+- `converse.js` on npm no longer includes the source of `@converse/headless`
+- Import headless from `@converse/headless`, not `converse.js/src/headless`
+- Types ship as one `.d.ts` per package; the `types/*` subpaths are gone
+- Unused exports and some default exports are removed from `converse.js/src/*`
+- The unused `errors.UserFacingError` class is removed
+- `credentials_url` and `beforeFetchLoginCredentials` are removed
+- `api.user.login()` takes `{ automatic: true }` instead of a boolean
+- `chat.sendMessage()` rejects with an error whose `code` gives the reason
+- `api.modal.remove()` takes only the modal's name, not a modal instance
+- The `time_format` setting is removed; message times are shown as relative
+- `converse-location-button` and the toolbar's `show_*_button` props are gone
+- The `callButtonClicked` event is removed along with the generic call button
+- `routeToChat` and `routeToRoom` are removed; link to chats with `xmpp:` URIs
+- Stream Management state moved from `_converse.session` to the connection
+- Resource binding is skipped on stream resumption; listen to `streamResumed`
+
+### Features
+
+- #194: Full support for XEP-0115 Entity Capabilities
+- #1247: Register Converse as the browser's handler for `xmpp:` links
+- #1509: Chat with a bare-host JID
+- #3615: XEP-0277 Microblogging and XEP-0472 Social Feeds
+- #3949: Pin bookmarked conversations to the top (XEP-0469)
+- #3978: XEP-0202 Entity Time
+- #4201: Shareable links to contacts and groupchats, with a landing page
+- Full XEP-0172 User Nickname support
+- New `@converse/daemon` and `@converse/cli` packages for terminals and agents
+- 1:1 audio calls over Jingle (XEP-0167, XEP-0353 and XEP-0215)
+- Record and send voice messages with the opt-in `converse-voice-messages`
+- Search groupchats with XEP-0433; suggestions show their participant counts
+- One attachment button replaces the file upload and location buttons
+- The `fileupload` key of `visible_toolbar_buttons` hides file upload
+- A failed encrypted send can be retried or discarded, instead of an alert
+- Cached data of a remembered session can be accessed while offline
+- Messages, edits and retractions made while offline are sent once online
+- While offline, the UI shows it and marks messages as not sent yet
+- On trusted devices, a dropped session stays shown and keeps retrying
+- Reconnection attempts back off, from 3 seconds up to a minute
+- `retry_initial_connection` retries when the server is unreachable at startup
+- Logging in with the browser's stored password can be turned off
+- Plugins can vouch for resuming a session through `unattendedLogin`
+- `enable_url_routing` enables back/forward navigation and deep links
+- Invitation links from other clients open the chat in Converse
+- Opening a groupchat from a link asks for confirmation first
+- Ask before following a link out of a message (`confirm_external_links`)
+- Modals that show an XMPP address have a button to copy it
+- New hooks for plugins: `getComposerPanels` and `getAttachmentMenuItems`
+- New `api.connection.remembered()`, `api.connection.retry()`
+- New `api.notifications.isNotable()` and `api.promises.renew()`
+- `api.send` returns whether it sent; `api.settings.extend` can deep-merge
+
+### Fixes
+
+- #4132: The emoji picker no longer crashes when emoji.json can't be loaded
+- Credentials that a plugin supplies log in to the account they name
+- `api.send` and `api.sendIQ` refuse to send before login has finished
+- Reconnecting no longer gives up when a retry fails before login
+- A failed connection is retried over the other transport, if configured
+- `connected`, not `reconnected`, fires when the first connection is a retry
+- No password reset tab for logins without a password, such as anonymous
+- An open dialog no longer stays on screen after logging out
+- Logging out on a trusted device kept the chats open
+- With IndexedDB, all pending changes are written on page leave or logout
+- Clearing the cache could empty the roster on the next login
+- With URL routing, the address bar shows the open chat again after login
+- The info button in the "Query for Groupchats" modal works again
+- The "Add groupchat" modal lacked an address field for some configurations
+- Moderating an edited groupchat message retracts all its versions
+- Corrections fetched again from the archive are no longer shown twice
+- Groupchat participants were listed twice before their occupant id was known
+- A groupchat message got the real JID of whoever later took the sender's nick
+- The "Offline" filter in the participants list matches again
+- The contacts and participants filters fit on one line
+- Replying in a 1:1 chat showed the reply preview twice
+- The chat header shows the contact's status message again, and legibly
+- The profile modal's status icons are colored again
+- A `loadEmojis` listener that throws no longer blocks sending messages
+- Notify of a 1:1 message in a hidden chat while the tab is visible
+- Desktop notifications for XEP-0316 MEP notifications work again
+- No mention or MEP notification while the groupchat is visible
+- No notification sound for an OMEMO message that couldn't be decrypted
+- With `fetch_url_headers`, extensionless image URLs render again
+- Fewer vCard fetches on session resumption and on groupchat presences
+- A rejected write to browser extension storage now fires an `error` event
+- A daemon that lost a simultaneous start no longer takes over later
+- Five documented configuration defaults, such as `theme`, are corrected
+
+### Other changes
+
+- The `converse-push` plugin (XEP-0357) is now part of `@converse/headless`
+- XEP-0198 Stream Management is now handled by Strophe.js
+- The source is exported as `converse.js/src/*`, for projects that bundle it
+- `dist/converse.js` can be bundled; serve `dist/chunkjs/` and libomemo with it
+- `localforage-webextensionstorage-driver` is no longer a dependency
+- `strophe.js` is bumped to 6.0.0 and `@converse/log` to 0.1.0
+
+## 14.0.1 (2026-10-17)
+
 - #3560: Emoji shortnames are now matched case-sensitively
-- #3615: Add support for XEP-0277 Microblogging and XEP-0472 Social Feeds
-- #3949: Allow pinning bookmarked conversations to the top (XEP-0469)
-- #3978: Add support for XEP-0202 Entity Time.
-- Full XEP-0172 User Nickname support.
-- feat: New `@converse/daemon` and `@converse/cli` packages, which let an LLM agent or person using a
-  terminal read and send XMPP messages through one long-lived session, subject to a send policy.
-- feat: Record and send voice messages with the opt-in `converse-voice-messages` plugin. Adds the
-  `max_voice_message_duration`, `voice_message_bitrate` and `voice_message_mime_type` settings,
-  and the `voice_message` key of `visible_toolbar_buttons`.
-- feat(muc): Search for groupchats with XEP-0433 Extended Channel Search, through the new
-  `api.rooms.search` method. Groupchat suggestions in the "Add groupchat" modal now show how many
-  participants each one has, list the busiest first, and include groupchats whose name (rather
-  than address) matched.
-- fix(muc-views): The "Add groupchat" modal had no field for the groupchat's address when
-  `muc_search_service` was set to an empty string.
-- feat: 1:1 audio calls over Jingle ([XEP-0167](https://xmpp.org/extensions/xep-0167.html)), set up with Jingle Message Initiation ([XEP-0353](https://xmpp.org/extensions/xep-0353.html)) and STUN/TURN discovery via [XEP-0215](https://xmpp.org/extensions/xep-0215.html). Adds the `call_ice_servers` setting, and the `call` key of `visible_toolbar_buttons` now shows the audio call button in 1:1 chats (on by default).
-- fix(rosterview): The contacts and occupants filters show their icons and text input on one line,
-  with the input taking up the remaining width.
-- #4132: The emoji picker no longer crashes when emoji.json can't be loaded, and the logged error
-  names the `assets_path` it was loaded from.
-- fix(emojis): A `loadEmojis` hook listener that throws no longer leaves emoji support, and with it
-  sending and receiving messages, waiting forever. Its changes are ignored and the error is logged.
-- fix(chatview): The contact's name and status message in a chat header were painted the same
-  colour as the header itself.
-- fix(chatview): Show the contact's status message in the chat header again. It was read off the
-  chat, while the presence handler keeps it on the contact, so it never rendered.
-- fix(muc): Moderating an edited groupchat message now removes every version of it from the room
-  archive, not just the latest correction. Moderations sent by other clients for any version of
-  an edited message (including its original) are now recognised. Corrections fetched again from
-  the archive, or received before the message they correct, are no longer shown twice.
-- fix(muc): Participants were listed twice when they became known before their XEP-0421
-  occupant id, for example a member from the member list who joins later.
-- fix(muc): A message's sender was given the real JID of whoever had the same nick,
-  even when the nick had since been taken by someone else. This also applied to the room
-  history replayed on joining.
-- fix(muc-views): The "Offline" state filter in the participants list didn't match anyone.
-- fix(notifications): Notify of a 1:1 message in a hidden chat while the tab is visible. The
-  check looked up the chat by the message's attributes instead of its JID, so it never found it.
-- fix(notifications): Show desktop notifications for XEP-0316 MEP room notifications again.
-- fix(notifications): Don't notify of a groupchat mention or a MEP notification while the room is
-  visible. Rooms now follow the same rule as 1:1 chats: notify while the chat is hidden, or always
-  when `show_desktop_notifications` is `all`.
-- fix(notifications): Don't play the notification sound for an OMEMO message that couldn't be
-  decrypted. It never showed a desktop notification.
-- feat(notifications): New `api.notifications.isNotable` tells whether a received message is worth
-  drawing the user's attention to, according to the notification settings.
-- fix(omemo): Match the SCE affixes of an OMEMO:2 message by namespace instead of by `xmlns`
-  attribute. Chromium 153 no longer keeps the redundant namespace declaration on `<from/>` and
-  `<to/>`, which stopped MUC messages from decrypting and silently skipped the `<from/>` check.
-- fix(reactions): A reaction fetched from the message archive no longer moves the message it
-  reacts to after later messages.
-- fix(utils): `isImageURL` checked the fetched `Content-Type` header for `video`, not `image`. With
-  `fetch_url_headers` on, extensionless image URLs weren't rendered at all and video URLs were
-  rendered as broken images.
-- fix(vcard): Don't eagerly refetch cached vcards when a session resumes.
-- fix(vcard): Don't fetch a MUC's own vCard in response to an occupant presence.
-- refactor(smacks): XEP-0198 Stream Management is now implemented natively by Strophe.js (see its
-  `enableStreamManagement` connection option).
-- feat(toolbar): Allow hiding the file upload button via the `fileupload` key of `visible_toolbar_buttons`
-- feat(settings): `api.settings.extend` accepts a `deep_merge` option so an object setting fills in
-  defaults instead of being replaced wholesale.
-- Optional browser back/forward and deep links via URL routing, gated behind the new `enable_url_routing` setting
-- chore(types): Switch TypeScript `moduleResolution` to `bundler`; `@converse/headless` now exposes its
-  type declarations via a `./types/*` export instead of consumer-side `paths` mappings.
-- feat(notifications) Prepend `assets_path` to logo path.
-- refactor(storage): The `BrowserExtLocal` and `BrowserExtSync` persistent stores now use Converse's own localForage drivers instead of the `localforage-webextensionstorage-driver` package, which is no longer a dependency. A write that the extension storage rejects, such as one that exceeds the `chrome.storage.sync` quota, now fires the model's `error` event instead of failing silently.
-
-### Breaking changes:
-
-`chat.sendMessage()` now rejects with an error whose `code` gives the failure reason.
-
-`api.modal.remove()` no longer takes a modal instance, only the modal's name.
-
-The `converse-location-button` element and the toolbar's `show_fileupload_button` and `show_location_button` properties are removed. See the `getAttachmentMenuItems` hook.
- 
-The `time_format` setting has been removed. Message times are now shown relative to the present
-instead of as a configurable clock.
-
-Stream Management state is no longer kept in `_converse.session`. Query the connection instead
-(e.g. `api.connection.get().isStreamManagementEnabled()`, `.hasResumed()`, `.sm.state`).
-
-Resource binding (and the `beforeResourceBinding` event) is now skipped when a stream
-is resumed via XEP-0198. Plugins that use `beforeResourceBinding` to register stanza handlers
-must also listen to the new `streamResumed` event, which fires while `<resumed/>` is processed,
-before the server's replay of queued stanzas is handled.
-
-The `routeToChat` and `routeToRoom` functions are removed. The legacy `#converse/chat?jid=<jid>` and
-`#converse/room?jid=<jid>` fragments are still accepted, but are now handled like an `xmpp:` link
-(see `register_protocol_handler`): they wait for login, and a room link asks before joining a
-groupchat you're not already in. They're only understood by the full build, not by a page that loads
-`@converse/headless` alone, and Converse no longer emits them. To link to a chat, use an `xmpp:` URI,
-or `#converse/action?uri=` followed by the percent-encoded URI.
-
-The `callButtonClicked` event is removed, together with the generic call button that emitted it.
-The `call` key of `visible_toolbar_buttons` now shows the built-in audio call button instead.
-Plugins that want a call button of their own add it with the `getToolbarButtons` hook.
+- feat(notifications): Prepend `assets_path` to the notification logo path
+- fix(omemo): Decrypt OMEMO:2 groupchat messages in Chromium 153 again
+- fix(reactions): A reaction from the archive no longer moves its message
+- fix(types): Generated type definitions resolve for TypeScript consumers
 
 ## 14.0.0 (2026-06-26)
 

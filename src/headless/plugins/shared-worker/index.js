@@ -14,13 +14,25 @@ function usesWorker() {
 }
 
 /**
- * Asks the worker to attach this tab to its session, and resolves with
- * whether it did. The connection's status handler takes it from there.
+ * Asks the worker to attach this tab to its session. Resolves with `false`
+ * if login should connect anew, and with `true` if there's nothing left for
+ * it to do: the tab attached, or its connection was ended while attaching
+ * (for example by logging out). The connection's status handler takes it
+ * from there.
  * @returns {Promise<boolean>}
  */
 function attach() {
     const connection = api.connection.get();
+    const { ATTACHED, ATTACHFAIL, CONNECTED, CONNFAIL, DISCONNECTED } = Strophe.Status;
+    let settled = false;
+    let abandoned = false;
+
     return new Promise((resolve) => {
+        /** @param {boolean} done */
+        const settle = (done) => {
+            settled = true;
+            resolve(done);
+        };
         connection.attach(
             /**
              * @param {number} status
@@ -28,10 +40,23 @@ function attach() {
              * @param {Element} [elem]
              */
             (status, condition, elem) => {
-                if (status === Strophe.Status.ATTACHFAIL) {
-                    resolve(false);
-                } else if (status === Strophe.Status.ATTACHED || status === Strophe.Status.CONNECTED) {
-                    resolve(true);
+                // Login connects anew, so the end of this attempt is not a
+                // disconnection to reconnect from.
+                if (abandoned) return;
+
+                if (!settled) {
+                    if (status === CONNFAIL) {
+                        // The worker has no session for this tab after all,
+                        // for example because its socket is gone or it speaks
+                        // another protocol version.
+                        abandoned = true;
+                        return settle(false);
+                    }
+                    if (status === ATTACHFAIL) {
+                        settle(false);
+                    } else if (status === ATTACHED || status === CONNECTED || status === DISCONNECTED) {
+                        settle(true);
+                    }
                 }
                 connection.onConnectStatusChanged(status, condition, elem);
             },

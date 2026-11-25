@@ -77,6 +77,42 @@ describe('A shared worker session', function () {
     );
 
     it(
+        'is connected anew when the worker drops it while attaching',
+        mock.initConverse(converse, [], SETTINGS, async (_converse) => {
+            const { api } = _converse;
+            const calls = stubWorker(api);
+            const reconnect = vi.fn();
+            api.listen.on('will-reconnect', reconnect);
+
+            const login = api.user.login('romeo@montague.lit', 'secret');
+            await u.waitUntil(() => api.connection.get()?._proto.worker);
+            // As the worker does for a page from another build, or once its socket is gone.
+            api.connection.get()._proto._onClose('Shared connection worker protocol mismatch');
+            await login;
+            await u.waitUntil(() => api.connection.authenticated());
+
+            expect(calls.connect).toHaveBeenCalledOnce();
+            expect(reconnect).not.toHaveBeenCalled();
+        }),
+    );
+
+    it(
+        'lets login finish when logging out while attaching',
+        mock.initConverse(converse, [], SETTINGS, async (_converse) => {
+            const { api } = _converse;
+            const calls = stubWorker(api);
+
+            const login = api.user.login('romeo@montague.lit', 'secret');
+            await u.waitUntil(() => api.connection.get()?._proto.worker);
+            await api.user.logout();
+            await login;
+
+            expect(calls.connect).not.toHaveBeenCalled();
+            expect(api.connection.authenticated()).toBeFalsy();
+        }),
+    );
+
+    it(
         'keeps its data where every tab can read it',
         mock.initConverse(converse, [], SETTINGS, async (_converse) => {
             const { api } = _converse;

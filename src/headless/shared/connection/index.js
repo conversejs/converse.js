@@ -5,7 +5,6 @@ import { ANONYMOUS, ANONYMOUS_RESET, BOSH_WAIT, LOGOUT } from '../../shared/cons
 import { CONNECTION_STATUS } from '../constants.js';
 import { MemoryStorageBackend, Strophe } from 'strophe.js';
 import { clearSession, endSession, isResumable, tearDown } from '../../utils/session.js';
-import { getOpenPromise } from '@converse/openpromise';
 import { setUserJID } from '../../utils/init.js';
 import { rememberSession } from '../../utils/remembered-session.js';
 
@@ -616,15 +615,8 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
         log.debug(`Status changed to: ${CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.ATTACHFAIL) {
             this.setConnectionStatus(status);
-            this.worker_attach_promise?.resolve(false);
         } else if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
-            if (this.worker_attach_promise?.isResolved && this.status === Strophe.Status.ATTACHED) {
-                // A different tab must have attached, so nothing to do for us here.
-                return;
-            }
             this.setConnectionStatus(status);
-            this.worker_attach_promise?.resolve(true);
-
             this.setDisconnectionCause();
             if (this.restored) {
                 // No need to send an initial presence stanza when
@@ -695,18 +687,12 @@ export class Connection extends /** @type {import('../types').StropheConnectionC
     }
 
     hasResumed() {
-        const { api } = _converse;
-        if (api.settings.get('connection_options')?.worker || this.isType('bosh')) {
-            return _converse.state.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
-        }
+        // Attaching takes over a session that is already running (a BOSH
+        // session or one held by a shared worker).
+        if (this.status === Strophe.Status.ATTACHED) return true;
+
         // Strophe knows whether its XEP-0198 engine resumed the session.
         return super.hasResumed();
-    }
-
-    restoreWorkerSession() {
-        this.attach(this.onConnectStatusChanged);
-        this.worker_attach_promise = getOpenPromise();
-        return this.worker_attach_promise;
     }
 }
 

@@ -127,7 +127,7 @@ export function unregisterListener(name, func) {
  * @param {string} [val] The value, if the previous parameter is a key
  */
 export function updateAppSettings(key, val) {
-    if (key == null) return this; // eslint-disable-line no-eq-null
+    if (key == null) return; // eslint-disable-line no-eq-null
 
     let attrs;
     if (key instanceof Object) {

@@ -28,7 +28,7 @@ export default {
             const event_args = args.splice(1);
             await Promise.all(events.map((e) => e.callback.apply(e.ctx, event_args)));
         } else {
-            _converse.trigger.apply(_converse, arguments);
+            _converse.trigger(name, ...Array.from(arguments).slice(1));
         }
         const promise = _converse.promises[name];
         if (promise !== undefined) {

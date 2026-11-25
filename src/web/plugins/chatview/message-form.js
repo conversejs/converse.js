@@ -76,7 +76,8 @@ export default class MessageForm extends CustomElement {
             }
         });
 
-        this.handleEmojiSelection = (/** @type {CustomEvent} */ { detail }) => {
+        this.handleEmojiSelection = (/** @type {Event} */ ev) => {
+            const { detail } = /** @type {CustomEvent} */ (ev);
             if (this.model.get('jid') === detail.jid) {
                 this.insertIntoTextArea(detail.value);
             }

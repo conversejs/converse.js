@@ -143,7 +143,7 @@ class SplitResize extends CustomElement {
     }
 
     /**
-     * @param {MouseEvent} e
+     * @param {MouseEvent|TouchEvent} e
      */
     getMousePosition(e) {
         if ('touches' in e) return e.touches[0][/** @type {string} */ (this.clientAxis)];
@@ -190,7 +190,7 @@ class SplitResize extends CustomElement {
      * ---------------------------------------------------------------------
      * | <- this.start                                        this.size -> |
      *
-     * @param {MouseEvent} e
+     * @param {MouseEvent|TouchEvent} e
      * @param {Record<string, any>} options
      */
     drag(e, options) {
@@ -431,7 +431,7 @@ class SplitResize extends CustomElement {
         // Create two event listeners bound to the same this.pair object and store
         // them in the this.pair object.
         this.pair.stop = () => this.stopDragging(options);
-        this.pair.move = /** @param {MouseEvent} e */ (e) => this.drag(e, options);
+        this.pair.move = (e) => this.drag(e, options);
 
         // All the binding. `window` gets the stop events in case we drag out of the elements.
         /** @type {Window} */ (global).addEventListener('mouseup', this.pair.stop);

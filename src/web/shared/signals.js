@@ -46,8 +46,9 @@ export function attrSignal(model, key) {
  * Mirror a collection's membership as a `Signal.State` snapshot of its models.
  * The snapshot is replaced with a fresh array on every add/remove/reset/sort,
  * so Lit re-renders the parts of the template that read it.
- * @param {import('@converse/skeletor').Collection} collection
- * @returns {import('@lit-labs/signals').Signal.State<import('@converse/skeletor').Model[]>}
+ * @template {import('@converse/skeletor').Model} M
+ * @param {import('@converse/skeletor').Collection<M>} collection
+ * @returns {import('@lit-labs/signals').Signal.State<M[]>}
  */
 export function collectionSignal(collection) {
     let signal = collection_signals.get(collection);

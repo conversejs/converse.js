@@ -22,6 +22,7 @@ const { Strophe } = converse.env;
  * auto-tracks the `collectionSignal` over the feed's messages, so the post list
  * re-renders as posts are backfilled or pushed live. Only a window of the feed
  * is in the DOM at a time (see {@link WindowedListElement}).
+ * @extends {WindowedListElement<import('@converse/headless').PubSubMessage>}
  */
 export default class SocialProfile extends WindowedListElement {
     static get properties() {

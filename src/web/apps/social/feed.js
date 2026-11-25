@@ -21,6 +21,7 @@ import { byTimeDesc } from 'utils/time.js';
  *
  * @param {string} [jid] attribute — the compose feed's JID; defaults to the
  *      user's own. (The timeline itself always aggregates all feeds.)
+ * @extends {WindowedListElement<import('@converse/headless').PubSubMessage>}
  */
 export default class SocialFeed extends WindowedListElement {
     static get properties() {

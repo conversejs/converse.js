@@ -46,7 +46,7 @@ export type AttachmentMenuItem = {
 
 export type MessageActionButton = {
     i18n_text: string;
-    handler: (ev: Event) => void;
+    handler: (ev: MouseEvent) => void;
     button_class: string;
     icon_class: string;
     name: string;

@@ -67,6 +67,7 @@ export default class AutoCompleteComponent extends CustomElement {
 
         /** @type {"above" | "below"} Should the autocomplete list show above or below the input element? */
         this.position = 'above';
+        /** @type {import('./types').AutoCompleteConfig['item']} */
         this.renderItem = getAutoCompleteItem;
 
         this.required = false;

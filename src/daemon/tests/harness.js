@@ -182,8 +182,7 @@ export async function startDaemon({
         receive,
         /**
          * Connects a client to this daemon, without auto-spawning.
-         * @param {Object} [options]
-         * @param {string} [options.consumer]
+         * @param {Pick<import('../types').ConnectOptions, 'consumer'>} [options]
          */
         connect: (options) => connect({ ...options, spawn: false, env }),
         /**

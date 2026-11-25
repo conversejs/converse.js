@@ -12,7 +12,7 @@ import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import { getSocketFromEnv, loadConfig } from './config.js';
 import { pidfileHolder } from './pidfile.js';
-import { PROTOCOL_VERSION, RPCError } from './protocol.js';
+import { ERRORS, PROTOCOL_VERSION, RPCError } from './protocol.js';
 import { findDaemon } from './registry.js';
 
 export { AccountError, getConfigDir, getConfigPath, getSocketFromEnv, listAccounts, loadConfig } from './config.js';
@@ -52,13 +52,21 @@ export class DaemonUnavailableError extends Error {
  * doesn't read the account's config: `access` and `spawn` are then moot. When
  * the config names the sockets, the client connects to those, and never starts
  * a daemon: it runs on another host.
- * @param {Object} [options]
- * @param {string} [options.consumer] - Who is connecting; defaults to the configured consumer.
- * @param {import('./types').Access} [options.access='full'] - Which socket to connect to
- * @param {boolean} [options.spawn=true]
- * @param {NodeJS.ProcessEnv} [options.env]
+ * @param {import('./types').ConnectOptions} [options]
+ * @returns {Promise<Client>}
  */
-export async function connect({ consumer, access = 'full', spawn: may_spawn = true, env = process.env } = {}) {
+export async function connect(options) {
+    return connectAt(PROTOCOL_VERSION, options);
+}
+
+/**
+ * {@link connect}, asking for a protocol version that may not be ours, which
+ * is only of use to stop a daemon of another version.
+ * @param {number} protocol
+ * @param {import('./types').ConnectOptions} [options]
+ * @returns {Promise<Client>}
+ */
+async function connectAt(protocol, { consumer, access = 'full', spawn: may_spawn = true, env = process.env } = {}) {
     const socket_from_env = getSocketFromEnv(env);
     if (socket_from_env) {
         let socket;
@@ -73,11 +81,11 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
                 { cause: e },
             );
         }
-        return handshake(socket, socket_from_env, consumer);
+        return handshake(socket, socket_from_env, consumer, protocol);
     }
 
     const config = loadConfig(env);
-    if (config.sockets) return connectConfigured(config, access, consumer);
+    if (config.sockets) return connectConfigured(config, access, consumer, protocol);
 
     // A running daemon is found by its account's name, in case the config's JID changed since it started.
     const sockets = findDaemon(config) ?? config.paths;
@@ -97,7 +105,7 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
         }
         socket = await spawnDaemon(config, socket_path, env);
     }
-    return handshake(socket, socket_path, consumer ?? config.consumer);
+    return handshake(socket, socket_path, consumer ?? config.consumer, protocol);
 }
 
 /**
@@ -125,9 +133,10 @@ class FullAccessUnreachableError extends Error {
  * @param {import('./types').Config} config
  * @param {import('./types').Access} access
  * @param {string} [consumer]
+ * @param {number} [protocol]
  * @returns {Promise<Client>}
  */
-async function connectConfigured(config, access, consumer) {
+async function connectConfigured(config, access, consumer, protocol) {
     const { socket, restricted_socket } = config.sockets;
     const [key, socket_path] = access === 'restricted' ? ['restricted_socket', restricted_socket] : ['socket', socket];
     const restricted_answers = async () =>
@@ -142,7 +151,7 @@ async function connectConfigured(config, access, consumer) {
         );
     }
     try {
-        return await handshake(await openSocket(socket_path), socket_path, consumer ?? config.consumer);
+        return await handshake(await openSocket(socket_path), socket_path, consumer ?? config.consumer, protocol);
     } catch (e) {
         if (e instanceof RPCError) throw e;
 
@@ -166,12 +175,13 @@ async function connectConfigured(config, access, consumer) {
  * @param {net.Socket} socket
  * @param {string} socket_path - Where the socket was reached
  * @param {string} [consumer] - Unset leaves it to the daemon's config
+ * @param {number} [protocol]
  * @returns {Promise<Client>}
  */
-async function handshake(socket, socket_path, consumer) {
+async function handshake(socket, socket_path, consumer, protocol = PROTOCOL_VERSION) {
     const client = new Client(socket, socket_path);
     try {
-        client.hello = await client.request('hello', { protocol: PROTOCOL_VERSION, consumer });
+        client.hello = await client.request('hello', { protocol, consumer });
     } catch (e) {
         client.close();
         throw e;
@@ -185,6 +195,10 @@ async function handshake(socket, socket_path, consumer) {
  * `CONVERSE_SOCKET` or the config names may run on another host, where its
  * pidfile is out of reach: for that one, this waits until the daemon has
  * closed the connection.
+ *
+ * A daemon of another protocol version is stopped too, by speaking its
+ * version: every version has had "daemon.stop", so that an upgrade can restart
+ * the daemon.
  * @param {Object} [options]
  * @param {NodeJS.ProcessEnv} [options.env]
  * @returns {Promise<'stopped'|'asked'|false>} Whether it stopped, was asked to, or wasn't running.
@@ -192,7 +206,7 @@ async function handshake(socket, socket_path, consumer) {
 export async function stopDaemon({ env = process.env } = {}) {
     let client;
     try {
-        client = await connect({ spawn: false, env });
+        client = await connectToStop(env);
     } catch (e) {
         if (e instanceof DaemonUnavailableError) return false;
         throw e;
@@ -227,6 +241,31 @@ export async function stopDaemon({ env = process.env } = {}) {
         await new Promise((resolve) => setTimeout(resolve, 50));
     }
     return 'stopped';
+}
+
+/**
+ * @param {NodeJS.ProcessEnv} env
+ * @returns {Promise<Client>}
+ */
+async function connectToStop(env) {
+    try {
+        return await connect({ spawn: false, env });
+    } catch (e) {
+        const mismatch = e instanceof RPCError && e.code === ERRORS.PROTOCOL_MISMATCH;
+        const protocol = mismatch ? /** @type {{ protocol?: number }} */ (e.data)?.protocol : null;
+        if (!Number.isInteger(protocol)) throw e;
+
+        // It hangs up after refusing the handshake, so this is a new connection.
+        try {
+            return await connectAt(protocol, { spawn: false, env });
+        } catch (retry_error) {
+            // It answered a moment ago, so don't report it as not running.
+            throw new Error(
+                `A daemon of protocol version ${protocol} is running, and the connection to stop it failed.`,
+                { cause: retry_error },
+            );
+        }
+    }
 }
 
 export class Client {

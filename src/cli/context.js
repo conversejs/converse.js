@@ -63,9 +63,8 @@ export async function requestDrafts(ctx, method, params) {
  * @param {import('./types').Context} ctx
  * @param {string} method
  * @param {Record<string, any>} [params]
- * @param {Object} [options]
- * @param {boolean} [options.spawn]
- * @param {import('@converse/daemon/types').Access} [options.access] - Defaults to the configured level
+ * @param {Pick<import('@converse/daemon/types').ConnectOptions, 'spawn'|'access'>} [options] - `access`
+ *  defaults to the configured level
  */
 export async function request(ctx, method, params, { spawn = true, access = accessFor(ctx.env) } = {}) {
     const client = await connect({ spawn, env: ctx.env, access });

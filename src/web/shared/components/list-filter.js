@@ -79,7 +79,9 @@ export default class ListFilter extends CustomElement {
      */
     submitFilter(ev) {
         ev?.preventDefault();
-        this.liveFilter();
+        this.liveFilter.cancel();
+        const text = /** @type {HTMLInputElement} */ (this.querySelector('.items-filter')).value;
+        this.model.save({ text });
     }
 
     /**

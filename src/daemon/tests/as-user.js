@@ -342,6 +342,17 @@ describe('Acting as the user (as_user mode)', () => {
             ]);
         });
 
+        it('reports an approved reaction as sent, though the message it reacts to is pending', async () => {
+            await begin();
+            const { message: mine } = await full('messages.send', { to: JULIET, body: 'Noon?' });
+            const chat = await daemon.api.chats.get(JULIET);
+            chat.messages.findWhere({ msgid: mine.id }).save({ send_status: 'pending' });
+            await restricted('messages.react', { id: mine.id, emoji: ':thumbsup:' });
+
+            expect(await full('drafts.send', { id: 'd1' })).toMatchObject({ outcome: 'sent' });
+            expect(audit().at(-1)).toMatchObject({ outcome: 'sent', action: 'react', target: mine.id });
+        });
+
         it('shares an approved upload as a file, with its URL out of band (XEP-0066)', async () => {
             const server = http.createServer((request, response) => {
                 request.resume().on('end', () => response.writeHead(201).end());

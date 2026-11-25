@@ -175,7 +175,6 @@ export function draftMethods({ drafts, audit, events, owner, mode }) {
             // It went out: a message the room turns down is kept as a failed send, not as a draft.
             drafts.remove(id);
             events.publishDraft('sent', draft);
-            const outcome = outcomeOf(message);
             /** @type {Omit<import('./types').AuditEntry, 'outcome'|'id'>} */
             const entry = {
                 consumer: client.consumer,
@@ -188,10 +187,11 @@ export function draftMethods({ drafts, audit, events, owner, mode }) {
             };
             // A retraction or a reaction is shown on the message it acts on, which went out before.
             if (['send', 'reply', 'correct', 'upload'].includes(draft.action)) {
-                return { outcome, message: await confirmAndRecord(message, audit, entry) };
+                return { outcome: outcomeOf(message), message: await confirmAndRecord(message, audit, entry) };
             }
-            audit.record({ ...entry, outcome, id: getID(message) });
-            return { outcome, message: toMessageDTO(message) };
+            // Its status is that of the message acted on. The retraction or reaction itself went out, or threw.
+            audit.record({ ...entry, outcome: 'sent', id: getID(message) });
+            return { outcome: 'sent', message: toMessageDTO(message) };
         },
 
         /**

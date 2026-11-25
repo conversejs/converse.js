@@ -27,8 +27,6 @@ const profiles = new Map();
  * from the vCard cache exactly like a timeline post does — non-contacts
  * included (see {@link getVCardJID}). It is *not* persisted: the feed and the
  * vCard cache are the sources of truth; this is a transient view model.
- *
- * @extends {Model}
  */
 class MicroblogProfile extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
     get idAttribute() {

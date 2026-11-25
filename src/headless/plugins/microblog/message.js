@@ -11,7 +11,6 @@ import { COMMENTS_NODE_PREFIX, MICROBLOG_NODE, MICROBLOG_TYPE } from './constant
 /**
  * Represents a single microblog post (a parsed Atom entry).
  * Extends {@link BaseMessage} to inherit vCard/contact/colour awareness.
- * @extends {BaseMessage}
  */
 class PubSubMessage extends BaseMessage {
     defaults() {

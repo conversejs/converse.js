@@ -60,7 +60,8 @@ class AutoComplete extends EventEmitter(Object) {
     }
 
     bindEvents() {
-        /** @type {Record<string, Array<{callback: Function, context?: any, ctx?: any}>>} */ this._events = {
+        /** @type {Record<string, Array<{callback: (ev: any) => void, context?: any, ctx?: any}>>} */
+        this.dom_events = {
             input: [
                 {
                     callback: () => this.close({ reason: 'blur' }),
@@ -90,12 +91,12 @@ class AutoComplete extends EventEmitter(Object) {
         };
         // The helpers.bind function expects event names to be passed differently
         // We need to manually bind each event
-        this.input.addEventListener('blur', this._events.input[0].callback);
+        this.input.addEventListener('blur', this.dom_events.input[0].callback);
         if (this.input.form) {
-            this.input.form.addEventListener('submit', this._events.form[0].callback);
+            this.input.form.addEventListener('submit', this.dom_events.form[0].callback);
         }
-        this.ul.addEventListener('mousedown', this._events.ul[0].callback);
-        this.ul.addEventListener('mouseover', this._events.ul[1].callback);
+        this.ul.addEventListener('mousedown', this.dom_events.ul[0].callback);
+        this.ul.addEventListener('mouseover', this.dom_events.ul[1].callback);
     }
 
     set list(list) {
@@ -173,12 +174,12 @@ class AutoComplete extends EventEmitter(Object) {
 
     destroy() {
         // Remove events from the input and its form
-        this.input.removeEventListener('blur', this._events.input[0].callback);
+        this.input.removeEventListener('blur', this.dom_events.input[0].callback);
         if (this.input.form) {
-            this.input.form.removeEventListener('submit', this._events.form[0].callback);
+            this.input.form.removeEventListener('submit', this.dom_events.form[0].callback);
         }
-        this.ul.removeEventListener('mousedown', this._events.ul[0].callback);
-        this.ul.removeEventListener('mouseover', this._events.ul[1].callback);
+        this.ul.removeEventListener('mousedown', this.dom_events.ul[0].callback);
+        this.ul.removeEventListener('mouseover', this.dom_events.ul[1].callback);
         this.input.removeAttribute('aria-autocomplete');
     }
 

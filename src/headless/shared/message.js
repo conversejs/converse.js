@@ -294,7 +294,7 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Messag
                 is_ephemeral: true,
                 message:
                     // `e` is null if the slot request timed out
-                    e?.code === NO_SLOT
+                    /** @type {Error & { code?: string }} */ (e)?.code === NO_SLOT
                         ? __('Sorry, could not determine file upload URL.')
                         : __('Sorry, could not determine upload URL.'),
                 type: 'error',
@@ -320,13 +320,11 @@ class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Messag
             );
         } catch (e) {
             log.error(e);
+            const { responseText } = /** @type {Error & { responseText?: string }} */ (e);
             return this.save({
                 is_ephemeral: true,
-                message: e.responseText
-                    ? __(
-                          'Sorry, could not successfully upload your file. Your server’s response: "%1$s"',
-                          e.responseText,
-                      )
+                message: responseText
+                    ? __('Sorry, could not successfully upload your file. Your server’s response: "%1$s"', responseText)
                     : __('Sorry, could not successfully upload your file.'),
                 type: 'error',
                 upload: FAILURE,

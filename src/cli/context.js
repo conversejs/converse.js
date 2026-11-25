@@ -46,7 +46,11 @@ export async function requestDrafts(ctx, method, params) {
         return await request(ctx, method, params);
     } catch (e) {
         // Given only a socket, there's no other level to try.
-        if (e.code !== ERRORS.ACCESS_DENIED || getSocketFromEnv(ctx.env)) throw e;
+        if (
+            /** @type {import('@converse/daemon/protocol').RPCError} */ (e).code !== ERRORS.ACCESS_DENIED ||
+            getSocketFromEnv(ctx.env)
+        )
+            throw e;
 
         return request(ctx, method, params, { access: 'full' });
     }

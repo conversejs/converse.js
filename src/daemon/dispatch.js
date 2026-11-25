@@ -119,7 +119,9 @@ export function createDispatcher({ access, config, methods, getJID, notify, writ
             return { response: id === null ? null : { id, result }, close: false, after };
         } catch (e) {
             const { code, message, data } =
-                e instanceof RPCError ? e : { code: ERRORS.INTERNAL_ERROR, message: e.message, data: undefined };
+                e instanceof RPCError
+                    ? e
+                    : { code: ERRORS.INTERNAL_ERROR, message: /** @type {Error} */ (e).message, data: undefined };
             return {
                 response: id === null ? null : { id, error: { code, message, data } },
                 close: code === ERRORS.PROTOCOL_MISMATCH,

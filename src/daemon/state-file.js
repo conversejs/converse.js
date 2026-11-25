@@ -19,8 +19,8 @@ export function readStateFile(file, empty, what) {
     try {
         return JSON.parse(fs.readFileSync(file, 'utf8'));
     } catch (e) {
-        if (e.code === 'ENOENT') return empty;
-        throw new Error(`Couldn't read ${what} in ${file}: ${e.message}`, { cause: e });
+        if (/** @type {NodeJS.ErrnoException} */ (e).code === 'ENOENT') return empty;
+        throw new Error(`Couldn't read ${what} in ${file}: ${/** @type {Error} */ (e).message}`, { cause: e });
     }
 }
 

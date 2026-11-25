@@ -59,7 +59,7 @@ export default {
                     <store xmlns="${Strophe.NS.HINTS}"/>
                 </message>`;
             } catch (e) {
-                handleMessageSendError(e, chat); // attaches the error code and re-throws
+                handleMessageSendError(/** @type {Error} */ (e), chat); // attaches the error code and re-throws
             }
             // Sending is outside the try block, so a transport failure isn't reported as an encryption failure.
             api.send(stanza);

@@ -39,7 +39,9 @@ async function searchServer(text, jid, limit) {
         const result = await api.archive.search(text, { with: jid, max: limit, create: true });
         return result?.messages ?? null;
     } catch (e) {
-        log.warn(`The server couldn't search its archive, so the messages held locally are searched: ${e.message}`);
+        log.warn(
+            `The server couldn't search its archive, so the messages held locally are searched: ${/** @type {Error} */ (e).message}`,
+        );
         return null;
     }
 }

@@ -225,10 +225,10 @@ async function searchChannels(service, query, options) {
         back_offs.delete(service);
         return result;
     } catch (e) {
-        maybeBackOff(service, e);
+        maybeBackOff(service, /** @type {Error} */ (e));
         if (protocol !== 'xep-0433') throw e;
         // A service that doesn't know XEP-0433 might not answer at all
-        if (!isUnsupported(e) && !(e instanceof TimeoutError)) throw e;
+        if (!isUnsupported(/** @type {Error} */ (e)) && !(e instanceof TimeoutError)) throw e;
 
         xep_0433_error = e;
     }
@@ -239,7 +239,7 @@ async function searchChannels(service, query, options) {
         back_offs.delete(service);
         return result;
     } catch (e) {
-        if (isUnsupported(e) && isUnsupported(xep_0433_error)) {
+        if (isUnsupported(/** @type {Error} */ (e)) && isUnsupported(xep_0433_error)) {
             protocols.set(service, 'none');
         } else if (e instanceof TimeoutError || xep_0433_error instanceof TimeoutError) {
             // Not necessarily permanent, so try again later instead of giving up on the service

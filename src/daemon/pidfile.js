@@ -66,7 +66,7 @@ async function create(pidfile, pid) {
         await fs.link(temp, pidfile);
         return true;
     } catch (e) {
-        if (e.code === 'EEXIST') return false;
+        if (/** @type {NodeJS.ErrnoException} */ (e).code === 'EEXIST') return false;
         throw e;
     } finally {
         await fs.rm(temp, { force: true });
@@ -86,7 +86,7 @@ async function removeStale(pidfile, stale, pid) {
     try {
         await fs.rename(pidfile, aside);
     } catch (e) {
-        if (e.code === 'ENOENT') return;
+        if (/** @type {NodeJS.ErrnoException} */ (e).code === 'ENOENT') return;
         throw e;
     }
     if ((await read(aside)) !== stale) {
@@ -107,7 +107,7 @@ async function read(file) {
     try {
         return await fs.readFile(file, 'utf8');
     } catch (e) {
-        if (e.code === 'ENOENT') return null;
+        if (/** @type {NodeJS.ErrnoException} */ (e).code === 'ENOENT') return null;
         throw e;
     }
 }

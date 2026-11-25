@@ -33,7 +33,7 @@ export function checkRuntimeDir(dir, { check_mode = true } = {}) {
     try {
         stat = fs.lstatSync(dir);
     } catch (e) {
-        if (e.code === 'ENOENT') return;
+        if (/** @type {NodeJS.ErrnoException} */ (e).code === 'ENOENT') return;
         throw e;
     }
     if (!stat.isDirectory() || stat.uid !== process.getuid()) {
@@ -71,7 +71,7 @@ export function daemonsIn(runtime_dir) {
     try {
         files = fs.readdirSync(dir);
     } catch (e) {
-        if (e.code !== 'ENOENT') throw e;
+        if (/** @type {NodeJS.ErrnoException} */ (e).code !== 'ENOENT') throw e;
     }
     return files
         .filter((f) => f.endsWith('.json'))
@@ -155,6 +155,6 @@ export function isRunning(pid) {
         process.kill(pid, 0);
         return true;
     } catch (e) {
-        return e.code === 'EPERM';
+        return /** @type {NodeJS.ErrnoException} */ (e).code === 'EPERM';
     }
 }

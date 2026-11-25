@@ -207,7 +207,11 @@ export async function confirmAndRecord(dto, audit, entry) {
         audit.record({ ...entry, outcome: outcomeOf(message), id: dto.id });
         return message;
     } catch (e) {
-        const error_code = e.code === ERRORS.NOT_JOINED ? 'not-in-room' : e.data?.condition;
+        const error = /** @type {import('./protocol.js').RPCError} */ (e);
+        const error_code =
+            error.code === ERRORS.NOT_JOINED
+                ? 'not-in-room'
+                : /** @type {{ condition?: string } | undefined} */ (error.data)?.condition;
         audit.record({ ...entry, outcome: 'failed', id: dto.id, error_code });
         throw e;
     }

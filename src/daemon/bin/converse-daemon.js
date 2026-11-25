@@ -13,7 +13,7 @@ let daemon;
 try {
     daemon = await start(loadConfig());
 } catch (e) {
-    process.stderr.write(`converse-daemon: ${e.message}\n`);
+    process.stderr.write(`converse-daemon: ${/** @type {Error} */ (e).message}\n`);
     process.exit(1);
 }
 

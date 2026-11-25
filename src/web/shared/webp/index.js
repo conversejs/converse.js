@@ -42,7 +42,7 @@ export default class ConverseWebP extends AnimationPlayer {
         } catch (e) {
             if (this.disposed) return;
 
-            log.warn(`Could not decode WebP image ${this.el.getAttribute('src')}: ${e.message}`);
+            log.warn(`Could not decode WebP image ${this.el.getAttribute('src')}: ${/** @type {Error} */ (e).message}`);
             this.showError();
             return;
         }

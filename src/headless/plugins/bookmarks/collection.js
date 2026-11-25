@@ -193,7 +193,7 @@ class Bookmarks extends Collection {
                 } catch (error) {
                     // Only a refusal tells us the server doesn't have the
                     // change. After a timeout it might, so we keep it.
-                    const refused = isErrorStanza(error) || error instanceof StanzaError;
+                    const refused = isErrorStanza(/** @type {Element} */ (error)) || error instanceof StanzaError;
                     if (refused && !options.keep_on_error) {
                         await this.#rollBack(bookmark, previous, options);
                     }
@@ -202,7 +202,7 @@ class Bookmarks extends Collection {
             }
             return bookmark;
         } catch (error) {
-            this.onBookmarkError(error);
+            this.onBookmarkError(/** @type {Element|Error} */ (error));
             throw error;
         }
     }

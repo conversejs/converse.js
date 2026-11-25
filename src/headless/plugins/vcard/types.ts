@@ -13,7 +13,7 @@ export interface VCardResult {
     nickname?: string;
     role?: string;
     stanza: Element;
-    error?: Error;
+    error?: string; // Why the vCard couldn't be fetched
     url?: string;
     vcard_error?: string;
     vcard_updated?: string;

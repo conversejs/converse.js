@@ -67,7 +67,7 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
         } catch (e) {
             // Without the account's config there's no password to start a daemon with.
             throw new DaemonUnavailableError(
-                `No daemon answers on ${socket_from_env}, the socket CONVERSE_SOCKET names (${e.code}). ` +
+                `No daemon answers on ${socket_from_env}, the socket CONVERSE_SOCKET names (${/** @type {NodeJS.ErrnoException} */ (e).code}). ` +
                     'This client has no account config to start one with: ask the user to start the daemon, ' +
                     'and check that this path is its restricted socket.',
                 { cause: e },
@@ -87,7 +87,7 @@ export async function connect({ consumer, access = 'full', spawn: may_spawn = tr
         socket = await openSocket(socket_path);
     } catch (e) {
         if (access === 'full' && (await answers(sockets.restricted_socket))) {
-            throw new FullAccessUnreachableError(e);
+            throw new FullAccessUnreachableError(/** @type {Error} */ (e));
         }
         if (!may_spawn) {
             throw new DaemonUnavailableError(
@@ -146,10 +146,13 @@ async function connectConfigured(config, access, consumer) {
     } catch (e) {
         if (e instanceof RPCError) throw e;
 
-        if (await restricted_answers()) throw new FullAccessUnreachableError(e);
+        if (await restricted_answers()) throw new FullAccessUnreachableError(/** @type {Error} */ (e));
 
         // A tunnel that's up accepts the connection, and closes it when nothing answers on the other host.
-        const reason = e instanceof DaemonUnavailableError ? 'the connection was closed' : e.code;
+        const reason =
+            e instanceof DaemonUnavailableError
+                ? 'the connection was closed'
+                : /** @type {import('./protocol.js').RPCError} */ (e).code;
         throw new DaemonUnavailableError(
             `No daemon answers on ${socket_path}, the "${key}" that ${config.paths.config} names (${reason}). ` +
                 "Check that the tunnel to the daemon's host is up, and that the daemon runs on that host. " +

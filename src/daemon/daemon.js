@@ -245,7 +245,7 @@ async function serve(config, gid) {
                 }
             } catch (e) {
                 // Still clean up below: a daemon left with its pidfile behind blocks the next one.
-                log.error(`Couldn't leave cleanly: ${e.message}`);
+                log.error(`Couldn't leave cleanly: ${/** @type {Error} */ (e).message}`);
             } finally {
                 cursors.flush();
                 await fs.rm(paths.socket, { force: true });

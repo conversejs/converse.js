@@ -87,7 +87,7 @@ export function listAccounts(env = process.env) {
     try {
         files = fs.readdirSync(path.join(dir, 'accounts'));
     } catch (e) {
-        if (e.code !== 'ENOENT') throw e;
+        if (/** @type {NodeJS.ErrnoException} */ (e).code !== 'ENOENT') throw e;
     }
     for (const file of files.filter((f) => f.endsWith('.json')).sort()) {
         const name = file.slice(0, -'.json'.length);
@@ -170,7 +170,7 @@ export function loadConfig(env = process.env) {
     try {
         raw = JSON.parse(fs.readFileSync(config_path, 'utf8'));
     } catch (e) {
-        throw new Error(`Could not read ${config_path}: ${e.message}`, { cause: e });
+        throw new Error(`Could not read ${config_path}: ${/** @type {Error} */ (e).message}`, { cause: e });
     }
 
     const jid = typeof raw.jid === 'string' ? raw.jid.trim().toLowerCase() : '';

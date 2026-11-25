@@ -73,7 +73,7 @@ export async function main(argv, io) {
             options: PARSE_OPTIONS,
         });
     } catch (e) {
-        io.err(`converse-cli: ${e.message}. Run "converse-cli --help" for usage.\n`);
+        io.err(`converse-cli: ${/** @type {Error} */ (e).message}. Run "converse-cli --help" for usage.\n`);
         return EXIT.ERROR;
     }
     const { values, positionals } = parsed;
@@ -88,7 +88,7 @@ export async function main(argv, io) {
         try {
             io.out(overview(COMMANDS, getConfigDir(io.env), getSocketFromEnv(io.env)));
         } catch (e) {
-            return reportError(e, io);
+            return reportError(/** @type {Error} */ (e), io);
         }
         return EXIT.OK;
     }
@@ -133,7 +133,7 @@ export async function main(argv, io) {
     try {
         return await COMMANDS[command].run({ ...io, args, options: values });
     } catch (e) {
-        return reportError(e, io);
+        return reportError(/** @type {Error} */ (e), io);
     }
 }
 

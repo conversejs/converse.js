@@ -214,7 +214,7 @@ class DiscoEntity extends Model {
             stanza = await api.disco.info(this.get('jid'), options?.node ?? null, options);
         } catch (iq) {
             if (u.isElement(iq)) {
-                const e = await parseErrorStanza(iq);
+                const e = await parseErrorStanza(/** @type {Element|Error} */ (iq));
                 if (e.message !== 'item-not-found') {
                     log.error(`Error querying disco#info for ${this.get('jid')}: ${e.message}`);
                 }
@@ -228,7 +228,7 @@ class DiscoEntity extends Model {
                     log.error(`Error querying disco#info for ${this.get('jid')}: ${iq}`);
                 }
                 this.waitUntilFeaturesDiscovered.resolve(iq);
-                this.waitUntilItemsFetched.resolve(iq);
+                this.waitUntilItemsFetched.resolve(/** @type {Element|Error} */ (iq));
             }
             return;
         }

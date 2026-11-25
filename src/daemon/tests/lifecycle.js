@@ -1,9 +1,11 @@
 import fs from 'node:fs/promises';
 import net from 'node:net';
+import os from 'node:os';
 import path from 'node:path';
 import readline from 'node:readline';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { converse } from '@converse/headless';
+import { stopDaemon } from '../client.js';
 import { ERRORS, PROTOCOL_VERSION } from '../protocol.js';
 import { start } from '../daemon.js';
 import { findDaemon } from '../registry.js';
@@ -269,5 +271,38 @@ describe('The daemon', () => {
         }
         await expect(fs.stat(config.paths.socket)).rejects.toThrow('ENOENT');
         await expect(fs.stat(config.paths.pidfile)).rejects.toThrow('ENOENT');
+    });
+
+    it('is stopped by a client that speaks a newer protocol version', async () => {
+        // A daemon from before an upgrade, which only takes its own version.
+        const old_version = PROTOCOL_VERSION - 1;
+        const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-'));
+        const socket_path = path.join(dir, 'daemon.sock');
+        const methods = [];
+        const server = net.createServer((socket) => {
+            readline.createInterface({ input: socket }).on('line', (line) => {
+                const { id, method, params } = JSON.parse(line);
+                methods.push(method);
+                if (method === 'hello' && params.protocol !== old_version) {
+                    const error = {
+                        code: ERRORS.PROTOCOL_MISMATCH,
+                        message: 'mismatch',
+                        data: { protocol: old_version },
+                    };
+                    socket.end(JSON.stringify({ jsonrpc: '2.0', id, error }) + '\n');
+                } else {
+                    socket.write(JSON.stringify({ jsonrpc: '2.0', id, result: {} }) + '\n');
+                    if (method === 'daemon.stop') socket.end();
+                }
+            });
+        });
+        await new Promise((resolve) => server.listen(socket_path, () => resolve(undefined)));
+        try {
+            await expect(stopDaemon({ env: { CONVERSE_SOCKET: socket_path } })).resolves.toBe('asked');
+            expect(methods).toEqual(['hello', 'hello', 'daemon.stop']);
+        } finally {
+            server.close();
+            await fs.rm(dir, { recursive: true, force: true });
+        }
     });
 });

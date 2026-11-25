@@ -40,6 +40,16 @@ export type DaemonRecord = {
 export type Access = 'full' | 'restricted';
 
 /**
+ * How a client connects to the daemon.
+ */
+export type ConnectOptions = {
+    consumer?: string; // Who is connecting; defaults to the configured consumer
+    access?: Access; // Which socket to connect to; defaults to full
+    spawn?: boolean; // Whether to start a daemon if none is running; defaults to true
+    env?: NodeJS.ProcessEnv;
+};
+
+/**
  * How the account acts. "owner_only": restricted sends are drafts for the owner,
  * and direct only to the owner. "bot": restricted sends also go out directly to
  * the rooms and contacts the policy lists. "as_user": the account is the user's

@@ -81,6 +81,7 @@ describe('A send to a room', () => {
         expect(message).toMatchObject({ status: 'sent', delivered: expect.any(String) });
         // The id is then the one the room gave it.
         expect(message.id).not.toBe(lastSent().getAttribute('id'));
+        expect(lastAudited()).toMatchObject({ outcome: 'sent', id: message.id });
 
         const { messages } = await client.request('messages.list', { conversation: GARDEN });
         expect(messages.at(-1)).toMatchObject({ id: message.id, delivered: message.delivered });

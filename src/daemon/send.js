@@ -202,11 +202,11 @@ export async function confirmDelivery(message) {
  * @throws {RPCError} NOT_JOINED or UNDELIVERED, when the room didn't take it
  */
 export async function confirmAndRecord(message, audit, entry) {
-    // Taken before the room echoes it, which gives it the room's id.
+    // A room that doesn't take the message never gives it an id of its own.
     const id = getID(message);
     try {
         const dto = await confirmDelivery(message);
-        audit.record({ ...entry, outcome: outcomeOf(message), id });
+        audit.record({ ...entry, outcome: outcomeOf(message), id: dto.id });
         return dto;
     } catch (e) {
         const error = /** @type {import('./protocol.js').RPCError} */ (e);

@@ -45,6 +45,7 @@
 
     "strict": false,
     "noImplicitAny": false,
+    "strictFunctionTypes": true,
 
     "skipLibCheck": true,
 

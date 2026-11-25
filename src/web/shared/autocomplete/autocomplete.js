@@ -108,7 +108,7 @@ class AutoComplete extends EventEmitter(Object) {
             // Element or CSS selector
             const el = helpers.getElement(list);
             const children = el?.children;
-            this._list = Array.from(children || [])
+            this._list = /** @type {HTMLOptionElement[]} */ (Array.from(children || []))
                 .filter(/** @param {HTMLOptionElement} el */ (el) => !el.disabled)
                 .map(
                     /** @param {HTMLOptionElement} el */ (el) => {

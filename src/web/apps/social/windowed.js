@@ -31,6 +31,9 @@ const WINDOW_DELTA = 5; // How many items the window moves at a time.
  */
 export const mounted_lists = new Set();
 
+/**
+ * @template {import('@converse/skeletor').Model} [M=import('@converse/skeletor').Model] - The type of the listed items
+ */
 export class WindowedListElement extends SignalWatcher(CustomElement) {
     static get properties() {
         return {
@@ -112,7 +115,7 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
 
     /**
      * The full list of models the window slides over. Subclasses must implement this.
-     * @returns {import('@converse/skeletor').Model[]}
+     * @returns {M[]}
      */
     get virtualizedItems() {
         throw new Error('WindowedListElement subclasses must implement virtualizedItems');
@@ -129,7 +132,7 @@ export class WindowedListElement extends SignalWatcher(CustomElement) {
 
     /**
      * The items currently within the rendered window.
-     * @returns {import('@converse/skeletor').Model[]}
+     * @returns {M[]}
      */
     get windowedItems() {
         const items = this.virtualizedItems;

@@ -117,9 +117,9 @@ export const SORT_BY_QUERY_POSITION = function (a, b) {
 
 /**
  * Marks the occurrences of the input string in a text.
- * @param {string} text - The text to display.
+ * @param {string|import('./suggestion').default} text - The text to display.
  * @param {string} input - The input string to highlight.
- * @returns {Array<import('lit').TemplateResult|string>}
+ * @returns {Array<import('lit').TemplateResult|string|import('./suggestion').default>}
  */
 export function highlightMatches(text, input) {
     input = input.trim();
@@ -130,7 +130,7 @@ export function highlightMatches(text, input) {
 
 /**
  * Renders an item for display in a list.
- * @param {string} text - The text to display.
+ * @param {string|import('./suggestion').default} text - The text to display.
  * @param {string} input - The input string to highlight.
  * @returns {import('lit').TemplateResult} The rendered HTML for the item.
  */

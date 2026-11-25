@@ -85,9 +85,7 @@ export function setAffiliation(affiliation, muc_jids, members) {
         muc_jids = [muc_jids];
     }
     members = members.filter((m) => [undefined, affiliation].includes(m.affiliation));
-    return Promise.all(
-        muc_jids.reduce((acc, jid) => [...acc, ...members.map((m) => sendAffiliationIQ(affiliation, jid, m))], []),
-    );
+    return Promise.all(muc_jids.flatMap((jid) => members.map((m) => sendAffiliationIQ(affiliation, jid, m))));
 }
 
 /**

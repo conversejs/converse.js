@@ -21,7 +21,7 @@ export type ResizablePair = {
     gutter: HTMLElement;
     parent: HTMLElement;
     stop: (this: Window, ev: Event) => any;
-    move: (this: Window, ev: Event) => any;
+    move: (ev: MouseEvent | TouchEvent) => void;
 };
 
 export type ResizableElement = {

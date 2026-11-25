@@ -37,6 +37,7 @@ class CapsInfoCache extends Collection {
     }
 
     fetchCache() {
+        /** @type {import('../../shared/types').OpenPromise} */
         const deferred = getOpenPromise();
         this.fetch({
             success: () => deferred.resolve(),

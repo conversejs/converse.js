@@ -1,5 +1,5 @@
 /**
- * @typedef {module:dom-navigator.DOMNavigatorOptions} DOMNavigatorOptions
+ * @typedef {import('shared/dom-navigator/types').DOMNavigatorOptions} DOMNavigatorOptions
  */
 import { html } from 'lit';
 import { until } from 'lit/directives/until.js';

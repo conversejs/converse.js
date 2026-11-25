@@ -96,22 +96,24 @@ export async function shareLocation(model) {
         ]);
         if (!confirmed) return;
 
-        await new Promise((resolve) => {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    model
-                        .sendMessage({ body: `geo:${latitude.toFixed(6)},${longitude.toFixed(6)}` })
-                        .catch(alertSendError);
-                    resolve();
-                },
-                (error) => {
-                    api.alert('error', __('Location Error'), [getLocationErrorMessage(error)]);
-                    resolve();
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
-            );
-        });
+        await /** @type {Promise<void>} */ (
+            new Promise((resolve) => {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        model
+                            .sendMessage({ body: `geo:${latitude.toFixed(6)},${longitude.toFixed(6)}` })
+                            .catch(alertSendError);
+                        resolve();
+                    },
+                    (error) => {
+                        api.alert('error', __('Location Error'), [getLocationErrorMessage(error)]);
+                        resolve();
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+                );
+            })
+        );
     } finally {
         pending.delete(model);
     }

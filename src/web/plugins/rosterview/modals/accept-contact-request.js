@@ -6,7 +6,7 @@ import { __ } from 'i18n';
 
 export default class AcceptContactRequestModal extends BaseModal {
     /**
-     * @param {Object} options
+     * @param {Record<string, any>} options
      */
     constructor(options) {
         super(options);

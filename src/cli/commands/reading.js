@@ -392,7 +392,7 @@ const SEARCHED = {
  * Subscribes for the first incoming message that matches, and resolves with
  * it, or with null once `seconds` have passed.
  * @param {import('@converse/daemon/client').Client} client
- * @param {Object} filter - The subscription's filter, as `events.subscribe` takes it
+ * @param {Record<string, any>} filter - The subscription's filter, as `events.subscribe` takes it
  * @param {number} seconds
  * @returns {Promise<import('@converse/daemon/types').MessageDTO|null>}
  */

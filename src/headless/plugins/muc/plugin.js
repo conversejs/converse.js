@@ -188,7 +188,7 @@ converse.plugins.add('converse-muc', {
         Object.assign(_converse.exports, exports);
         Object.assign(_converse, exports); // XXX DEPRECATED
 
-        /** @type {module:shared-api.APIEndpoint} */ (api.chatboxes.registry).add(CHATROOMS_TYPE, MUC);
+        api.chatboxes.registry.add(CHATROOMS_TYPE, MUC);
 
         if (api.settings.get('allow_muc_invitations')) {
             api.listen.on('connected', registerDirectInvitationHandler);

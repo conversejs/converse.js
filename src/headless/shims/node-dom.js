@@ -73,7 +73,7 @@ Object.assign(globalThis, {
 /**
  * Defines a property only if the DOM doesn't already have it, so that a future
  * `@xmldom/xmldom` implementing any of these wins over the shim.
- * @param {object} proto
+ * @param {Record<string, any>} proto
  * @param {string} name
  * @param {PropertyDescriptor} descriptor
  */

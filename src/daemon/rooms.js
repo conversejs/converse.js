@@ -275,7 +275,7 @@ const forgetting = new Map();
 /**
  * Gets a room, once any leave of it has finished closing it.
  * @param {string} jid
- * @param {Object} [attrs]
+ * @param {Record<string, any>} [attrs]
  * @param {boolean} [create]
  * @returns {Promise<import('@converse/headless').MUC|undefined>}
  */

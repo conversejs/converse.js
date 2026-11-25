@@ -23,7 +23,7 @@ export default {
     /**
      * @method api.chatboxes.create
      * @param {string|string[]} jids - A JID or array of JIDs
-     * @param {Object} attrs An object containing configuration attributes
+     * @param {Record<string, any>} attrs An object containing configuration attributes
      * @param {ModelClass} model - The type of chatbox that should be created
      */
     async create(jids = [], attrs = {}, model) {

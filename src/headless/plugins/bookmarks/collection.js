@@ -140,6 +140,7 @@ class Bookmarks extends Collection {
     }
 
     fetchBookmarks() {
+        /** @type {import('../../shared/types').OpenPromise} */
         const deferred = getOpenPromise();
         if (_converse.state.session.get(this.fetched_flag)) {
             this.fetch({
@@ -217,10 +218,13 @@ class Bookmarks extends Collection {
     async #rollBack(bookmark, previous, options) {
         try {
             if (previous) {
-                await bookmark.save(previous, /** @type {Object} */ ({ ...options, rollback: true, promise: true }));
+                await bookmark.save(
+                    previous,
+                    /** @type {Record<string, any>} */ ({ ...options, rollback: true, promise: true }),
+                );
             } else {
                 await new Promise((success, error) =>
-                    bookmark.destroy(/** @type {Object} */ ({ rollback: true, success, error })),
+                    bookmark.destroy(/** @type {Record<string, any>} */ ({ rollback: true, success, error })),
                 );
             }
         } catch (e) {
@@ -380,7 +384,7 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * @param {Object} deferred
+     * @param {Record<string, any>} deferred
      * @param {Element} iq
      */
     async onBookmarksReceived(deferred, iq) {
@@ -392,7 +396,7 @@ class Bookmarks extends Collection {
     }
 
     /**
-     * @param {Object} deferred
+     * @param {Record<string, any>} deferred
      * @param {Element} iq
      */
     async onBookmarksReceivedError(deferred, iq) {

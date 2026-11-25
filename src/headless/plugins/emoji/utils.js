@@ -328,7 +328,7 @@ export function isOnlyEmojis(text) {
 /**
  * @param { 'category'|'cp'|'sn' } attr
  *  The attribute according to which the returned map should be keyed.
- * @returns { Object }
+ * @returns {Record<string, any>}
  *  Map of emojis with the passed in `attr` used as key and a list of emojis as values.
  */
 function getEmojisByAttribute(attr) {

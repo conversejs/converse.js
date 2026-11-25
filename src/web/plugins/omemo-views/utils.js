@@ -1,5 +1,4 @@
 /**
- * @typedef {module:plugins-omemo-index.WindowWithLibsignal} WindowWithLibsignal
  * @typedef {import('@converse/headless').MessageAttributes} MessageAttributes
  * @typedef {import('@converse/headless').MUCMessageAttributes} MUCMessageAttributes
  * @typedef {import('@converse/headless').ChatBox} ChatBox

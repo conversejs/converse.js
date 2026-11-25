@@ -100,7 +100,10 @@ export { api, converse, _converse, i18n, log, u, constants, parsers, errors };
  * @typedef {import('./plugins/muc/types').MUCMessageAttributes} MUCMessageAttributes
  * @typedef {import('./plugins/muc/types').MUCMessageEventData} MUCMessageEventData
  * @typedef {import('./plugins/muc/types').MUCRoomInfo} MUCRoomInfo
+ * @typedef {import('./plugins/muc/types').MUCAffiliation} MUCAffiliation
+ * @typedef {import('./plugins/muc/types').NonOutcastAffiliation} NonOutcastAffiliation
  * @typedef {import('./plugins/omemo/types').OMEMOVersion} OMEMOVersion
+ * @typedef {import('./shared/types').OpenPromise} OpenPromise
  * @typedef {import('./plugins/time/types').ContactTime} ContactTime
  * @typedef {import('./plugins/vcard/types').VCardData} VCardData
  * @typedef {import('./plugins/version/types').SoftwareVersion} SoftwareVersion

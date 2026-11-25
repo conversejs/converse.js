@@ -54,7 +54,7 @@ class SplitResize extends CustomElement {
      * Helper function gets a property from the properties object, with a default fallback
      * @param {Record<string, any>} options
      * @param {string} propName
-     * @param {any} def
+     * @param {any} [def]
      */
     getOption(options, propName, def) {
         const value = options[propName];
@@ -191,7 +191,7 @@ class SplitResize extends CustomElement {
      * | <- this.start                                        this.size -> |
      *
      * @param {MouseEvent} e
-     * @param {object} options
+     * @param {Record<string, any>} options
      */
     drag(e, options) {
         let offset;
@@ -361,7 +361,7 @@ class SplitResize extends CustomElement {
 
     /**
      * stopDragging is very similar to startDragging in reverse.
-     * @param {Object} options
+     * @param {Record<string, any>} options
      */
     stopDragging(options) {
         const a = this.elements[this.pair.a].element;
@@ -405,7 +405,7 @@ class SplitResize extends CustomElement {
      * It also adds event listeners for mouse/touch events,
      * and prevents selection while dragging to avoid selecting text.
      * @param {MouseEvent} e
-     * @param {Object} options
+     * @param {Record<string, any>} options
      */
     startDragging(e, options) {
         // Right-clicking can't start dragging.
@@ -590,7 +590,7 @@ class SplitResize extends CustomElement {
      * @param {HTMLElement[]} els
      * @param {HTMLElement} el
      * @param {number} i
-     * @param {object} options
+     * @param {Record<string, any>} options
      * @returns {import('./types').ResizableElement}
      */
     createElement(els, el, i, options) {
@@ -616,7 +616,7 @@ class SplitResize extends CustomElement {
     }
 
     /**
-     * @param {object} options
+     * @param {Record<string, any>} options
      */
     createPair(options) {
         const parentStyle = getComputedStyle ? getComputedStyle(this.parent) : null;

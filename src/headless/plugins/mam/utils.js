@@ -123,9 +123,9 @@ async function createMessageFromError(model, error) {
 
 /**
  * @param {ChatBox|MUC} model
- * @param {Object} result
- * @param {Object} query
- * @param {Object} options
+ * @param {Record<string, any>} result
+ * @param {Record<string, any>} query
+ * @param {Record<string, any>} options
  * @param {('forwards'|'backwards'|false)} [should_page=false]
  */
 export async function handleMAMResult(model, result, query, options, should_page = false) {

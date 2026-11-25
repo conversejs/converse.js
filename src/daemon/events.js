@@ -207,7 +207,7 @@ export function createEvents({ mode }) {
 }
 
 /**
- * @param {Object} params
+ * @param {Record<string, any>} params
  * @returns {Promise<{ type: import('./types').EventType, filter: import('./types').EventFilter, once: boolean }>}
  */
 async function parseSubscription({ type = 'message', conversation, from, direction, mention = false, once = false }) {

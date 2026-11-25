@@ -34,7 +34,7 @@ async function loadEmojiJSON() {
 }
 
 /**
- * @param {object} json
+ * @param {Record<string, any>} json
  */
 function setEmojiData(json) {
     converse.emojis.json = json;

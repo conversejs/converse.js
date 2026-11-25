@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "test": "node --test test.js",
-    "types": "tsc"
+    "types": "cd ../.. && node node_modules/typescript/bin/tsc -p ./src/log/tsconfig.json"
   },
   "keywords": [
     "converse.js",
@@ -50,6 +50,6 @@
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   }
 }

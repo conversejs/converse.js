@@ -23,6 +23,7 @@ export default function ModelWithContact(BaseModel) {
             this.on('change:num_unread', () => this.updateContactUnreadCounter());
             this.on('contact:add', () => this.updateContactUnreadCounter());
 
+            /** @type {import('./types').OpenPromise} */
             this.rosterContactAdded = getOpenPromise();
             this.onClosedChanged = () => this.setModelContact(this.get('jid'));
             /**

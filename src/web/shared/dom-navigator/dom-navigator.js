@@ -57,7 +57,7 @@ class DOMNavigator {
     /**
      * Gets the closest element based on the provided distance function.
      * @param {HTMLElement[]} els - The elements to evaluate.
-     * @param {function(HTMLElement): number} getDistance - The function to calculate distance.
+     * @param {(el: HTMLElement) => number} getDistance - The function to calculate distance.
      * @returns {HTMLElement} The closest element.
      */
     static getClosestElement(els, getDistance) {

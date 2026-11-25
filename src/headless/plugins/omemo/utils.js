@@ -164,28 +164,32 @@ async function fetchDeviceLists() {
     _converse.state.devicelists = new DeviceLists();
     const id = `converse.devicelists-${bare_jid}`;
     initStorage(_converse.state.devicelists, id);
-    await new Promise((resolve) => {
-        _converse.state.devicelists.fetch({
-            success: resolve,
-            error: (_m, e) => {
-                log.error(e);
-                resolve();
-            },
-        });
-    });
+    await /** @type {Promise<void>} */ (
+        new Promise((resolve) => {
+            _converse.state.devicelists.fetch({
+                success: resolve,
+                error: (_m, e) => {
+                    log.error(e);
+                    resolve();
+                },
+            });
+        })
+    );
 
     _converse.state.devicelists_v2 = new DeviceLists();
     const id_v2 = `converse.devicelists-v2-${bare_jid}`;
     initStorage(_converse.state.devicelists_v2, id_v2);
-    await new Promise((resolve) => {
-        _converse.state.devicelists_v2.fetch({
-            success: resolve,
-            error: (_m, e) => {
-                log.error(e);
-                resolve();
-            },
-        });
-    });
+    await /** @type {Promise<void>} */ (
+        new Promise((resolve) => {
+            _converse.state.devicelists_v2.fetch({
+                success: resolve,
+                error: (_m, e) => {
+                    log.error(e);
+                    resolve();
+                },
+            });
+        })
+    );
 
     // Ensure our own legacy device list exists (creates + publishes if needed).
     // This is awaited (unlike the v2 fetch below) because OMEMO initialization

@@ -88,7 +88,7 @@ const converse = Object.assign(/** @type {any} */ (globalThis).converse || {}, {
      * @async
      * @memberOf converse
      * @method initialize
-     * @param { object } settings A map of [configuration-settings](https://conversejs.org/docs/configuration/#configuration-settings).
+     * @param {Record<string, any>} settings A map of [configuration-settings](https://conversejs.org/docs/configuration/#configuration-settings).
      * @example
      * converse.initialize({
      *     auto_list_rooms: false,
@@ -173,7 +173,7 @@ const converse = Object.assign(/** @type {any} */ (globalThis).converse || {}, {
          * Registers a new plugin.
          * @method converse.plugins.add
          * @param { string } name The name of the plugin
-         * @param { object } plugin The plugin object
+         * @param {Record<string, any>} plugin The plugin object
          * @example
          *  const plugin = {
          *      initialize: function () {

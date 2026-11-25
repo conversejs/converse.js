@@ -91,7 +91,7 @@ function tplSkintoneEmoji(o, /** @type {string} */ skintone, /** @type {string} 
 
 /**
  * @param {import('../emoji-picker').default} el
- * @param {Object} o
+ * @param {Record<string, any>} o
  */
 export function tplEmojiPicker(el, o) {
     const i18n_search = __('Search');

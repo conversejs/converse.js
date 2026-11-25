@@ -20,7 +20,7 @@ export default {
          *
          * @method api.headlines.get
          * @param {String|String[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @param { Object } [attrs] - Attributes to be set on the _converse.ChatBox model.
+         * @param {Record<string, any>} [attrs] - Attributes to be set on the _converse.ChatBox model.
          * @param { Boolean } [create=false] - Whether the chat should be created if it's not found.
          * @returns { Promise<HeadlinesFeed[]|HeadlinesFeed> }
          */

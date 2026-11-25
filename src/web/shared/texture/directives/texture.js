@@ -33,7 +33,7 @@ class TextureDirective extends Directive {
     /**
      * @param {string} text
      * @param {number} offset
-     * @param {object} options
+     * @param {Record<string, any>} options
      * @param {Function} [callback]
      */
     render(text, offset, options, callback) {

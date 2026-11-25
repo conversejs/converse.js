@@ -46,7 +46,7 @@ export function getNicknameFromBookmark(jid) {
 }
 
 /**
- * @param {import('../chat/message')} message
+ * @param {import('../chat/message').default} message
  * @returns {true}
  */
 export function handleBookmarksPush(message) {

@@ -28,7 +28,7 @@ const form = (o) => {
 };
 
 /**
- * @param {object} o
+ * @param {Record<string, any>} o
  * @param {Record<string, string>} item
  */
 const tplItem = (o, item) => {

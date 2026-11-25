@@ -70,7 +70,7 @@ export function getMEPActivities(stanza) {
  * Note, this function doesn't check whether this is actually a MAM archived stanza.
  *
  * @param {Element} stanza - The message stanza
- * @returns {Object}
+ * @returns {string|undefined}
  */
 function getJIDFromMUCUserData(stanza) {
     const item = sizzle(`message > x[xmlns="${Strophe.NS.MUC_USER}"] item`, stanza).pop();
@@ -80,7 +80,7 @@ function getJIDFromMUCUserData(stanza) {
 /**
  * @param {Element} stanza - The message stanza
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
- * @returns {Object}
+ * @returns {Record<string, any>}
  */
 function getDeprecatedModerationAttributes(stanza) {
     const fastening = sizzle(`apply-to[xmlns="${Strophe.NS.FASTEN}"]`, stanza).pop();
@@ -120,7 +120,7 @@ function getDeprecatedModerationAttributes(stanza) {
 /**
  * @param {Element} stanza - The message stanza
  *  message stanza, if it was contained, otherwise it's the message stanza itself.
- * @returns {Object}
+ * @returns {Record<string, any>}
  */
 function getModerationAttributes(stanza) {
     const retract = sizzle(`> retract[xmlns="${Strophe.NS.RETRACT}"]`, stanza).pop();

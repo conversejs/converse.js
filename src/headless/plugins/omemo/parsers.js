@@ -48,7 +48,7 @@ const DECRYPTION_ERROR_ATTRS = {
 };
 
 /**
- * @returns {object}
+ * @returns {Record<string, any>}
  */
 function getNoKeyErrorAttrs() {
     const { __ } = _converse;
@@ -434,7 +434,7 @@ async function decryptOMEMO2Message(stanza, attrs, chatbox) {
          * room context.
          * @event _converse#parseEncryptedContent
          * @param {Element} content - The decrypted SCE `<content>` element
-         * @param {object} attrs - The message attributes parsed so far
+         * @param {Record<string, any>} attrs - The message attributes parsed so far
          * @param {import('../muc/muc.js').default} [chatbox] - The MUC model, if any
          * @example api.listen.on('parseEncryptedContent', parseReactionsMessage);
          */

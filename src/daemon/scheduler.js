@@ -229,7 +229,10 @@ function dueTime(scheduled) {
     return Date.parse(scheduled.get('retry_at') ?? scheduled.get('send_at'));
 }
 
-/** Resolve once Skeletor has removed a persisted model. */
+/**
+ * Resolve once Skeletor has removed a persisted model.
+ * @returns {Promise<void>}
+ */
 function destroy(model) {
     return new Promise((resolve, reject) => model.destroy({ success: () => resolve(), error: (_m, e) => reject(e) }));
 }

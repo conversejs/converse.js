@@ -204,7 +204,7 @@ class OMEMOStore extends Model {
 
     /**
      * @param {string} address
-     * @param {object} record
+     * @param {string} record
      */
     storeSession(address, record) {
         return Promise.resolve(this.save('session' + address, record));

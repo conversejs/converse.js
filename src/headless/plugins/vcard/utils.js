@@ -4,7 +4,6 @@
  * @typedef {import('../../plugins/status/profile').default} Profile
  * @typedef {import('../../plugins/vcard/vcards').default} VCards
  * @typedef {import('../../plugins/vcard/vcard').default} VCard
- * @typedef {import('../../shared/model-with-contact.js').default} ModelWithContact
  * @typedef {import('../muc/occupant.js').default} MUCOccupant
  * @typedef {import('@converse/skeletor').Model} Model
  */

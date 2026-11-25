@@ -31,6 +31,7 @@ class VCards extends Collection {
     }
 
     fetchVCards() {
+        /** @type {import('../../shared/types').OpenPromise} */
         const deferred = getOpenPromise();
         this.fetch({
             success: () => deferred.resolve(),

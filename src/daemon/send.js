@@ -47,7 +47,7 @@ export const ROOM_ECHO = { timeout: 5000 };
  * @param {Object} [targets] - Messages of the same conversation
  * @param {import('@converse/headless').BaseMessage} [targets.replying_to]
  * @param {import('@converse/headless').BaseMessage} [targets.correcting] - One of ours
- * @param {Object} [attributes] - More outgoing message attributes, such as an XEP-0066 URL
+ * @param {Record<string, any>} [attributes] - More outgoing message attributes, such as an XEP-0066 URL
  * @param {import('./types').SendType} [type] - Whether it's meant for a MUC, or as a chat
  * @returns {Promise<import('./types').MessageDTO>}
  */
@@ -132,8 +132,8 @@ export function outcomeOf(message) {
  * such as an OMEMO send that couldn't be encrypted. The code is kept for
  * clients to act on. The words are the daemon's own, never headless's.
  * @param {import('@converse/headless').ChatBox|import('@converse/headless').MUC} chatbox
- * @param {Object} attrs
- * @param {Object} targets
+ * @param {Record<string, any>} attrs
+ * @param {Record<string, any>} targets
  * @returns {Promise<import('@converse/headless').BaseMessage>}
  */
 async function send(chatbox, attrs, targets) {
@@ -252,7 +252,7 @@ function awaitEcho(room, message) {
  * discarding it restores.
  * @param {import('@converse/headless').BaseMessage} message
  * @param {string} code
- * @param {Object} [before_correction] - What the room's occupants have of it
+ * @param {Record<string, any>} [before_correction] - What the room's occupants have of it
  */
 function markFailed(message, code, before_correction) {
     message.save({

@@ -1,5 +1,5 @@
 /**
- * @typedef {module:shared.api.user} LoginHookPayload
+ * @typedef {import('../../shared/api/types').LoginHookPayload} LoginHookPayload
  */
 import log from '@converse/log';
 import api from '../../shared/api/index.js';

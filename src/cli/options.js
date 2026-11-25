@@ -68,7 +68,7 @@ export function parseOptions(commands) {
 /**
  * The options given that a command doesn't take, so that none is silently ignored.
  * @param {import('./types').Command} command
- * @param {Object} values - The options given, as `parseArgs` returns them
+ * @param {Record<string, any>} values - The options given, as `parseArgs` returns them
  * @returns {string[]}
  */
 export function unexpectedOptions(command, values) {

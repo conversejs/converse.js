@@ -1,5 +1,5 @@
 /**
- * @typedef {module:muc-affiliations-utils.NonOutcastAffiliation} NonOutcastAffiliation
+ * @typedef {import('@converse/headless').NonOutcastAffiliation} NonOutcastAffiliation
  */
 import { api, MUCOccupants, constants, u } from '@converse/headless';
 import { __ } from 'i18n';
@@ -31,6 +31,7 @@ export default class ModeratorTools extends CustomElement {
         super();
         this.jid = null;
         this.tab = 'affiliations';
+        /** @type {import('@converse/headless').MUCAffiliation|null} */
         this.affiliation = null;
         this.affiliations_filter = '';
         this.role = '';
@@ -62,6 +63,7 @@ export default class ModeratorTools extends CustomElement {
     }
 
     async initialize() {
+        /** @type {import('@converse/headless').OpenPromise} */
         this.initialized = u.getOpenPromise();
         const muc = await api.rooms.get(this.jid);
         await muc.initialized;

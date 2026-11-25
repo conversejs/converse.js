@@ -68,7 +68,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @typedef {import('../../shared/types').ErrorMessageAttributes} ErrorMessageAttributes
      * @typedef {import('./types').MUCMessageAttributes} MUCMessageAttributes
      * @typedef {import('./types').MUCPresenceAttributes} MUCPresenceAttributes
-     * @typedef {module:shared.converse.UserMessage} UserMessage
+     * @typedef {Record<string, Record<string, string>>} MUCLabels
      * @typedef {import('strophe.js').Builder} Builder
      * @typedef {import('../../shared/errors').StanzaParseError} StanzaParseError
      */
@@ -785,7 +785,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         /**
          * Triggered when a groupchat message stanza has been received and parsed.
          * @event _converse#message
-         * @type {object}
+         * @type {Record<string, any>}
          * @property {import('./types').MUCMessageEventData} data
          */
         api.trigger('message', data);
@@ -1127,27 +1127,31 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
         // Delete the features model
         if (this.features) {
-            await new Promise((resolve) =>
-                this.features.destroy({
-                    success: resolve,
-                    error: (_, e) => {
-                        log.error(e);
-                        resolve();
-                    },
-                }),
+            await /** @type {Promise<void>} */ (
+                new Promise((resolve) =>
+                    this.features.destroy({
+                        success: resolve,
+                        error: (_, e) => {
+                            log.error(e);
+                            resolve();
+                        },
+                    }),
+                )
             );
         }
         // Delete disco entity
         const disco_entity = _converse.state.disco_entities?.get(this.get('jid'));
         if (disco_entity) {
-            await new Promise((resolve) =>
-                disco_entity.destroy({
-                    success: resolve,
-                    error: (_, e) => {
-                        log.error(e);
-                        resolve();
-                    },
-                }),
+            await /** @type {Promise<void>} */ (
+                new Promise((resolve) =>
+                    disco_entity.destroy({
+                        success: resolve,
+                        error: (_, e) => {
+                            log.error(e);
+                            resolve();
+                        },
+                    }),
+                )
             );
         }
     }
@@ -1174,14 +1178,16 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             [this.session, this.features, this.config].map(
                 (m) =>
                     m &&
-                    new Promise((resolve) =>
-                        m.destroy({
-                            success: resolve,
-                            error: (_, e) => {
-                                log.error(e);
-                                resolve();
-                            },
-                        }),
+                    /** @type {Promise<void>} */ (
+                        new Promise((resolve) =>
+                            m.destroy({
+                                success: resolve,
+                                error: (_, e) => {
+                                    log.error(e);
+                                    resolve();
+                                },
+                            }),
+                        )
                     ),
             ),
         );
@@ -1219,14 +1225,16 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         api.trigger('leaveRoom', this);
 
         // Delete the session model
-        await new Promise((success) =>
-            this.session.destroy({
-                success,
-                error: (_, e) => {
-                    log.error(e);
-                    success();
-                },
-            }),
+        await /** @type {Promise<void>} */ (
+            new Promise((success) =>
+                this.session.destroy({
+                    success,
+                    error: (_, e) => {
+                        log.error(e);
+                        success();
+                    },
+                }),
+            )
         );
         return super.close();
     }
@@ -1440,7 +1448,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
          * After the user has sent out a direct invitation (as per XEP-0249),
          * to a roster contact, asking them to join a room.
          * @event _converse#chatBoxMaximized
-         * @type {object}
+         * @type {Record<string, any>}
          * @property {MUC} room
          * @property {string} recipient - The JID of the person being invited
          * @property {string} reason - The original reason for the invitation
@@ -1863,7 +1871,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * Then compute the delta between those users and
      * the passed in members, and if it exists, send the delta
      * to the XMPP server to update the member list.
-     * @param {object} members - Map of member jids and affiliations.
+     * @param {import('./types').AffiliationChange[]} members - The members and their affiliations.
      * @returns {Promise}
      *  A promise which is resolved once the list has been
      *  updated or once it's been established there's no need
@@ -2172,7 +2180,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
     /**
      * Handle a possible subject change and return `true` if so.
-     * @param {object} attrs - Attributes representing a received
+     * @param {Record<string, any>} attrs - Attributes representing a received
      *  message, as returned by {@link parseMUCMessage}
      */
     async handleSubjectChange(attrs) {
@@ -2215,7 +2223,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     /**
      * Is this a chat state notification that can be ignored,
      * because it's old or because it's from us.
-     * @param {Object} attrs - The message attributes
+     * @param {Record<string, any>} attrs - The message attributes
      */
     ignorableCSN(attrs) {
         return attrs.chat_state && !attrs.body && (attrs.is_delayed || this.isOwnMessage(attrs));
@@ -2345,7 +2353,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
     }
 
     /**
-     * @param {object} attrs
+     * @param {MessageAttributes} attrs
      * @returns {Promise<boolean>}
      */
     async shouldShowErrorMessage(attrs) {
@@ -2380,7 +2388,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * incoming message. If so, it's considered "dangling" because
      * it probably hasn't been applied to anything yet, given that
      * the relevant message is only coming in now.
-     * @param {object} attrs - Attributes representing a received
+     * @param {Record<string, any>} attrs - Attributes representing a received
      *  message, as returned by {@link parseMUCMessage}
      * @returns {MUCMessage}
      */
@@ -2409,7 +2417,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
     /**
      * Handles message moderation based on the passed in attributes.
-     * @param {object} attrs - Attributes representing a received
+     * @param {MUCMessageAttributes} attrs - Attributes representing a received
      *  message, as returned by {@link parseMUCMessage}
      * @returns {Promise<boolean>} Returns `true` or `false` depending on
      *  whether a message was moderated or not.
@@ -2753,7 +2761,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
         if (!disconnected) {
             return;
         }
-        const { STATUS_CODE_MESSAGES } = /** @type {UserMessage} */ (_converse.labels.muc);
+        const { STATUS_CODE_MESSAGES } = /** @type {MUCLabels} */ (_converse.labels.muc);
         const message = STATUS_CODE_MESSAGES[codes[0]];
         const status = codes.includes('301') ? ROOMSTATUS.BANNED : ROOMSTATUS.DISCONNECTED;
         this.setDisconnectionState(message, reason, actor?.nick, status);
@@ -2884,7 +2892,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             return;
         }
 
-        const { STATUS_CODE_MESSAGES } = /** @type {UserMessage} */ (_converse.labels.muc);
+        const { STATUS_CODE_MESSAGES } = /** @type {MUCLabels} */ (_converse.labels.muc);
         const message = STATUS_CODE_MESSAGES[code];
         const data = /** @type {InfoMessageAttributes} */ ({
             type: 'info',
@@ -2917,7 +2925,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             return;
         }
 
-        const { STATUS_CODE_MESSAGES } = /** @type {UserMessage} */ (_converse.labels.muc);
+        const { STATUS_CODE_MESSAGES } = /** @type {MUCLabels} */ (_converse.labels.muc);
         const message = STATUS_CODE_MESSAGES[code];
 
         if (message) {
@@ -2995,7 +3003,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 const message = __('You are not on the member list of this groupchat.');
                 this.setDisconnectionState(message, reason);
             } else if (error.querySelector('forbidden')) {
-                const { STATUS_CODE_MESSAGES } = /** @type {UserMessage} */ (_converse.labels.muc);
+                const { STATUS_CODE_MESSAGES } = /** @type {MUCLabels} */ (_converse.labels.muc);
                 this.setDisconnectionState(STATUS_CODE_MESSAGES[301], reason, null, ROOMSTATUS.BANNED);
             }
         } else if (error_type === 'cancel') {

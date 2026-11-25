@@ -29,7 +29,7 @@ const REPLY_FALLBACK_QUOTE_LENGTH = 80;
  * Whether a stored message and the attributes of an incoming one are from the same sender,
  * for the purposes of XEP-0308 corrections.
  * @param {import('./message').default} message
- * @param {object} attrs - Attributes representing a received message
+ * @param {Record<string, any>} attrs - Attributes representing a received message
  * @returns {boolean}
  */
 function isFromSameSender(message, attrs) {
@@ -494,7 +494,7 @@ export default function ModelWithMessages(BaseModel) {
          * `send_status` set to `failed` and `send_error_code` set to that code. Nothing
          * resends it on its own. Call {@link resendFailedMessage} or
          * {@link discardFailedMessage} to act on it.
-         * @param {Object} [attrs] - A map of attributes to be saved on the message
+         * @param {MessageAttributes} [attrs] - A map of attributes to be saved on the message
          * @param {Object} [options]
          * @param {BaseMessage} [options.replying_to] - A message of this conversation that this
          *  one replies to (XEP-0461). Defaults to the one chosen with the chat's `reply_to_id`.
@@ -621,8 +621,8 @@ export default function ModelWithMessages(BaseModel) {
              * Triggered when a message has been sent out. For a message that was
              * pending, that's when it was actually sent.
              * @event _converse#sendMessage
-             * @type {Object}
-             * @param {Object} data
+             * @type {Record<string, any>}
+             * @param {Record<string, any>} data
              * @property {(ChatBox|MUC)} data.chatbox
              * @property {(BaseMessage)} data.message
              */
@@ -688,7 +688,7 @@ export default function ModelWithMessages(BaseModel) {
          * saved before the send and restored if it fails again. A failed attempt keeps
          * its own failure, not the earlier one, since that's the one the user hasn't seen.
          * @param {BaseMessage} message - A message whose `send_status` is `failed`.
-         * @param {Object} [attrs] - Attributes to apply to this attempt.
+         * @param {Record<string, any>} [attrs] - Attributes to apply to this attempt.
          * @returns {Promise<BaseMessage>}
          */
         async resendFailedMessage(message, attrs = {}) {
@@ -885,7 +885,7 @@ export default function ModelWithMessages(BaseModel) {
          * If api.settings.get('allow_message_corrections') is "last", then only the last
          * message sent from me will be editable. If set to "all" all messages
          * will be editable. Otherwise no messages will be editable.
-         * @param {Object} attrs An object containing message attributes.
+         * @param {Record<string, any>} attrs An object containing message attributes.
          * @param {String} send_time - time when the message was sent
          */
         setEditable(attrs, send_time) {
@@ -909,7 +909,7 @@ export default function ModelWithMessages(BaseModel) {
          * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
          * See XEP-0085 Chat State Notifications.
          * @param {string} state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-         * @param {object} [options]
+         * @param {Record<string, any>} [options]
          */
         setChatState(state, options) {
             if (this.chat_state_timeout !== undefined) {
@@ -951,11 +951,11 @@ export default function ModelWithMessages(BaseModel) {
          */
         async onMessageUploadChanged(message) {
             if (message.get('upload') === constants.SUCCESS) {
-                const attrs = {
+                const attrs = /** @type {MessageAttributes} */ ({
                     'body': message.get('body'),
                     'spoiler_hint': message.get('spoiler_hint'),
                     'oob_url': message.get('oob_url'),
-                };
+                });
                 // A failed send stays in the history as a failed message, so the upload placeholder goes either way.
                 await this.sendMessage(attrs).catch((e) => log.error(e));
                 message.destroy();
@@ -1105,7 +1105,7 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Given an error `<message>` stanza's attributes, find the saved message model which is
          * referenced by that error.
-         * @param {object} attrs
+         * @param {Record<string, any>} attrs
          */
         getMessageReferencedByError(attrs) {
             if (attrs.msgid) {
@@ -1126,7 +1126,7 @@ export default function ModelWithMessages(BaseModel) {
          * incoming message. If so, it's considered "dangling" because it
          * probably hasn't been applied to anything yet, given that the
          * relevant message is only coming in now.
-         * @param {object} attrs - Attributes representing a received
+         * @param {Record<string, any>} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
          * @returns {BaseMessage|null}
          */
@@ -1155,7 +1155,7 @@ export default function ModelWithMessages(BaseModel) {
          * passed in attributes map.
          *
          * @fires getDuplicateMessageQueries
-         * @param {object} attrs - Attributes representing a received
+         * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received
          *  message, as returned by {@link parseMessage}
          * @returns {Promise<BaseMessage|undefined>}
          */
@@ -1187,7 +1187,7 @@ export default function ModelWithMessages(BaseModel) {
         /**
          * Whether the passed in attributes are those of a XEP-0308 correction
          * which was already applied to the given message, based on its stanza-ids.
-         * @param {object} attrs - Attributes representing a received message
+         * @param {MessageAttributes|MUCMessageAttributes} attrs - Attributes representing a received message
          * @param {BaseMessage} message
          * @returns {boolean}
          */
@@ -1197,14 +1197,14 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {object} attrs - Attributes representing a received
+         * @param {Record<string, any>} attrs - Attributes representing a received
          */
         getOriginIdQueryAttrs(attrs) {
             return attrs.origin_id && { origin_id: attrs.origin_id, from: attrs.from };
         }
 
         /**
-         * @param {object} attrs - Attributes representing a received
+         * @param {Record<string, any>} attrs - Attributes representing a received
          */
         getStanzaIdQueryAttrs(attrs) {
             const keys = Object.keys(attrs).filter((k) => k.startsWith('stanza_id '));
@@ -1217,7 +1217,7 @@ export default function ModelWithMessages(BaseModel) {
         }
 
         /**
-         * @param {object} attrs - Attributes representing a received
+         * @param {Record<string, any>} attrs - Attributes representing a received
          */
         getMessageBodyQueryAttrs(attrs) {
             if (attrs.msgid) {
@@ -1323,8 +1323,8 @@ export default function ModelWithMessages(BaseModel) {
              * *Hook* which allows plugins to add application-specific attributes
              * @event _converse#getErrorAttributesForMessage
              * @param {BaseMessage} message - The message context
-             * @param {Object} new_attrs - The newly created error attributes
-             * @param {Object} attrs - The original stanza attributes
+             * @param {Record<string, any>} new_attrs - The newly created error attributes
+             * @param {Record<string, any>} attrs - The original stanza attributes
              */
             return await api.hook('getErrorAttributesForMessage', message, new_attrs, attrs);
         }

@@ -284,7 +284,7 @@ export class Client {
 
     /**
      * @param {string} method
-     * @param {Object} [params]
+     * @param {Record<string, any>} [params]
      * @returns {Promise<any>} The result, or rejects with an {@link RPCError}, or with a
      *  {@link DaemonUnavailableError} if the connection is closed, or closes before the answer.
      */

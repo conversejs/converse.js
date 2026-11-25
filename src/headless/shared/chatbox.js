@@ -127,7 +127,7 @@ export default class ChatBoxBase extends ModelWithMessages(Model) {
     }
 
     /**
-     * @param {Object} [_ev]
+     * @param {Record<string, any>} [_ev]
      */
     async close(_ev) {
         if (await this.shouldDestroyOnClose()) {

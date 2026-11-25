@@ -1,5 +1,5 @@
 /**
- * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
+ * @typedef {import('./types').MemberListItem} MemberListItem
  * @typedef {import('@converse/skeletor').ModelAttributes} ModelAttributes
  * @typedef {import('@converse/skeletor').CollectionOptions} CollectionOptions
  * @typedef {import('@converse/skeletor').Options} Options

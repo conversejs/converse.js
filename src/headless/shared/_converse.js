@@ -1,6 +1,5 @@
 /**
  * @module:shared.converse
- * @typedef {import('@converse/skeletor').BrowserStorage} BrowserStorage
  * @typedef {import('@converse/skeletor').Collection} Collection
  * @typedef {import('../plugins/disco/index').DiscoState} DiscoState
  * @typedef {import('../plugins/status/profile').default} Profile
@@ -83,7 +82,7 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
 
         this.templates = {};
 
-        this.storage = /** @type {Record<string, BrowserStorage.LocalForage>} */ {};
+        this.storage = /** @type {Record<string, any>} */ ({});
 
         this.promises = {
             initialized: getOpenPromise(),
@@ -100,13 +99,13 @@ export class ConversePrivateGlobal extends EventEmitter(Object) {
 
         Object.assign(this, DEPRECATED_ATTRS);
 
-        this.api = /** @type {module:shared-api.APIEndpoint} */ null;
+        this.api = /** @type {any} */ (null);
 
         /**
          * Namespace for storing translated strings.
          *
          * @typedef {Record<string, string>} UserMessage
-         * @typedef {Record<string, string|UserMessage>} UserMessages
+         * @typedef {Record<string, string|UserMessage|Record<string, UserMessage>>} UserMessages
          */
         this.labels = /** @type {UserMessages} */ ({});
 

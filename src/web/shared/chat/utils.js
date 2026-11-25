@@ -82,7 +82,7 @@ export async function getStandaloneButtons(promise) {
 }
 
 /**
- * @param {Promise<Array<object>>} promise
+ * @param {Promise<Array<HeadingButtonAttributes>>} promise
  */
 export async function getDropdownButtons(promise) {
     const btns = await promise;
@@ -137,6 +137,7 @@ export function getHats(message) {
             .get('muc_hats')
             .filter((hat) => hat)
             .map((hat) => hat.toLowerCase());
+        /** @type {any} */
         let vcard_roles = [];
         if (allowed_hats.includes('vcard_roles')) {
             vcard_roles = message.vcard ? message.vcard.get('role') : null;

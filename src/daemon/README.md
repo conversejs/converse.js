@@ -12,7 +12,7 @@ reads and sends are quick, and messages reach a client as they arrive.
 
 The daemon itself has no user interface. Clients talk to it over its socket:
 
-- `converse-cli`, a short-lived command line client which can be
+- `converse`, a short-lived command line client which can be
   driven by a script, an AI agent through a shell, or used by hand.
 - A planned Ink-based terminal UI, for you to use directly.
 

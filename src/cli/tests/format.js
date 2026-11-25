@@ -42,7 +42,7 @@ const draft = {
     body: 'Noon.',
 };
 
-describe('converse-cli text output of untrusted text', () => {
+describe('converse text output of untrusted text', () => {
     it('keeps a message on one line whatever its sender put in the ids, nickname and emojis', () => {
         const line = formatMessage(
             {

@@ -15,7 +15,7 @@
     }
   },
   "bin": {
-    "converse-daemon": "./bin/converse-daemon.js"
+    "conversed": "./bin/conversed.js"
   },
   "files": [
     "*.js",

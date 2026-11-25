@@ -1,5 +1,5 @@
 /**
- * converse-cli's text output, made for an LLM to read: one line per message,
+ * converse's text output, made for an LLM to read: one line per message,
  * cheap in tokens, and unambiguous about where untrusted content starts and
  * ends.
  */

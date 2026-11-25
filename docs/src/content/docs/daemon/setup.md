@@ -42,7 +42,7 @@ So give the agent the restricted socket and nothing else of the daemon's. There
 are two ways: run it in a sandbox, or run it as another OS user. Either way, the
 agent's CLI finds the socket through the `CONVERSE_SOCKET` environment variable,
 and reads no config. It can't start the daemon, because it has no password, so
-start the daemon yourself with `converse-cli daemon start`. If the daemon isn't
+start the daemon yourself with `converse daemon start`. If the daemon isn't
 running, the agent's commands fail with exit code 7, saying so.
 
 The restricted socket is the file `sock` in a directory of its own, so that a
@@ -149,7 +149,7 @@ daemon's config or keyring. Only `as_user` mode uses it.
 The config is `~/.config/converse/accounts/default.json` in the daemon user's
 home, or `$XDG_CONFIG_HOME/converse/accounts/default.json` when
 `XDG_CONFIG_HOME` is set.
-`converse-cli --help` prints the path it uses. To configure more than one
+`converse --help` prints the path it uses. To configure more than one
 account, see [Several accounts](#several-accounts).
 
 ```json
@@ -200,10 +200,10 @@ account, see [Several accounts](#several-accounts).
   }
   ```
 - `policy.presence` (default `false`) lets a restricted agent change your
-  availability and status message with `converse-cli presence set`. Full access
+  availability and status message with `converse presence set`. Full access
   can always do it.
 - `allow_unencrypted_resend` (default `false`) lets you send a failed send in
-  the clear, with `converse-cli resend --unencrypted`, when it failed because it
+  the clear, with `converse resend --unencrypted`, when it failed because it
   couldn't be encrypted. It applies to full access only: an agent can never
   resend.
 - The agent's password goes in the keyring under the service `converse`, with
@@ -237,10 +237,10 @@ accounts and asks you to pick one. A name that isn't configured fails with exit
 code 3, listing the accounts there are.
 
 ```sh
-converse-cli accounts                         # the accounts, and which is the default
-converse-cli --account juliet inbox           # Juliet's inbox, from her daemon
-CONVERSE_ACCOUNT=nurse converse-cli inbox     # the same, for the nurse
-converse-cli daemon status --all              # every running daemon
+converse accounts                         # the accounts, and which is the default
+converse --account juliet inbox           # Juliet's inbox, from her daemon
+CONVERSE_ACCOUNT=nurse converse inbox     # the same, for the nurse
+converse daemon status --all              # every running daemon
 ```
 
 This is how several agents run side by side, each with its own JID, so that they
@@ -249,7 +249,7 @@ account, and set `CONVERSE_ACCOUNT` in its environment. An agent given only a
 socket, with `CONVERSE_SOCKET`, needs no account name.
 
 The CLI finds a running daemon by its account's name. So if you change an
-account's `jid` while its daemon runs, `converse-cli --account <name> daemon
+account's `jid` while its daemon runs, `converse --account <name> daemon
 stop` still stops it, and the next command starts a daemon with the new JID.
 
 ## From another machine
@@ -263,7 +263,7 @@ Forward the full access socket to use your own daemon from a laptop. Forward
 only the restricted socket to give an agent on another machine restricted
 access and nothing more.
 
-On the daemon's host, `converse-cli daemon status` ends with the socket it
+On the daemon's host, `converse daemon status` ends with the socket it
 reached. The full access socket is `$XDG_RUNTIME_DIR/converse/<account>.sock`,
 and the restricted one is `sock` in the directory `<account>.restricted/` beside it, or
 in `restricted_dir` if the config names one (see
@@ -448,7 +448,7 @@ changes what happens on the restricted socket. Sends from the full-access socket
 are never routed: they go out directly, as they would from any of your clients.
 
 The CLI connects at the config's `access` level, which is `restricted` unless
-the config says otherwise. With that default, a `converse-cli send` from your
+the config says otherwise. With that default, a `converse send` from your
 own terminal would be drafted like the agent's. So set the level in your own
 config:
 
@@ -482,10 +482,10 @@ delivered to anyone, you included. From your own terminal, which can reach the
 full-access socket:
 
 ```sh
-converse-cli drafts list        # what's waiting
-converse-cli drafts show d17    # one draft in full: recipient, the message it answers, its text
-converse-cli drafts send d17    # send it as you
-converse-cli drafts reject d17  # or drop it
+converse drafts list        # what's waiting
+converse drafts show d17    # one draft in full: recipient, the message it answers, its text
+converse drafts send d17    # send it as you
+converse drafts reject d17  # or drop it
 ```
 
 `drafts send` sends the draft as it was asked for. A reply is sent as a reply, a
@@ -521,7 +521,7 @@ from a message, since a draft can't do any of those. In `bot` mode it can, where
 the policy sends the message directly, and only to its own messages.
 
 If you don't want it, withdraw it from the command line with
-`converse-cli drafts reject d1`, and you get a note confirming it was withdrawn.
+`converse drafts reject d1`, and you get a note confirming it was withdrawn.
 Nothing reaches Juliet unless you send it yourself.
 
 ## What the setup does not cover

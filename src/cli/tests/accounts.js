@@ -6,7 +6,7 @@ import { createAccount } from '../../daemon/tests/account.js';
 import { EXIT } from '../exit-codes.js';
 import { run } from './run.js';
 
-describe('converse-cli with several accounts', () => {
+describe('converse with several accounts', () => {
     let account, env, juliet_config;
 
     beforeAll(async () => {
@@ -44,7 +44,7 @@ describe('converse-cli with several accounts', () => {
         expect(code).toBe(EXIT.NOT_FOUND);
         expect(stdout).toBe('');
         expect(stderr).toBe(
-            'converse-cli: No account is called "tybalt". Pick one of these with --account <name>, ' +
+            'converse: No account is called "tybalt". Pick one of these with --account <name>, ' +
                 `or create ${path.join(env.XDG_CONFIG_HOME, 'converse', 'accounts', 'tybalt.json')}.\n` +
                 '  default\n  juliet\n',
         );
@@ -111,7 +111,7 @@ describe('converse-cli with several accounts', () => {
         const { code, stderr } = await run(env, 'daemon', 'status');
         expect(code).toBe(EXIT.AMBIGUOUS);
         expect(stderr).toBe(
-            'converse-cli: Several accounts are configured, and none is the default. Pick one of these ' +
+            'converse: Several accounts are configured, and none is the default. Pick one of these ' +
                 'with --account <name>, or CONVERSE_ACCOUNT=<name>.\n  juliet\n  romeo\n',
         );
     });

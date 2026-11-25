@@ -1,5 +1,5 @@
 /**
- * converse-cli's built-in documentation, rendered from the commands'
+ * converse's built-in documentation, rendered from the commands'
  * definitions (see {@link module:@converse/cli/commands}): the overview
  * `--help` prints, and each command's own help. An agent learns the CLI from
  * this text alone, so it says what to do, not just what exists.
@@ -120,7 +120,7 @@ function exitTable(codes) {
 }
 
 /**
- * The overview, for `converse-cli --help`.
+ * The overview, for `converse --help`.
  * @param {Record<string, import('./types').Command>} command_table - Every command, in the order to list them
  * @param {string} config_dir - Where the accounts are configured.
  * @param {string|null} [socket_path] - The socket `CONVERSE_SOCKET` names, if it's set
@@ -132,14 +132,14 @@ export function overview(command_table, config_dir, socket_path = null) {
         summary,
     ]);
     const sections = [
-        'Usage: converse-cli <command> [arguments] [options]',
+        'Usage: converse <command> [arguments] [options]',
         paragraphs(
             'Read and send XMPP messages through the Converse daemon, which holds one long-lived ' +
                 "session for your account. Any command starts the daemon if it isn't running.",
         ),
         `Commands:\n${table([...commands, HELP_COMMAND])}`,
         paragraphs(
-            'Run "converse-cli help <command>", or "converse-cli <command> --help", for its ' +
+            'Run "converse help <command>", or "converse <command> --help", for its ' +
                 'arguments, options, exit codes and examples.',
         ),
         'Naming people, rooms and messages:\n' +
@@ -188,7 +188,7 @@ export function overview(command_table, config_dir, socket_path = null) {
               paragraphs(
                   `The account <name> is configured in ${config_dir}/accounts/<name>.json, and the ` +
                       `default one in ${config_dir}/accounts/default.json. Each account has a daemon of its own. ` +
-                      'Use --account <name>, or CONVERSE_ACCOUNT=<name>, to pick one, and "converse-cli ' +
+                      'Use --account <name>, or CONVERSE_ACCOUNT=<name>, to pick one, and "converse ' +
                       'accounts" to list them. An agent uses the account it was given, and never ' +
                       'switches to another.',
                   2,
@@ -199,13 +199,13 @@ export function overview(command_table, config_dir, socket_path = null) {
 }
 
 /**
- * One command's help, for `converse-cli help <command>`.
+ * One command's help, for `converse help <command>`.
  * @param {string} name
  * @param {import('./types').Command} command
  */
 export function commandHelp(name, command) {
     const { description, args = [], options = [], exits = [], examples } = command;
-    const sections = [`Usage: converse-cli ${synopsis(name, command)}`, paragraphs(description)];
+    const sections = [`Usage: converse ${synopsis(name, command)}`, paragraphs(description)];
     if (args.length) sections.push(`Arguments:\n${table(args)}`);
     sections.push(`Options:\n${table(optionRows([...options, ...GLOBAL_OPTIONS]))}`);
     sections.push(`Exit codes:\n${exitTable([...COMMON_EXITS, ...exits])}`);

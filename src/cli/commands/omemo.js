@@ -18,7 +18,7 @@ export const OMEMO_COMMANDS = {
             'an encrypted conversation failed.',
         args: [CONTACT],
         exits: LOOKUP_EXITS,
-        examples: ['converse-cli omemo devices juliet@capulet.lit'],
+        examples: ['converse omemo devices juliet@capulet.lit'],
         async run(ctx) {
             const { options, out } = ctx;
             const conversation = takeOne(ctx, 'contact');
@@ -43,7 +43,7 @@ export const OMEMO_COMMANDS = {
             ['<trust>', 'trusted, untrusted or undecided'],
         ],
         exits: LOOKUP_EXITS,
-        examples: ['converse-cli omemo trust juliet@capulet.lit 1234567 trusted'],
+        examples: ['converse omemo trust juliet@capulet.lit 1234567 trusted'],
         async run(ctx) {
             const { args, options, out } = ctx;
             if (args.length !== 3) throw new UsageError('Expected a contact, a device id and a trust state.');

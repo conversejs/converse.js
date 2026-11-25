@@ -17,7 +17,7 @@ export const PRESENCE_COMMANDS = {
             ['<show>', 'online, chat, away, xa or dnd'],
             ['[message]', 'The status message'],
         ],
-        examples: ['converse-cli presence set away "Back at three"'],
+        examples: ['converse presence set away "Back at three"'],
         async run(ctx) {
             const { args, options, out } = ctx;
             if (args.length === 0) throw new UsageError('Expected a presence: online, chat, away, xa or dnd.');

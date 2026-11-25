@@ -1,5 +1,5 @@
 /**
- * converse-cli: a command line client of the Converse daemon.
+ * converse: a command line client of the Converse daemon.
  * Each invocation connects to the daemon's socket (starting the daemon if
  * it isn't running), makes its request, prints the result and exits. `watch`
  * alone stays connected, printing what arrives until it's stopped.
@@ -34,16 +34,16 @@ const EXIT_FOR_ERROR = {
  * a command for are shown as that command.
  */
 const COMMAND_FOR = {
-    'converse-daemon': 'converse-cli daemon start',
-    'daemon.status': 'converse-cli daemon status',
-    'daemon.stop': 'converse-cli daemon stop',
-    'contacts.list': 'converse-cli contacts',
-    'drafts.list': 'converse-cli drafts list',
-    'drafts.reject': 'converse-cli drafts reject',
-    'messages.list': 'converse-cli read',
-    'omemo.devices.list': 'converse-cli omemo devices',
-    'rooms.join': 'converse-cli rooms join',
-    'schedules.list': 'converse-cli schedules list',
+    'conversed': 'converse daemon start',
+    'daemon.status': 'converse daemon status',
+    'daemon.stop': 'converse daemon stop',
+    'contacts.list': 'converse contacts',
+    'drafts.list': 'converse drafts list',
+    'drafts.reject': 'converse drafts reject',
+    'messages.list': 'converse read',
+    'omemo.devices.list': 'converse omemo devices',
+    'rooms.join': 'converse rooms join',
+    'schedules.list': 'converse schedules list',
 };
 
 /**
@@ -73,7 +73,7 @@ export async function main(argv, io) {
             options: PARSE_OPTIONS,
         });
     } catch (e) {
-        io.err(`converse-cli: ${/** @type {Error} */ (e).message}. Run "converse-cli --help" for usage.\n`);
+        io.err(`converse: ${/** @type {Error} */ (e).message}. Run "converse --help" for usage.\n`);
         return EXIT.ERROR;
     }
     const { values, positionals } = parsed;
@@ -107,15 +107,13 @@ export async function main(argv, io) {
         }
         const subcommands = group.map((key) => key.slice(name.length + 1));
         io.err(
-            `converse-cli: "${name}" needs one of: ${subcommands.join(', ')}. ` +
-                `Run "converse-cli help ${name}" for each one's usage.\n`,
+            `converse: "${name}" needs one of: ${subcommands.join(', ')}. ` +
+                `Run "converse help ${name}" for each one's usage.\n`,
         );
         return EXIT.ERROR;
     }
     if (!command) {
-        io.err(
-            `converse-cli: unknown command "${positionals.join(' ')}". Run "converse-cli --help" to list commands.\n`,
-        );
+        io.err(`converse: unknown command "${positionals.join(' ')}". Run "converse --help" to list commands.\n`);
         return EXIT.ERROR;
     }
     if (asking || values.help) {
@@ -125,8 +123,8 @@ export async function main(argv, io) {
     const unexpected = unexpectedOptions(COMMANDS[command], values);
     if (unexpected.length) {
         io.err(
-            `converse-cli: ${command} doesn't take ${unexpected.map((o) => `--${o}`).join(' or ')}. ` +
-                `Run "converse-cli help ${command}" for its options.\n`,
+            `converse: ${command} doesn't take ${unexpected.map((o) => `--${o}`).join(' or ')}. ` +
+                `Run "converse help ${command}" for its options.\n`,
         );
         return EXIT.ERROR;
     }
@@ -144,10 +142,10 @@ export async function main(argv, io) {
  */
 function reportError(e, io) {
     if (e instanceof UsageError) {
-        io.err(`converse-cli: ${e.message} Run "converse-cli --help" for usage.\n`);
+        io.err(`converse: ${e.message} Run "converse --help" for usage.\n`);
         return EXIT.ERROR;
     }
-    io.err(`converse-cli: ${inCommands(e)}\n`);
+    io.err(`converse: ${inCommands(e)}\n`);
     if (e instanceof AccountError) {
         e.candidates.forEach((c) => io.err(`  ${c}\n`));
         return e.reason === 'ambiguous' ? EXIT.AMBIGUOUS : EXIT.NOT_FOUND;

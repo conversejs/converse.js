@@ -13,7 +13,7 @@ const { Strophe, stx } = converse.env;
 
 const JULIET = 'juliet@capulet.lit';
 
-describe('converse-cli acting on messages', () => {
+describe('converse acting on messages', () => {
     let daemon;
 
     /** The last message stanza the daemon sent. */
@@ -73,7 +73,7 @@ describe('converse-cli acting on messages', () => {
 
         const result = await run(daemon.env, 'retract', 'zzz');
         expect(result.code).toBe(EXIT.NOT_FOUND);
-        expect(result.stderr).toBe('converse-cli: No message with id "zzz" in any conversation.\n');
+        expect(result.stderr).toBe('converse: No message with id "zzz" in any conversation.\n');
     });
 
     it('reacts to a message, and read shows how many reacted with each emoji', async () => {
@@ -102,7 +102,7 @@ describe('converse-cli acting on messages', () => {
         expect(result).toEqual({
             code: EXIT.ERROR,
             stdout: '',
-            stderr: 'converse-cli: Message "e5e5" was sent by someone else, and only our own messages can be corrected.\n',
+            stderr: 'converse: Message "e5e5" was sent by someone else, and only our own messages can be corrected.\n',
         });
     });
 });

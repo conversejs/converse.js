@@ -19,7 +19,7 @@ const GARDEN = 'garden@conference.montague.lit';
 /** A message line as watch prints it, after the conversation's JID. */
 const LINE = /^\S+ {2}\S+ {2}\S+ \((?:just now|\d+s ago)\) {2}\S+ {2}".*"$/;
 
-describe('converse-cli watch', () => {
+describe('converse watch', () => {
     let daemon;
 
     beforeAll(async () => {
@@ -195,7 +195,7 @@ describe('converse-cli watch', () => {
     it('refuses a batch window that is not a positive number of seconds', async () => {
         const { code, stderr } = await run(daemon.env, 'watch', '--batch', 'soon');
         expect(code).toBe(EXIT.ERROR);
-        expect(stderr).toMatch(/^converse-cli: --batch "soon" isn't a number of seconds, up to 24 days\. /);
+        expect(stderr).toMatch(/^converse: --batch "soon" isn't a number of seconds, up to 24 days\. /);
     });
 
     it('refuses a batch window longer than a timer can wait', async () => {
@@ -274,7 +274,7 @@ describe('converse-cli watch', () => {
             for (const filter of [['--from', JULIET], ['--mention']]) {
                 const { code, stderr } = await run(daemon.env, 'watch', '--inbox', ...filter);
                 expect(code).toBe(EXIT.ERROR);
-                expect(stderr).toMatch(/^converse-cli: --inbox can't be used with --from or --mention: /);
+                expect(stderr).toMatch(/^converse: --inbox can't be used with --from or --mention: /);
             }
         });
 
@@ -306,8 +306,8 @@ describe('converse-cli watch', () => {
                 const { code, stderr } = await run({ ...daemon.env, CONVERSE_SOCKET: socket_path }, 'watch', '--inbox');
                 expect(code).toBe(EXIT.ERROR);
                 expect(stderr).toBe(
-                    "converse-cli: The daemon running is older than this converse-cli, and can't mark what " +
-                        'watch prints seen, as --inbox needs. Restart it with "converse-cli daemon stop", and ' +
+                    "converse: The daemon running is older than this CLI, and can't mark what " +
+                        'watch prints seen, as --inbox needs. Restart it with "converse daemon stop", and ' +
                         'run watch again.\n',
                 );
             } finally {
@@ -321,14 +321,14 @@ describe('converse-cli watch', () => {
         const { code, stdout, stderr } = await run(daemon.env, 'watch', '--drafts');
         expect(code).toBe(EXIT.ERROR);
         expect(stdout).toBe('');
-        expect(stderr).toMatch(/^converse-cli: Draft events are only available where "converse-cli drafts list" is/);
+        expect(stderr).toMatch(/^converse: Draft events are only available where "converse drafts list" is/);
     });
 
     it('refuses an unknown name in a filter at once, with the lookup exit code', async () => {
         const { code, stdout, stderr } = await run(daemon.env, 'watch', '--from', 'Tybalt');
         expect(code).toBe(EXIT.NOT_FOUND);
         expect(stdout).toBe('');
-        expect(stderr).toMatch(/^converse-cli: .*Tybalt/);
+        expect(stderr).toMatch(/^converse: .*Tybalt/);
     });
 
     it('ends quietly once its reader goes away', async () => {
@@ -352,6 +352,6 @@ describe('converse-cli watch', () => {
 
         const { code, stderr } = await watch.exited();
         expect(code).toBe(EXIT.DAEMON_UNAVAILABLE);
-        expect(stderr).toMatch(/converse-cli: The daemon closed the connection\.\n$/);
+        expect(stderr).toMatch(/converse: The daemon closed the connection\.\n$/);
     });
 });

@@ -18,7 +18,7 @@ import { findDaemon } from './registry.js';
 export { AccountError, getConfigDir, getConfigPath, getSocketFromEnv, listAccounts, loadConfig } from './config.js';
 export { listDaemons } from './registry.js';
 
-const DAEMON_BIN = fileURLToPath(new URL('./bin/converse-daemon.js', import.meta.url));
+const DAEMON_BIN = fileURLToPath(new URL('./bin/conversed.js', import.meta.url));
 
 /**
  * How long to wait for an auto-spawned daemon to open its socket.
@@ -98,10 +98,10 @@ async function connectAt(protocol, { consumer, access = 'full', spawn: may_spawn
             throw new FullAccessUnreachableError(/** @type {Error} */ (e));
         }
         if (!may_spawn) {
-            throw new DaemonUnavailableError(
-                `The daemon for ${config.jid} isn't running. Start it with "converse-daemon".`,
-                { cause: e, see: ['converse-daemon'] },
-            );
+            throw new DaemonUnavailableError(`The daemon for ${config.jid} isn't running. Start it with "conversed".`, {
+                cause: e,
+                see: ['conversed'],
+            });
         }
         socket = await spawnDaemon(config, socket_path, env);
     }

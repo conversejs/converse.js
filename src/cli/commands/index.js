@@ -1,5 +1,5 @@
 /**
- * Every command converse-cli has, each defined once, in the module of its
+ * Every command converse has, each defined once, in the module of its
  * group: what it's for, its arguments and options, its exit codes, examples,
  * and what it does. The help and the parser are derived from these.
  * @module @converse/cli/commands

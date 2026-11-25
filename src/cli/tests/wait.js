@@ -9,7 +9,7 @@ const { stx, u } = converse.env;
 const JULIET = 'juliet@capulet.lit';
 const MERCUTIO = 'mercutio@montague.lit';
 
-describe('converse-cli wait', () => {
+describe('converse wait', () => {
     let daemon;
 
     beforeAll(async () => {
@@ -69,7 +69,7 @@ describe('converse-cli wait', () => {
     it('refuses a timeout that is not a positive number of seconds', async () => {
         const { code, stderr } = await run(daemon.env, 'wait', '--timeout', '0');
         expect(code).toBe(EXIT.ERROR);
-        expect(stderr).toMatch(/^converse-cli: --timeout "0" isn't a number of seconds\. /);
+        expect(stderr).toMatch(/^converse: --timeout "0" isn't a number of seconds\. /);
     });
 
     it('prints the first message from the sender it is waiting for, and exits ok', async () => {

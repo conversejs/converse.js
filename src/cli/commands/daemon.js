@@ -18,7 +18,7 @@ export const DAEMON_COMMANDS = {
             'for the one used when no account is named. Each file accounts/<name>.json is the ' +
             'account <name>. The account "default" is the default, or without it the only account, ' +
             'and with several there is none.',
-        examples: ['converse-cli accounts'],
+        examples: ['converse accounts'],
         run({ options, out, err, env }) {
             const accounts = listAccounts(env).map((account) => ({ ...account, jid: readJID(account.config) }));
             if (options.json) {
@@ -38,7 +38,7 @@ export const DAEMON_COMMANDS = {
         description:
             "Start the daemon if it isn't running, and show its status. Any other command starts it " +
             'too, so this is rarely needed.',
-        examples: ['converse-cli daemon start'],
+        examples: ['converse daemon start'],
         run: (ctx) => printStatus(ctx, true),
     },
     'daemon status': {
@@ -51,7 +51,7 @@ export const DAEMON_COMMANDS = {
             'With --all, list every running daemon instead, one line per account: its name, the JID ' +
             'it was started as, its pid and for how long it has been running.',
         options: [flag('all', "List every account's running daemon")],
-        examples: ['converse-cli daemon status', 'converse-cli daemon status --all'],
+        examples: ['converse daemon status', 'converse daemon status --all'],
         run: (ctx) => (ctx.options.all ? printAllStatuses(ctx) : printStatus(ctx, false)),
     },
     'daemon stop': {
@@ -60,7 +60,7 @@ export const DAEMON_COMMANDS = {
             'Log out and stop the daemon. Your contacts see you go offline, and rooms see you leave. ' +
             'A daemon reached through a socket the config names may be on another host, so for that ' +
             'one this returns once the daemon has closed the connection, and says it was asked to stop.',
-        examples: ['converse-cli daemon stop'],
+        examples: ['converse daemon stop'],
         async run({ options, out, env }) {
             const stopped = await stopDaemon({ env });
             if (options.json) {

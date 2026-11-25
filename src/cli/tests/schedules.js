@@ -5,7 +5,7 @@ import { run } from './run.js';
 
 const JULIET = 'juliet@capulet.lit';
 
-describe('converse-cli scheduled sends', () => {
+describe('converse scheduled sends', () => {
     let daemon;
     let send_at;
     let schedule_id;

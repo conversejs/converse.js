@@ -12,17 +12,17 @@ import pkg from '../package.json' with { type: 'json' };
 const SKILL = fs.readFileSync(new URL('../skill/SKILL.md', import.meta.url), 'utf8');
 
 /**
- * Every invocation the skill shows, as the words after "converse-cli", up to
+ * Every invocation the skill shows, as the words after "converse", up to
  * the end of its code span or line.
  * @returns {string[][]}
  */
 function invocations() {
-    return [...SKILL.matchAll(/converse-cli((?: [^`\n|]*)?)/g)].map(([, rest]) =>
+    return [...SKILL.matchAll(/converse((?: [^`\n|]*)?)/g)].map(([, rest]) =>
         [...rest.matchAll(/"[^"]*"|'[^']*'|\S+/g)].map(([word]) => word),
     );
 }
 
-describe('The converse-cli agent skill', () => {
+describe('The converse agent skill', () => {
     it('is a skill named after the CLI, shipped with the package', () => {
         expect(SKILL).toMatch(/^---\nname: converse-cli\ndescription: \S.*\n---\n/);
         expect(pkg.files).toContain('skill/');

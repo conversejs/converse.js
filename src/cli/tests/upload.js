@@ -11,11 +11,11 @@ import { run } from './run.js';
 
 const JULIET = 'juliet@capulet.lit';
 
-describe('converse-cli upload', () => {
+describe('converse upload', () => {
     let daemon, dir, file, server;
 
     beforeAll(async () => {
-        dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-cli-upload-test-'));
+        dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-upload-test-'));
         file = path.join(dir, 'balcony.txt');
         await fs.writeFile(file, 'Arise, fair sun');
         server = http.createServer((request, response) => {
@@ -74,7 +74,7 @@ describe('converse-cli upload', () => {
         const { code, stdout, stderr } = await run(daemon.env, 'upload', JULIET, missing);
         expect({ code, stdout }).toEqual({ code: EXIT.ERROR, stdout: '' });
         expect(stderr).toBe(
-            `converse-cli: The file at ${JSON.stringify(missing)} could not be read (ENOENT). ` +
+            `converse: The file at ${JSON.stringify(missing)} could not be read (ENOENT). ` +
                 'Check that the path names a readable file, then try again.\n',
         );
         expect(daemon.connection.IQ_stanzas).toHaveLength(before);
@@ -105,7 +105,7 @@ describe('converse-cli upload', () => {
         const { code, stdout, stderr } = await run(daemon.env, 'upload', JULIET, large);
         expect({ code, stdout }).toEqual({ code: EXIT.ERROR, stdout: '' });
         expect(stderr).toBe(
-            `converse-cli: "large.bin" is ${MAX_UPLOAD_SIZE + 1} bytes, which exceeds the daemon's ` +
+            `converse: "large.bin" is ${MAX_UPLOAD_SIZE + 1} bytes, which exceeds the daemon's ` +
                 `${MAX_UPLOAD_SIZE}-byte upload limit. Choose a smaller file.\n`,
         );
         expect(daemon.connection.IQ_stanzas).toHaveLength(before);

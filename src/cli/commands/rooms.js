@@ -20,7 +20,7 @@ export const ROOMS_COMMANDS = {
             option('nick', '<name>', 'The nickname to use there (default: the consumer name, agent unless configured)'),
         ],
         exits: [EXIT.NOT_FOUND],
-        examples: ['converse-cli rooms join lobby@conference.example.org --nick romeo'],
+        examples: ['converse rooms join lobby@conference.example.org --nick romeo'],
         async run(ctx) {
             const { options, out } = ctx;
             const room = takeOne(ctx, 'room JID');
@@ -39,7 +39,7 @@ export const ROOMS_COMMANDS = {
         description: "Leave a room, and forget it, so a restart won't rejoin it. Restricted access, as for rooms join.",
         args: [ROOM],
         exits: [EXIT.NOT_FOUND],
-        examples: ['converse-cli rooms leave lobby@conference.example.org'],
+        examples: ['converse rooms leave lobby@conference.example.org'],
         async run(ctx) {
             const { options, out } = ctx;
             const room = takeOne(ctx, 'room');
@@ -62,7 +62,7 @@ export const ROOMS_COMMANDS = {
             'affiliation and, where the room shows it, their JID, else "-".',
         args: [ROOM],
         exits: [EXIT.NOT_FOUND],
-        examples: ['converse-cli rooms occupants lobby@conference.example.org'],
+        examples: ['converse rooms occupants lobby@conference.example.org'],
         async run(ctx) {
             const { options, out, err } = ctx;
             const room = takeOne(ctx, 'room');
@@ -82,7 +82,7 @@ export const ROOMS_COMMANDS = {
         summary: 'List the rooms a MUC service hosts',
         description: 'List the rooms a MUC service hosts, with their names. Nothing is joined.',
         args: [['<service>', 'The MUC service, such as conference.example.org']],
-        examples: ['converse-cli rooms discover conference.example.org'],
+        examples: ['converse rooms discover conference.example.org'],
         async run(ctx) {
             const { options, out, err } = ctx;
             const service = takeOne(ctx, 'service');

@@ -717,7 +717,7 @@ This setting lets you pass in the text value that goes into the <span class="tit
 
 ### emoji_image_path
 
-- Default: `'https://twemoji.maxcdn.com/2/'`
+- Default: `'https://twemoji.maxcdn.com/v/12.1.6/'`
 
 When [use_system_emojis](#use_system_emojis) is set to `false`, then this is the URL from where image files for displaying emojis will be fetched.
 
@@ -1266,7 +1266,7 @@ Desktop notifications will be shown for a time of `notification_delay` ms. Setti
 
 ### notification_icon
 
-- Default: `'logo/conversejs-filled.svg'`
+- Default: `${assets_path}/images/logo/conversejs-filled.svg`
 
 This option specifies which icon is shown in HTML5 notifications, as provided by the `src/converse-notification.js` plugin.
 
@@ -1705,7 +1705,7 @@ Set it to an empty string to turn shareable links off, for example when your use
 
 ### show_background
 
-- Default: `true`
+- Default: `false`
 
 Whether a background with the Converse logo should be shown.
 
@@ -1895,8 +1895,8 @@ If set to `a resource name`, Converse will synchronize only with a client that h
 
 ### theme
 
-- Default: `default`
-- Valid options: `default`, `cyberpunk`, `dracula`, `nord`
+- Default: `classic`
+- Valid options: `classic`, `cyberpunk`, `dracula`, `nordic`
 
 Lets you set a color theme for Converse.
 

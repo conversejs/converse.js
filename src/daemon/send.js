@@ -4,7 +4,7 @@
  * @module @converse/daemon/send
  */
 import { api, constants, converse } from '@converse/headless';
-import { getIDs, toMessageDTO } from './dto.js';
+import { getID, isRoomMessage, toMessageDTO } from './dto.js';
 import { notRetracted } from './find.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { notJoined } from './routing.js';
@@ -49,7 +49,7 @@ export const ROOM_ECHO = { timeout: 5000 };
  * @param {import('@converse/headless').BaseMessage} [targets.correcting] - One of ours
  * @param {Record<string, any>} [attributes] - More outgoing message attributes, such as an XEP-0066 URL
  * @param {import('./types').SendType} [type] - Whether it's meant for a MUC, or as a chat
- * @returns {Promise<import('./types').MessageDTO>}
+ * @returns {Promise<import('@converse/headless').BaseMessage>}
  */
 export async function sendMessage(jid, body, targets = {}, attributes = {}, type) {
     requireConnected('nothing was sent');
@@ -57,8 +57,7 @@ export async function sendMessage(jid, body, targets = {}, attributes = {}, type
     const muc = await checkSendType(jid, type);
     const chatbox = muc ?? (await api.chats.get(jid, {}, true));
     await chatbox.initialized;
-    const message = await send(chatbox, { body, ...attributes }, targets);
-    return toMessageDTO(message);
+    return send(chatbox, { body, ...attributes }, targets);
 }
 
 /**
@@ -120,11 +119,11 @@ export async function checkSendType(jid, type) {
 /**
  * What became of a send that headless accepted. A message is pending when the
  * session dropped before it went out: headless sends it once it's connected again.
- * @param {import('./types').MessageDTO} message
+ * @param {import('@converse/headless').BaseMessage} message
  * @returns {'sent'|'pending'}
  */
 export function outcomeOf(message) {
-    return message.status === 'pending' ? 'pending' : 'sent';
+    return message.get('send_status') === 'pending' ? 'pending' : 'sent';
 }
 
 /**
@@ -155,17 +154,15 @@ async function send(chatbox, attrs, targets) {
  * a failed send, which can be sent again once we're back in the room. A room
  * that doesn't answer within {@link ROOM_ECHO} leaves it as it is, sent but
  * not delivered, since the echo may still come.
- * @param {import('./types').MessageDTO} dto - A message we just sent
+ * @param {import('@converse/headless').BaseMessage} message - A message we just sent
  * @returns {Promise<import('./types').MessageDTO>} The message as it is now
  * @throws {RPCError} NOT_JOINED or UNDELIVERED, when the room didn't take it
  */
-export async function confirmDelivery(dto) {
-    if (dto.status !== 'sent') return dto;
+export async function confirmDelivery(message) {
+    const dto = toMessageDTO(message);
+    if (dto.status !== 'sent' || !isRoomMessage(message)) return dto;
 
-    const room = await api.rooms.get(dto.conversation);
-    const message = room?.messages.models.find((m) => getIDs(m).includes(dto.id));
-    if (!message) return dto;
-
+    const room = /** @type {import('@converse/headless').MUC} */ (message.collection.chatbox);
     const outcome = await awaitEcho(room, message);
     const delivered = delivered_versions.get(message);
     delivered_versions.delete(message);
@@ -195,24 +192,26 @@ export async function confirmDelivery(dto) {
  * Waits, as {@link confirmDelivery} does, for the room to take a message we
  * just sent, then records the send in the audit log: as failed, with the
  * reason, if the room didn't take it.
- * @param {import('./types').MessageDTO} dto - A message we just sent
+ * @param {import('@converse/headless').BaseMessage} message - A message we just sent
  * @param {ReturnType<typeof import('./audit.js').createAudit>} audit
  * @param {Omit<import('./types').AuditEntry, 'outcome'|'id'>} entry
  * @returns {Promise<import('./types').MessageDTO>} The message as it is now
  * @throws {RPCError} NOT_JOINED or UNDELIVERED, when the room didn't take it
  */
-export async function confirmAndRecord(dto, audit, entry) {
+export async function confirmAndRecord(message, audit, entry) {
+    // Taken before the room echoes it, which gives it the room's id.
+    const id = getID(message);
     try {
-        const message = await confirmDelivery(dto);
-        audit.record({ ...entry, outcome: outcomeOf(message), id: dto.id });
-        return message;
+        const dto = await confirmDelivery(message);
+        audit.record({ ...entry, outcome: outcomeOf(message), id });
+        return dto;
     } catch (e) {
         const error = /** @type {import('./protocol.js').RPCError} */ (e);
         const error_code =
             error.code === ERRORS.NOT_JOINED
                 ? 'not-in-room'
                 : /** @type {{ condition?: string } | undefined} */ (error.data)?.condition;
-        audit.record({ ...entry, outcome: 'failed', id: dto.id, error_code });
+        audit.record({ ...entry, outcome: 'failed', id, error_code });
         throw e;
     }
 }

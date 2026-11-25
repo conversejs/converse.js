@@ -10,7 +10,7 @@
  */
 import { api } from '@converse/headless';
 import { withdrawalNotice, draftNotice } from './notices.js';
-import { toMessageDTO } from './dto.js';
+import { getID, toMessageDTO } from './dto.js';
 import { findOwn, findTarget } from './find.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { confirmAndRecord, outcomeOf, retractMessage, sendMessage, sendReaction } from './send.js';
@@ -190,8 +190,8 @@ export function draftMethods({ drafts, audit, events, owner, mode }) {
             if (['send', 'reply', 'correct', 'upload'].includes(draft.action)) {
                 return { outcome, message: await confirmAndRecord(message, audit, entry) };
             }
-            audit.record({ ...entry, outcome, id: message.id });
-            return { outcome, message };
+            audit.record({ ...entry, outcome, id: getID(message) });
+            return { outcome, message: toMessageDTO(message) };
         },
 
         /**
@@ -228,15 +228,21 @@ export function draftMethods({ drafts, audit, events, owner, mode }) {
  * Does what a draft says, as the user: sends it, or applies it to the message
  * it acts on.
  * @param {import('./types').Draft} draft
- * @returns {Promise<import('./types').MessageDTO>}
+ * @returns {Promise<import('@converse/headless').BaseMessage>} The message sent, or the one acted on
  */
 async function deliver(draft) {
     const { to, type } = draft;
     switch (draft.action) {
-        case 'retract':
-            return retractMessage(await findOwn(draft.target, to, 'retract'), draft.target);
-        case 'react':
-            return sendReaction(await findTarget(draft.target, to), draft.body, draft.remove);
+        case 'retract': {
+            const message = await findOwn(draft.target, to, 'retract');
+            await retractMessage(message, draft.target);
+            return message;
+        }
+        case 'react': {
+            const message = await findTarget(draft.target, to);
+            await sendReaction(message, draft.body, draft.remove);
+            return message;
+        }
         case 'reply':
             return sendMessage(to, draft.body, { replying_to: await findTarget(draft.target, to) }, {}, type);
         case 'correct':

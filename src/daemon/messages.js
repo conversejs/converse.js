@@ -170,9 +170,9 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
                 const target = replying_to ?? correcting;
                 /** @type {{ action?: 'reply'|'correct', target?: string }} */
                 const action = target ? { action: replying_to ? 'reply' : 'correct', target: getID(target) } : {};
-                const dto = await sendMessage(jid, body, { replying_to, correcting }, {}, type);
+                const message = await sendMessage(jid, body, { replying_to, correcting }, {}, type);
                 const entry = { consumer: client.consumer, to: jid, ...action, ...routing };
-                return { outcome: outcomeOf(dto), message: await confirmAndRecord(dto, audit, entry) };
+                return { outcome: outcomeOf(message), message: await confirmAndRecord(message, audit, entry) };
             };
             const draft = async (routing) => {
                 const correcting = correct === undefined ? undefined : await findOwn(correct, jid, 'correct');
@@ -311,7 +311,6 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
             await attempt(() =>
                 unencrypted ? resendUnencrypted(chatbox, message) : chatbox.resendFailedMessage(message),
             );
-            const dto = toMessageDTO(message);
             /** @type {Omit<import('./types').AuditEntry, 'outcome'|'id'>} */
             const entry = {
                 consumer: client.consumer,
@@ -319,7 +318,7 @@ export function messageMethods({ routeSend, audit, queueDraft, mode, allow_unenc
                 action: 'resend',
                 ...(unencrypted ? { unencrypted: true } : {}),
             };
-            return { outcome: outcomeOf(dto), message: await confirmAndRecord(dto, audit, entry) };
+            return { outcome: outcomeOf(message), message: await confirmAndRecord(message, audit, entry) };
         },
 
         /**

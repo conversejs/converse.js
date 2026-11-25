@@ -602,8 +602,10 @@ converse.initialize({
 });
 ```
 
-Logging in attaches to the worker's connection if it has one. This is done by the
-`converse-shared-worker` plugin, so logging in fails if that plugin isn't loaded.
+Logging in attaches to the worker's connection if it has one, and the session's
+data is kept where every tab can read it. Both are done by the
+`converse-shared-worker` plugin, so logging in fails if that plugin isn't loaded
+(for example when it's in `blacklisted_plugins`).
 
 ### csi_waiting_time
 

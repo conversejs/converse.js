@@ -225,7 +225,15 @@ export async function setUserJID(jid) {
  * @param {string} jid
  */
 export async function initSession(_converse, jid) {
-    const is_shared_session = _converse.api.settings.get('connection_options').worker;
+    /**
+     * *Hook* through which a plugin says that the user's session is shared by
+     * all tabs (as one held by a shared worker is), so that its data is kept
+     * where every tab can read it, rather than in this tab only.
+     * @event _converse#shouldShareSession
+     * @param {null} context
+     * @param {boolean} shared
+     */
+    const is_shared_session = await _converse.api.hook('shouldShareSession', null, false);
 
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;

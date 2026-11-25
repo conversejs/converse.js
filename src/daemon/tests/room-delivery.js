@@ -4,7 +4,7 @@
  */
 import fs from 'node:fs';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { converse } from '@converse/headless';
+import { converse, MAMPlaceholderMessage } from '@converse/headless';
 import { ERRORS } from '../protocol.js';
 import { ROOM_ECHO } from '../send.js';
 import { JID, startDaemon } from './harness.js';
@@ -84,6 +84,17 @@ describe('A send to a room', () => {
 
         const { messages } = await client.request('messages.list', { conversation: GARDEN });
         expect(messages.at(-1)).toMatchObject({ id: message.id, delivered: message.delivered });
+    });
+
+    it('is confirmed in a room whose history has a gap', async () => {
+        const room = await daemon.api.rooms.get(GARDEN);
+        const gap = room.messages.add(new MAMPlaceholderMessage({ time: new Date().toISOString() }));
+        try {
+            const { outcome } = await client.request('messages.send', { to: GARDEN, body: 'Mind the gap' });
+            expect(outcome).toBe('sent');
+        } finally {
+            room.messages.remove(gap);
+        }
     });
 
     it('confirms a correction afresh, when the room echoes it', async () => {

@@ -166,6 +166,9 @@ export async function confirmDelivery(message) {
     const outcome = await awaitEcho(room, message);
     const delivered = delivered_versions.get(message);
     delivered_versions.delete(message);
+    // Clearing the room's messages while we waited took this one too, so there's nothing left to confirm.
+    if (!message.collection) return dto;
+
     if (outcome === 'not_joined') {
         markFailed(message, 'not-in-room', delivered);
         throw new RPCError(

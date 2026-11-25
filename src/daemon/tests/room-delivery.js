@@ -131,6 +131,16 @@ describe('A send to a room', () => {
         expect(message).toMatchObject({ status: 'sent', delivered: null });
     });
 
+    it("reports a send as sent when the room's messages are cleared before it echoes", async () => {
+        daemon.setRoomEcho(false);
+        const n = countSent();
+        const sending = client.request('messages.send', { to: GARDEN, body: 'Gone soon' });
+        await sentToRoom(n + 1);
+        const room = await daemon.api.rooms.get(GARDEN);
+        await room.clearMessages();
+        await expect(sending).resolves.toMatchObject({ outcome: 'sent', message: { status: 'sent' } });
+    });
+
     it('fails a send the room turns down, and keeps it for a resend', async () => {
         daemon.setRoomEcho(false);
         const n = countSent();

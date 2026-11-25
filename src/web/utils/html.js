@@ -233,6 +233,7 @@ export function getHyperlinkTemplate(url) {
  * Shows/expands an element by sliding it out of itself
  * @param {HTMLElement} el - The HTML string
  * @param {Number} duration - The duration amount in milliseconds
+ * @returns {Promise<void>}
  */
 export function slideOut(el, duration = 200) {
     return new Promise((resolve, reject) => {

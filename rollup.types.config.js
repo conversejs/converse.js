@@ -20,8 +20,13 @@ function bundle(input, file) {
     // `plugins/...`), so resolve those inside the folder they were emitted to.
     // Anything not found there resolves from node_modules and stays external.
     const types_dir = path.resolve(path.dirname(input));
+    const isStylesheet = (/** @type {string} */ id) => /\.s?css$/.test(id);
     return {
         input,
+        // The declarations keep the sources' stylesheet imports, which declare
+        // no types, so leave them out of the bundle.
+        external: isStylesheet,
+        treeshake: { moduleSideEffects: (id) => !isStylesheet(id) },
         // The sourcemap follows the per-file declaration maps back to the
         // sources, which the packages ship, so "Go to definition" lands there.
         output: { file, format: 'es', sourcemap: true },

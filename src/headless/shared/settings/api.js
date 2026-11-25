@@ -28,7 +28,7 @@ export const settings_api = {
      * `converse.initialize`.
      *
      * @method api.settings.extend
-     * @param {object} settings The configuration settings
+     * @param {Record<string, any>} settings The configuration settings
      * @param {object} [options]
      * @param {string[]} [options.deep_merge] Keys of object-valued settings whose
      *  user-provided value should be *deep-merged* onto the default (so unspecified
@@ -105,7 +105,7 @@ export const settings_api = {
          * @param { ('change') } name - The name of the event to listen for.
          *  Currently there is only the 'change' event.
          * @param { Function } handler - The event handler function
-         * @param { Object } [context] - The context of the `this` attribute of the
+         * @param {Record<string, any>} [context] - The context of the `this` attribute of the
          *  handler function.
          * @example api.settings.listen.on('change', callback);
          */

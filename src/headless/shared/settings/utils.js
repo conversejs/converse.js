@@ -75,7 +75,7 @@ export function getAppSetting(key) {
 }
 
 /**
- * @param {Object} settings - New settings (or new defaults for existing settings).
+ * @param {Record<string, any>} settings - New settings (or new defaults for existing settings).
  * @param {Object} [options]
  * @param {string[]} [options.deep_merge] - Keys whose user-provided object value
  *  should be deep-merged onto the default instead of replacing it wholesale. The

@@ -26,7 +26,7 @@ class BaseModal extends CustomElement {
     #connection_state = null;
 
     /**
-     * @param {Object} options
+     * @param {Record<string, any>} [options]
      */
     constructor(options) {
         super();
@@ -50,6 +50,7 @@ class BaseModal extends CustomElement {
             if (ev.key === 'Escape' && isComposing(ev)) ev.stopImmediatePropagation();
         });
 
+        /** @type {import('@converse/headless').OpenPromise} */
         this.initialized = u.getOpenPromise();
 
         // Allow properties to be set via passed in options

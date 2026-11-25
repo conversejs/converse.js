@@ -20,7 +20,7 @@ export default class OccupantModal extends BaseModal {
         /**
          * Triggered once the OccupantModal has been initialized
          * @event _converse#occupantModalInitialized
-         * @type { Object }
+         * @type {Record<string, any>}
          * @example _converse.api.listen.on('occupantModalInitialized', data);
          */
         api.trigger('occupantModalInitialized', { 'model': this.model, 'message': this.message });

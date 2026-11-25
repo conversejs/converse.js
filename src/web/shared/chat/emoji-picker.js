@@ -1,7 +1,7 @@
 /**
  * @module emoji-picker
- * @typedef {module:dom-navigator.DOMNavigatorOptions} DOMNavigatorOptions
- * @typedef {module:dom-navigator.DOMNavigatorDirection} DOMNavigatorDirection
+ * @typedef {import('shared/dom-navigator/types').DOMNavigatorOptions} DOMNavigatorOptions
+ * @typedef {import('shared/dom-navigator/types').DOMNavigatorDirection} DOMNavigatorDirection
  */
 import debounce from 'lodash-es/debounce.js';
 import { api, converse, u, constants } from '@converse/headless';

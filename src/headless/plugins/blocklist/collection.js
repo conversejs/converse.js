@@ -56,6 +56,7 @@ class Blocklist extends Collection {
     }
 
     fetchBlocklist() {
+        /** @type {import('../../shared/types').OpenPromise} */
         const deferred = getOpenPromise();
         // Before connecting, there's only the cache to read. It's brought up
         // to date once connected (see `refresh`).
@@ -81,7 +82,7 @@ class Blocklist extends Collection {
     }
 
     /**
-     * @param {Object} [deferred]
+     * @param {Record<string, any>} [deferred]
      */
     async fetchBlocklistFromServer(deferred) {
         const stanza = stx`<iq xmlns="jabber:client"

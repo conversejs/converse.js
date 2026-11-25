@@ -27,7 +27,7 @@ export default class ProfileModal extends BaseModal {
     };
 
     /**
-     * @param {Object} options
+     * @param {Record<string, any>} options
      */
     constructor(options) {
         super(options);

@@ -64,7 +64,7 @@ export function onChatBoxesFetched() {
  * Given the login `<form>` element, parse its data and update the
  * converse settings with the supplied JID, password and connection URL.
  * @param {HTMLFormElement} form
- * @param {Object} settings - Extra settings that may be passed in and will
+ * @param {Record<string, any>} settings - Extra settings that may be passed in and will
  *  also be set together with the form settings.
  */
 export function updateSettingsWithFormData(form, settings = {}) {

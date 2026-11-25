@@ -40,7 +40,7 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     /**
      * @param {string|Object} key
      * @param {string|Object} [val]
-     * @param {Object} [options]
+     * @param {Record<string, any>} [options]
      */
     set(key, val, options) {
         if (key === 'jid' || key === 'nickname') {
@@ -84,7 +84,7 @@ export default class Profile extends ModelWithVCard(ColorAwareModel(Model)) {
     /**
      * Constructs a presence stanza
      * @param {import('./types').PresenceAttrs} [attrs={}]
-     * @returns {Promise<Stanza>}
+     * @returns {Promise<import('strophe.js').Stanza>}
      */
     async constructPresence(attrs = {}) {
         const { type, to } = attrs;

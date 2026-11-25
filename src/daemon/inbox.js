@@ -88,7 +88,7 @@ export function inboxMethods(cursors, events) {
         /**
          * The conversations with messages, most recent first, each with how
          * many incoming messages are unread for this consumer.
-         * @param {Object} _params
+         * @param {Record<string, any>} _params
          * @param {import('./types').Client} client
          * @returns {Promise<{ conversations: import('./types').ConversationSummary[] }>}
          */
@@ -108,7 +108,7 @@ export function inboxMethods(cursors, events) {
          * The incoming messages this consumer hasn't seen, grouped by
          * conversation, and then marks them seen. Messages it sent, from any
          * client, are passed over without being shown.
-         * @param {Object} _params
+         * @param {Record<string, any>} _params
          * @param {import('./types').Client} client
          * @returns {Promise<import('./types').Inbox>}
          */

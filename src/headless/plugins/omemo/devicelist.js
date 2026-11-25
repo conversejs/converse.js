@@ -104,15 +104,17 @@ class DeviceList extends OMEMOVersionAwareModel {
             this._devices_promise = undefined;
         }
         if (this._devices_promise === undefined) {
-            this._devices_promise = new Promise((resolve) => {
-                this.devices.fetch({
-                    success: (c) => resolve(this.onDevicesFound(c)),
-                    error: (_, e) => {
-                        log.error(e);
-                        resolve();
-                    },
-                });
-            });
+            this._devices_promise = /** @type {Promise<void>} */ (
+                new Promise((resolve) => {
+                    this.devices.fetch({
+                        success: (c) => resolve(this.onDevicesFound(c)),
+                        error: (_, e) => {
+                            log.error(e);
+                            resolve();
+                        },
+                    });
+                })
+            );
         }
         return this._devices_promise;
     }
@@ -227,14 +229,16 @@ class DeviceList extends OMEMOVersionAwareModel {
                 .map((id) => this.devices.get(id))
                 .map(
                     (d) =>
-                        new Promise((resolve) =>
-                            d.destroy({
-                                success: resolve,
-                                error: (_, e) => {
-                                    log.error(e);
-                                    resolve();
-                                },
-                            }),
+                        /** @type {Promise<void>} */ (
+                            new Promise((resolve) =>
+                                d.destroy({
+                                    success: resolve,
+                                    error: (_, e) => {
+                                        log.error(e);
+                                        resolve();
+                                    },
+                                }),
+                            )
                         ),
                 ),
         );

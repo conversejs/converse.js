@@ -1,6 +1,3 @@
-/**
- * @type {Object.<string, number>}
- */
 export const LEVELS = {
     debug: 0,
     info: 1,
@@ -20,16 +17,16 @@ export const LEVELS = {
  * @namespace log
  */
 const log = {
-    /** @type {keyof LEVELS} The current log level */
+    /** @type {keyof typeof LEVELS} The current log level */
     loglevel: 'info',
 
     /**
      * Sets the current log level which determines which messages are logged
-     * @param {keyof LEVELS} level - The log level to set
+     * @param {keyof typeof LEVELS} level - The log level to set
      * @throws {Error} If an invalid log level is provided
      */
     setLogLevel(level) {
-        if (!['debug', 'info', 'warn', 'error', 'fatal'].includes(/** @type {string} */ (level))) {
+        if (!['debug', 'info', 'warn', 'error', 'fatal'].includes(level)) {
             throw new Error(`Invalid loglevel: ${level}`);
         }
         this.loglevel = level;
@@ -38,7 +35,7 @@ const log = {
     /**
      * Logs a message at the specified level.
      * Accepts the same arguments as the corresponding console method.
-     * @param {keyof LEVELS} level - The log level to use
+     * @param {keyof typeof LEVELS} level - The log level to use
      * @param  {...any} args - Arguments passed through to the console method
      */
     log(level, ...args) {

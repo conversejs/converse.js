@@ -45,7 +45,7 @@ export function setLogLevelFromRoute(event) {
         event?.preventDefault();
         const level = hash.split('=').pop();
         if (Object.keys(LEVELS).includes(level)) {
-            log.setLogLevel(/** @type {keyof LEVELS} */ (level));
+            log.setLogLevel(/** @type {keyof typeof LEVELS} */ (level));
         } else {
             log.error(`Could not set loglevel of ${level}`);
         }

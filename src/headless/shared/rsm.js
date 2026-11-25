@@ -61,7 +61,7 @@ export class RSM {
 
     /**
      * Creates a new RSM instance
-     * @param { Object } options - Configuration options
+     * @param {Record<string, any>} options - Configuration options
      */
     constructor(options = {}) {
         this.query = RSM.getQueryParameters(options);

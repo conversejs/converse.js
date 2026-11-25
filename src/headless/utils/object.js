@@ -1,7 +1,7 @@
 /**
  * Merge the second object into the first one.
- * @param {Object} dst
- * @param {Object} src
+ * @param {Record<string, any>} dst
+ * @param {Record<string, any>} src
  */
 export function merge(dst, src) {
     for (const k in src) {
@@ -50,7 +50,6 @@ export function isErrorObject(o) {
 
 /**
  * @param {import('@converse/skeletor').Model} model
- * @returns {import('@converse/skeletor').BrowserStorage}
  */
 export function isPersistableModel(model) {
     return model.storage || model.collection?.storage;

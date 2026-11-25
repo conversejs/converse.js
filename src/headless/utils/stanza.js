@@ -40,7 +40,7 @@ export function isServiceUnavailableError(stanza) {
 /**
  * Returns an object containing all attribute names and values for a particular element.
  * @param {Element} stanza
- * @returns {object}
+ * @returns {Record<string, any>}
  */
 export function getAttributes(stanza) {
     return stanza.getAttributeNames().reduce((acc, name) => {

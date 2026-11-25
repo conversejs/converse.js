@@ -52,11 +52,11 @@ export class StanzaError extends Error {
     /**
      * @param {ErrorName|'unknown'} name
      * @param {Element} e - The <error> element from a stanza
-     * @param {Object} extra - Extra properties from plugin parsers
+     * @param {Record<string, any>} [extra] - Extra properties from plugin parsers
      */
     constructor(name, e, extra) {
         super(e.querySelector('text')?.textContent ?? '');
-        /** @type {ErrorName} */
+        /** @type {ErrorName|'unknown'} */
         this.name = name;
         /** @type {string} */
         this.message = name;

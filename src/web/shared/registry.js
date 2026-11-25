@@ -24,7 +24,7 @@ const elements = {
      *
      * @method api.elements.define
      * @param { string } name
-     * @param { object } constructor
+     * @param {Record<string, any>} constructor
      */
     define(name, constructor) {
         this.registry[name] = constructor;

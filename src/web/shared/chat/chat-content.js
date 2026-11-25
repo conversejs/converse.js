@@ -168,7 +168,7 @@ export default class ChatContent extends CustomElement {
         /**
          * Triggered once the converse-chat-content element has been scrolled down to the bottom.
          * @event _converse#chatBoxScrolledDown
-         * @type {object}
+         * @type {Record<string, any>}
          * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
          * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
          */

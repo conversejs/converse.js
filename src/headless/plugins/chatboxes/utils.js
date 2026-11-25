@@ -52,7 +52,7 @@ export async function onClearSession(reason) {
 
 /**
  * @param {string} jid
- * @param {object} attrs
+ * @param {Record<string, any>} attrs
  * @param {new (attrs: object, options: object) => ChatBox} Model
  */
 export async function createChatBox(jid, attrs, Model) {

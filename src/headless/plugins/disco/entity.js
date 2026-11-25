@@ -27,6 +27,7 @@ class DiscoEntity extends Model {
     initialize(_, options) {
         super.initialize();
         this.waitUntilFeaturesDiscovered = getOpenPromise();
+        /** @type {import('../../shared/types').OpenPromise<Element|Error|void>} */
         this.waitUntilItemsFetched = getOpenPromise();
 
         // Keyed by our own bare JID too, so that another account using the
@@ -139,16 +140,18 @@ class DiscoEntity extends Model {
         } else {
             await new Promise((resolve) => this.fetch({ success: resolve, error: resolve }));
 
-            await new Promise((resolve) =>
-                this.features.fetch({
-                    add: true,
-                    success: () => {
-                        this.waitUntilFeaturesDiscovered.resolve(this);
-                        this.trigger('featuresDiscovered');
-                        resolve();
-                    },
-                    error: resolve,
-                }),
+            await /** @type {Promise<void>} */ (
+                new Promise((resolve) =>
+                    this.features.fetch({
+                        add: true,
+                        success: () => {
+                            this.waitUntilFeaturesDiscovered.resolve(this);
+                            this.trigger('featuresDiscovered');
+                            resolve();
+                        },
+                        error: resolve,
+                    }),
+                )
             );
 
             await new Promise((resolve) => this.identities.fetch({ add: true, success: resolve, error: resolve }));

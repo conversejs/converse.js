@@ -152,7 +152,7 @@ export async function getAutoCompleteList() {
  */
 function setRole(
     muc,
-    /** @type {keyof COMMAND_TO_ROLE} */ command,
+    /** @type {keyof typeof COMMAND_TO_ROLE} */ command,
     /** @type {string} */ args,
     /** @type {string[]} */ required_affiliations = [],
     /** @type {string[]} */ required_roles = [],
@@ -183,7 +183,7 @@ function setRole(
  */
 function verifyAndSetAffiliation(
     muc,
-    /** @type {keyof COMMAND_TO_AFFILIATION} */ command,
+    /** @type {keyof typeof COMMAND_TO_AFFILIATION} */ command,
     /** @type {string} */ args,
     /** @type {string[]} */ required_affiliations,
 ) {

@@ -1,44 +1,56 @@
-/**
- * @type {Object.<string, number>}
- */
-export const LEVELS: {
-    [x: string]: number;
+export declare const LEVELS: {
+    debug: number;
+    info: number;
+    warn: number;
+    error: number;
+    fatal: number;
 };
-export default log;
-declare namespace log {
-    let loglevel: string | number;
+/**
+ * Logs messages to the console.
+ * Available loglevels are:
+ *      - 0: 'debug'
+ *      - 1: 'info'
+ *      - 2: 'warn',
+ *      - 3: 'error'
+ *      - 4: 'fatal'.
+ * @namespace log
+ */
+declare const log: {
+    /** @type {keyof typeof LEVELS} The current log level */
+    loglevel: keyof typeof LEVELS;
     /**
      * Sets the current log level which determines which messages are logged
-     * @param {keyof LEVELS} level - The log level to set
+     * @param {keyof typeof LEVELS} level - The log level to set
      * @throws {Error} If an invalid log level is provided
      */
-    function setLogLevel(level: string | number): void;
+    setLogLevel(level: keyof typeof LEVELS): void;
     /**
      * Logs a message at the specified level.
      * Accepts the same arguments as the corresponding console method.
-     * @param {keyof LEVELS} level - The log level to use
+     * @param {keyof typeof LEVELS} level - The log level to use
      * @param  {...any} args - Arguments passed through to the console method
      */
-    function log(level: string | number, ...args: any[]): void;
+    log(level: keyof typeof LEVELS, ...args: any[]): void;
     /**
      * @param  {...any} args - Arguments passed through to console.debug
      */
-    function debug(...args: any[]): void;
+    debug(...args: any[]): void;
     /**
      * @param  {...any} args - Arguments passed through to console.error
      */
-    function error(...args: any[]): void;
+    error(...args: any[]): void;
     /**
      * @param  {...any} args - Arguments passed through to console.info
      */
-    function info(...args: any[]): void;
+    info(...args: any[]): void;
     /**
      * @param  {...any} args - Arguments passed through to console.warn
      */
-    function warn(...args: any[]): void;
+    warn(...args: any[]): void;
     /**
      * @param  {...any} args - Arguments passed through to console.error
      */
-    function fatal(...args: any[]): void;
-}
+    fatal(...args: any[]): void;
+};
+export default log;
 //# sourceMappingURL=index.d.ts.map

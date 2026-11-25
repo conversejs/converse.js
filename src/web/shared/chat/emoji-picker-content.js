@@ -1,5 +1,5 @@
 /**
- * @typedef {module:emoji-picker.EmojiPicker} EmojiPicker
+ * @typedef {import('./emoji-picker.js').default} EmojiPicker
  */
 import { html } from 'lit';
 import { converse, api, u } from '@converse/headless';

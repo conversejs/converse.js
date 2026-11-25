@@ -44,9 +44,9 @@ export default {
      * structure in order to modify it, before passing it back.
      * @async
      * @param {string} name - The hook name
-     * @param {...any} context - The context to which the hook applies
+     * @param {any} context - The context to which the hook applies
      *  (could be for example, a {@link _converse.ChatBox}).
-     * @param {...any} data - The data structure to be intercepted and modified by the hook listeners.
+     * @param {any} data - The data structure to be intercepted and modified by the hook listeners.
      * @param {...any} extra_args - Additional passthrough arguments for hook listeners.
      * @returns {Promise<any>} - A promise that resolves with the modified data structure.
      */
@@ -77,7 +77,7 @@ export default {
          * @method _converse.api.listen.once
          * @param {string} name The event's name
          * @param {function} callback The callback method to be called when the event is emitted.
-         * @param {object} [context] The value of the `this` parameter for the callback.
+         * @param {Record<string, any>} [context] The value of the `this` parameter for the callback.
          * @example _converse.api.listen.once('message', function (messageXML) { ... });
          */
         once: _converse.once.bind(_converse),
@@ -88,7 +88,7 @@ export default {
          * @method _converse.api.listen.on
          * @param {string} name The event's name
          * @param {function} callback The callback method to be called when the event is emitted.
-         * @param {object} [context] The value of the `this` parameter for the callback.
+         * @param {Record<string, any>} [context] The value of the `this` parameter for the callback.
          * @example _converse.api.listen.on('message', function (messageXML) { ... });
          */
         on: _converse.on.bind(_converse),
@@ -125,12 +125,9 @@ export default {
             if (isFunction(options)) {
                 handler = /** @type {Function} */ (options);
                 options = {};
-            } else {
-                options = options || {};
             }
-            _converse.api.connection
-                .get()
-                .addHandler(handler, options.ns, name, options.type, options.id, options.from, options);
+            const opts = /** @type {MatchingOptions} */ (options || {});
+            _converse.api.connection.get().addHandler(handler, opts.ns, name, opts.type, opts.id, opts.from, opts);
         },
     },
 };

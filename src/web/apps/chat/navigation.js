@@ -27,7 +27,7 @@ import { buildChatRoute } from './routing.js';
  *
  * @param {'chat'|'room'} view
  * @param {string} jid
- * @param {object} [attrs={}]
+ * @param {Record<string, any>} [attrs={}]
  * @returns {Promise<void>}
  */
 export async function openConversationRouted(view, jid, attrs = {}) {

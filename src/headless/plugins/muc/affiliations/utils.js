@@ -1,11 +1,10 @@
 /**
  * @copyright The Converse.js contributors
  * @license Mozilla Public License (MPLv2)
- * @module:muc-affiliations-utils
- * @typedef {module:plugin-muc-parsers.MemberListItem} MemberListItem
- * @typedef {module:plugin-muc-affiliations-api.User} User
+ * @typedef {import('../types').MemberListItem} MemberListItem
+ * @typedef {import('../types').AffiliationChange} User
  * @typedef {import('@converse/skeletor').Model} Model
- * @typedef {import('../constants').AFFILIATIONS} AFFILIATIONS
+ * @typedef {typeof import('../constants').AFFILIATIONS} AFFILIATIONS
  */
 import _converse from '../../../shared/_converse.js';
 import api from '../../../shared/api/index.js';
@@ -76,7 +75,7 @@ export function setAffiliations(muc_jid, users) {
  * @param {AFFILIATIONS[number]} affiliation - The affiliation to be set
  * @param {String|Array<String>} muc_jids - The JID(s) of the MUCs in which the
  *  affiliations need to be set.
- * @param {object} members - A map of jids, affiliations and
+ * @param {Record<string, any>} members - A map of jids, affiliations and
  *  optionally reasons. Only those entries with the
  *  same affiliation as being currently set will be considered.
  * @returns {Promise} A promise which resolves and fails depending on the XMPP server response.
@@ -95,7 +94,7 @@ export function setAffiliation(affiliation, muc_jids, members) {
  * Send an IQ stanza specifying an affiliation change.
  * @param {AFFILIATIONS[number]} affiliation - Affiliation (could also be stored on the member object).
  * @param {string} muc_jid - The JID of the MUC in which the affiliation should be set.
- * @param {object} member - Map containing the member's jid and optionally a reason and affiliation.
+ * @param {Record<string, any>} member - Map containing the member's jid and optionally a reason and affiliation.
  */
 function sendAffiliationIQ(affiliation, muc_jid, member) {
     affiliation = member.affiliation || affiliation;

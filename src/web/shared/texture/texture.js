@@ -84,6 +84,7 @@ export class Texture extends String {
         this.embed_audio = options?.embed_audio;
         this.embed_videos = options?.embed_videos;
         this.mentions = options?.mentions || [];
+        /** @type {MediaURLMetadata[]|undefined} */
         this.media_urls = options?.media_urls;
         this.nick = options?.nick;
         this.offset = offset;
@@ -373,7 +374,7 @@ export class Texture extends String {
      * which is being replaced with markup.
      * @param {Number} end - The ending index of the plain message text
      * which is being replaced with markup.
-     * @param {Object} template - The lit TemplateResult instance
+     * @param {import('lit').TemplateResult|string} template - The lit TemplateResult instance
      */
     addTemplateResult(begin, end, template) {
         this.references.push({ begin, end, template });
@@ -424,7 +425,7 @@ class StylingDirective extends Directive {
     /**
      * @param {string} txt
      * @param {number} offset
-     * @param {object} options
+     * @param {Record<string, any>} options
      */
     render(txt, offset, options) {
         const t = new Texture(
@@ -443,19 +444,19 @@ const renderStyling = directive(StylingDirective);
 const styling_templates = {
     // m is the chatbox model
     // i is the offset of this directive relative to the start of the original message
-    emphasis: /** @param {string} txt @param {number} i @param {object} options */ (txt, i, options) => html`<span class="styling-directive">_</span><i>${renderStyling(txt, i, options)}</i><span class="styling-directive">_</span>`,
+    emphasis: /** @param {string} txt @param {number} i @param {Record<string, any>} options */ (txt, i, options) => html`<span class="styling-directive">_</span><i>${renderStyling(txt, i, options)}</i><span class="styling-directive">_</span>`,
     preformatted: /** @param {string} txt */ (txt) => html`<span class="styling-directive">\`</span><code>${txt}</code><span class="styling-directive">\`</span>`,
     preformatted_block: /** @param {string} txt */ (txt) => html`<div class="styling-directive">\`\`\`</div><pre><code class="block">${txt}</code></pre><div class="styling-directive">\`\`\`</div>`,
-    quote: /** @param {string} txt @param {number} i @param {object} options */ (txt, i, options) => html`<blockquote>${renderStyling(txt, i, options)}</blockquote>`,
-    strike: /** @param {string} txt @param {number} i @param {object} options */ (txt, i, options) => html`<span class="styling-directive">~</span><del>${renderStyling(txt, i, options)}</del><span class="styling-directive">~</span>`,
-    strong: /** @param {string} txt @param {number} i @param {object} options */ (txt, i, options) => html`<span class="styling-directive">*</span><b>${renderStyling(txt, i, options)}</b><span class="styling-directive">*</span>`,
+    quote: /** @param {string} txt @param {number} i @param {Record<string, any>} options */ (txt, i, options) => html`<blockquote>${renderStyling(txt, i, options)}</blockquote>`,
+    strike: /** @param {string} txt @param {number} i @param {Record<string, any>} options */ (txt, i, options) => html`<span class="styling-directive">~</span><del>${renderStyling(txt, i, options)}</del><span class="styling-directive">~</span>`,
+    strong: /** @param {string} txt @param {number} i @param {Record<string, any>} options */ (txt, i, options) => html`<span class="styling-directive">*</span><b>${renderStyling(txt, i, options)}</b><span class="styling-directive">*</span>`,
 };
 
 /**
  * @param {string} d
  * @param {string} text
  * @param {number} offset
- * @param {object} options
+ * @param {Record<string, any>} options
  */
 export function getDirectiveTemplate(d, text, offset, options) {
     const template = styling_templates[/** @type {{name: string, type: string}} */ (styling_map[d]).name];

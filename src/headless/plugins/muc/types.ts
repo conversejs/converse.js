@@ -30,8 +30,9 @@ export type MUCConfigAttributes = ModelAttributes & {
 };
 
 export type DefaultMUCAttributes = {
-    bookmarked: boolean;
+    bookmarked?: boolean;
     chat_state: typeof CHAT_STATES;
+    closed: boolean;
     has_activity: boolean; // XEP-437
     hidden: boolean;
     hidden_occupants: boolean;
@@ -91,6 +92,13 @@ export type MUCAffiliation = 'owner' | 'admin' | 'member' | 'outcast' | 'none';
 export type MUCRole = 'moderator' | 'participant' | 'visitor' | 'none';
 
 export type NonOutcastAffiliation = 'admin' | 'owner' | 'member';
+
+// A change of affiliation for one user, as passed to `api.rooms.affiliations.set`
+export type AffiliationChange = {
+    jid: string;
+    affiliation: MUCAffiliation;
+    reason?: string;
+};
 
 /**
  * Either the JID or the nickname (or both) will be available.

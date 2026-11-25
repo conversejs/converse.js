@@ -14,10 +14,9 @@ import { NO_SLOT, putFile, requestSlot } from './http-upload.js';
 
 const { dayjs } = converse.env;
 
-/**
- * @extends {Model<import('./types').BaseMessageAttributes>}
- */
-class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(Model))) {
+const MessageModel = /** @type {typeof Model<import('./types').BaseMessageAttributes>} */ (Model);
+
+class BaseMessage extends ModelWithVCard(ModelWithContact(ColorAwareModel(MessageModel))) {
     defaults() {
         return {
             msgid: getUniqueId(),

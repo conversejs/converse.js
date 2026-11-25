@@ -32,6 +32,7 @@ class PopularEmojis extends Model {
 
     async fetchPopularEmojis() {
         if (_converse.state.session.get(this.fetched_flag)) {
+            /** @type {import('../../shared/types').OpenPromise} */
             const deferred = getOpenPromise();
             this.fetch({
                 success: () => deferred.resolve(),

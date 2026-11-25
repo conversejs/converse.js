@@ -17,7 +17,11 @@ export type MessageAndStanza = {
     stanza: Builder; // The stanza that will be sent out, as a Strophe.Builder object.
 };
 
-export type ReplaceableOpenPromise = ReturnType<typeof getOpenPromise> & {
+// A promise that can be resolved or rejected from outside. `T` is what it
+// resolves to, so `OpenPromise` (of `void`) is resolved without a value.
+export type OpenPromise<T = void> = ReturnType<typeof getOpenPromise<T>>;
+
+export type ReplaceableOpenPromise = OpenPromise<any> & {
     replace?: boolean;
 };
 
@@ -79,7 +83,7 @@ export interface VCardAware {
 // Added by ModelWithContact.
 export interface ContactAware {
     contact: RosterContact | Profile | null;
-    rosterContactAdded: ReturnType<typeof getOpenPromise>;
+    rosterContactAdded: OpenPromise;
     onClosedChanged: () => Promise<void>;
     updateContactUnreadCounter(): void;
     setModelContact(jid: string, options?: { create?: boolean }): Promise<void>;
@@ -325,6 +329,7 @@ export type MessageErrorAttributes = {
     error_condition: string; // The defined error condition
     error_text: string; // The error text received from the server
     error_type: string; // The type of error received from the server
+    error_message?: string; // Why the message couldn't be processed here, such as a failure to decrypt it
 };
 
 export type MessageStanzaTypes = 'chat' | 'normal' | 'headline' | 'groupchat' | 'error';

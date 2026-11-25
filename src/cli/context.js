@@ -39,7 +39,7 @@ export const accessFor = (env) => (getSocketFromEnv(env) ? 'restricted' : loadCo
  * which can differ for a daemon on another host.
  * @param {import('./types').Context} ctx
  * @param {string} method
- * @param {Object} params
+ * @param {Record<string, any>} params
  */
 export async function requestDrafts(ctx, method, params) {
     try {
@@ -58,7 +58,7 @@ export async function requestDrafts(ctx, method, params) {
  * what the output depends on.
  * @param {import('./types').Context} ctx
  * @param {string} method
- * @param {Object} [params]
+ * @param {Record<string, any>} [params]
  * @param {Object} [options]
  * @param {boolean} [options.spawn]
  * @param {import('@converse/daemon/types').Access} [options.access] - Defaults to the configured level

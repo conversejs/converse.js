@@ -539,9 +539,7 @@ export async function savedLoginInfo(jid) {
 /**
  * @param {Object} [credentials]
  * @param {string} [credentials.jid]
- * @param {string} credentials.password
- * @param {Object} credentials.password
- * @param {string} credentials.password.ck
+ * @param {string|{ ck: string }} credentials.password
  * @param {boolean} [credentials.renewable] - Whether the source of the
  *  credentials can renew them if the server rejects them.
  * @returns {Promise<void>}
@@ -642,8 +640,8 @@ async function connect(credentials) {
 
 /**
  * @param {Model} model
- * @param {Object} attributes
- * @param {Object} options
+ * @param {Record<string, any>} attributes
+ * @param {Record<string, any>} [options]
  */
 export function safeSave(model, attributes, options) {
     if (isPersistableModel(model)) {

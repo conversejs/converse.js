@@ -37,7 +37,7 @@ const rooms = {
      * @method api.rooms.create
      * @param {(string[]|string)} jids The JID or array of
      *     JIDs of the chatroom(s) to create
-     * @param {object} [attrs] attrs The room attributes
+     * @param {Record<string, any>} [attrs] attrs The room attributes
      * @returns {Promise<MUC[]|MUC>} Promise which resolves with the Model representing the chat.
      */
     create(jids, attrs = {}) {

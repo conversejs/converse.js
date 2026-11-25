@@ -30,6 +30,15 @@ export type LoginOptions = {
     automatic?: boolean; // Whether Converse logs in by itself at start-up, rather than the user logging in
 };
 
+// The payload of the `login` hook. A handler that has logged the user in
+// returns it with `success` set, and later handlers then don't try again.
+export type LoginHookPayload = {
+    jid: string;
+    password: string;
+    automatic?: boolean; // Whether Converse is logging in by itself once the connection is set up
+    success?: boolean; // Whether a handler has already logged in
+};
+
 // The payload of the `attachSession` hook, through which a plugin attaches to
 // a session that already exists elsewhere, such as in a shared worker.
 export type AttachSessionPayload = {

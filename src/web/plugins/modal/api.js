@@ -20,7 +20,7 @@ const modal_api = {
          * Will create a new instance of that class if an existing one isn't
          * found.
          * @param {string} name
-         * @param {Object} [properties] - Optional properties that will be set on a newly created modal instance.
+         * @param {Record<string, any>} [properties] - Optional properties that will be set on a newly created modal instance.
          */
         show(name, properties) {
             const modal = this.get(name) ?? this.create(name, properties);
@@ -41,7 +41,7 @@ const modal_api = {
         /**
          * Create a modal of the passed-in type.
          * @param {String} name
-         * @param {Object} [properties] - Optional properties that will be
+         * @param {Record<string, any>} [properties] - Optional properties that will be
          *  set on the modal instance.
          * @return {import('./modal').default}
          */

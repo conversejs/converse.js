@@ -22,8 +22,8 @@ class Devices extends Collection {
     /**
      * Stamp the collection's OMEMO version onto every device created through it,
      * unless one was explicitly provided.
-     * @param {object|Device} attrs
-     * @param {object} [options]
+     * @param {Record<string, any>|Device} attrs
+     * @param {Record<string, any>} [options]
      */
     _prepareModel(attrs, options) {
         if (this.version && attrs && !(attrs instanceof Device) && !attrs.version) {

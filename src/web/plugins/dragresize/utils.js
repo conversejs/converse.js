@@ -105,6 +105,7 @@ export function onStartHorizontalResize(ev, trigger = true) {
 }
 
 /**
+ * @this {HTMLElement} The element whose template the resize handle is in
  * @param {MouseEvent} ev
  */
 export function onStartDiagonalResize(ev) {

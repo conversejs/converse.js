@@ -72,7 +72,6 @@ export async function declineContactRequest(contact) {
         }
         if (!chat) contact.destroy();
     }
-    return this;
 }
 
 /**

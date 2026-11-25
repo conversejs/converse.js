@@ -15,6 +15,10 @@ export function debounce(func, timeout) {
     let lastArgs = [];
     let lastThis;
 
+    /**
+     * @this {unknown}
+     * @param {...any} args
+     */
     function debounced(...args) {
         lastArgs = args;
         lastThis = this;

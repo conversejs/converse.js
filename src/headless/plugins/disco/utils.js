@@ -51,7 +51,6 @@ function addClientFeatures() {
      * @example _converse.api.listen.on('addClientFeatures', () => { ... });
      */
     api.trigger('addClientFeatures');
-    return this;
 }
 
 export async function initializeDisco() {

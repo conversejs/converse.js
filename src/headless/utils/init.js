@@ -452,7 +452,7 @@ export async function attemptNonPreboundSession(credentials, automatic) {
      */
     let new_creds = credentials;
     try {
-        ({ credentials: new_creds } = await api.hook('beforeAttemptNonPreboundSession', this, {
+        ({ credentials: new_creds } = await api.hook('beforeAttemptNonPreboundSession', undefined, {
             credentials,
             automatic,
         }));

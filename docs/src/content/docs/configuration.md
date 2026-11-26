@@ -696,13 +696,14 @@ To enable the `custom` category, set it to one of the keys under the `custom` se
 
 You can also listen for the `loadEmojis` hook, that allows you to modify `emojis.json` at runtime.
 
-### emoji_categories_label
+### emoji_category_labels
 
 - Default:
 
 <!-- -->
 
     {
+      "popular": "Frequently used",
       "smileys": "Smileys and emotions",
       "people": "People",
       "activity": "Activities",
@@ -862,7 +863,7 @@ If the given value is negative or `0`, this feature is disabled.
 
 - Default: `null`
 
-Any URL in a message that matches the regex in this setting will be considered an image and rendered, if [show_images_inline](#show_images_inline) is set to `true`. If the image cannot be rendered, a hyperlink will be rendered instead.
+Any URL in a message that matches the regex in this setting will be considered an image and rendered, if [render_media](#render_media) allows it. If the image cannot be rendered, a hyperlink will be rendered instead.
 
 For example, to render Imgur images inline, you can use the following regex: `/^https?:\/\/(?:www.)?(?:imgur\.com\/\w{7})\/?$/i`
 
@@ -1777,14 +1778,6 @@ Requires the <span class="title-ref">src/converse-notification.js</span> plugin.
 - Default: `true`
 
 Whether chat messages should also render the author's avatar.
-
-### show_images_inline
-
-- Default: `true`
-
-If set to `false`, images won't be rendered in chats, instead only their links will be shown.
-
-Users will however still have the ability to render individual images via the message actions dropdown. If you want to disallow users from doing so, set the `allowed_image_domains` option to an empty array `[]`.
 
 ### show_retraction_warning
 

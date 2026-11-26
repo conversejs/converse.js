@@ -90,6 +90,7 @@
 - A rejected write to browser extension storage now fires an `error` event
 - A daemon that lost a simultaneous start no longer takes over later
 - Five documented configuration defaults, such as `theme`, are corrected
+- The docs name `emoji_category_labels` correctly and drop the obsolete `show_images_inline`
 
 ### Other changes
 

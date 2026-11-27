@@ -315,12 +315,25 @@ function quoted(text) {
 }
 
 /**
- * One occupant of a room, on one line: nickname, role, affiliation, then
- * their JID if the room shows it. The nickname is chosen by the occupant, so it's quoted.
+ * One occupant of a room, on one line: nickname, presence, role, affiliation,
+ * their JID if the room shows it, then their status message if they set one.
+ * The nickname and status message are chosen by the occupant, so they're quoted.
  * @param {import('@converse/daemon/types').OccupantDTO} occupant
  */
 export function formatOccupant(occupant) {
-    return `${quote(occupant.nick)}  ${occupant.role}  ${occupant.affiliation}  ${escapeInvisible(occupant.jid === null ? '-' : token(occupant.jid))}\n`;
+    // The daemon passes on only known presences, roles and affiliations, but an
+    // older one sends no presence or status, and doesn't check the others.
+    /** @param {string|null|undefined} text @param {string} fallback */
+    const word = (text, fallback) => escapeInvisible(token(text || fallback));
+    const status = occupant.status ? `  ${quote(occupant.status)}` : '';
+    const fields = [
+        quote(occupant.nick),
+        word(occupant.presence, 'online'),
+        word(occupant.role, 'none'),
+        word(occupant.affiliation, 'none'),
+        word(occupant.jid, '-'),
+    ];
+    return `${fields.join('  ')}${status}\n`;
 }
 
 /**

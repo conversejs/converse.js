@@ -17,6 +17,19 @@ import { getRooms, requireConnected } from './session.js';
 import { readStateFile, writeStateFile } from './state-file.js';
 
 const { ROOMSTATUS } = converse;
+const { AFFILIATIONS, PRES_SHOW_VALUES, ROLES } = constants;
+
+/**
+ * A value the room or an occupant sent, if it's one we expect, else the fallback.
+ * The CLI shows these bare, so nothing else may get through.
+ * @param {unknown} value
+ * @param {string[]} allowed
+ * @param {string} fallback
+ * @returns {string}
+ */
+function oneOf(value, allowed, fallback) {
+    return typeof value === 'string' && allowed.includes(value) ? value : fallback;
+}
 
 /** How long a join may take before we stop waiting for the room to confirm it. */
 const JOIN_TIMEOUT = 20000;
@@ -456,7 +469,8 @@ export function roomMethods({ config, policy, store, passwords, joining }) {
         },
 
         /**
-         * Who is in a room we're in, by nickname. A JID is shown only where the room reveals it.
+         * Who is in a room we're in, by nickname, with each one's presence and status message there.
+         * A JID is shown only where the room reveals it.
          * @param {Object} params
          * @param {string} params.room - The room's JID, or the name of one we know
          * @returns {Promise<{ occupants: import('./types').OccupantDTO[] }>}
@@ -472,8 +486,10 @@ export function roomMethods({ config, policy, store, passwords, joining }) {
             const occupants = present.map((occupant) => ({
                 nick: occupant.get('nick'),
                 jid: occupant.get('jid') ?? null,
-                role: occupant.get('role') || 'none',
-                affiliation: occupant.get('affiliation') || 'none',
+                presence: oneOf(occupant.get('show'), PRES_SHOW_VALUES, 'online'),
+                status: occupant.get('status') || null,
+                role: oneOf(occupant.get('role'), ROLES, 'none'),
+                affiliation: oneOf(occupant.get('affiliation'), AFFILIATIONS, 'none'),
             }));
             occupants.sort((a, b) => a.nick.localeCompare(b.nick));
             return { occupants };

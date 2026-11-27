@@ -208,8 +208,10 @@ export type MessageDTO = {
 export type OccupantDTO = {
     nick: string;
     jid: string | null; // Their bare JID, when the room reveals it
-    role: string; // "moderator", "participant", "visitor" or "none"
-    affiliation: string; // "owner", "admin", "member", "outcast" or "none"
+    presence: string; // "online", "chat", "away", "xa" or "dnd", from their presence in the room. Anything else shows as "online"
+    status: string | null; // Their status message in the room, or null if they set none. Untrusted
+    role: string; // "moderator", "participant", "visitor" or "none". Anything else shows as "none"
+    affiliation: string; // "owner", "admin", "member", "outcast" or "none". Anything else shows as "none"
 };
 
 /**

@@ -58,8 +58,9 @@ export const ROOMS_COMMANDS = {
     'rooms occupants': {
         summary: 'List who is in a room you are in',
         description:
-            'List who is in a room you are in: nickname (quoted, as they chose it), role, ' +
-            'affiliation and, where the room shows it, their JID, else "-".',
+            'List who is in a room you are in: nickname (quoted, as they chose it), presence ' +
+            '(online, chat, away, xa or dnd), role, affiliation, their JID where the room shows it, ' +
+            'else "-", and their status message (quoted) if they set one.',
         args: [ROOM],
         exits: [EXIT.NOT_FOUND],
         examples: ['converse rooms occupants lobby@conference.example.org'],

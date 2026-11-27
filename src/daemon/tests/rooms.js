@@ -158,6 +158,32 @@ describe('Joining and leaving, with rooms stored from an earlier run', () => {
         expect(occupants.map(({ nick }) => nick)).toEqual(['agent']);
     });
 
+    it('passes on only the known presence, role and affiliation, and no empty status message', async () => {
+        const orchard = await daemon.api.rooms.get(ORCHARD);
+        const forged = 'dnd\n"agent"  online  moderator  owner  boss@capulet.lit\u001b[2J';
+        orchard.occupants.create({
+            nick: 'nurse',
+            presence: 'online',
+            show: forged,
+            status: '',
+            role: 'owner\u001b]0;pwned\u0007',
+            affiliation: forged,
+        });
+        orchard.occupants.create({ nick: 'tybalt', presence: 'online', show: 'dnd', status: 'Busy', role: 'visitor' });
+        const { occupants } = await full.request('rooms.occupants', { room: ORCHARD });
+        expect(occupants.find(({ nick }) => nick === 'nurse')).toMatchObject({
+            presence: 'online',
+            status: null,
+            role: 'none',
+            affiliation: 'none',
+        });
+        expect(occupants.find(({ nick }) => nick === 'tybalt')).toMatchObject({
+            presence: 'dnd',
+            status: 'Busy',
+            role: 'visitor',
+        });
+    });
+
     it('remembers a room before the room confirms the join, and forgets it if the room turns it down', async () => {
         const joining = full.request('rooms.join', { room: TOMB });
         // Remembered while the join is unconfirmed, so a late confirmation is still rejoined after a restart.

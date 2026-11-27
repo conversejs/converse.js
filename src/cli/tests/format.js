@@ -5,7 +5,7 @@
  * output or in --json.
  */
 import { describe, expect, it } from 'vitest';
-import { formatDraftDetails, formatEvent, formatJSON, formatMessage } from '../format.js';
+import { formatDraftDetails, formatEvent, formatJSON, formatMessage, formatOccupant } from '../format.js';
 
 const NOW = new Date('2026-10-20T10:01:00.000Z');
 
@@ -140,5 +140,48 @@ describe('converse text output of untrusted text', () => {
         expect(line.split('\n')).toEqual([expect.any(String), '']);
         expect(hasInvisible(line)).toBe(false);
         expect(JSON.parse(line)).toEqual(value);
+    });
+});
+
+describe('converse rooms occupants output', () => {
+    const occupant = {
+        nick: 'juliet',
+        jid: 'juliet@capulet.lit',
+        presence: 'away',
+        status: 'At the window',
+        role: 'participant',
+        affiliation: 'member',
+    };
+
+    it('shows an occupant on one line, with their status message last', () => {
+        expect(formatOccupant(occupant)).toBe(
+            '"juliet"  away  participant  member  juliet@capulet.lit  "At the window"\n',
+        );
+    });
+
+    it("leaves out a status message they didn't set, and a JID the room hides", () => {
+        expect(formatOccupant({ ...occupant, jid: null, status: null })).toBe(
+            '"juliet"  away  participant  member  -\n',
+        );
+    });
+
+    it('shows an occupant from an older daemon, which sends no presence or status', () => {
+        const { presence, status, ...older } = occupant;
+        expect(formatOccupant(/** @type {any} */ (older))).toBe(
+            '"juliet"  online  participant  member  juliet@capulet.lit\n',
+        );
+    });
+
+    it('keeps an occupant on one line whatever they or the room put in the fields', () => {
+        const line = formatOccupant({
+            nick: `nurse\n${HOSTILE}`,
+            jid: `nurse@capulet.lit\n${HOSTILE}`,
+            presence: `dnd\n"agent"  online  moderator  owner  boss@capulet.lit${HOSTILE}`,
+            status: `Hi ${HOSTILE}`,
+            role: `owner${HOSTILE}`,
+            affiliation: `owner\n${HOSTILE}`,
+        });
+        expect(line.split('\n')).toEqual([expect.any(String), '']);
+        expect(hasInvisible(line)).toBe(false);
     });
 });

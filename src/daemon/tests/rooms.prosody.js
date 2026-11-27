@@ -159,6 +159,18 @@ describe('Rooms on a real Prosody', () => {
         expect(occupants.map((o) => o.nick)).toEqual(['agent', 'juliet']);
     });
 
+    it("shows each occupant's presence and status message in the room", async () => {
+        await juliet.requestFull('presence.set', { show: 'dnd', message: 'PR 415' });
+        const juliet_occupant = await eventually(
+            async () => {
+                const { occupants } = await romeo.request('rooms.occupants', { room });
+                return occupants.find((o) => o.nick === 'juliet' && o.presence === 'dnd');
+            },
+            { what: "juliet's new presence to reach the room" },
+        );
+        expect(juliet_occupant).toMatchObject({ presence: 'dnd', status: 'PR 415' });
+    });
+
     it('exchanges messages in the room, with each sender identified as its occupant', async () => {
         // A restricted send to a room that isn't on the policy list is refused, so nothing goes out.
         const refused = await romeo.requestRestricted('messages.send', { to: room, body: 'Is this the room?' });

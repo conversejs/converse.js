@@ -49,6 +49,7 @@ export async function eventually(fn, { timeout = 10000, what = 'the condition' }
  * @param {string} [options.owner] - The owner's bare JID. Defaults to an account no test uses.
  * @param {Record<string, unknown>} [options.settings] - More headless settings
  * @param {Record<string, { password?: string }>} [options.rooms] - The rooms the daemon is to be in, from the config file
+ * @param {import('../types').Access} [options.access] - The level the CLI connects at, from the config file
  */
 export async function startDaemon(
     account,
@@ -60,6 +61,7 @@ export async function startDaemon(
         owner = 'benvolio@montague.lit',
         settings = {},
         rooms,
+        access,
     } = {},
 ) {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'converse-prosody-test-'));
@@ -82,6 +84,7 @@ export async function startDaemon(
             ...(policy ? { policy } : {}),
             ...(mode ? { mode } : {}),
             ...(rooms ? { rooms } : {}),
+            ...(access ? { access } : {}),
         }),
     );
     const log = path.join(env.XDG_STATE_HOME, 'converse', 'accounts', 'default', 'daemon.log');

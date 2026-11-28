@@ -26,6 +26,7 @@ const EXIT_MEANINGS = {
     [EXIT.DAEMON_UNAVAILABLE]: "daemon not running, or it couldn't be started, or it went away",
     [EXIT.PENDING]: 'not sent yet: the connection dropped, and it goes out once the daemon is connected again',
     [EXIT.NOT_JOINED]: "the daemon isn't in that room, so nothing reached it",
+    [EXIT.FORBIDDEN]: "the room refused: that takes an affiliation we don't have there, such as owner",
 };
 
 /** The exit codes any command can end with. */

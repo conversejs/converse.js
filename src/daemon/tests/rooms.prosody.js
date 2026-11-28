@@ -139,12 +139,15 @@ describe('Rooms on a real Prosody', () => {
         await Promise.all(daemons.map((d) => d.stop()));
     });
 
-    it('joins a room under the consumer name, and remembers it as a group chat', async () => {
-        const joined = await romeo.requestFull('rooms.join', { room });
-        expect(joined).toEqual({
+    it('creates a room, joined under the consumer name, and remembers it as a group chat', async () => {
+        const created = await romeo.requestFull('rooms.create', { room });
+        expect(created).toMatchObject({
+            created: true,
             conversation: expect.objectContaining({ jid: room, type: 'groupchat' }),
             nick: 'agent',
         });
+        // Already in it, so joining changes nothing.
+        expect(await romeo.requestFull('rooms.join', { room })).toMatchObject({ nick: 'agent' });
         expect(await juliet.requestFull('rooms.join', { room, nick: 'juliet' })).toMatchObject({ nick: 'juliet' });
     });
 
@@ -289,6 +292,12 @@ describe('Rooms from the config, on a real Prosody', () => {
     const occupantsOf = async (room) => (await romeo.request('rooms.occupants', { room })).occupants.length;
 
     beforeAll(async () => {
+        const owner = await startDaemon(await registerAccount('owner'));
+        // Persistent, so that they stay once the owner leaves.
+        for (const room of [kept, dropped]) {
+            await owner.requestFull('rooms.create', { room, nick: 'owner', settings: { persistentroom: true } });
+        }
+        await owner.stop();
         romeo = await startDaemon(await registerAccount('romeo'), { rooms: { [kept]: {}, [dropped]: {} } });
     });
 
@@ -354,7 +363,7 @@ describe('Bookmarks on a real Prosody', () => {
 
     it('bookmarks none of the rooms it joins', async () => {
         const room = newRoom();
-        await romeo.requestFull('rooms.join', { room });
+        await romeo.requestFull('rooms.create', { room });
         await juliet.requestFull('rooms.join', { room, nick: 'juliet' });
 
         await eventually(async () => (await juliet_bookmarks.rooms()).includes(room), {
@@ -366,6 +375,12 @@ describe('Bookmarks on a real Prosody', () => {
     it("doesn't join the rooms the account's bookmarks say to join", async () => {
         // A room each, so that neither waits on a room the other has just created.
         const [romeo_room, juliet_room] = [newRoom(), newRoom()];
+        // A join doesn't create a room, so they're made first, by someone else.
+        const owner = await startDaemon(await registerAccount('owner'));
+        for (const room of [romeo_room, juliet_room]) {
+            await owner.requestFull('rooms.create', { room, nick: 'owner', settings: { persistentroom: true } });
+        }
+        await owner.stop();
         await Promise.all([romeo_bookmarks.add(romeo_room, 'romeo'), juliet_bookmarks.add(juliet_room, 'juliet')]);
         await Promise.all([romeo.restart(), juliet.restart()]);
 

@@ -13,6 +13,18 @@ import { api, constants, converse, log } from '@converse/headless';
 import { toRoomDTO } from './dto.js';
 import { ERRORS, RPCError } from './protocol.js';
 import { parseJID, resolveRoomJID } from './resolve.js';
+import {
+    cancelForm,
+    displayValue,
+    fetchAffiliations,
+    fetchForm,
+    fillForm,
+    grantAffiliations,
+    parseAffiliations,
+    roomExists,
+    settingsOf,
+    submitForm,
+} from './room-config.js';
 import { getRooms, requireConnected } from './session.js';
 import { readStateFile, writeStateFile } from './state-file.js';
 
@@ -161,13 +173,72 @@ export function createJoins() {
 }
 
 /**
+ * The settings for each room that `rooms.create` is creating, by JID. A join
+ * that creates a room that isn't listed here cancels its configuration, which
+ * destroys it: a room is only created on purpose, and never with the server's
+ * defaults, which might leave a members-only room open to anyone.
+ * @type {Map<string, Record<string, unknown>>}
+ */
+const creating = new Map();
+
+/**
+ * How the configuration of each room our join just created went, by room.
+ * @type {WeakMap<import('@converse/headless').MUC, Promise<ReturnType<typeof fillForm>>>}
+ */
+const creations = new WeakMap();
+
+/**
+ * Configures a room our join just created, while the server keeps it locked,
+ * with the settings `rooms.create` was given, or cancels its configuration,
+ * which destroys it, if it wasn't asked to create it or the settings won't do.
+ * @param {import('@converse/headless').MUC} room
+ * @returns {Promise<ReturnType<typeof fillForm>>} The form as it was sent, and what it changed
+ */
+async function configureCreated(room) {
+    const jid = room.get('jid');
+    const settings = creating.get(jid);
+    const cancel = () =>
+        cancelForm(jid).catch((e) => log.warn(`Couldn't cancel the room ${jid}: ${/** @type {Error} */ (e).message}`));
+    if (!settings) {
+        await cancel();
+        throw new RPCError(
+            ERRORS.NOT_FOUND,
+            `There's no room ${jid}, and joining one doesn't create it. Create it with "rooms.create".`,
+            { see: ['rooms.create'], missing: true },
+        );
+    }
+    try {
+        const filled = fillForm(await fetchForm(jid), settings);
+        await submitForm(jid, filled.fields);
+        return filled;
+    } catch (e) {
+        await cancel();
+        throw e;
+    }
+}
+
+/**
+ * How the configuration of the room went, if our join created it, which is
+ * known once the room has let us in: it's set in the same tick.
+ * @param {import('@converse/headless').MUC} room
+ */
+function takeCreation(room) {
+    const creation = creations.get(room);
+    creations.delete(room);
+    return creation;
+}
+
+/**
  * Enters a room with a nickname, and waits for the room to confirm it. Does
- * nothing if we're already in it.
+ * nothing if we're already in it. If the join created the room, it waits for
+ * the room to be configured too.
  * @param {import('@converse/headless').MUC} room
  * @param {string} nick
+ * @returns {Promise<ReturnType<typeof fillForm>|undefined>} How the room was configured, if the join created it
  */
 export async function enter(room, nick) {
-    if (room.isEntered()) return;
+    // Headless joins a room as soon as it's got, so it may have created it already.
+    if (room.isEntered()) return takeCreation(room);
     if (room.session.get('connection_status') === ROOMSTATUS.OFFLINE) {
         // Loaded before connecting, for example by a resumed session, so
         // headless enters it once connected, however long that takes.
@@ -176,8 +247,15 @@ export async function enter(room, nick) {
         await room.join(nick);
     }
     const status = await settledStatus(room);
-    if (status === ROOMSTATUS.ENTERED) return;
-
+    if (status === ROOMSTATUS.ENTERED) return takeCreation(room);
+    if (status === ROOMSTATUS.DISCONNECTED) {
+        const why = room.session.get('disconnection_message') || 'it turned the join down';
+        const reason = room.session.get('disconnection_reason');
+        throw new RPCError(
+            ERRORS.JOIN_REFUSED,
+            `The room ${room.get('jid')} wouldn't let us in: ${why}${reason ? ` (${reason})` : ''}`,
+        );
+    }
     if (status !== null) {
         throw new RPCError(
             ERRORS.JOIN_REFUSED,
@@ -236,7 +314,13 @@ function settledStatus(room) {
     return new Promise((resolve) => {
         const check = () => {
             const status = room.session.get('connection_status');
-            if (status === ROOMSTATUS.ENTERED || Object.hasOwn(REFUSALS, status)) settle(status);
+            if (
+                status === ROOMSTATUS.ENTERED ||
+                status === ROOMSTATUS.DISCONNECTED ||
+                Object.hasOwn(REFUSALS, status)
+            ) {
+                settle(status);
+            }
         };
         const settle = (status) => {
             clearTimeout(timer);
@@ -301,8 +385,9 @@ async function getRoom(jid, attrs, create) {
  * Has headless restore only the rooms the daemon is meant to be in, or is
  * joining. Headless keeps every room the daemon was in, and restores and
  * joins them when it starts, which would bring back a room that was taken
- * out of the config. To be called once headless is initialized, before
- * logging in.
+ * out of the config. Also has a join that creates a room configure it as
+ * `rooms.create` asked, or else destroy it (see {@link configureCreated}).
+ * To be called once headless is initialized, before logging in.
  * @param {ReturnType<typeof withConfigRooms>} store
  * @param {ReturnType<typeof createJoins>} joining
  */
@@ -315,6 +400,21 @@ export function limitRoomsTo(store, joining) {
             /** @param {import('@converse/skeletor').ModelAttributes} attrs */
             static shouldCreate(attrs) {
                 return super.shouldCreate(attrs) && (!!store.get(attrs.jid) || joining.has(attrs.jid));
+            }
+
+            /**
+             * Our join created the room: configures it as `rooms.create` asked,
+             * or destroys it. Headless waits for this, and has nothing to do with
+             * a failure, which {@link enter} reports.
+             */
+            onCreated() {
+                const room = /** @type {import('@converse/headless').MUC} */ (/** @type {unknown} */ (this));
+                const creation = configureCreated(room);
+                creations.set(room, creation);
+                return creation.then(() => this.refreshDiscoInfo()).then(
+                    () => {},
+                    () => {},
+                );
             }
         },
     );
@@ -365,6 +465,28 @@ export async function rejoinRooms(store, passwords, joining) {
     );
 }
 
+/** @param {unknown} nick */
+function checkNick(nick) {
+    if (nick !== undefined && (typeof nick !== 'string' || !nick.trim())) {
+        throw new RPCError(ERRORS.INVALID_PARAMS, '"nick" must be a nickname.');
+    }
+}
+
+/**
+ * @param {unknown} settings
+ * @returns {Record<string, unknown>}
+ */
+function parseSettings(settings) {
+    if (settings === undefined) return {};
+    if (settings === null || typeof settings !== 'object' || Array.isArray(settings)) {
+        throw new RPCError(
+            ERRORS.INVALID_PARAMS,
+            '"settings" must map the names of room settings, such as "membersonly", to their values.',
+        );
+    }
+    return /** @type {Record<string, unknown>} */ (settings);
+}
+
 /**
  * @param {Object} deps
  * @param {import('./types').Config} deps.config
@@ -374,6 +496,21 @@ export async function rejoinRooms(store, passwords, joining) {
  * @param {ReturnType<typeof createJoins>} deps.joining
  */
 export function roomMethods({ config, policy, store, passwords, joining }) {
+    /**
+     * A password-protected room gets the password the config has for it,
+     * unless the settings give one.
+     * @param {string} jid
+     * @param {Record<string, unknown>} settings
+     */
+    const withPassword = (jid, settings) => {
+        const wants_password = [true, 1, '1', 'true'].includes(
+            /** @type {any} */ (settings.passwordprotectedroom ?? settings['muc#roomconfig_passwordprotectedroom']),
+        );
+        const has_secret = 'roomsecret' in settings || 'muc#roomconfig_roomsecret' in settings;
+        if (!wants_password || has_secret || !passwords.has(jid)) return settings;
+        return { ...settings, roomsecret: passwords.get(jid) };
+    };
+
     /**
      * Restricted access may join and leave only the rooms it's allowed to.
      * @param {import('./types').Client} client
@@ -404,9 +541,7 @@ export function roomMethods({ config, policy, store, passwords, joining }) {
          */
         async 'rooms.join'({ room, nick }, client) {
             const jid = parseJID(room, 'room');
-            if (nick !== undefined && (typeof nick !== 'string' || !nick.trim())) {
-                throw new RPCError(ERRORS.INVALID_PARAMS, '"nick" must be a nickname.');
-            }
+            checkNick(nick);
             checkAccess(client, jid);
             requireConnected('nothing was done');
 
@@ -416,13 +551,17 @@ export function roomMethods({ config, policy, store, passwords, joining }) {
             const model = existing?.isEntered()
                 ? existing
                 : await getRoom(jid, roomAttrs(passwords, jid, nickname), true);
-            if (!model.isEntered()) {
+            // Not only if it isn't entered yet: headless joins a room as soon as it's got, and the
+            // join may have created it, which enter() reports.
+            if (!existing?.isEntered()) {
                 const before = store.get(jid);
                 store.add(jid, nickname);
                 try {
                     await joining.during(jid, () => enter(model, nickname));
                 } catch (e) {
-                    if (/** @type {import('./protocol.js').RPCError} */ (e).code === ERRORS.JOIN_REFUSED) {
+                    // Turned down, or there's no such room: either way there's nothing to rejoin.
+                    const { code } = /** @type {import('./protocol.js').RPCError} */ (e);
+                    if (code === ERRORS.JOIN_REFUSED || code === ERRORS.NOT_FOUND) {
                         if (before) store.add(before.jid, before.nick);
                         else store.remove(jid);
                     }
@@ -439,6 +578,137 @@ export function roomMethods({ config, policy, store, passwords, joining }) {
             const used = model.getOwnOccupant()?.get('nick') ?? model.get('nick') ?? nickname;
             store.add(jid, used, nickname);
             return { conversation: toRoomDTO(model), nick: used };
+        },
+
+        /**
+         * Creates a room, configured as asked, and joins it, as `rooms.join`
+         * does. A room that exists already is left as it is, whatever its
+         * settings: change those with `rooms.configure`. Every setting is
+         * checked against the room's form before it's sent, and if any won't
+         * do, the new room is destroyed again.
+         *
+         * A password-protected room with no "roomsecret" in the settings gets
+         * the password under "rooms" in the config, if it has one there.
+         * @param {Object} params
+         * @param {string} params.room - The room's JID
+         * @param {string} [params.nick] - The nickname to use there. Defaults to the config's "consumer".
+         * @param {Record<string, unknown>} [params.settings] - The room's settings, by field name (see room-config.js)
+         * @param {Record<string, string[]>} [params.affiliations] - JIDs to give each affiliation
+         * @param {import('./types').Client} client
+         * @returns {Promise<import('./types').RoomCreated>}
+         */
+        async 'rooms.create'({ room, nick, settings, affiliations }, client) {
+            const jid = parseJID(room, 'room');
+            checkNick(nick);
+            const asked = withPassword(jid, parseSettings(settings));
+            const lists = parseAffiliations(affiliations);
+            checkAccess(client, jid);
+            requireConnected('nothing was done');
+
+            const existing = await getRoom(jid);
+            if (existing?.isEntered() || (await roomExists(jid))) {
+                return {
+                    created: false,
+                    conversation: existing ? toRoomDTO(existing) : { jid, type: 'groupchat', name: null },
+                    nick: existing?.isEntered() ? existing.get('nick') : null,
+                    settings: null,
+                    affiliations: [],
+                };
+            }
+            const nickname = (nick ?? config.consumer).trim();
+            const before = store.get(jid);
+            store.add(jid, nickname);
+            // Before the room is got, since headless joins it as soon as it's got.
+            creating.set(jid, asked);
+            let model, filled;
+            try {
+                model = await getRoom(jid, roomAttrs(passwords, jid, nickname), true);
+                filled = await joining.during(jid, () => enter(model, nickname));
+            } catch (e) {
+                if (before) store.add(before.jid, before.nick);
+                else store.remove(jid);
+                throw e;
+            } finally {
+                creating.delete(jid);
+                if (model && !store.get(jid)) await forgetAfterJoin(model);
+            }
+            const used = model.getOwnOccupant()?.get('nick') ?? model.get('nick') ?? nickname;
+            store.add(jid, used, nickname);
+            if (!filled) {
+                // Created by someone else, between our look and our join.
+                return { created: false, conversation: toRoomDTO(model), nick: used, settings: null, affiliations: [] };
+            }
+            let granted = [];
+            try {
+                granted = await grantAffiliations(jid, lists, {});
+            } catch (e) {
+                const error = /** @type {RPCError} */ (e);
+                throw new RPCError(error.code, `Created ${jid}, but not its affiliations: ${error.message}`, {
+                    ...(/** @type {object} */ (error.data) ?? {}),
+                    created: true,
+                });
+            }
+            return {
+                created: true,
+                conversation: toRoomDTO(model),
+                nick: used,
+                settings: settingsOf(filled.fields),
+                affiliations: granted,
+            };
+        },
+
+        /**
+         * A room's settings and affiliation lists, as its owner sees them. We
+         * needn't be in the room, but the room shows its settings only to its owners.
+         * @param {Object} params
+         * @param {string} params.room - The room's JID, or the name of one we know
+         * @returns {Promise<import('./types').RoomConfig>}
+         */
+        async 'rooms.config'({ room }) {
+            const jid = await resolveRoomJID(room, 'room');
+            requireConnected('nothing was read');
+            const fields = await fetchForm(jid);
+            return {
+                room: jid,
+                settings: settingsOf(fields),
+                affiliations: await fetchAffiliations(jid),
+                fields: fields
+                    .filter((f) => f.type !== 'fixed' && f.type !== 'hidden')
+                    .map((f) => ({
+                        name: f.name,
+                        type: f.type,
+                        label: f.label,
+                        value: displayValue(f),
+                        options: f.options,
+                    })),
+            };
+        },
+
+        /**
+         * Changes a room's settings, and gives JIDs affiliations there. Only
+         * what's asked for changes: the other settings stay as they are, and
+         * nobody loses an affiliation. Every setting is checked against the
+         * room's form first, and if any won't do, nothing is changed.
+         * @param {Object} params
+         * @param {string} params.room - The room's JID, or the name of one we know
+         * @param {Record<string, unknown>} [params.settings]
+         * @param {Record<string, string[]>} [params.affiliations]
+         * @param {boolean} [params.dry_run] - Say what would change, and change nothing
+         * @returns {Promise<import('./types').RoomConfigured>}
+         */
+        async 'rooms.configure'({ room, settings, affiliations, dry_run = false }) {
+            const jid = await resolveRoomJID(room, 'room');
+            const asked = withPassword(jid, parseSettings(settings));
+            const lists = parseAffiliations(affiliations);
+            if (typeof dry_run !== 'boolean') throw new RPCError(ERRORS.INVALID_PARAMS, '"dry_run" must be a boolean.');
+            requireConnected('nothing was changed');
+
+            const { fields, changes } = fillForm(await fetchForm(jid), asked);
+            if (changes.length && !dry_run) await submitForm(jid, fields);
+            const granted = Object.keys(lists).length
+                ? await grantAffiliations(jid, lists, await fetchAffiliations(jid), dry_run)
+                : [];
+            return { room: jid, dry_run, changes, affiliations: granted };
         },
 
         /**

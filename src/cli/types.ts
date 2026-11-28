@@ -31,6 +31,11 @@ export type Options = {
     unencrypted?: boolean; // Resend without encryption
     remove?: boolean; // Withdraw a reaction
     nick?: string; // The nickname to join a room with
+    file?: string; // A JSON file with a room's settings and affiliations, or "-" for stdin
+    set?: string[]; // Room settings, each as name=value
+    member?: string[]; // JIDs to make members of a room
+    'dry-run'?: boolean; // Say what would change, and change nothing
+    create?: boolean; // Create a room that a join finds missing, without asking
 };
 
 export type Context = IO & {
@@ -47,6 +52,7 @@ export type Option = {
     value?: string; // How help shows the value it takes, such as "<n>"
     short?: string; // The one-letter name, if it has one
     help: string; // What it does
+    multiple?: boolean; // Whether it may be given more than once, its values then coming as a list
 };
 
 // A command: what help says about it, and what it does.

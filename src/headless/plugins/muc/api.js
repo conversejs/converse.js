@@ -160,7 +160,8 @@ const rooms = {
             jid = getJIDFromURI(jid);
             let model = await chatboxes.get(jid);
             if (!model && create) {
-                model = await chatboxes.create(jid, attrs, _converse.exports.MUC);
+                // The registered class, as for a restored room, so that a plugin's subclass is used for both.
+                model = await chatboxes.create(jid, attrs, chatboxes.registry.get(CHATROOMS_TYPE));
             } else {
                 model = model && model.get('type') === CHATROOMS_TYPE ? model : null;
                 if (model && Object.keys(attrs).length) {

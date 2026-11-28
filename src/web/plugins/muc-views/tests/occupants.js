@@ -84,6 +84,8 @@ describe('The occupants sidebar', function () {
             view.model.rejoin();
             // Test that members aren't removed when we reconnect
             expect(view.model.occupants.length).toBe(8);
+            // ...but they're offline until the room sends their presence again
+            expect(view.model.occupants.filter((o) => o.get('presence') === 'online').length).toBe(0);
             view.model.session.set('connection_status', converse.ROOMSTATUS.ENTERED); // Hack
             await u.waitUntil(() => view.querySelectorAll('.occupant-list li').length === 8);
         }),

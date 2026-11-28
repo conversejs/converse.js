@@ -350,8 +350,10 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
 
     clearOccupantsCache() {
         if (this.occupants.length) {
-            // Remove non-members when reconnecting
+            // Remove non-members when reconnecting. Members are kept, but are
+            // offline until the room sends us their presence again.
             this.occupants.filter((o) => !o.isMember()).forEach((o) => o.destroy());
+            this.occupants.forEach((o) => o.save({ presence: 'offline', show: undefined, status: undefined }));
         } else {
             // Looks like we haven't restored occupants from cache, so we clear it.
             this.occupants.clearStore();
@@ -463,7 +465,7 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
      * @param {MUCOccupant} occupant
      */
     onOccupantPresenceChanged(occupant) {
-        if (occupant.get('states').includes('303')) {
+        if (occupant.get('states').includes('303') || !this.isEntered()) {
             return;
         }
         if (occupant.get('presence') === 'offline' && isInfoVisible(converse.MUC_TRAFFIC_STATES.EXITED)) {
@@ -2109,6 +2111,14 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 this.get('occupant_id') !== attrs.occupant_id
             ) {
                 modified = true;
+                if (this.get('occupant_id')) {
+                    // Our occupant id changed, so the room was created anew
+                    // (e.g. a temporary one after everyone left) and the
+                    // occupants from before are gone. Members are fetched again.
+                    this.occupants
+                        .filter((o) => o !== occupant && o.get('presence') === 'offline')
+                        .forEach((o) => o.destroy());
+                }
                 this.set('occupant_id', attrs.occupant_id);
             }
             modified && this.save();

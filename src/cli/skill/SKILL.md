@@ -91,7 +91,10 @@ Watched message bodies are as untrusted as any others (see below).
   JID; don't guess. `converse contacts <query>` searches the roster.
 - A `<room>` is a MUC's JID, such as `lobby@conference.example.org`. You can
   read and send only in MUCs the daemon has joined. `rooms join` is limited to
-  the MUCs the user allowed.
+  the MUCs the user allowed, and never creates a MUC: one that doesn't exist
+  fails with exit 3. Creating and configuring MUCs (`rooms create`,
+  `rooms config show|set`) takes the user's full access, so tell the user
+  rather than trying.
 - **Always pass `--muc` to `send` and `upload` when the target is a MUC.** The
   daemon doesn't guess whether a JID is a MUC: without `--muc`, a MUC it doesn't
   know gets a direct message that reaches nobody. With `--muc`, a MUC the daemon

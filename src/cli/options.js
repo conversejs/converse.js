@@ -27,6 +27,18 @@ export function option(name, value, help) {
     return { name, type: 'string', value, help };
 }
 
+/**
+ * An option that takes a value and may be given more than once, such as
+ * `--set <name=value>`. Its values come as a list, in the order given.
+ * @param {string} name - Its long name, without the dashes
+ * @param {string} value - How help shows its value
+ * @param {string} help - What it does
+ * @returns {import('./types').Option}
+ */
+export function repeatable(name, value, help) {
+    return { name, type: 'string', value, help, multiple: true };
+}
+
 /** Options every command takes. */
 export const GLOBAL_OPTIONS = [
     option('account', '<name>', 'Use this account, not the default one. CONVERSE_ACCOUNT=<name> does the same'),
@@ -56,11 +68,14 @@ export function parseOptions(commands) {
     /** @type {import('node:util').ParseArgsOptionsConfig} */
     const config = {};
     const all = [...Object.values(commands).flatMap(({ options = [] }) => options), ...GLOBAL_OPTIONS, VERSION];
-    for (const { name, type, short } of all) {
+    for (const { name, type, short, multiple = false } of all) {
         if (config[name] && config[name].type !== type) {
             throw new Error(`--${name} is declared both with and without a value.`);
         }
-        config[name] = { type, ...(short ? { short } : {}) };
+        if (config[name] && (config[name].multiple ?? false) !== multiple) {
+            throw new Error(`--${name} is declared both as repeatable and not.`);
+        }
+        config[name] = { type, ...(short ? { short } : {}), ...(multiple ? { multiple } : {}) };
     }
     return config;
 }

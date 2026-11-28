@@ -222,6 +222,50 @@ export type RoomListing = {
     name: string | null;
 };
 
+/**
+ * A room setting's value, as `rooms.config` shows it: a boolean for a yes/no
+ * setting, a list for one that takes several values, else a string, or null
+ * if it's unset. A password shows as "(hidden)".
+ */
+export type RoomSetting = boolean | string | string[] | null;
+
+/** JIDs by affiliation: "owner", "admin", "member" or "outcast". */
+export type AffiliationLists = Record<string, string[]>;
+
+/** A JID given an affiliation in a room. */
+export type AffiliationGrant = { jid: string; affiliation: string };
+
+/** A setting `rooms.configure` changed, or would change. */
+export type SettingChange = { name: string; from: RoomSetting; to: RoomSetting };
+
+export type RoomCreated = {
+    created: boolean; // False if the room was there already, in which case it was left as it is
+    conversation: ConversationDTO;
+    nick: string | null; // Ours there, if we're in it
+    settings: Record<string, RoomSetting> | null; // The new room's settings, or null if it wasn't created
+    affiliations: AffiliationGrant[]; // Those given in the new room
+};
+
+export type RoomConfig = {
+    room: string;
+    settings: Record<string, RoomSetting>; // By name, which `rooms.create` and `rooms.configure` take as they are
+    affiliations: AffiliationLists; // The lists the room showed us
+    fields: {
+        name: string;
+        type: string; // The XEP-0004 field type
+        label: string | null; // As the server words it. Untrusted
+        value: RoomSetting;
+        options: string[] | null; // The values a list setting takes
+    }[];
+};
+
+export type RoomConfigured = {
+    room: string;
+    dry_run: boolean; // If true, nothing was changed
+    changes: SettingChange[];
+    affiliations: AffiliationGrant[];
+};
+
 export type MessageList = {
     conversation: ConversationDTO;
     messages: MessageDTO[]; // Oldest first

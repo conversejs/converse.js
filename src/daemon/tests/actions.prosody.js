@@ -107,7 +107,7 @@ describe('Acting on messages on a real Prosody', () => {
 
         beforeAll(async () => {
             room = `orchard-${crypto.randomUUID().slice(0, 8)}@${MUC_DOMAIN}`;
-            await romeo.requestFull('rooms.join', { room, nick: 'romeo' });
+            await romeo.requestFull('rooms.create', { room, nick: 'romeo' });
             await juliet.requestFull('rooms.join', { room, nick: 'juliet' });
             ({ message: original } = await juliet.requestFull('messages.send', { to: room, body: 'Who is there?' }));
             as_romeo_sees_it = await waitForMessage(

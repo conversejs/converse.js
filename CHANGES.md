@@ -31,6 +31,8 @@
 - #4201: Shareable links to contacts and groupchats, with a landing page
 - Full XEP-0172 User Nickname support
 - New `@converse/daemon` and `@converse/cli` packages for terminals and agents
+- `converse rooms create` and `rooms config show|set` set up a groupchat from its spec file
+- The daemon never creates a groupchat on a join, nor with the server's defaults
 - 1:1 audio calls over Jingle (XEP-0167, XEP-0353 and XEP-0215)
 - Record and send voice messages with the opt-in `converse-voice-messages`
 - Search groupchats with XEP-0433; suggestions show their participant counts
@@ -53,6 +55,7 @@
 - New hooks for plugins: `getComposerPanels` and `getAttachmentMenuItems`
 - New `api.connection.remembered()`, `api.connection.retry()`
 - New `api.notifications.isNotable()` and `api.promises.renew()`
+- New `MUC.onCreated()`, called when our join created the groupchat, to override
 - `api.send` returns whether it sent; `api.settings.extend` can deep-merge
 
 ### Fixes
@@ -89,6 +92,8 @@
 - Fewer vCard fetches on session resumption and on groupchat presences
 - A rejected write to browser extension storage now fires an `error` event
 - A daemon that lost a simultaneous start no longer takes over later
+- A daemon turned away from a members-only groupchat says why, not that it timed out
+- `api.rooms.get` creates a groupchat with the MUC class in the chatboxes registry
 - Five documented configuration defaults, such as `theme`, are corrected
 
 ### Other changes

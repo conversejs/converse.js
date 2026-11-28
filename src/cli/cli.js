@@ -18,6 +18,9 @@ import { EXIT } from './exit-codes.js';
 import { commandHelp, overview } from './help.js';
 import { parseOptions, unexpectedOptions } from './options.js';
 
+/** The most words a command's name has, such as "rooms config set". */
+const MAX_COMMAND_WORDS = 3;
+
 /** Every option any command takes, for the parser. */
 const PARSE_OPTIONS = parseOptions(COMMANDS);
 
@@ -26,6 +29,7 @@ const EXIT_FOR_ERROR = {
     [ERRORS.NOT_FOUND]: EXIT.NOT_FOUND,
     [ERRORS.AMBIGUOUS]: EXIT.AMBIGUOUS,
     [ERRORS.NOT_JOINED]: EXIT.NOT_JOINED,
+    [ERRORS.FORBIDDEN]: EXIT.FORBIDDEN,
 };
 
 /**
@@ -42,6 +46,7 @@ const COMMAND_FOR = {
     'drafts.reject': 'converse drafts reject',
     'messages.list': 'converse read',
     'omemo.devices.list': 'converse omemo devices',
+    'rooms.create': 'converse rooms create',
     'rooms.join': 'converse rooms join',
     'schedules.list': 'converse schedules list',
 };
@@ -94,13 +99,17 @@ export async function main(argv, io) {
     }
 
     const asking = positionals[0] === 'help';
-    const [name, ...rest] = asking ? positionals.slice(1) : positionals;
+    const words = asking ? positionals.slice(1) : positionals;
     // Only the table's own entries count: "constructor" and "toString" aren't commands.
     const lookup = (key) => (Object.hasOwn(COMMANDS, key) ? key : undefined);
-    const [command, args] = lookup(name) ? [lookup(name), rest] : [lookup(`${name} ${rest[0]}`), rest.slice(1)];
-    // A group such as "drafts", given without its subcommand.
+    // The longest run of leading words that names a command, such as "rooms config set".
+    const length = [MAX_COMMAND_WORDS, 2, 1].find((n) => n <= words.length && lookup(words.slice(0, n).join(' ')));
+    const command = length ? lookup(words.slice(0, length).join(' ')) : undefined;
+    const args = length ? words.slice(length) : [];
+    // A group such as "drafts" or "rooms config", given without its subcommand.
+    const name = words.join(' ');
     const group = command ? [] : Object.keys(COMMANDS).filter((key) => key.startsWith(`${name} `));
-    if (group.length && rest.length === 0) {
+    if (group.length) {
         if (asking || values.help) {
             io.out(group.map((key) => commandHelp(key, COMMANDS[key])).join('\n'));
             return EXIT.OK;

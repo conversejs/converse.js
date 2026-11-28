@@ -51,6 +51,7 @@ export const ERRORS = {
     BUSY: -32008, // The daemon is reading too many large requests already; sent with a null id
     NOT_JOINED: -32009, // A send to a room we aren't in, or that turned out, from the room's answer, not to have us
     UNDELIVERED: -32010, // The room turned a message down with an error; `data.condition` names it
+    FORBIDDEN: -32011, // The room turned a request down that takes an affiliation we don't have, such as owner
 };
 
 /**

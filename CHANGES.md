@@ -90,7 +90,7 @@
 - A rejected write to browser extension storage now fires an `error` event
 - A daemon that lost a simultaneous start no longer takes over later
 - Five documented configuration defaults, such as `theme`, are corrected
-- Members who left a groupchat while we were away no longer show as present
+- Rejoining a groupchat no longer lists the same occupant twice
 
 ### Other changes
 

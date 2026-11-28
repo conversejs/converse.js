@@ -2111,6 +2111,14 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
                 this.get('occupant_id') !== attrs.occupant_id
             ) {
                 modified = true;
+                if (this.get('occupant_id')) {
+                    // Our occupant id changed, so the room was created anew
+                    // (e.g. a temporary one after everyone left) and the
+                    // occupants from before are gone. Members are fetched again.
+                    this.occupants
+                        .filter((o) => o !== occupant && o.get('presence') === 'offline')
+                        .forEach((o) => o.destroy());
+                }
                 this.set('occupant_id', attrs.occupant_id);
             }
             modified && this.save();

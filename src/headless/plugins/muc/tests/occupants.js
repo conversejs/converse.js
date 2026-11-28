@@ -524,4 +524,59 @@ describe('A MUC occupant', function () {
             expect(message.getOccupant()).toBe(juliet);
         }),
     );
+
+    it(
+        'is shown once after rejoining a room that was destroyed and created anew',
+        mock.initConverse(converse, [], {}, async function (_converse) {
+            await mock.waitUntilBookmarksReturned(_converse);
+            const muc_jid = 'lounge@montague.lit';
+            const features = [...mock.default_muc_features, Strophe.NS.OCCUPANTID];
+            const members = [{ jid: 'juliet@capulet.lit', nick: 'juliet', affiliation: 'member' }];
+            const model = await mock.openAndEnterMUC(
+                _converse,
+                muc_jid,
+                'romeo',
+                features,
+                members,
+                true,
+                {},
+                'member',
+                'participant',
+            );
+
+            const sendPresence = (/** @type {string} */ affiliation) =>
+                _converse.api.connection.get()._dataRecv(
+                    mock.createRequest(
+                        _converse,
+                        stx`<presence from="${muc_jid}/juliet" to="${_converse.jid}" xmlns="jabber:client">
+                            <x xmlns="${Strophe.NS.MUC_USER}">
+                                <item affiliation="${affiliation}" role="participant"/>
+                            </x>
+                            <occupant-id xmlns="${Strophe.NS.OCCUPANTID}" id="${u.getUniqueId()}"/>
+                        </presence>`,
+                    ),
+                );
+
+            sendPresence('member');
+            await u.waitUntil(() => model.getOccupantByNickname('juliet')?.get('presence') === 'online');
+
+            // Everyone left, so the server destroyed the room. Rejoining
+            // creates it anew, with new occupant ids and no members.
+            const { sent_stanzas, IQ_stanzas } = _converse.api.connection.get();
+            sent_stanzas.splice(0, sent_stanzas.length);
+            IQ_stanzas.splice(0, IQ_stanzas.length);
+            model.rejoin();
+            await mock.waitForMUCDiscoInfo(_converse, muc_jid, features);
+            sendPresence('none');
+            await mock.receiveOwnMUCPresence(_converse, muc_jid, 'romeo', 'none', 'participant', features);
+            await u.waitUntil(() => model.session.get('connection_status') === converse.ROOMSTATUS.ENTERED);
+
+            for (const nick of ['juliet', 'romeo']) {
+                const occupants = model.occupants.filter((o) => o.get('nick') === nick);
+                expect(occupants.length).toBe(1);
+                expect(occupants[0].get('affiliation')).toBe('none');
+                expect(occupants[0].get('presence')).toBe('online');
+            }
+        }),
+    );
 });

@@ -3149,16 +3149,31 @@ class MUC extends ModelWithVCard(ModelWithMessages(ColorAwareModel(ChatBoxBase))
             this.updateOccupantsOnPresence(attrs);
         }
 
-        const locked_room = attrs.codes.includes('201');
-        if (locked_room) {
-            if (this.get('auto_configure')) {
-                await this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
-            } else if (api.settings.get('muc_instant_rooms')) {
-                // Accept default configuration
-                await this.sendConfiguration().then(() => this.refreshDiscoInfo());
-            } else {
-                api.modal.show('converse-muc-config-modal', { model: this });
-            }
+        if (attrs.codes.includes('201')) {
+            await this.onCreated();
+        }
+    }
+
+    /**
+     * Called when our join created the groupchat, which the server keeps
+     * locked until its owner (us) configures it. The groupchat is configured
+     * from its `roomconfig` if `auto_configure` is set, else given the server's
+     * defaults if `muc_instant_rooms` is set, else the configuration form is
+     * shown. Override it to decide differently, for example to cancel the
+     * configuration, which destroys the groupchat.
+     *
+     * It's called synchronously once the groupchat has been entered, in the
+     * same tick as the `change:connection_status` event that says so.
+     * @returns {Promise<void>}
+     */
+    async onCreated() {
+        if (this.get('auto_configure')) {
+            await this.autoConfigureChatRoom().then(() => this.refreshDiscoInfo());
+        } else if (api.settings.get('muc_instant_rooms')) {
+            // Accept default configuration
+            await this.sendConfiguration().then(() => this.refreshDiscoInfo());
+        } else {
+            api.modal.show('converse-muc-config-modal', { model: this });
         }
     }
 
